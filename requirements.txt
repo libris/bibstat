@@ -1,0 +1,4 @@
+Django==1.6.4
+mongoengine==0.8.7
+django-mongonaut==0.2.20
+
