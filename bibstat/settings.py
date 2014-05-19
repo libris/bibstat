@@ -121,7 +121,7 @@ _MONGODB_DATABASE_HOST = \
 mongoengine.connect(_MONGODB_NAME)
 
 # Mongonaut Admin GUI static files
-MONGONAUT_JQUERY = "/static/jquery/1.7.1/jquery.min.js"
+MONGONAUT_JQUERY = "/static/js/plugins/jquery/1.7.1/jquery.min.js"
 MONGONAUT_TWITTER_BOOTSTRAP = "/static/js/plugins/bootstrap/css/bootstrap.css"
-MONGONAUT_TWITTER_BOOTSTRAP_ALERT = "/static/js/plugins/bootstrap/js/bootstrap-alert.js"
+MONGONAUT_TWITTER_BOOTSTRAP_ALERT = "/static/js/plugins/bootstrap/js/bootstrap.js"
 

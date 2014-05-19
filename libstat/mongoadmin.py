@@ -1,10 +1,16 @@
+# Import the MongoAdmin base class
 from mongonaut.sites import MongoAdmin
-from libstat.models import Term
 
-class TermAdmin(MongoAdmin):
-    def has_view_permission(self, request):
-        return True
+# Import your custom models
+from libstat.models import Variable
 
-# Instantiate the PostAdmin subclass
-# Then attach PostAdmin to your models
-Term.mongoadmin = TermAdmin()
+# Subclass MongoAdmin and add a customization
+class VariableAdmin(MongoAdmin):
+     # Searches on the title field. Displayed in the DocumentListView.
+    search_fields = ("comment")
+
+    # provide following fields for view in the DocumentListView
+    list_fields = ("key", "comment")
+
+# Instantiate the MongoAdmin subclass and attach it to your model
+Variable.mongoadmin = VariableAdmin()
