@@ -84,8 +84,13 @@ USE_TZ = True
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/1.6/howto/static-files/
-
 STATIC_URL = '/static/'
+
+# Common static resources not tied to any application.
+STATICFILES_DIRS = (
+    os.path.join(BASE_DIR, "static"),
+    # TODO '/var/www/static/',
+)
 
 #
 # MongoEngine settings
@@ -116,8 +121,7 @@ _MONGODB_DATABASE_HOST = \
 mongoengine.connect(_MONGODB_NAME)
 
 # Mongonaut Admin GUI static files
-# TODO: Download and store in local static folder!
-MONGONAUT_JQUERY = "http://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"
-MONGONAUT_TWITTER_BOOTSTRAP = "http://twitter.github.com/bootstrap/assets/css/bootstrap.css"
-MONGONAUT_TWITTER_BOOTSTRAP_ALERT = "http://twitter.github.com/bootstrap/assets/js/bootstrap-alert.js"
+MONGONAUT_JQUERY = "/static/jquery/1.7.1/jquery.min.js"
+MONGONAUT_TWITTER_BOOTSTRAP = "/static/js/plugins/bootstrap/css/bootstrap.css"
+MONGONAUT_TWITTER_BOOTSTRAP_ALERT = "/static/js/plugins/bootstrap/js/bootstrap-alert.js"
 
