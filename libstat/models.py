@@ -5,6 +5,48 @@ from pip._vendor.pkg_resources import require
 # Create your models here.
 
 """
+     Enum for types
+""" 
+class Type(Document):
+    type = StringField(max_length=100, primary_key=True)
+    description = StringField(max_length=200)
+    
+    meta = {
+        'collection': 'libstat_types'
+    }
+    
+    def __unicode__(self):
+        return self.type
+    
+"""
+    Enum for dimensions
+"""
+class Term(Document):
+    term = StringField(max_length=100, primary_key=True)
+    description = StringField(max_length=200)
+    
+    meta =  {
+        'collection': 'libstat_terms'
+    }
+    
+    def __unicode__(self):
+        return self.term
+    
+"""
+    Enum for measurables
+"""
+class Measurable(Document):
+    measurable = StringField(max_length=100, primary_key=True)
+    description = StringField(max_length=200)
+    
+    meta =  {
+        'collection': 'libstat_measurables'
+    }
+    
+    def __unicode__(self):
+        return self.measurable
+
+"""
 Variables
 [
     {
@@ -12,10 +54,10 @@ Variables
         "key": "folk18",
         "description": "Antal anställda bibliotekarier som är män",
         "is_public": True,
-        "metadata": <VariableMetaData> {
+        "metadata": <VariableMetadata> {
             "dimensions": {                <--- dimensions as a DictField, sadly not editable in Mongonaut...
                 "staffType": "Librarian",
-                "sex": "Male"
+                "gender": "Male"
             },
             "measurable": {                <--- measurable as a DictField, sadly not editable in Mongonaut...
                 "name": "noOfEmployees",
@@ -28,16 +70,16 @@ Variables
         "key": "folk17",
         "description": "Antal anställda bibliotekarier som är kvinnor",
         "is_public": True,
-        "metadata": <VariableMetaData> {
+        "metadata": <VariableMetadata> {
             "dimensions": [
                 <EmbeddedDimension> {
                 {
-                    "dimension": "staffType",
-                    "value": "Librarian"
+                    "dimension": <Term>"staffType",
+                    "value": <Type>"Librarian"
                 },
                 <EmbeddedDimension> {
-                    "dimension":"sex",
-                    "value": "Female"
+                    "dimension": <Term>"gender",
+                    "value": <Type>"Female"
                 }
             ],
             "measurable": noOfEmployees
@@ -60,7 +102,7 @@ class EmbeddedDimension(EmbeddedDocument):
     def __unicode__(self):
         return "{}: {}".format(self.dimension, self.value)
 
-class VariableMetaData(EmbeddedDocument):
+class VariableMetadata(EmbeddedDocument):
     dimensions = ListField(EmbeddedDocumentField(EmbeddedDimension))
     measurable = StringField(max_length=50)
     range = StringField(max_length=50)
@@ -70,12 +112,13 @@ class VariableMetaData(EmbeddedDocument):
 
 class Variable(Document):
     key = StringField(max_length=30, required=True, unique=True)
-
+    # TODO: variable = StringField(max_length=50, primary_key=True) d v s "folk6" i s f id + key
+    # TODO: aliases = ListField(StringField(max_length=50), required=True) innehåller "folk6"
     description = StringField(max_length=300)
     comment = StringField(max_length=200)
     is_public = BooleanField(required=True, default=True)
 
-    metadata = EmbeddedDocumentField(VariableMetaData)
+    metadata = EmbeddedDocumentField(VariableMetadata)
 
     meta = {
         'collection': 'libstat_variables'
@@ -98,7 +141,7 @@ SurveyResponse
             "value": "6",
             "_variable_key": "folk18",
             "_is_public": True,
-            "_metadata": <VariableMetaData> {
+            "_metadata": <VariableMetadata> {
                 "dimensions": {
                     "staffType": "Librarian",
                     "sex": "Male"
@@ -114,7 +157,7 @@ SurveyResponse
             "value": "23"
             "_variable_key": "folk17",
             "_is_public": True,
-            "_metadata": <VariableMetaData> {
+            "_metadata": <VariableMetadata> {
                 "dimensions": {
                     "staffType": "Librarian",
                     "sex": "Female"
@@ -141,7 +184,7 @@ class SurveyObservation(EmbeddedDocument):
 
     _variable_key = StringField(max_length=30)
     _is_public = BooleanField(required=True, default=True)
-    _metadata = EmbeddedDocumentField(VariableMetaData)
+    _metadata = EmbeddedDocumentField(VariableMetadata)
 
     def __unicode__(self):
         return "{0}: {1}".format(self.variable, self.value)
