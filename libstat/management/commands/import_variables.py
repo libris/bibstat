@@ -1,5 +1,5 @@
 from django.core.management.base import BaseCommand, CommandError
-from libstat.models import Variable, Term, Type, Measurable, VariableMetadata, EmbeddedDimension
+from libstat.models import Variable, Term, Type, Measurable, EmbeddedDimension
 from xlrd import open_workbook
 
 class Command(BaseCommand):
@@ -27,10 +27,11 @@ class Command(BaseCommand):
             object.is_public = is_public
 
             if is_public:
-                metadata = VariableMetadata(measurable=measurable, range=row[4])
-                metadata.dimensions = []
-                
                 Measurable.objects.filter(measurable=measurable).update_one(upsert=True)
+                
+                object.measurable =  Measurable.objects.get(pk=measurable)
+                
+                object.dimensions = []
                 
                 term1 = row[5].strip()
                 Term.objects.filter(term=term1).update_one(upsert=True)
@@ -38,7 +39,7 @@ class Command(BaseCommand):
                 type1 = row[6].strip()
                 Type.objects.filter(type=type1).update_one(upsert=True)
                 
-                metadata.dimensions.append(EmbeddedDimension(dimension=term1, value=type1))
+                object.dimensions.append(EmbeddedDimension(dimension=Term.objects.get(pk=term1), value=Type.objects.get(pk=type1)))
 
                 term2 = row[7].strip()
                 has_second_dimension = bool(term2)
@@ -49,9 +50,7 @@ class Command(BaseCommand):
                     type2 = row[8].strip()
                     Type.objects.filter(type=type2).update_one(upsert=True)
                     
-                    metadata.dimensions.append(EmbeddedDimension(dimension=term2, value=type2))
-                    
-                object.metadata = metadata
+                    object.dimensions.append(EmbeddedDimension(dimension=Term.objects.get(pk=term2), value=Type.objects.get(pk=type2)))
                 
             object.save()
             self.stdout.write("Imported Variable %s" % object.key)

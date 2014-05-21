@@ -70,21 +70,18 @@ Variables
         "key": "folk17",
         "description": "Antal anställda bibliotekarier som är kvinnor",
         "is_public": True,
-        "metadata": <VariableMetadata> {
-            "dimensions": [
-                <EmbeddedDimension> {
-                {
-                    "dimension": <Term>"staffType",
-                    "value": <Type>"Librarian"
-                },
-                <EmbeddedDimension> {
-                    "dimension": <Term>"gender",
-                    "value": <Type>"Female"
-                }
-            ],
-            "measurable": noOfEmployees
-            "range": "integer"
-        }
+        "dimensions": [
+            <EmbeddedDimension> {
+            {
+                "dimension": <Term>"staffType",
+                "value": <Type>"Librarian"
+            },
+            <EmbeddedDimension> {
+                "dimension": <Term>"gender",
+                "value": <Type>"Female"
+            }
+        ],
+        "measurable": <Measurable>noOfEmployees
     },
     {
         "id": "sd0f9s8df098sd0f9sydf86d5",
@@ -96,19 +93,19 @@ Variables
 ]
 """
 class EmbeddedDimension(EmbeddedDocument):
-    dimension = StringField(max_length=50, required=True)
-    value = StringField(max_length=50, required=True)
+    dimension = ReferenceField(Term, required=True)
+    value = ReferenceField(Type, required=True)
 
     def __unicode__(self):
         return "{}: {}".format(self.dimension, self.value)
 
-class VariableMetadata(EmbeddedDocument):
-    dimensions = ListField(EmbeddedDocumentField(EmbeddedDimension))
-    measurable = StringField(max_length=50)
-    range = StringField(max_length=50)
-
-    def __unicode__(self):
-        return "dimensions:{}, measurable:{}, range:{}".format(self.dimensions, self.measurable, self.range)
+# class VariableMetadata(EmbeddedDocument):
+#     dimensions = ListField(EmbeddedDocumentField(EmbeddedDimension))
+#     measurable = StringField(max_length=50)
+#     range = StringField(max_length=50)
+# 
+#     def __unicode__(self):
+#         return "dimensions:{}, measurable:{}, range:{}".format(self.dimensions, self.measurable, self.range)
 
 class Variable(Document):
     key = StringField(max_length=30, required=True, unique=True)
@@ -118,7 +115,10 @@ class Variable(Document):
     comment = StringField(max_length=200)
     is_public = BooleanField(required=True, default=True)
 
-    metadata = EmbeddedDocumentField(VariableMetadata)
+    dimensions = ListField(EmbeddedDocumentField(EmbeddedDimension))
+    measurable = ReferenceField(Measurable)
+    
+    #metadata = EmbeddedDocumentField(VariableMetadata)
 
     meta = {
         'collection': 'libstat_variables'
@@ -157,23 +157,22 @@ SurveyResponse
             "value": "23"
             "_variable_key": "folk17",
             "_is_public": True,
-            "_metadata": <VariableMetadata> {
-                "dimensions": {
-                    "staffType": "Librarian",
-                    "sex": "Female"
-                }
-                "measurable": {
-                    "name": "noOfEmployees",
-                    "range": "integer"
-                }
+            "_dimensions": {
+                "staffType": "Librarian",
+                "sex": "Female"
+            }
+            "_measurable": {
+                "name": "noOfEmployees",
+                "range": "integer"
             }
         },
         <SurveyObservation> {
             "variable": "sd0f9s8df098sd0f9sydf86d5",
             "value": "Boksnurror i köpcentret"
             "_variable_key": "folk15",
-            "_is_public": False
-            "_metadata": null
+            "_is_public": False,
+            "_dimensions": null,
+            "_measurable": null
         }
     ]
 }
@@ -184,7 +183,11 @@ class SurveyObservation(EmbeddedDocument):
 
     _variable_key = StringField(max_length=30)
     _is_public = BooleanField(required=True, default=True)
-    _metadata = EmbeddedDocumentField(VariableMetadata)
+    
+    _dimensions = ListField(EmbeddedDocumentField(EmbeddedDimension))
+    _measurable = ReferenceField(Measurable)
+    
+    #_metadata = EmbeddedDocumentField(VariableMetadata)
 
     def __unicode__(self):
         return "{0}: {1}".format(self.variable, self.value)
