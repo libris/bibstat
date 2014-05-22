@@ -7,10 +7,10 @@ from libstat.models import Variable, SurveyResponse
 # Subclass MongoAdmin and add a customization
 class VariableAdmin(MongoAdmin):
      # Searches on the title field. Displayed in the DocumentListView.
-    search_fields = ["key", "aliases", "description",]
+    search_fields = ["key", "alias", "description",]
 
     # provide following fields for view in the DocumentListView
-    list_fields = ["key", "description", "is_public"]
+    list_fields = ["key", "alias", "description", "is_public",]
 
 class SurveyResponseAdmin(MongoAdmin):
     search_fields = ["sampleYear", "library",]

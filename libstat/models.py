@@ -23,33 +23,37 @@ Variables
     {
         "id": "fpweijf+9u3+r9u3493+49u",
         "key": "noOfEmployees_Librarian_M",
-        "aliases": ["folk18"],
+        "alias": "folk18",
         "description": "Antal anställda bibliotekarier som är män",
-        "is_public": True
+        "is_public": True,
+        "target_groups": ["PublicLibrary"]
     },
     {
         "id": "sd0f98s0d9f80s9d8f0d9f9s",
         "key": "noOfEmployees_Librarian_F",
-        "aliases": ["folk17"],
+        "alias": "folk17",
         "description": "Antal anställda bibliotekarier som är kvinnor",
-        "is_public": True
+        "is_public": True,
+        "target_groups": ["PublicLibrary"]
     },
     {
         "id": "sd0f9s8df098sd0f9sydf86d5",
         "key": "comment_OtherLendingPlaces",
-        "aliases": ["folk15"]
+        "alias": "folk15",
         "description": "Textkommentar övriga utlåningsställen",
-        "is_public": False
+        "is_public": False,
+        "target_groups": ["PublicLibrary"]
     },
 ]
 """
 class Variable(Document):
     key = StringField(max_length=100, required=True, unique=True)
-    aliases = ListField(StringField(max_length=100), required=True)
+    alias = StringField(max_length=100, unique=True)
+    
     description = StringField(max_length=300, required=True)
     comment = StringField(max_length=200)
-    
     is_public = BooleanField(required=True, default=True)
+    
     target_groups = ListField(StringField(max_length=20), required=True)
 #     observation_type = StringField(max_length=20, required=True, default="Integer")
 
@@ -157,7 +161,7 @@ class SurveyObservation(EmbeddedDocument):
         return u"{0}: {1}".format(self.variable, self.value)
 
 class SurveyResponse(Document):
-    library = StringField(max_length=50, required=True)
+    library = StringField(max_length=100, required=True, unique_with='sampleYear')
     sampleYear = IntField(required=True)
 
     observations = ListField(EmbeddedDocumentField(SurveyObservation))
