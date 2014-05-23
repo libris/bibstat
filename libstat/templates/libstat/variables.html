@@ -1,0 +1,25 @@
+{% extends "libstat/base.html" %}
+
+{% block content %}
+  <div class="container">
+    
+    <div class="page-header">
+      <h1>Termer</h1>
+    </div>
+    
+    {% if variables %}
+      <div class="list-group">
+        {% for v in variables %}
+          <a href="#" class="list-group-item">
+            <h4 class="list-group-item-heading">{{v.key}}</h4>
+            <p class="list-group-item-text">{{v.description}}</p>
+          </a>
+          <!-- <li class="list-group-item">
+            <a href="{% url 'variable_detail' v.id %}">{{v.key}}</a> {{v.description}}
+          </li> -->
+      	{% endfor %}
+      </div>
+    {% endif %}
+  
+  </div>
+{% endblock %}

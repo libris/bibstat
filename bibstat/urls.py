@@ -14,4 +14,7 @@ urlpatterns = patterns('',
     # Mongonaut MongoDB admin GUI. 
     # NOTE: Mongonaut does not have a login form but views requires authentication!
     url(r'^mongonaut/', include('mongonaut.urls')),
+    
+    url(r'^statistics/', include('libstat.urls')),
+    url(r'^$', 'libstat.views.index')
 )

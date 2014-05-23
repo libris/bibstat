@@ -1,0 +1,22 @@
+{% extends "libstat/base.html" %}
+
+{% block content %}
+  <div class="container">
+
+    <div class="page-header">
+      <h1>Enkätsvar</h1>
+    </div>
+    
+    {% if survey_responses %}
+      <div class="list-group">
+        {% for sr in survey_responses %}
+          <a href="#" class="list-group-item">
+            <h4 class="list-group-item-heading">{{sr.library}} <small>{{sr.sampleYear}}</small></h4>
+            <p class="list-group-item-text"></p>
+          </a>
+        {% endfor %}
+      </div>
+    {% endif %}
+
+  </div>
+{% endblock %}
