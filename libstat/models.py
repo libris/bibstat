@@ -143,7 +143,9 @@ SurveyResponse
 """
 class SurveyObservation(EmbeddedDocument):
     variable = ReferenceField(Variable, required=True)
-    value = DynamicField(required=True)
+    
+    # Need to allow None/null values to indicate invalid or missing responses in old data
+    value = DynamicField() 
 
     # Keeping the original key reference from spreadsheet for traceability
     _source_key = StringField(max_length=100)

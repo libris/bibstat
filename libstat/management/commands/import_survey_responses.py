@@ -38,7 +38,6 @@ class Command(BaseCommand):
         
         for i in range(0, work_sheet.ncols):
             alias = work_sheet.cell_value(0, i)
-            #TODO: Bara ett alias
             vars = Variable.objects.filter(alias=alias)
             if len(vars) > 0:
                 v = vars[0]
@@ -64,7 +63,10 @@ class Command(BaseCommand):
                     if len(existing_responses) == 0:
                         sr = SurveyResponse(library=library, sampleYear=year, observations=[])
                         for n, alias, variable in variable_keys:
-                            sr.observations.append(SurveyObservation(variable=variable, value=row[n], _source_key=alias, _is_public=variable.is_public))
+                            value = row[n]
+                            if (isinstance(value, str) and value.strip() == "") or value == 0:
+                              value = None
+                            sr.observations.append(SurveyObservation(variable=variable, value=value, _source_key=alias, _is_public=variable.is_public))
                         sr.save()
                         imported_responses += 1
                         self.stdout.write(u"Imported survey response for library {}".format(library))
