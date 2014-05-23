@@ -11,12 +11,6 @@ SCHOOL_LIBRARY = "SchoolLibrary"
  
 SURVEY_TARGET_GROUPS = [PUBLIC_LIBRARY, RESEARCH_LIBRARY, HOSPITAL_LIBRARY, SCHOOL_LIBRARY]
 
-OBSERVATION_TYPE_INT = "Integer",
-OBSERVATION_TYPE_STR = "String",
-OBSERVATION_TYPE_SEK = "Currency_SEK"
-
-OBSERVATION_TYPES = [OBSERVATION_TYPE_INT, OBSERVATION_TYPE_STR, OBSERVATION_TYPE_SEK]
-
 """
 Variables
 [
@@ -53,9 +47,9 @@ class Variable(Document):
     description = StringField(max_length=300, required=True)
     comment = StringField(max_length=200)
     is_public = BooleanField(required=True, default=True)
+    type = StringField(max_length=100, required=True)
     
     target_groups = ListField(StringField(max_length=20), required=True)
-#     observation_type = StringField(max_length=20, required=True, default="Integer")
 
     meta = {
         'collection': 'libstat_variables'

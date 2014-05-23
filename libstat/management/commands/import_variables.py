@@ -32,26 +32,21 @@ class Command(BaseCommand):
         for i in range(1, work_sheet.nrows):
             row = work_sheet.row_values(i)
             
-            #Columns: 0-Alias, 1-Description, optional: 2-Comment, 3-Variable
+            #Columns: 0-Alias, 1-Description, 2-Comment (optional), 3-Is public, 4-Variable type, 5-Variable (optional)
             alias = row[0].strip()
             description = row[1].strip()
-            comment = None
-            variable = None
-            is_public = True
-            
-            if work_sheet.ncols > 2:
-                comment = row[2].strip()
-            if work_sheet.ncols > 3:
-                variable = row[3].strip()
+            comment = row[2].strip()
+            is_public = bool(row[3].strip())
+            variable_type = row[4].strip()
+            variable = row[5].strip()
+
             if not variable:
                 variable = alias
-            if comment:
-                # Not the best way to determine if a field is private or public, but it's the only one I've got. 
-                is_public=False
             
             existing_vars = Variable.objects.filter(key=variable)
             if len(existing_vars) == 0:
-                object = Variable(key=variable, alias=alias, description=description, comment=comment, is_public=is_public, target_groups=[target_group])
+                object = Variable(key=variable, alias=alias, description=description, comment=comment, 
+                                  is_public=is_public, type=variable_type, target_groups=[target_group])
                 object.save()
                 self.stdout.write("IMPORTED: key={}, alias={}, is_public={}, target_groups={}".format(object.key, object.alias, object.is_public, object.target_groups))
             else:
