@@ -1,3 +1,5 @@
+{% load i18n %}
+ 
 <!DOCTYPE html>
 <html lang="en">
   <head>
@@ -8,13 +10,20 @@
     <meta name="author" content="">
     <!-- <link rel="shortcut icon" href="../../assets/ico/favicon.ico"> -->
 
-    <title>Biblioteksstatistiken</title>
+    <title>{% trans "Biblioteksstatistiken" %}</title>
 
     <!-- Bootstrap core CSS -->
     <link href="/static/js/plugins/bootstrap/3.1.1/css/bootstrap.min.css" rel="stylesheet">
+    
+    <!-- Libstat customizations -->
+    <link href="/static/css/libstat.css" rel="stylesheet">
+    
+    <!-- Navigation -->
+    <!-- <link href="/static/js/plugins/bootstrap/3.1.1/css/navbar-fixed-top.css" rel="stylesheet"> -->
 
-    <!-- Custom styles for this template -->
-    <link href="/static/js/plugins/bootstrap/3.1.1/css/jumbotron.css" rel="stylesheet">
+    <!-- Custom styles for templates -->
+    <!-- <link href="/static/js/plugins/bootstrap/3.1.1/css/jumbotron.css" rel="stylesheet"> -->
+    <!-- <link href="/static/js/plugins/bootstrap/3.1.1/css/offcanvas.css" rel="stylesheet"> -->
 
     <!-- Just for debugging purposes. Don't actually copy this line! -->
     <!--[if lt IE 9]><script src="../../assets/js/ie8-responsive-file-warning.js"></script><![endif]-->
@@ -26,51 +35,47 @@
     <![endif]-->
   </head>
 
-  <body>
+  <body class="libstat">
 
-    <div class="navbar navbar-inverse navbar-fixed-top" role="navigation">
-      <div class="container">
-        <div class="navbar-header">
-          <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
-            <span class="sr-only">Toggle navigation</span>
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-          </button>
-          <a class="navbar-brand" href="#">KB Statistik</a>
-        </div>
-        <div class="navbar-collapse collapse">
-          <ul class="nav navbar-nav">
-            <li class="active"><a href="{% url 'index' %}">Start</a></li>
-            <li><a href="#">Öppen data</a></li>
-            <li><a href="{% url 'variables' %}">Termer</a></li>
-            <li><a href="{% url 'survey_responses' %}">Enkätsvar</a></li>
-            <li class="dropdown">
-              <a data-toggle="dropdown" class="dropdown-toggle" href="#">Administrera <b class="caret"></b></a>
-              <ul class="dropdown-menu">
-                <li><a href="{% url 'variables' %}">Termer</a></li>
-                <li><a href="{% url 'survey_responses' %}">Enkätsvar</a></li>
-                
-                <!-- <li><a href="#">Action</a></li>
-                <li><a href="#">Another action</a></li>
-                <li><a href="#">Something else here</a></li>
-                <li class="divider"></li>
-                <li class="dropdown-header">Nav header</li>
-                <li><a href="#">Separated link</a></li>
-                <li><a href="#">One more separated link</a></li> -->
-              </ul>
-            </li>
-          </ul>
-          <form class="navbar-form navbar-right" role="form">
-            <div class="form-group">
-              <input type="text" placeholder="Email" class="form-control">
-            </div>
-            <div class="form-group">
-              <input type="password" placeholder="Password" class="form-control">
-            </div>
-            <button type="submit" class="btn btn-success">Sign in</button>
-          </form>
-        </div><!--/.navbar-collapse -->
+    <div class="navbar navbar-inverse navbar-static-top" role="navigation">
+      <div class="container-fluid">
+        <div class="container">
+          
+          <div class="navbar-header">
+            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#top-main-nav">
+              <span class="sr-only">Toggle navigation</span>
+              <span class="icon-bar"></span>
+              <span class="icon-bar"></span>
+              <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="{% url 'index' %}">{% trans "KB Statistik" %}</a>
+          </div>
+          
+          <div class="collapse navbar-collapse" id="top-main-nav">
+            <ul class="nav navbar-nav">
+              <li class="{{nav_start_css}}"><a href="{% url 'index' %}">{% trans "Start" %}</a></li>
+              <li class="{{nav_open_data_css}}"><a href="{% url 'open_data' %}">{% trans "Öppen data" %}</a></li>
+            </ul>
+            
+            <ul class="nav navbar-nav navbar-right">
+              {% if user.is_authenticated %}
+                {% if user.is_superuser %}
+                  <li class="dropdown">
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown">{% trans "Administrera" %} <b class="caret"></b></a>
+                    <ul class="dropdown-menu">
+                      <li><a href="{% url 'variables' %}">{% trans "Termer" %}</a></li>
+                      <li><a href="{% url 'survey_responses' %}">{% trans "Enkätsvar" %}</a></li>
+                    </ul>
+                  </li>
+                {% endif %}
+                <li class="navbar-text">{% trans "Inloggad som" %} {{user.username}}</li>
+                <li><a href="#logout">{% trans "Logga ut" %}</a></li>
+              {% else %}
+                <li><a href="#login">{% trans "Logga in" %}</a></li>
+              {% endif %}
+            </ul>
+          </div><!--/.navbar-collapse -->
+        </div><!-- /.container-fluid -->
       </div>
     </div>
 	
@@ -81,7 +86,7 @@
     <!-- Bootstrap core JavaScript
     ================================================== -->
     <!-- Placed at the end of the document so the pages load faster -->
-    <script src="/static/js/plugins/jquery/1.11.1/jquery.min.js"></script>
+    <script src="/static/js/plugins/jquery/1.11.1/jquery-1.11.1.min.js"></script>
     <script src="/static/js/plugins/bootstrap/3.1.1/js/bootstrap.min.js"></script>
   </body>
 </html>

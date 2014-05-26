@@ -5,10 +5,22 @@ from django.http import Http404
 
 from libstat.models import Variable, SurveyResponse
 
+
 # Create your views here.
 
 def index(request):
-    return render(request, 'libstat/index.html', {})
+    context =  {
+        "nav_start_css": "active",
+        "nav_open_data_css": ""
+    }
+    return render(request, 'libstat/index.html', context)
+  
+def open_data(request):
+    context =  {
+        "nav_start_css": "",
+        "nav_open_data_css": "active"
+    }
+    return render(request, 'libstat/open_data.html', context)
 
 def variables(request):
     variables = Variable.objects.all()

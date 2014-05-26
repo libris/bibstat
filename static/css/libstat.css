@@ -1,0 +1,7 @@
+/*
+ * Customizations for libstat
+ */
+ 
+.libstat .navbar-inverse li:hover {
+  background-color: #333333;
+}
