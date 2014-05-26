@@ -1,0 +1,113 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2014-05-26 16:38+0200\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: templates/libstat/base.html:13 templates/libstat/index.html:8
+msgid "Biblioteksstatistiken"
+msgstr "Library statistics"
+
+#: templates/libstat/base.html:51
+msgid "KB Statistik"
+msgstr "KB Statistics"
+
+#: templates/libstat/base.html:56
+msgid "Start"
+msgstr "Start"
+
+#: templates/libstat/base.html:57 templates/libstat/open_data.html:14
+msgid "Öppen data"
+msgstr "Open data"
+
+#: templates/libstat/base.html:64
+msgid "Administrera"
+msgstr "Manage"
+
+#: templates/libstat/base.html:66
+msgid "Termer"
+msgstr "Terms"
+
+#: templates/libstat/base.html:67
+msgid "Enkätsvar"
+msgstr "Survey responses"
+
+#: templates/libstat/base.html:71
+msgid "Inloggad som"
+msgstr "Logged in as"
+
+#: templates/libstat/base.html:72
+msgid "Logga ut"
+msgstr "Sign out"
+
+#: templates/libstat/base.html:74
+msgid "Logga in"
+msgstr "Sign in"
+
+#: templates/libstat/index.html:10
+msgid ""
+"\n"
+"          Kungl. biblioteket är sedan 2011 utsett av regeringen att vara "
+"ansvarigt för \n"
+"          Sveriges officiella biblioteksstatistik. Tidigare låg ansvaret hos "
+"Statens kulturråd. \n"
+"          Under åren har statistiken genomförts och publicerats på olika "
+"sätt. \n"
+"          Här finns samtliga publiceringar som gjorts under de senaste elva "
+"åren.\n"
+"          "
+msgstr ""
+
+#: templates/libstat/index.html:17 templates/libstat/index.html.py:34
+#: templates/libstat/index.html:45 templates/libstat/index.html.py:55
+msgid "Läs mer"
+msgstr "Learn more"
+
+#: templates/libstat/index.html:62 templates/libstat/open_data.html:57
+msgid "Kungliga Biblioteket"
+msgstr "National Library of Sweden"
+
+#: templates/libstat/open_data.html:16
+msgid ""
+"\n"
+"              Den officiella biblioteksstatistiken finns tillgänglig som "
+"öppen länkad data via Kungliga Bibliotekets API:er.\n"
+"              Här finns en beskrivning av API:ernas uppbyggnad och vilka URL:"
+"er som kan användas.\n"
+"              "
+msgstr ""
+
+#: templates/libstat/open_data.html:46
+msgid "Folkbiblioteken"
+msgstr "Public libraries"
+
+#: templates/libstat/open_data.html:47
+msgid "Forskningsbiblioteken"
+msgstr "Research libraries"
+
+#: templates/libstat/open_data.html:48
+msgid "Sjukhusbiblioteken"
+msgstr "Hospital libraries"
+
+#: templates/libstat/open_data.html:49
+msgid "Skolbiblioteken"
+msgstr "School libraries"
+
+#~ msgid "Användarnamn"
+#~ msgstr "Username"
+
+#~ msgid "Lösenord"
+#~ msgstr "Password"
