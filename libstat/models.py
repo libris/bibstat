@@ -4,12 +4,13 @@ from pip._vendor.pkg_resources import require
 
 # Create your models here.
 
-PUBLIC_LIBRARY = "PublicLibrary"
-RESEARCH_LIBRARY = "ResearchLibrary"
-HOSPITAL_LIBRARY = "HospitalLibrary"
-SCHOOL_LIBRARY = "SchoolLibrary"
+PUBLIC_LIBRARY = ("public", "Folkbibliotek")
+RESEARCH_LIBRARY = ("research", "Forskningsbibliotek")
+HOSPITAL_LIBRARY = ("hospital", "Sjukhusbibliotek")
+SCHOOL_LIBRARY = ("school", "Skolbibliotek")
  
-SURVEY_TARGET_GROUPS = [PUBLIC_LIBRARY, RESEARCH_LIBRARY, HOSPITAL_LIBRARY, SCHOOL_LIBRARY]
+SURVEY_TARGET_GROUPS = (PUBLIC_LIBRARY, RESEARCH_LIBRARY, HOSPITAL_LIBRARY, SCHOOL_LIBRARY)
+targetGroups = dict(SURVEY_TARGET_GROUPS)
 
 """
 Variables
@@ -49,11 +50,17 @@ class Variable(Document):
     is_public = BooleanField(required=True, default=True)
     type = StringField(max_length=100, required=True)
     
-    target_groups = ListField(StringField(max_length=20), required=True)
+    target_groups = ListField(StringField(max_length=20, choices=SURVEY_TARGET_GROUPS), required=True)
 
     meta = {
         'collection': 'libstat_variables'
     }
+    
+    def target_groups__descriptions(self):
+      display_names = []
+      for tg in self.target_groups:
+        display_names.append(targetGroups[tg])
+      return display_names
 
     def __unicode__(self):
         return self.key

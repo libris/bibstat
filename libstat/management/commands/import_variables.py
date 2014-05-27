@@ -24,7 +24,7 @@ class Command(BaseCommand):
             return
         target_group = self.libraryTypes[library_type]
 
-        self.stdout.write(u"Importing {} variables from: {}".format(target_group, file))
+        self.stdout.write(u"Importing {} variables from: {}".format(target_group[0], file))
 
         book = open_workbook(file)
         work_sheet = book.sheet_by_index(0)
@@ -42,11 +42,14 @@ class Command(BaseCommand):
 
             if not variable:
                 variable = alias
+                
+            # TODO: Använd sdmx-dimension:refArea="http://dbpedia.org/resource/Botkyrka_Municipality" och library="http://bibdb.libris.kb.se/library/123" 
+            # för kommun resp. biblioteksfält
             
             existing_vars = Variable.objects.filter(key=variable)
             if len(existing_vars) == 0:
                 object = Variable(key=variable, alias=alias, description=description, comment=comment, 
-                                  is_public=is_public, type=variable_type, target_groups=[target_group])
+                                  is_public=is_public, type=variable_type, target_groups=[target_group[0]])
                 object.save()
                 self.stdout.write("IMPORTED: key={}, alias={}, is_public={}, target_groups={}".format(object.key, object.alias, object.is_public, object.target_groups))
             else:

@@ -24,8 +24,15 @@ def open_data(request):
   
 @permission_required('is_superuser', login_url='login')
 def variables(request):
-    variables = Variable.objects.order_by("key")
-    context = { 'variables': variables }
+    target_group = request.GET.get("target_group", "")
+    if target_group:
+      variables = Variable.objects.filter(target_groups__in=[target_group])
+    else:
+      variables = Variable.objects.order_by("key")
+    context = { 
+        'variables': variables,
+        'target_group': target_group
+    }
     return render(request, 'libstat/variables.html', context)
 
 @permission_required('is_superuser', login_url='login')

@@ -16,6 +16,13 @@
         <p>
           {% trans "Här listas de termer som används i biblioteksstatistiken" %}
         </p>
+        <div class="btn-group">
+          <a role="button" class="btn btn-default {% if not target_group %}active{% endif %}" href="{% url 'variables' %}">{% trans "Alla" %}</a>
+          <a role="button" class="btn btn-default {% if target_group == 'public' %}active{% endif %}" href="{% url 'variables' %}?target_group=public">{% trans "Folkbibliotek" %}</a>
+          <a role="button" class="btn btn-default {% if target_group == 'research' %}active{% endif %}" href="{% url 'variables' %}?target_group=research">{% trans "Forskningsbibliotek" %}</a>
+          <a role="button" class="btn btn-default {% if target_group == 'hospital' %}active{% endif %}" href="{% url 'variables' %}?target_group=hospital">{% trans "Sjukhusbibliotek" %}</a>
+          <a role="button" class="btn btn-default {% if target_group == 'school' %}active{% endif %}" href="{% url 'variables' %}?target_group=school">{% trans "Skolbibliotek" %}</a>
+        </div>
       </div>
 
       <table class="table variables">
@@ -36,7 +43,7 @@
               <td>{{ v.description }}</td>
               <td>{{ v.comment }}</td>
               <td>{{ v.is_public|yesno }}</td>
-              <td>{{ v.target_groups|join:", " }}</td>
+              <td>{{ v.target_groups__descriptions|join:", " }}</td>
             </tr>
           {% endfor %}
         {% endif %}
