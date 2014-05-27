@@ -31,8 +31,7 @@ ALLOWED_HOSTS = []
 
 INSTALLED_APPS = (
     # Django standard apps
-    'django.contrib.admin', # TODO: Remove?
-    'django.contrib.auth',  # TODO: Remove?
+    'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
@@ -92,7 +91,8 @@ STATICFILES_DIRS = (
     # TODO '/var/www/static/',
 )
 
-#
+LOGIN_REDIRECT_URL = 'libstat.views.index'
+
 # MongoEngine settings
 #
 import mongoengine
@@ -107,6 +107,8 @@ MONGOENGINE_USER_DOCUMENT = 'mongoengine.django.auth.User'
 # Store Django sessions in MongoDB backend
 SESSION_ENGINE = 'mongoengine.django.sessions'
 SESSION_SERIALIZER = 'mongoengine.django.sessions.BSONSerializer'
+# 1h session timeout, cleanup of sessions is done with document TTL in mongodb
+SESSION_COOKIE_AGE = 60*60*1   
 
 # Initialize MongoDB connection
 _MONGODB_USER = 'bibstat'

@@ -69,9 +69,9 @@
                   </li>
                 {% endif %}
                 <li class="navbar-text">{% trans "Inloggad som" %} {{user.username}}</li>
-                <li><a href="#logout">{% trans "Logga ut" %}</a></li>
+                <li><a href="{% url 'logout' %}">{% trans "Logga ut" %}</a></li>
               {% else %}
-                <li><a href="#login">{% trans "Logga in" %}</a></li>
+                <li><a href="{% url 'login' %}">{% trans "Logga in" %}</a></li>
               {% endif %}
             </ul>
           </div><!--/.navbar-collapse -->
