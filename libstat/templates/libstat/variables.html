@@ -1,25 +1,48 @@
 {% extends "libstat/base.html" %}
+{% load i18n %}
 
 {% block content %}
   <div class="container">
     
     <div class="page-header">
-      <h1>Termer</h1>
+      <h1>{% trans "Termer" %}</h1>
     </div>
     
-    {% if variables %}
-      <div class="list-group">
-        {% for v in variables %}
-          <a href="#" class="list-group-item">
-            <h4 class="list-group-item-heading">{{v.key}}</h4>
-            <p class="list-group-item-text">{{v.description}}</p>
-          </a>
-          <!-- <li class="list-group-item">
-            <a href="{% url 'variable_detail' v.id %}">{{v.key}}</a> {{v.description}}
-          </li> -->
-      	{% endfor %}
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        <h3 class="panel-title">{% trans "Termer" %}</h3>
       </div>
-    {% endif %}
+      <div class="panel-body">
+        <p>
+          {% trans "Här listas de termer som används i biblioteksstatistiken" %}
+        </p>
+      </div>
+
+      <table class="table variables">
+        <thead>
+          <tr>
+            <th class="column key">{% trans "Nyckel" %}</th>
+            <th class="column desc">{% trans "Beskrivning" %}</th>
+            <th class="column comment">{% trans "Kommentar" %}</th>
+            <th class="column is_public">{% trans "Publik" %}</th>
+            <th class="column target_groups">{% trans "Målgrupper" %}</th>
+          </tr>
+        </thead>
+        <tbody>
+        {% if variables %}
+          {% for v in variables %}
+            <tr>
+              <td>{{ v.key }}</td>
+              <td>{{ v.description }}</td>
+              <td>{{ v.comment }}</td>
+              <td>{{ v.is_public|yesno }}</td>
+              <td>{{ v.target_groups|join:", " }}</td>
+            </tr>
+          {% endfor %}
+        {% endif %}
+        </tbody>
+      </table>
+    </div>
   
-  </div>
+  </div>  
 {% endblock %}

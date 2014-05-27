@@ -2,6 +2,27 @@
  * Customizations for libstat
  */
  
+ /* Top menu */
 .libstat .navbar-inverse li:hover {
   background-color: #333333;
+}
+
+/* Table Sortable plugin */
+.libstat table.tablesorter thead tr .header {
+	background-image: url(../img/bg.gif);
+	background-repeat: no-repeat;
+	background-position: center right;
+	cursor: pointer;
+	padding-right: 16px;
+}
+.libstat table.tablesorter thead tr .headerSortUp {
+	background-image: url(../img/asc.gif);
+}
+.libstat table.tablesorter thead tr .headerSortDown {
+	background-image: url(../img/desc.gif);
+}
+.libstat table.tablesorter thead tr .headerSortDown, 
+.libstat table.tablesorter thead tr .headerSortUp {
+  background-color: #428BCA;
+  color: #ffffff;
 }

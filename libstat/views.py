@@ -24,7 +24,7 @@ def open_data(request):
   
 @permission_required('is_superuser', login_url='login')
 def variables(request):
-    variables = Variable.objects.all()
+    variables = Variable.objects.order_by("key")
     context = { 'variables': variables }
     return render(request, 'libstat/variables.html', context)
 
