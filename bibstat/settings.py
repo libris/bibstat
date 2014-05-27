@@ -39,7 +39,6 @@ INSTALLED_APPS = (
 
     # Bibstat specific apps
     'mongoengine.django.mongo_auth',
-    'mongonaut',
     'libstat'
 )
 
@@ -121,9 +120,3 @@ _MONGODB_DATABASE_HOST = \
 
 #mongoengine.connect(_MONGODB_NAME, host=_MONGODB_DATABASE_HOST)
 mongoengine.connect(_MONGODB_NAME)
-
-# Mongonaut Admin GUI static files
-MONGONAUT_JQUERY = "/static/js/plugins/jquery/1.7.1/jquery.min.js"
-MONGONAUT_TWITTER_BOOTSTRAP = "/static/js/plugins/bootstrap/2.3.2/css/bootstrap.css"
-MONGONAUT_TWITTER_BOOTSTRAP_ALERT = "/static/js/plugins/bootstrap/2.3.2/js/bootstrap.js"
-
