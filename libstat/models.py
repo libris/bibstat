@@ -1,6 +1,7 @@
 # -*- coding: UTF-8 -*-
 from mongoengine import *
 from pip._vendor.pkg_resources import require
+from mongoengine.queryset.queryset import QuerySet
 
 # Create your models here.
 
@@ -148,6 +149,18 @@ SurveyResponse
     ]
 }
 """
+class SurveyResponseQuerySet(QuerySet):
+  
+  def by_year_or_group(self, sample_year=None, target_group=None  ):
+    filters = {}
+    if target_group:
+      filters["target_group"] = target_group
+    if sample_year:
+      filters["sample_year"] = int(sample_year)
+    print u"Filtering SurveyResponses with: {}".format(filters)  
+    return self.filter(__raw__=filters)
+  
+  
 class SurveyObservation(EmbeddedDocument):
     variable = ReferenceField(Variable, required=True)
     
@@ -167,15 +180,45 @@ class SurveyResponse(Document):
     library = StringField(max_length=100, required=True, unique_with='sample_year')
     sample_year = IntField(required=True)
     target_group = StringField(required=True, choices=SURVEY_TARGET_GROUPS)
-
+    _published = BooleanField(required=True, default=False)
+    
     observations = ListField(EmbeddedDocumentField(SurveyObservation))
 
     meta = {
-        'collection': 'libstat_survey_response'
+        'collection': 'libstat_survey_response',
+        'queryset_class': SurveyResponseQuerySet,
     }
     
     def target_group__desc(self):
       return targetGroups[self.target_group]
-
+    
+    def publish(self):
+      print u"Publishing SurveyResponse {} {} {}".format(self.id, self.library, self.sample_year)
+      for obs in self.observations:
+        if obs._is_public:
+          # TODO: Warn if already published?
+          pd = PublicData(library=self.library, sample_year=self.sample_year, target_group=self.target_group, variable=obs.variable, value=obs.value)
+          pd.save()
+          print u"Created Public Data: {}".format(pd)
+      self._published = True
+      self.save()
+      
     def __unicode__(self):
         return u"{} {} {}".format(self.target_group, self.library, self.sample_year)
+
+
+class PublicData(Document):
+    library = StringField(max_length=100, required=True, unique_with=['sample_year', 'variable'])
+    sample_year = IntField(required=True)
+    target_group = StringField(required=True, choices=SURVEY_TARGET_GROUPS)
+    variable = ReferenceField(Variable, required=True)
+    # Need to allow None/null values to indicate invalid or missing responses in old data
+    value = DynamicField() 
+  
+    meta = {
+        'collection': 'libstat_public_data'
+    }
+    
+    def __unicode__(self):
+      return u"{} {} {} {} {}".format(self.library, self.sample_year, self.target_group, self.variable.key, self.value)
+  

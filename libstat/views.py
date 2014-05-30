@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 from django.shortcuts import render
-from django.http import HttpResponse
+from django.core.urlresolvers import reverse
+from django.http import HttpResponse, HttpResponseRedirect
 from django.http import Http404
 
 from libstat.models import Variable, SurveyResponse
@@ -52,19 +53,30 @@ def survey_responses(request):
     sample_years = SurveyResponse.objects.distinct("sample_year")
     
     if request.method == "POST":
-      action = request.POST.get("action", "list")
       target_group = request.POST.get("target_group", "")
       sample_year = request.POST.get("sample_year", "")
+      
+      print u"Publish requested for {} {}".format(target_group, sample_year)
+      
+      s_responses = SurveyResponse.objects.by_year_or_group(sample_year=sample_year, target_group=target_group)
+      for sr in s_responses:
+        sr.publish()
+      
+      # TODO: There has to be a better way to do this...
+      return HttpResponseRedirect(u"{}{}".format(reverse("survey_responses"), u"?action=list&target_group={}&sample_year={}".format(target_group, sample_year)))
+        
+    action = request.GET.get("action", "")
+    target_group = request.GET.get("target_group", "")
+    sample_year = request.GET.get("sample_year", "")
     
-      if target_group and sample_year:
-        if action == "publish":
-          print u"Publish called for {} {}".format(target_group, sample_year)
-        else:
-          s_responses = SurveyResponse.objects.filter(target_group=target_group, sample_year=sample_year).order_by("library")
-    
+    if action == "list":
+      s_responses = SurveyResponse.objects.by_year_or_group(sample_year=sample_year, target_group=target_group).order_by("library")
+  
     context = { 
          'sample_years': sample_years,
-         'survey_responses': s_responses 
+         'survey_responses': s_responses, 
+         'target_group': target_group,
+         'sample_year': sample_year
     }
     return render(request, 'libstat/survey_responses.html', context)
 

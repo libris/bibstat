@@ -13,32 +13,51 @@
         <h3 class="panel-title">{% trans "Enkätsvar uppdelat på målgrupp och år" %}</h3>
       </div>
       <div class="panel-body">
-        <p>
-          {% trans "Välj målgrupp och år för att lista enkätsvar" %}
-        </p>
+        <div class="row">
+          <div class="col-md-12">
+            <p>
+            {% trans "Välj målgrupp och år för att lista enkätsvar" %}
+            </p>
+          </div>
+        </div>
         
-        <div class="button-toolbar" role="toolbar">
-          <form action="." method="POST" role="form" class="form-inline">
-            {% csrf_token %}
-            <div class="form-group">
-              <select name="sample_year" class="form-control">
-                {% for year in sample_years %}
-                  <option value="{{year}}">{{year}}</option>
-                {% endfor %}
-              </select>
-              <select name="target_group" class="form-control">
-                <option value="public">{% trans 'Folkbibliotek' %}</option>
-                <option value="research">{% trans "Forskningsbibliotek" %}</option>
-                <option value="hospital">{% trans "Sjukhusbibliotek" %}</option>
-                <option value="school">{% trans "Skolbibliotek" %}</option>
-              </select>
-              <button type="submit" name="action" value="list" class="btn btn-default">{% trans "Lista enkätsvar" %}</button>
-            </div>
-            
-            <div class="form-group pull-right">
-              <button type="submit" name="action" value="publish" class="btn btn-primary">{% trans "Publicera urval" %}</button>
-            </div>
-          </form>
+        <div class="row">
+          <div class="col-md-6">
+            <form action="." method="GET" role="form" class="form-inline">
+              {% csrf_token %}
+              <div class="form-group">
+                <select name="sample_year" class="form-control" value={{sample_year}}>
+                  <option value="" {% if not sample_year %}selected="selected"{% endif %}>{% trans "År" %}</option>
+                  {% for year in sample_years %}
+                    <option value="{{year}}" {% ifequal year|slugify sample_year %}selected="selected"{% endifequal %}>{{year}}</option>
+                  {% endfor %}
+                </select>
+              </div>
+              <div class="form-group">
+                <select name="target_group" class="form-control" value="{{target_group}}">
+                  <option value="" {% if not target_group %}selected="selected"{% endif %}>{% trans "Målgrupp" %}</option>
+                  <option value="public" {% ifequal target_group "public" %}selected="selected"{% endifequal %}>{% trans 'Folkbibliotek' %}</option>
+                  <option value="research" {% ifequal target_group "research" %}selected="selected"{% endifequal %}>{% trans "Forskningsbibliotek" %}</option>
+                  <option value="hospital" {% ifequal target_group "hospital" %}selected="selected"{% endifequal %}>{% trans "Sjukhusbibliotek" %}</option>
+                  <option value="school" {% ifequal target_group "school" %}selected="selected"{% endifequal %}>{% trans "Skolbibliotek" %}</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <button type="submit" name="action" value="list" class="btn btn-default">{% trans "Lista enkätsvar" %}</button>
+              </div>
+            </form>
+          </div>
+          
+          <div class="col-md-6">
+            <form action="." method="POST" role="form" class="form-inline">
+              {% csrf_token %}
+              <input type="hidden" name="sample_year" value="{{sample_year}}"/>
+              <input type="hidden" name="target_group" value="{{target_group}}"/>
+              <div class="form-group pull-right">
+                <button type="submit" name="action" value="publish" class="btn btn-primary">{% trans "Publicera urval" %}</button>
+              </div>
+            </form>
+          </div>
         </div>
       </div>
     </div>
