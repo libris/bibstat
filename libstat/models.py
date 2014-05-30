@@ -109,7 +109,7 @@ class Question(Document):
  
 class Survey(Document):
     target_group = StringField(max_length=20, required=True, choices=SURVEY_TARGET_GROUPS)
-    sampleYear = IntField(required=True)
+    sample_year = IntField(required=True)
     questions = ListField(ReferenceField(Question), required=True)
      
     meta = {
@@ -117,7 +117,7 @@ class Survey(Document):
     }
      
     def __unicode__(self):
-        return u"{} {}".format(self.target_group, self.sampleYear)
+        return u"{} {}".format(self.target_group, self.sample_year)
 
 """
 SurveyResponse
@@ -125,7 +125,7 @@ SurveyResponse
     "id": "07sdf5df08sfg9s8g09sf9",
     "library": "Kls1",
     "refArea": "Karlstad",
-    "sampleYear": 2013,
+    "sample_year": 2013,
     "observations": [
         <SurveyObservation> {
             "variable": "fpweijf+9u3+r9u3493+49u",
@@ -164,14 +164,18 @@ class SurveyObservation(EmbeddedDocument):
         return u"{0}: {1}".format(self.variable, self.value)
 
 class SurveyResponse(Document):
-    library = StringField(max_length=100, required=True, unique_with='sampleYear')
-    sampleYear = IntField(required=True)
+    library = StringField(max_length=100, required=True, unique_with='sample_year')
+    sample_year = IntField(required=True)
+    target_group = StringField(required=True, choices=SURVEY_TARGET_GROUPS)
 
     observations = ListField(EmbeddedDocumentField(SurveyObservation))
 
     meta = {
         'collection': 'libstat_survey_response'
     }
+    
+    def target_group__desc(self):
+      return targetGroups[self.target_group]
 
     def __unicode__(self):
-        return u"{0}: {1}".format(self.respondent, self.observations)
+        return u"{} {} {}".format(self.target_group, self.library, self.sample_year)

@@ -1,24 +1,34 @@
 # -*- coding: UTF-8 -*-
 from django.core.management.base import BaseCommand, CommandError
-from libstat.models import SurveyResponse, SurveyObservation, Variable
+from libstat.models import SurveyResponse, SurveyObservation, Variable, PUBLIC_LIBRARY, RESEARCH_LIBRARY, HOSPITAL_LIBRARY, SCHOOL_LIBRARY
 from xlrd import open_workbook
 import re
 
 class Command(BaseCommand):
-    args = "<file> [Year] <libraryId column index>"
+    args = "<file> [Year] <libraryId column index> [LibraryType]"
     help = "Imports survey responses from a spreadsheet"
     
+    libraryTypes = { "public": PUBLIC_LIBRARY, "research": RESEARCH_LIBRARY, "hospital": HOSPITAL_LIBRARY, "school": SCHOOL_LIBRARY}
+    
     def handle(self, *args, **options):
-        if(len(args) != 3):
-            self.stdout.write("Usage: python manage.py import_survey_responses <SourceFile> [Year] <libraryId column index>\n\n")
+        if(len(args) != 4):
+            self.stdout.write("Usage: python manage.py import_survey_responses <SourceFile> [Year] <libraryId column index> [LibraryType]\n\n")
             self.stdout.write("\tfile: Absolute path to source spreadsheet. I.e. /home/MyUser/documents/sourcefile.xlsx")
             self.stdout.write("\tYear; YYYY")
             self.stdout.write("\tlibraryId column index; The column index containing a library identifier. First column = 0.")
+            self.stdout.write("\tLibraryType; public, research, hospital, school")
             return
 
         file_name = args[0]
         year = args[1]
         library_column_index = args[2]
+        
+        library_type = args[3]
+
+        if library_type not in self.libraryTypes.keys():
+            self.stdout.write(u"Invalid LibraryType '{}', aborting".format(library_type))
+            return
+        target_group = self.libraryTypes[library_type]
         
         book = open_workbook(file_name)
         work_sheet = book.sheet_by_index(0)
@@ -58,10 +68,10 @@ class Command(BaseCommand):
                 library = row[library_column_index].strip()
                 
                 if library:
-                    existing_responses = SurveyResponse.objects.filter(library=library, sampleYear=year)
+                    existing_responses = SurveyResponse.objects.filter(library=library, sample_year=year)
                    
                     if len(existing_responses) == 0:
-                        sr = SurveyResponse(library=library, sampleYear=year, observations=[])
+                        sr = SurveyResponse(library=library, sample_year=year, target_group=target_group[0], observations=[])
                         for n, alias, variable in variable_keys:
                             value = row[n]
                             if (isinstance(value, str) and value.strip() == "") or value == 0:

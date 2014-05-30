@@ -46,8 +46,26 @@ def variable_detail(request, variable_id):
 
 @permission_required('is_superuser', login_url='login')
 def survey_responses(request):
-    s_responses = SurveyResponse.objects.all()
-    context = { 'survey_responses': s_responses }
+    s_responses = []
+    
+    # TODO: Cache sample_years
+    sample_years = SurveyResponse.objects.distinct("sample_year")
+    
+    if request.method == "POST":
+      action = request.POST.get("action", "list")
+      target_group = request.POST.get("target_group", "")
+      sample_year = request.POST.get("sample_year", "")
+    
+      if target_group and sample_year:
+        if action == "publish":
+          print u"Publish called for {} {}".format(target_group, sample_year)
+        else:
+          s_responses = SurveyResponse.objects.filter(target_group=target_group, sample_year=sample_year).order_by("library")
+    
+    context = { 
+         'sample_years': sample_years,
+         'survey_responses': s_responses 
+    }
     return render(request, 'libstat/survey_responses.html', context)
 
 """

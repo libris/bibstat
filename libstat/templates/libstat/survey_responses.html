@@ -1,4 +1,5 @@
 {% extends "libstat/base.html" %}
+{% load i18n %}
 
 {% block content %}
   <div class="container">
@@ -7,16 +8,65 @@
       <h1>Enkätsvar</h1>
     </div>
     
-    {% if survey_responses %}
-      <div class="list-group">
-        {% for sr in survey_responses %}
-          <a href="#" class="list-group-item">
-            <h4 class="list-group-item-heading">{{sr.library}} <small>{{sr.sampleYear}}</small></h4>
-            <p class="list-group-item-text"></p>
-          </a>
-        {% endfor %}
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        <h3 class="panel-title">{% trans "Enkätsvar uppdelat på målgrupp och år" %}</h3>
       </div>
-    {% endif %}
-
+      <div class="panel-body">
+        <p>
+          {% trans "Välj målgrupp och år för att lista enkätsvar" %}
+        </p>
+        
+        <div class="button-toolbar" role="toolbar">
+          <form action="." method="POST" role="form" class="form-inline">
+            {% csrf_token %}
+            <div class="form-group">
+              <select name="sample_year" class="form-control">
+                {% for year in sample_years %}
+                  <option value="{{year}}">{{year}}</option>
+                {% endfor %}
+              </select>
+              <select name="target_group" class="form-control">
+                <option value="public">{% trans 'Folkbibliotek' %}</option>
+                <option value="research">{% trans "Forskningsbibliotek" %}</option>
+                <option value="hospital">{% trans "Sjukhusbibliotek" %}</option>
+                <option value="school">{% trans "Skolbibliotek" %}</option>
+              </select>
+              <button type="submit" name="action" value="list" class="btn btn-default">{% trans "Lista enkätsvar" %}</button>
+            </div>
+            
+            <div class="form-group pull-right">
+              <button type="submit" name="action" value="publish" class="btn btn-primary">{% trans "Publicera urval" %}</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+    
+    <div class="panel panel-default">
+      <div class="panel-body">
+        <table class="table variables">
+          <thead>
+            <tr>
+              <th class="column sample_year">{% trans "År" %}</th>
+              <th class="column library">{% trans "Bibliotek" %}</th>
+              <th class="column target_group">{% trans "Målgrupp" %}</th>
+            </tr>
+          </thead>
+          <tbody>
+          {% if survey_responses %}
+            {% for sr in survey_responses %}
+              <tr>
+                <td>{{ sr.sample_year }}</td>
+                <td>{{ sr.library }}</td>
+                <td>{{ sr.target_group__desc }}</td>
+              </tr>
+            {% endfor %}
+          {% endif %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+    
   </div>
 {% endblock %}
