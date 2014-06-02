@@ -65,7 +65,10 @@ class Command(BaseCommand):
                 row = work_sheet.row_values(i)
                 
                 # TODO: Lookup library in bibdb!
-                library = row[library_column_index].strip()
+                library = None
+                lib_col_value = row[library_column_index]
+                if lib_col_value and isinstance(lib_col_value, basestring):
+                  library = lib_col_value.strip()
                 
                 if library:
                     existing_responses = SurveyResponse.objects.filter(library=library, sample_year=year)
