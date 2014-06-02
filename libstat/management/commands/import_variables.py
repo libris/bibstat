@@ -38,7 +38,7 @@ class Command(BaseCommand):
             comment = row[2].strip()
             is_public = bool(row[3].strip())
             variable_type = row[4].strip()
-            variable = row[5].strip()
+            variable = None #TODO: Define in file then -> row[5].strip()
 
             if not variable:
                 variable = alias
