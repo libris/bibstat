@@ -56,7 +56,7 @@ def survey_responses(request):
       target_group = request.POST.get("target_group", "")
       sample_year = request.POST.get("sample_year", "")
       
-      print u"Publish requested for {} {}".format(target_group, sample_year)
+      print(u"Publish requested for {} {}".format(target_group, sample_year))
       
       s_responses = SurveyResponse.objects.by_year_or_group(sample_year=sample_year, target_group=target_group)
       for sr in s_responses:

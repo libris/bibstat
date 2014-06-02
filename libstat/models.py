@@ -2,6 +2,7 @@
 from mongoengine import *
 from pip._vendor.pkg_resources import require
 from mongoengine.queryset.queryset import QuerySet
+from datetime import datetime
 
 # Create your models here.
 
@@ -157,7 +158,6 @@ class SurveyResponseQuerySet(QuerySet):
       filters["target_group"] = target_group
     if sample_year:
       filters["sample_year"] = int(sample_year)
-    print u"Filtering SurveyResponses with: {}".format(filters)  
     return self.filter(__raw__=filters)
   
   
@@ -180,12 +180,16 @@ class SurveyResponse(Document):
     library = StringField(max_length=100, required=True, unique_with='sample_year')
     sample_year = IntField(required=True)
     target_group = StringField(required=True, choices=SURVEY_TARGET_GROUPS)
-    _published = BooleanField(required=True, default=False)
+    
+    published_at = DateTimeField()
+
+    date_created = DateTimeField(required=True, default=datetime.utcnow)
+    date_modified = DateTimeField(required=True, default=datetime.utcnow)
     
     observations = ListField(EmbeddedDocumentField(SurveyObservation))
 
     meta = {
-        'collection': 'libstat_survey_response',
+        'collection': 'libstat_survey_responses',
         'queryset_class': SurveyResponseQuerySet,
     }
     
@@ -193,30 +197,45 @@ class SurveyResponse(Document):
       return targetGroups[self.target_group]
     
     def publish(self):
-      print u"Publishing SurveyResponse {} {} {}".format(self.id, self.library, self.sample_year)
+      # TODO: Publishing date as a parameter to enable setting correct date for old data
+      print(u"Publishing SurveyResponse {} {} {}".format(self.id, self.library, self.sample_year))
+      publishing_date = datetime.utcnow()
+      
       for obs in self.observations:
         if obs._is_public:
-          # TODO: Warn if already published?
-          pd = PublicData(library=self.library, sample_year=self.sample_year, target_group=self.target_group, variable=obs.variable, value=obs.value)
-          pd.save()
-          print u"Created Public Data: {}".format(pd)
-      self._published = True
+          # TODO: Warn if already is_published?
+          data_item = None
+          existing = OpenData.objects.filter(library=self.library, sample_year=self.sample_year, variable=obs.variable)
+          if(len(existing) == 0):
+            data_item = OpenData(library=self.library, sample_year=self.sample_year, variable=obs.variable, target_group=self.target_group, date_created=publishing_date)
+          else:
+            data_item = existing.get(0)
+          
+          data_item.value= obs.value
+          data_item.date_modified = publishing_date
+          data_item.save()
+          
+      self.published_at = publishing_date
+      self.date_modified = publishing_date
       self.save()
       
     def __unicode__(self):
         return u"{} {} {}".format(self.target_group, self.library, self.sample_year)
 
 
-class PublicData(Document):
+class OpenData(Document):
     library = StringField(max_length=100, required=True, unique_with=['sample_year', 'variable'])
     sample_year = IntField(required=True)
     target_group = StringField(required=True, choices=SURVEY_TARGET_GROUPS)
     variable = ReferenceField(Variable, required=True)
     # Need to allow None/null values to indicate invalid or missing responses in old data
     value = DynamicField() 
+    
+    date_created = DateTimeField(required=True, default=datetime.utcnow)
+    date_modified = DateTimeField(required=True, default=datetime.utcnow)
   
     meta = {
-        'collection': 'libstat_public_data'
+        'collection': 'libstat_open_data'
     }
     
     def __unicode__(self):

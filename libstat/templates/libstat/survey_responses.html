@@ -67,6 +67,7 @@
         <table class="table variables">
           <thead>
             <tr>
+              <th class="column published">{% trans "Publicerad" %}</th>
               <th class="column sample_year">{% trans "År" %}</th>
               <th class="column library">{% trans "Bibliotek" %}</th>
               <th class="column target_group">{% trans "Målgrupp" %}</th>
@@ -76,6 +77,7 @@
           {% if survey_responses %}
             {% for sr in survey_responses %}
               <tr>
+                <td>{{ sr.published_at|date:"Y-m-d H:i" }}</td>
                 <td>{{ sr.sample_year }}</td>
                 <td>{{ sr.library }}</td>
                 <td>{{ sr.target_group__desc }}</td>
