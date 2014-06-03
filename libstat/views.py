@@ -4,8 +4,9 @@ from django.core.urlresolvers import reverse
 from django.http import HttpResponse, HttpResponseRedirect
 from django.http import Http404
 
-from libstat.models import Variable, SurveyResponse
+from libstat.models import Variable, SurveyResponse, OpenData
 from django.contrib.auth.decorators import permission_required
+import json
 
 # Create your views here.
 
@@ -22,6 +23,46 @@ def open_data(request):
         "nav_open_data_css": "active"
     }
     return render(request, 'libstat/open_data.html', context)
+
+"""
+TODO: Måste kontext ligga på varje objekt i listan?
+
+"@context": "http://id.kb.se/statistics/def/context",
+[
+    {
+        "library" : "Kld1",
+        "sample_year": 2013,
+        "target_group": "public",
+        "folk6": 9
+        "published": 1938174983748,
+        "modified": 1293719283793,
+    },
+    {
+        "library" : "Kms",
+        "sample_year": 2013,
+        "target_group": "public",
+        "folk6": 4
+        "published": 1938174983748,
+        "modified": 1938174983748,
+    }
+]
+"""
+def data(request):
+    date_format = "%Y-%m-%d"
+    
+    from_date = request.GET.get("from_date", None)
+    to_date = request.GET.get("to_date", None)
+    limit = int(request.GET.get("limit", 100))
+    offset = int(request.GET.get("offset", 0))
+    
+    print u"Fetching statistics data published between {} and {}, items {} to {}".format(from_date, to_date, offset, offset+limit)
+    
+    objects = OpenData.objects.filter(date_modified__gte=from_date, date_modified__lt=to_date).skip(offset).limit(limit)
+    data = []
+    for item in objects:
+        data.append(item.to_dict())
+        
+    return HttpResponse(json.dumps(data), content_type="application/json")
   
 @permission_required('is_superuser', login_url='login')
 def variables(request):
@@ -79,43 +120,3 @@ def survey_responses(request):
          'sample_year': sample_year
     }
     return render(request, 'libstat/survey_responses.html', context)
-
-"""
-Slice/DataSet
-{
-    "slice": "slice_noOfEmployees_byYear",
-    "observations": [
-        {
-
-            "refArea": "Karlstad",
-            "sampleYear": 2013
-            "staffType": "Librarian",
-            "sex": "Male"
-            "noOfEmployees": 6
-        },
-        {
-            "refArea": "Karlstad",
-            "sampleYear": 2013
-            "staffType": "Librarian",
-            "sex": "Female"
-            "noOfEmployees": 23
-        },
-        {
-
-            "refArea": "Enköping",
-            "sampleYear": 2013
-            "staffType": "Librarian",
-            "sex": "Male"
-            "noOfEmployees": 8
-        },
-        {
-            "refArea": "Enköping",
-            "sampleYear": 2013
-            "staffType": "Librarian",
-            "sex": "Female"
-            "sex": "Female"
-            "noOfEmployees": 13
-        }
-    ]
-}
-"""

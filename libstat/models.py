@@ -235,9 +235,22 @@ class OpenData(Document):
     date_modified = DateTimeField(required=True, default=datetime.utcnow)
   
     meta = {
-        'collection': 'libstat_open_data'
+        'collection': 'libstat_open_data',
+        'ordering': ['-date_modified']
     }
     
     def __unicode__(self):
       return u"{} {} {} {} {}".format(self.library, self.sample_year, self.target_group, self.variable.key, self.value)
+  
+    def to_dict(self):
+        iso8601_format = "%Y-%m-%dT%H:%M:%SZ"
+        return {
+                "library": self.library,
+                "sampleYear": self.sample_year,
+                "targetGroup": self.target_group,
+                self.variable.key: self.value,
+                "published": self.date_created.strftime(iso8601_format),
+                "modified": self.date_modified.strftime(iso8601_format)
+        };
+        
   
