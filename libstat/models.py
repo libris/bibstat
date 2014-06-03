@@ -63,6 +63,13 @@ class Variable(Document):
       for tg in self.target_groups:
         display_names.append(targetGroups[tg])
       return display_names
+  
+    def to_dict(self):
+        return {
+            u"@id": u"http://stats.kb.se/def/stats#{}".format(self.key),
+            u"@type": self.type,
+            u"label": self.description
+        };
 
     def __unicode__(self):
         return self.key
@@ -239,18 +246,19 @@ class OpenData(Document):
         'ordering': ['-date_modified']
     }
     
-    def __unicode__(self):
-      return u"{} {} {} {} {}".format(self.library, self.sample_year, self.target_group, self.variable.key, self.value)
-  
     def to_dict(self):
         iso8601_format = "%Y-%m-%dT%H:%M:%SZ"
         return {
-                "library": self.library,
-                "sampleYear": self.sample_year,
-                "targetGroup": self.target_group,
+                u"library": self.library,
+                u"sampleYear": self.sample_year,
+                u"targetGroup": self.target_group,
                 self.variable.key: self.value,
-                "published": self.date_created.strftime(iso8601_format),
-                "modified": self.date_modified.strftime(iso8601_format)
+                u"published": self.date_created.strftime(iso8601_format),
+                u"modified": self.date_modified.strftime(iso8601_format)
         };
+
+    def __unicode__(self):
+      return u"{} {} {} {} {}".format(self.library, self.sample_year, self.target_group, self.variable.key, self.value)
+  
         
   

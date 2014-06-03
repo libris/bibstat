@@ -7,6 +7,7 @@ from django.http import Http404
 from libstat.models import Variable, SurveyResponse, OpenData
 from django.contrib.auth.decorators import permission_required
 import json
+from django.conf import settings
 
 # Create your views here.
 
@@ -24,29 +25,6 @@ def open_data(request):
     }
     return render(request, 'libstat/open_data.html', context)
 
-"""
-TODO: Måste kontext ligga på varje objekt i listan?
-
-"@context": "http://id.kb.se/statistics/def/context",
-[
-    {
-        "library" : "Kld1",
-        "sample_year": 2013,
-        "target_group": "public",
-        "folk6": 9
-        "published": 1938174983748,
-        "modified": 1293719283793,
-    },
-    {
-        "library" : "Kms",
-        "sample_year": 2013,
-        "target_group": "public",
-        "folk6": 4
-        "published": 1938174983748,
-        "modified": 1938174983748,
-    }
-]
-"""
 def data(request):
     date_format = "%Y-%m-%d"
     
@@ -58,11 +36,33 @@ def data(request):
     print u"Fetching statistics data published between {} and {}, items {} to {}".format(from_date, to_date, offset, offset+limit)
     
     objects = OpenData.objects.filter(date_modified__gte=from_date, date_modified__lt=to_date).skip(offset).limit(limit)
-    data = []
+    observations = []
     for item in objects:
-        data.append(item.to_dict())
+        observations.append(item.to_dict())
+    data = {
+        u"@context": {
+            u"observations": u"@graph",
+            u"@vocab": u"{}/def/stats#".format(settings.API_BASE_URL)
+        },
+        u"observations": observations
+    }
         
     return HttpResponse(json.dumps(data), content_type="application/json")
+
+def context(request):
+    # TODO: Add definition of: library, sampleYear, targetGroup, published, modified
+    terms = {
+      u"library": {
+          u"@id": u"{}/data/library",
+          u"@type": u"@id",
+          u"label": u"Bibliotek"
+        }
+    }
+    variables = Variable.objects.filter(is_public=True)
+    for v in variables:
+        terms[v.key] = v.to_dict()
+    
+    return HttpResponse(json.dumps(terms), content_type="application/json")
   
 @permission_required('is_superuser', login_url='login')
 def variables(request):
