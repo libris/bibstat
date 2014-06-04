@@ -113,13 +113,14 @@ SESSION_SERIALIZER = 'mongoengine.django.sessions.BSONSerializer'
 SESSION_COOKIE_AGE = 60*60*1   
 
 # Initialize MongoDB connection
-_MONGODB_USER = 'bibstat'
-_MONGODB_PASSWD = 'bibstat'
-_MONGODB_HOST = 'localhost'
-_MONGODB_NAME = 'bibstat'
-_MONGODB_DATABASE_HOST = \
-    'mongodb://%s:%s@%s/%s' \
-    % (_MONGODB_USER, _MONGODB_PASSWD, _MONGODB_HOST, _MONGODB_NAME)
+MONGODB_USER = 'bibstat'
+MONGODB_PASSWD = 'bibstat'
+MONGODB_HOST = 'localhost'
+MONGODB_NAME = 'bibstat'
+MONGODB_DATABASE_HOST = 'mongodb://%s:%s@%s/%s' % (MONGODB_USER, MONGODB_PASSWD, MONGODB_HOST, MONGODB_NAME)
 
-#mongoengine.connect(_MONGODB_NAME, host=_MONGODB_DATABASE_HOST)
-mongoengine.connect(_MONGODB_NAME)
+#mongoengine.connect(MONGODB_NAME, host=MONGODB_DATABASE_HOST)
+mongoengine.connect(MONGODB_NAME)
+
+# Use custom test runner to skip setup/teardown of fixtures for test database
+TEST_RUNNER = 'libstat.tests.MongoEngineTestRunner'
