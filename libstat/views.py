@@ -25,6 +25,78 @@ def open_data(request):
     }
     return render(request, 'libstat/open_data.html', context)
 
+"""
+
+    TODO: DO this for now?
+    "library": { "name": "BOTKYRKA BIBILIOTEK" },
+    
+LAB:
+{
+
+    "@context": {
+        "observations": "@graph",
+          "xsd": "http://www.w3.org/2001/XMLSchema#",
+        "@language": "sv",
+          "library": {
+                "@id": "http://localhost:8000/statistics/data/library",
+                "@type": "@id",
+                "label": "Bibliotek"
+
+        },
+        "sampleYear": {
+            "@id": "http://localhost:8000/statistics/def/terms#sampleYear",
+            "@type": "xsd:gYear",
+            "label": "Det mätår som statistiken avser."
+
+        },
+          "targetGroup": {
+          "@id": "http://localhost:8000/statistics/def/terms#targetGroup",
+          "@type": "xsd:string",
+          "label": "Den målgrupp som svarande bibliotek ingår i."
+          },
+          "modified": {
+          "@id": "http://localhost:8000/statistics/def/terms#modified",
+          "@type": "http://schema.org/DateTime",
+          "label": "Datum då mätvärdet senast uppdaterades"
+          },
+          "published": {
+            "@id": "http://localhost:8000/statistics/def/terms#published",
+                "@type": "http://schema.org/DateTime",
+                "label": "Datum då mätvärdet först publicerades"
+          },
+          "forsk56": {
+            "@id": "http://localhost:8000/statistics/def/terms#forsk56",
+            "@type": "xsd:integer",
+            "label": "Nyförvärv Mikrografiska dokument - antal fysiska enheter"
+        },
+        "forsk55": {
+            "@id": "http://localhost:8000/statistics/def/terms#forsk55",
+            "@type": "xsd:integer",
+            "label": "Bestånd Mikrografiska dokument - antal fysiska enheter"
+        }
+    },
+    "observations": [
+        {
+            "forsk55": 880,
+            "modified": "2014-06-03T08:46:46Z",
+            "library": "VTI Statens väg- och transportforskningsinstitut. BIC",
+            "sampleYear": 2011,
+            "published": "2014-06-03T08:46:46Z",
+            "targetGroup": "research"
+        },
+        {
+          "forsk56": null,
+            "modified": "2014-06-03T08:46:46Z",
+            "library": "VTI Statens väg- och transportforskningsinstitut. BIC",
+            "sampleYear": 2011,
+            "published": "2014-06-03T08:46:46Z",
+            "targetGroup": "research"
+        }
+    ]
+
+}
+    
+"""
 def data(request):
     date_format = "%Y-%m-%d"
     
@@ -42,26 +114,55 @@ def data(request):
     data = {
         u"@context": {
             u"observations": u"@graph",
-            u"@vocab": u"{}/def/stats#".format(settings.API_BASE_URL)
+            u"@vocab": u"{}/def/terms#".format(settings.API_BASE_URL)
         },
         u"observations": observations
     }
         
     return HttpResponse(json.dumps(data), content_type="application/json")
 
-def context(request):
-    # TODO: Add definition of: library, sampleYear, targetGroup, published, modified
-    terms = {
-      u"library": {
-          u"@id": u"{}/data/library",
-          u"@type": u"@id",
-          u"label": u"Bibliotek"
-        }
+def terms(request):
+    vars = {}
+    vars[u"library"] = {
+        u"@id": u"{}/data/library".format(settings.API_BASE_URL),
+        u"@type": u"@id",
+        u"label": u"Bibliotek"
     }
-    variables = Variable.objects.filter(is_public=True)
+    vars[u"sampleYear"] = {
+        u"@id": u"{}/def/terms#sampleYear".format(settings.API_BASE_URL),
+        u"@type": u"xsd:gYear",
+        u"label": u"Det mätår som statistikuppgiften avser"
+    }
+    vars[u"targetGroup"] = {
+        u"@id": u"{}/def/terms#targetGroup".format(settings.API_BASE_URL),
+        u"@type": u"xsd:string",
+        u"label": u"Den målgrupp som svarande bibliotek ingår i."
+    }
+    vars[u"modified"] = {
+        u"@id": u"{}/def/terms#modified".format(settings.API_BASE_URL),
+        u"@type": u"xsd:DateTime",
+        u"label": u"Datum då mätvärdet senast uppdaterades"
+    }
+    vars[u"published"] = {
+        u"@id": u"{}/def/terms#published".format(settings.API_BASE_URL),
+        u"@type": u"xsd:dateTime",
+        u"label": u"Datum då mätvärdet först publicerades"
+    }
+    variables = Variable.objects.filter(is_public=True).order_by("key")
     for v in variables:
-        terms[v.key] = v.to_dict()
+        vars[v.key] = v.to_dict()
     
+    terms = {
+        u"@context": {
+            u"xsd": u"http://www.w3.org/2001/XMLSchema#",
+            u"@language": u"sv",
+            u"index": {
+                u"@container": u"@index",
+                u"@id": u"@graph"
+            }              
+        },
+        u"index": vars
+    }
     return HttpResponse(json.dumps(terms), content_type="application/json")
   
 @permission_required('is_superuser', login_url='login')

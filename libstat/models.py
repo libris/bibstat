@@ -3,8 +3,7 @@ from mongoengine import *
 from pip._vendor.pkg_resources import require
 from mongoengine.queryset.queryset import QuerySet
 from datetime import datetime
-
-# Create your models here.
+from django.conf import settings
 
 PUBLIC_LIBRARY = ("public", "Folkbibliotek")
 RESEARCH_LIBRARY = ("research", "Forskningsbibliotek")
@@ -14,35 +13,7 @@ SCHOOL_LIBRARY = ("school", "Skolbibliotek")
 SURVEY_TARGET_GROUPS = (PUBLIC_LIBRARY, RESEARCH_LIBRARY, HOSPITAL_LIBRARY, SCHOOL_LIBRARY)
 targetGroups = dict(SURVEY_TARGET_GROUPS)
 
-"""
-Variables
-[
-    {
-        "id": "fpweijf+9u3+r9u3493+49u",
-        "key": "noOfEmployees_Librarian_M",
-        "alias": "folk18",
-        "description": "Antal anställda bibliotekarier som är män",
-        "is_public": True,
-        "target_groups": ["PublicLibrary"]
-    },
-    {
-        "id": "sd0f98s0d9f80s9d8f0d9f9s",
-        "key": "noOfEmployees_Librarian_F",
-        "alias": "folk17",
-        "description": "Antal anställda bibliotekarier som är kvinnor",
-        "is_public": True,
-        "target_groups": ["PublicLibrary"]
-    },
-    {
-        "id": "sd0f9s8df098sd0f9sydf86d5",
-        "key": "comment_OtherLendingPlaces",
-        "alias": "folk15",
-        "description": "Textkommentar övriga utlåningsställen",
-        "is_public": False,
-        "target_groups": ["PublicLibrary"]
-    },
-]
-"""
+
 class Variable(Document):
     key = StringField(max_length=100, required=True, unique=True)
     alias = StringField(max_length=100, unique=True)
@@ -66,7 +37,7 @@ class Variable(Document):
   
     def to_dict(self):
         return {
-            u"@id": u"http://stats.kb.se/def/stats#{}".format(self.key),
+            u"@id": u"{}/def/terms#{}".format(settings.API_BASE_URL, self.key),
             u"@type": self.type,
             u"label": self.description
         };
@@ -128,35 +99,7 @@ class Survey(Document):
     def __unicode__(self):
         return u"{} {}".format(self.target_group, self.sample_year)
 
-"""
-SurveyResponse
-{
-    "id": "07sdf5df08sfg9s8g09sf9",
-    "library": "Kls1",
-    "refArea": "Karlstad",
-    "sample_year": 2013,
-    "observations": [
-        <SurveyObservation> {
-            "variable": "fpweijf+9u3+r9u3493+49u",
-            "value": 6,
-            "_variable_key": "folk18",
-            "_is_public": True
-        },
-        <SurveyObservation> {
-            "variable": "sd0f98s0d9f80s9d8f0d9f9s",
-            "value": 23
-            "_variable_key": "folk17",
-            "_is_public": True
-        },
-        <SurveyObservation> {
-            "variable": "sd0f9s8df098sd0f9sydf86d5",
-            "value": "Boksnurror i köpcentret"
-            "_variable_key": "folk15",
-            "_is_public": False
-        }
-    ]
-}
-"""
+
 class SurveyResponseQuerySet(QuerySet):
   
   def by_year_or_group(self, sample_year=None, target_group=None  ):
@@ -259,6 +202,4 @@ class OpenData(Document):
 
     def __unicode__(self):
       return u"{} {} {} {} {}".format(self.library, self.sample_year, self.target_group, self.variable.key, self.value)
-  
-        
   

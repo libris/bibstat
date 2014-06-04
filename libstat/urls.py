@@ -10,7 +10,7 @@ urlpatterns = patterns('libstat.views',
 
     # API views
     url(r'^data/$', views.data, name="data"),
-    url(r'^def/stats', views.context, name="context"),
+    url(r'^def/terms', views.terms, name="terms"),
     
     # Login 
     url(r'^login', login, {'template_name': 'libstat/login.html'}, name='login'),
