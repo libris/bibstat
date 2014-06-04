@@ -8,6 +8,7 @@ from libstat.models import Variable, SurveyResponse, OpenData
 from django.contrib.auth.decorators import permission_required
 import json
 from django.conf import settings
+import datetime
 
 # Create your views here.
 
@@ -100,8 +101,8 @@ LAB:
 def data(request):
     date_format = "%Y-%m-%d"
     
-    from_date = request.GET.get("from_date", None)
-    to_date = request.GET.get("to_date", None)
+    from_date = request.GET.get("from_date", datetime.date.fromtimestamp(0))
+    to_date = request.GET.get("to_date", datetime.date.today() + datetime.timedelta(days=1))
     limit = int(request.GET.get("limit", 100))
     offset = int(request.GET.get("offset", 0))
     
