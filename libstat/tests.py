@@ -139,6 +139,9 @@ class OpenDataApiTest(MongoTestCase):
 
         
 class TermApiTest(MongoTestCase):
+    def setUp(self):
+        v = Variable(key=u"folk5", alias=u"folk5", description=u"Antal bemannade serviceställen, sammanräknat", is_public=True, type="xsd:integer", target_groups=["public"])
+        v.save()
     
     def test_response_should_return_jsonld(self):
         response = self.client.get(reverse("terms"))
@@ -159,4 +162,9 @@ class TermApiTest(MongoTestCase):
         self.assertTrue(u"targetGroup" in data[u"index"])
         self.assertTrue(u"modified" in data[u"index"])
         self.assertTrue(u"published" in data[u"index"])
+    
+    def test_should_return_all_variables(self):
+        response = self.client.get(reverse("terms"))
+        data = json.loads(response.content)
+        self.assertTrue(u"folk5" in data[u"index"])
     
