@@ -95,67 +95,67 @@ class OpenDataApiTest(MongoTestCase):
         d2.save()
     
     def test_response_should_return_jsonld(self):
-        response = self.client.get(reverse("data"))
+        response = self.client.get(reverse("data_api"))
         self.assertEqual(response["Content-Type"], "application/json")
         
     def test_response_should_contain_context(self):
-        response = self.client.get(reverse("data"))
+        response = self.client.get(reverse("data_api"))
         data = json.loads(response.content)
         self.assertEqual(data[u"@context"][u"@vocab"], u"{}/def/terms#".format(settings.API_BASE_URL))
         self.assertEqual(data[u"@context"][u"observations"], u"@graph")
     
     def test_should_not_filter_by_date_unless_requested(self):
-        response = self.client.get(reverse("data"))
+        response = self.client.get(reverse("data_api"))
         data = json.loads(response.content)
         self.assertEquals(len(data[u"observations"]), 3)
 
     def test_should_filter_data_by_from_date(self):
-        response = self.client.get(u"{}?from_date=2014-06-04".format(reverse("data")))
+        response = self.client.get(u"{}?from_date=2014-06-04".format(reverse("data_api")))
         data = json.loads(response.content)
         self.assertEquals(len(data[u"observations"]), 1)
         self.assertEquals(data[u"observations"][0][u"library"], u"Ga")
     
     def test_should_filter_data_by_to_date(self):
-        response = self.client.get(u"{}?to_date=2014-06-03".format(reverse("data")))
+        response = self.client.get(u"{}?to_date=2014-06-03".format(reverse("data_api")))
         data = json.loads(response.content)
         self.assertEquals(len(data[u"observations"]), 1)
         self.assertEquals(data[u"observations"][0][u"library"], u"Lu")
         
     def test_should_filter_data_by_date_range(self):
-        response = self.client.get(u"{}?from_date=2014-06-03&to_date=2014-06-04".format(reverse("data")))
+        response = self.client.get(u"{}?from_date=2014-06-03&to_date=2014-06-04".format(reverse("data_api")))
         data = json.loads(response.content)
         self.assertEquals(len(data[u"observations"]), 1)
         self.assertEquals(data[u"observations"][0][u"library"], u"Kld1")
     
     def test_should_limit_results(self):
-        response = self.client.get(u"{}?limit=2".format(reverse("data")))
+        response = self.client.get(u"{}?limit=2".format(reverse("data_api")))
         data = json.loads(response.content)
         self.assertEquals(len(data[u"observations"]), 2)
         
     def test_should_limit_results_with_offset(self):
-        response = self.client.get(u"{}?limit=2&offset=2".format(reverse("data")))
+        response = self.client.get(u"{}?limit=2&offset=2".format(reverse("data_api")))
         data = json.loads(response.content)
         self.assertEquals(len(data[u"observations"]), 1)
 
         
-class TermApiTest(MongoTestCase):
+class TermsApiTest(MongoTestCase):
     def setUp(self):
         v = Variable(key=u"folk5", alias=u"folk5", description=u"Antal bemannade serviceställen, sammanräknat", is_public=True, type="xsd:integer", target_groups=["public"])
         v.save()
     
     def test_response_should_return_jsonld(self):
-        response = self.client.get(reverse("terms"))
+        response = self.client.get(reverse("terms_api"))
         self.assertEqual(response["Content-Type"], "application/json")
     
     def test_response_should_contain_context(self):
-        response = self.client.get(reverse("terms"))
+        response = self.client.get(reverse("terms_api"))
         data = json.loads(response.content)
         self.assertEqual(data[u"@context"][u"@language"], u"sv")
         self.assertEqual(data[u"@context"][u"index"], {u"@container": u"@index", u"@id": u"@graph"})
         self.assertEqual(data[u"@context"][u"xsd"], u"http://www.w3.org/2001/XMLSchema#")
         
     def test_should_contain_hardcoded_terms(self):
-        response = self.client.get(reverse("terms"))
+        response = self.client.get(reverse("terms_api"))
         data = json.loads(response.content)
         self.assertTrue(u"library" in data[u"index"])
         self.assertTrue(u"sampleYear" in data[u"index"])
@@ -164,7 +164,7 @@ class TermApiTest(MongoTestCase):
         self.assertTrue(u"published" in data[u"index"])
     
     def test_should_return_all_variables(self):
-        response = self.client.get(reverse("terms"))
+        response = self.client.get(reverse("terms_api"))
         data = json.loads(response.content)
         self.assertTrue(u"folk5" in data[u"index"])
     

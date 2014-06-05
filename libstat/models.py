@@ -30,10 +30,10 @@ class Variable(Document):
     }
     
     def target_groups__descriptions(self):
-      display_names = []
-      for tg in self.target_groups:
-        display_names.append(targetGroups[tg])
-      return display_names
+        display_names = []
+        for tg in self.target_groups:
+            display_names.append(targetGroups[tg])
+        return display_names
   
     def to_dict(self):
         return {
@@ -102,13 +102,13 @@ class Survey(Document):
 
 class SurveyResponseQuerySet(QuerySet):
   
-  def by_year_or_group(self, sample_year=None, target_group=None  ):
-    filters = {}
-    if target_group:
-      filters["target_group"] = target_group
-    if sample_year:
-      filters["sample_year"] = int(sample_year)
-    return self.filter(__raw__=filters)
+    def by_year_or_group(self, sample_year=None, target_group=None  ):
+        filters = {}
+        if target_group:
+            filters["target_group"] = target_group
+        if sample_year:
+            filters["sample_year"] = int(sample_year)
+        return self.filter(__raw__=filters)
   
   
 class SurveyObservation(EmbeddedDocument):
@@ -144,30 +144,31 @@ class SurveyResponse(Document):
     }
     
     def target_group__desc(self):
-      return targetGroups[self.target_group]
+        return targetGroups[self.target_group]
     
     def publish(self):
-      # TODO: Publishing date as a parameter to enable setting correct date for old data
-      print(u"Publishing SurveyResponse {} {} {}".format(self.id, self.library, self.sample_year))
-      publishing_date = datetime.utcnow()
-      
-      for obs in self.observations:
-        if obs._is_public:
-          # TODO: Warn if already is_published?
-          data_item = None
-          existing = OpenData.objects.filter(library=self.library, sample_year=self.sample_year, variable=obs.variable)
-          if(len(existing) == 0):
-            data_item = OpenData(library=self.library, sample_year=self.sample_year, variable=obs.variable, target_group=self.target_group, date_created=publishing_date)
-          else:
-            data_item = existing.get(0)
-          
-          data_item.value= obs.value
-          data_item.date_modified = publishing_date
-          data_item.save()
-          
-      self.published_at = publishing_date
-      self.date_modified = publishing_date
-      self.save()
+        # TODO: Publishing date as a parameter to enable setting correct date for old data
+        print(u"Publishing SurveyResponse {} {} {}".format(self.id, self.library, self.sample_year))
+        publishing_date = datetime.utcnow()
+        
+        for obs in self.observations:
+            if obs._is_public:
+                # TODO: Warn if already is_published?
+                data_item = None
+                existing = OpenData.objects.filter(library=self.library, sample_year=self.sample_year, variable=obs.variable)
+                if(len(existing) == 0):
+                    data_item = OpenData(library=self.library, sample_year=self.sample_year, variable=obs.variable, 
+                                         target_group=self.target_group, date_created=publishing_date)
+                else:
+                    data_item = existing.get(0)
+                
+                data_item.value= obs.value
+                data_item.date_modified = publishing_date
+                data_item.save()
+            
+        self.published_at = publishing_date
+        self.date_modified = publishing_date
+        self.save()
       
     def __unicode__(self):
         return u"{} {} {}".format(self.target_group, self.library, self.sample_year)
