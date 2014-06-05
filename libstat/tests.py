@@ -68,9 +68,10 @@ class VariableTest(MongoTestCase):
     def test_should_transform_object_to_dict(self):
         object = Variable.objects.first()
         expectedVariableDict = {
-            u"@id": u"{}/def/terms#folk5".format(settings.API_BASE_URL),
-            u"@type": u"xsd:integer",
-            u"label": u"Antal bemannade serviceställen, sammanräknat"
+            u"@id": u"#folk5",
+            u"@type": u"rdfs:Property",
+            u"label": u"Antal bemannade serviceställen, sammanräknat",
+            u"range": u"xsd:integer"
         }
         self.assertEqual(object.to_dict(), expectedVariableDict)
     
@@ -151,20 +152,26 @@ class TermsApiTest(MongoTestCase):
         response = self.client.get(reverse("terms_api"))
         data = json.loads(response.content)
         self.assertEqual(data[u"@context"][u"@language"], u"sv")
-        self.assertEqual(data[u"@context"][u"index"], {u"@container": u"@index", u"@id": u"@graph"})
+        self.assertEqual(data[u"@context"][u"terms"], u"@graph")
         self.assertEqual(data[u"@context"][u"xsd"], u"http://www.w3.org/2001/XMLSchema#")
+        self.assertEqual(data[u"@context"][u"rdfs"], u"http://www.w3.org/2000/01/rdf-schema#")
+        self.assertEqual(data[u"@context"][u"label"], u"rdfs:label")
+        self.assertEqual(data[u"@context"][u"range"], u"rdfs:range")
+        
         
     def test_should_contain_hardcoded_terms(self):
         response = self.client.get(reverse("terms_api"))
         data = json.loads(response.content)
-        self.assertTrue(u"library" in data[u"index"])
-        self.assertTrue(u"sampleYear" in data[u"index"])
-        self.assertTrue(u"targetGroup" in data[u"index"])
-        self.assertTrue(u"modified" in data[u"index"])
-        self.assertTrue(u"published" in data[u"index"])
+        ids = [term[u"@id"] for term in data[u"terms"]]
+        self.assertTrue(u"http://localhost:8000/statistics/data/library" in ids)
+        self.assertTrue(u"#sampleYear" in ids)
+        self.assertTrue(u"#targetGroup" in ids)
+        self.assertTrue(u"#modified" in ids)
+        self.assertTrue(u"#published" in ids)
     
     def test_should_return_all_variables(self):
         response = self.client.get(reverse("terms_api"))
         data = json.loads(response.content)
-        self.assertTrue(u"folk5" in data[u"index"])
+        ids = [term[u"@id"] for term in data[u"terms"]]
+        self.assertTrue(u"#folk5" in ids)
     

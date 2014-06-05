@@ -37,9 +37,10 @@ class Variable(Document):
   
     def to_dict(self):
         return {
-            u"@id": u"{}/def/terms#{}".format(settings.API_BASE_URL, self.key),
-            u"@type": self.type,
-            u"label": self.description
+            u"@id": u"#{}".format(self.key),
+            u"@type": u"rdfs:Property",
+            u"label": self.description,
+            u"range": self.type
         };
 
     def __unicode__(self):
