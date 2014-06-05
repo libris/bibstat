@@ -36,7 +36,7 @@ def data_api(request):
         u"observations": observations
     }
         
-    return HttpResponse(json.dumps(data), content_type="application/json")
+    return HttpResponse(json.dumps(data), content_type="application/ld+json")
 
 
 """
@@ -104,5 +104,5 @@ def terms_api(request):
         },
         u"terms": vars
     }
-    return HttpResponse(json.dumps(terms), content_type="application/json")
+    return HttpResponse(json.dumps(terms), content_type="application/ld+json")
 

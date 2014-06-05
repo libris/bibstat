@@ -99,7 +99,7 @@ class OpenDataApiTest(MongoTestCase):
     
     def test_response_should_return_jsonld(self):
         response = self.client.get(reverse("data_api"))
-        self.assertEqual(response["Content-Type"], "application/json")
+        self.assertEqual(response["Content-Type"], "application/ld+json")
         
     def test_response_should_contain_context(self):
         response = self.client.get(reverse("data_api"))
@@ -149,7 +149,7 @@ class TermsApiTest(MongoTestCase):
     
     def test_response_should_return_jsonld(self):
         response = self.client.get(reverse("terms_api"))
-        self.assertEqual(response["Content-Type"], "application/json")
+        self.assertEqual(response["Content-Type"], "application/ld+json")
     
     def test_response_should_contain_context(self):
         response = self.client.get(reverse("terms_api"))
