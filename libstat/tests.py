@@ -50,8 +50,10 @@ class OpenDataTest(MongoTestCase):
     def test_should_transform_object_to_dict(self):
        object = OpenData.objects.first()
        openDataAsDict = {
+            u"@id": str(object.id),
+            u"@type": u"Observation",
             u"folk5": 6, 
-            u"library": u"Kld1",
+            u"library": {u"@id": u"{}/library/Kld1".format(settings.BIBDB_BASE_URL)},
             u"sampleYear": 2013,
             u"targetGroup": u"public",
             u"published": "2014-06-03T15:28:31Z",
@@ -69,8 +71,8 @@ class VariableTest(MongoTestCase):
         object = Variable.objects.first()
         expectedVariableDict = {
             u"@id": u"#folk5",
-            u"@type": u"rdfs:Property",
-            u"label": u"Antal bemannade serviceställen, sammanräknat",
+            u"@type": u"qb:MeasureProperty",
+            u"comment": u"Antal bemannade serviceställen, sammanräknat",
             u"range": u"xsd:integer"
         }
         self.assertEqual(object.to_dict(), expectedVariableDict)
@@ -102,7 +104,8 @@ class OpenDataApiTest(MongoTestCase):
     def test_response_should_contain_context(self):
         response = self.client.get(reverse("data_api"))
         data = json.loads(response.content)
-        self.assertEqual(data[u"@context"][u"@vocab"], u"{}/def/terms#".format(settings.API_BASE_URL))
+        self.assertEqual(data[u"@context"][u"@vocab"], u"{}/def/terms#".format(settings.API_BASE_URL)),
+        self.assertEquals(data[u"@context"][u"@base"], u"{}/data/".format(settings.API_BASE_URL))
         self.assertEqual(data[u"@context"][u"observations"], u"@graph")
     
     def test_should_not_filter_by_date_unless_requested(self):
@@ -114,19 +117,19 @@ class OpenDataApiTest(MongoTestCase):
         response = self.client.get(u"{}?from_date=2014-06-04".format(reverse("data_api")))
         data = json.loads(response.content)
         self.assertEquals(len(data[u"observations"]), 1)
-        self.assertEquals(data[u"observations"][0][u"library"], u"Ga")
+        self.assertEquals(data[u"observations"][0][u"library"][u"@id"], u"{}/library/Ga".format(settings.BIBDB_BASE_URL))
     
     def test_should_filter_data_by_to_date(self):
         response = self.client.get(u"{}?to_date=2014-06-03".format(reverse("data_api")))
         data = json.loads(response.content)
         self.assertEquals(len(data[u"observations"]), 1)
-        self.assertEquals(data[u"observations"][0][u"library"], u"Lu")
+        self.assertEquals(data[u"observations"][0][u"library"][u"@id"], u"{}/library/Lu".format(settings.BIBDB_BASE_URL))
         
     def test_should_filter_data_by_date_range(self):
         response = self.client.get(u"{}?from_date=2014-06-03&to_date=2014-06-04".format(reverse("data_api")))
         data = json.loads(response.content)
         self.assertEquals(len(data[u"observations"]), 1)
-        self.assertEquals(data[u"observations"][0][u"library"], u"Kld1")
+        self.assertEquals(data[u"observations"][0][u"library"][u"@id"], u"{}/library/Kld1".format(settings.BIBDB_BASE_URL))
     
     def test_should_limit_results(self):
         response = self.client.get(u"{}?limit=2".format(reverse("data_api")))
@@ -151,23 +154,27 @@ class TermsApiTest(MongoTestCase):
     def test_response_should_contain_context(self):
         response = self.client.get(reverse("terms_api"))
         data = json.loads(response.content)
-        self.assertEqual(data[u"@context"][u"@language"], u"sv")
-        self.assertEqual(data[u"@context"][u"terms"], u"@graph")
         self.assertEqual(data[u"@context"][u"xsd"], u"http://www.w3.org/2001/XMLSchema#")
-        self.assertEqual(data[u"@context"][u"rdfs"], u"http://www.w3.org/2000/01/rdf-schema#")
+        self.assertEqual(data[u"@context"][u"rdfs"], u"http://www.w3.org/1999/02/22-rdf-syntax-ns#")
+        self.assertEqual(data[u"@context"][u"rdf"], u"http://www.w3.org/2000/01/rdf-schema#")
+        self.assertEqual(data[u"@context"][u"qb"], u"http://purl.org/linked-data/cube#")
+        self.assertEqual(data[u"@context"][u"terms"], u"@graph")
+        self.assertEqual(data[u"@context"][u"@language"], u"sv")
         self.assertEqual(data[u"@context"][u"label"], u"rdfs:label")
-        self.assertEqual(data[u"@context"][u"range"], u"rdfs:range")
-        
+        self.assertEqual(data[u"@context"][u"range"], {u"@id": u"rdfs:range", u"@type": u"@id"})
+        self.assertEqual(data[u"@context"][u"comment"], u"rdfs:comment")
+        self.assertEqual(data[u"@context"][u"subClassOf"], {u"@id": u"rdfs:subClassOf", u"@type": u"@id"})
         
     def test_should_contain_hardcoded_terms(self):
         response = self.client.get(reverse("terms_api"))
         data = json.loads(response.content)
         ids = [term[u"@id"] for term in data[u"terms"]]
-        self.assertTrue(u"http://localhost:8000/statistics/data/library" in ids)
+        self.assertTrue(u"#library" in ids)
         self.assertTrue(u"#sampleYear" in ids)
         self.assertTrue(u"#targetGroup" in ids)
         self.assertTrue(u"#modified" in ids)
         self.assertTrue(u"#published" in ids)
+        self.assertTrue(u"#Observation" in ids)
     
     def test_should_return_all_variables(self):
         response = self.client.get(reverse("terms_api"))

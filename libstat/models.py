@@ -38,8 +38,8 @@ class Variable(Document):
     def to_dict(self):
         return {
             u"@id": u"#{}".format(self.key),
-            u"@type": u"rdfs:Property",
-            u"label": self.description,
+            u"@type": u"qb:MeasureProperty",
+            u"comment": self.description,
             u"range": self.type
         };
 
@@ -194,7 +194,9 @@ class OpenData(Document):
     def to_dict(self):
         iso8601_format = "%Y-%m-%dT%H:%M:%SZ"
         return {
-                u"library": self.library,
+                u"@id": str(self.id),
+                u"@type": u"Observation",
+                u"library": {u"@id": u"{}/library/{}".format(settings.BIBDB_BASE_URL, self.library)},
                 u"sampleYear": self.sample_year,
                 u"targetGroup": self.target_group,
                 self.variable.key: self.value,

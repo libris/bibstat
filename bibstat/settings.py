@@ -93,7 +93,8 @@ STATICFILES_DIRS = (
 LOGIN_REDIRECT_URL = 'libstat.views.index'
 
 # Base url for api, i.e. http://stats.kb.se
-API_BASE_URL="http://localhost:8000/statistics"
+API_BASE_URL = "http://localhost:8000/statistics"
+BIBDB_BASE_URL = "http://bibdb.libris.kb.se"
 
 # MongoEngine settings
 #
