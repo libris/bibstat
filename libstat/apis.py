@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 from django.http import HttpResponse
 from django.conf import settings
+from mongoengine.queryset import Q
 
 import json
 import datetime
@@ -21,9 +22,24 @@ def data_api(request):
     limit = int(request.GET.get("limit", 100))
     offset = int(request.GET.get("offset", 0))
     
-    print u"Fetching statistics data published between {} and {}, items {} to {}".format(from_date, to_date, offset, offset + limit)
+    term = request.GET.get("term", None)
     
-    objects = OpenData.objects.filter(date_modified__gte=from_date, date_modified__lt=to_date).skip(offset).limit(limit)
+    modified_from_query = Q(date_modified__gte=from_date)
+    modified_to_query = Q(date_modified__lt=to_date)
+    
+    objects = []
+    if term:
+        try:
+            variable = Variable.objects.get(key=term)
+            print u"Fetching statistics data for term {} published between {} and {}, items {} to {}".format(variable.key, from_date, to_date, offset, offset + limit)
+            objects = OpenData.objects.filter(Q(variable=variable) & modified_from_query & modified_to_query).skip(offset).limit(limit)
+        except Exception:
+            print u"Unknown variable {}, skipping..".format(term)
+            
+    else:
+        print u"Fetching statistics data published between {} and {}, items {} to {}".format(from_date, to_date, offset, offset + limit)
+        objects = OpenData.objects.filter(modified_from_query & modified_to_query).skip(offset).limit(limit)
+
     observations = []
     for item in objects:
         observations.append(item.to_dict())

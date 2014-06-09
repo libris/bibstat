@@ -153,7 +153,8 @@ class SurveyResponse(Document):
         publishing_date = datetime.utcnow()
         
         for obs in self.observations:
-            if obs._is_public:
+            # Only publish public observations that have a value
+            if obs._is_public and obs.value != None:
                 # TODO: Warn if already is_published?
                 data_item = None
                 existing = OpenData.objects.filter(library=self.library, sample_year=self.sample_year, variable=obs.variable)

@@ -52,19 +52,6 @@ def survey_responses(request):
     # TODO: Cache sample_years
     sample_years = SurveyResponse.objects.distinct("sample_year")
     
-    if request.method == "POST":
-        target_group = request.POST.get("target_group", "")
-        sample_year = request.POST.get("sample_year", "")
-        
-        print(u"Publish requested for {} {}".format(target_group, sample_year))
-        
-        s_responses = SurveyResponse.objects.by_year_or_group(sample_year=sample_year, target_group=target_group)
-        for sr in s_responses:
-            sr.publish()
-        
-        # TODO: There has to be a better way to do this...
-        return HttpResponseRedirect(u"{}{}".format(reverse("survey_responses"), u"?action=list&target_group={}&sample_year={}".format(target_group, sample_year)))
-        
     action = request.GET.get("action", "")
     target_group = request.GET.get("target_group", "")
     sample_year = request.GET.get("sample_year", "")
@@ -79,3 +66,19 @@ def survey_responses(request):
          'sample_year': sample_year
     }
     return render(request, 'libstat/survey_responses.html', context)
+
+@permission_required('is_superuser', login_url='login')
+def publish_survey_responses(request):
+    if request.method == "POST":
+        target_group = request.POST.get("target_group", "")
+        sample_year = request.POST.get("sample_year", "")
+        
+        print(u"Publish requested for {} {}".format(target_group, sample_year))
+        
+        s_responses = SurveyResponse.objects.by_year_or_group(sample_year=sample_year, target_group=target_group)
+        for sr in s_responses:
+            sr.publish()
+        
+    # TODO: There has to be a better way to do this...
+    return HttpResponseRedirect(u"{}{}".format(reverse("survey_responses"), u"?action=list&target_group={}&sample_year={}".format(target_group, sample_year)))
+    
