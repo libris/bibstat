@@ -8,6 +8,7 @@ from datetime import datetime
 import json
 
 from libstat.models import Variable, OpenData, SurveyResponse, SurveyObservation
+from libstat.utils import parse_datetime_from_isodate_str
 
 """
     Test case and test runner for use with Mongoengine
@@ -35,6 +36,24 @@ class MongoTestCase(TestCase):
         connection = get_connection()
         connection.drop_database(self.mongodb_name)
         disconnect()
+        
+"""
+    Util functions test cases
+"""
+class UtilsTest(MongoTestCase):
+    def test_should_parse_datetime_from_isodate_str(self):
+        self.assertEquals(parse_datetime_from_isodate_str("2014-06-03T15:47:22.873+02:00"), None)
+        self.assertEquals(parse_datetime_from_isodate_str("2014-06-03T15:47:22.873Z"), None)
+        self.assertEquals(parse_datetime_from_isodate_str("2014-06-03T15:47:22.873"), datetime(2014, 06, 03, 15, 47, 22, 873000))
+        self.assertEquals(parse_datetime_from_isodate_str("2014-06-03T15:47:22"), datetime(2014, 06, 03, 15, 47, 22))
+        self.assertEquals(parse_datetime_from_isodate_str("2014-06-03T15:47"), datetime(2014, 06, 03, 15, 47))
+        self.assertEquals(parse_datetime_from_isodate_str("2014-06-03T15"), datetime(2014, 06, 03, 15))
+        self.assertEquals(parse_datetime_from_isodate_str("2014-06-03"), datetime(2014, 06, 03))
+        self.assertEquals(parse_datetime_from_isodate_str("2014-06"), datetime(2014, 06, 01))
+        self.assertEquals(parse_datetime_from_isodate_str("2014"), datetime(2014, 01, 01))
+        self.assertEquals(parse_datetime_from_isodate_str("jun 3 2014"), None)
+        
+
 
 """
     Model class test cases
@@ -186,7 +205,7 @@ class OpenDataApiTest(MongoTestCase):
         self.assertEquals(data[u"observations"][0][u"library"][u"@id"], u"{}/library/Lu".format(settings.BIBDB_BASE_URL))
         
     def test_should_filter_data_by_date_range(self):
-        response = self.client.get(u"{}?from_date=2014-06-03&to_date=2014-06-04".format(reverse("data_api")))
+        response = self.client.get(u"{}?from_date=2014-06-03T15:28:31.000&to_date=2014-06-04T11:14:00.000".format(reverse("data_api")))
         data = json.loads(response.content)
         self.assertEquals(len(data[u"observations"]), 1)
         self.assertEquals(data[u"observations"][0][u"library"][u"@id"], u"{}/library/Kld1".format(settings.BIBDB_BASE_URL))

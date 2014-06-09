@@ -7,6 +7,7 @@ import json
 import datetime
 
 from libstat.models import Variable, OpenData
+from libstat.utils import parse_datetime_from_isodate_str
 
 """
     OpenDataApi
@@ -15,14 +16,16 @@ from libstat.models import Variable, OpenData
         
 """
 def data_api(request):
-    date_format = "%Y-%m-%d"
-    
-    from_date = request.GET.get("from_date", datetime.date.fromtimestamp(0))
-    to_date = request.GET.get("to_date", datetime.date.today() + datetime.timedelta(days=1))
+    from_date = parse_datetime_from_isodate_str(request.GET.get("from_date", None))
+    to_date = parse_datetime_from_isodate_str(request.GET.get("to_date", None))
     limit = int(request.GET.get("limit", 100))
     offset = int(request.GET.get("offset", 0))
-    
     term = request.GET.get("term", None)
+    
+    if not from_date:    
+        from_date = datetime.datetime.fromtimestamp(0)
+    if not to_date:
+        to_date = datetime.datetime.today() + datetime.timedelta(days=1)
     
     modified_from_query = Q(date_modified__gte=from_date)
     modified_to_query = Q(date_modified__lt=to_date)
