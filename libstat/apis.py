@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from django.http import HttpResponse
+from django.http import HttpResponse, Http404
 from django.conf import settings
 from mongoengine.queryset import Q
 
@@ -57,6 +57,23 @@ def data_api(request):
         
     return HttpResponse(json.dumps(data), content_type="application/ld+json")
 
+
+"""
+    Observation Api
+"""
+def observation_api(request, observation_id):
+    context = {
+        u"@context": {
+            u"@vocab": u"{}/def/terms#".format(settings.API_BASE_URL),
+            u"@base": u"{}/data/".format(settings.API_BASE_URL)
+        }
+    }
+    try:
+        open_data = OpenData.objects.get(pk=observation_id)
+    except Exception:
+        raise Http404
+    observation = dict(context.items() + open_data.to_dict().items())
+    return HttpResponse(json.dumps(observation), content_type="application/ld+json")
 
 """
     TermsApi

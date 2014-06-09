@@ -1,6 +1,12 @@
 # -*- coding: UTF-8 -*-
 import datetime
 
+
+"""
+    Datetime in ISO8601 format with apppending 'Z' to indicate UTC time zone
+"""
+ISO8601_utc_format = "%Y-%m-%dT%H:%M:%S.%fZ"
+
 """
     Parse a datetime from an ISO8601 formatted date string. 
     

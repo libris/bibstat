@@ -5,6 +5,8 @@ from mongoengine.queryset.queryset import QuerySet
 from datetime import datetime
 from django.conf import settings
 
+from libstat.utils import ISO8601_utc_format
+
 PUBLIC_LIBRARY = ("public", "Folkbibliotek")
 RESEARCH_LIBRARY = ("research", "Forskningsbibliotek")
 HOSPITAL_LIBRARY = ("hospital", "Sjukhusbibliotek")
@@ -192,8 +194,13 @@ class OpenData(Document):
         'ordering': ['-date_modified']
     }
     
+    def date_created_str(self):
+        return self.date_created.strftime(ISO8601_utc_format)
+    
+    def date_modified_str(self):
+        return self.date_modified.strftime(ISO8601_utc_format)
+    
     def to_dict(self):
-        iso8601_format = "%Y-%m-%dT%H:%M:%SZ"
         return {
                 u"@id": str(self.id),
                 u"@type": u"Observation",
@@ -201,8 +208,8 @@ class OpenData(Document):
                 u"sampleYear": self.sample_year,
                 u"targetGroup": self.target_group,
                 self.variable.key: self.value,
-                u"published": self.date_created.strftime(iso8601_format),
-                u"modified": self.date_modified.strftime(iso8601_format)
+                u"published": self.date_created_str(),
+                u"modified": self.date_modified_str()
         };
 
     def __unicode__(self):
