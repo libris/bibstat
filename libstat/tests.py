@@ -252,7 +252,7 @@ class ObservationApiTest(MongoTestCase):
         self.assertEqual(data[u"@context"][u"@vocab"], u"{}/def/terms#".format(settings.API_BASE_URL)),
         self.assertEquals(data[u"@context"][u"@base"], u"{}/data/".format(settings.API_BASE_URL))
         
-    def test_should_return_details_for_one_observation(self):
+    def test_should_return_one_observation(self):
         obs = OpenData.objects.first()
         response = self.client.get(reverse("observation_api", kwargs={ "observation_id": str(obs.id)}))
         data = json.loads(response.content)
@@ -308,4 +308,39 @@ class TermsApiTest(MongoTestCase):
         data = json.loads(response.content)
         ids = [term[u"@id"] for term in data[u"terms"]]
         self.assertTrue(u"#folk5" in ids)
+        
+        
+class TermApiTest(MongoTestCase):
+    def setUp(self):
+        v1 = Variable(key=u"folk5", alias=u"folk5", description=u"Antal bemannade serviceställen, sammanräknat", is_public=True, type="xsd:integer", target_groups=["public"])
+        v1.save()
+    
+    def test_response_should_return_jsonld(self):
+        response = self.client.get(reverse("term_api", kwargs={ "term_key": "folk5"}))
+        self.assertEqual(response["Content-Type"], "application/ld+json")
+        
+    def test_response_should_contain_context(self):
+        response = self.client.get(reverse("term_api", kwargs={ "term_key": "folk5"}))
+        data = json.loads(response.content)
+        self.assertEqual(data[u"@context"][u"xsd"], u"http://www.w3.org/2001/XMLSchema#")
+        self.assertEqual(data[u"@context"][u"rdfs"], u"http://www.w3.org/1999/02/22-rdf-syntax-ns#")
+        self.assertEqual(data[u"@context"][u"rdf"], u"http://www.w3.org/2000/01/rdf-schema#")
+        self.assertEqual(data[u"@context"][u"qb"], u"http://purl.org/linked-data/cube#")
+        self.assertEqual(data[u"@context"][u"@language"], u"sv")
+        self.assertEqual(data[u"@context"][u"label"], u"rdfs:label")
+        self.assertEqual(data[u"@context"][u"range"], {u"@id": u"rdfs:range", u"@type": u"@id"})
+        self.assertEqual(data[u"@context"][u"comment"], u"rdfs:comment")
+        self.assertEqual(data[u"@context"][u"subClassOf"], {u"@id": u"rdfs:subClassOf", u"@type": u"@id"})  
+        
+    def test_should_return_one_term(self):
+        response = self.client.get(reverse("term_api", kwargs={ "term_key": "folk5"}))
+        data = json.loads(response.content)
+        self.assertEquals(data[u"@id"], u"folk5"),
+        self.assertEquals(data[u"@type"], u"qb:MeasureProperty"),
+        self.assertEquals(data[u"comment"], u"Antal bemannade serviceställen, sammanräknat"),
+        self.assertEquals(data[u"range"], u"xsd:integer")
+        
+    def test_should_return_404_if_term_not_found(self):
+        response = self.client.get(reverse("term_api", kwargs={ "term_key": "foo"}))
+        self.assertEqual(response.status_code, 404)
     

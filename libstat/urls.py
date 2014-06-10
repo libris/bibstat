@@ -11,7 +11,8 @@ urlpatterns = patterns('libstat.views',
     # API views
     url(r'^data/$', views.data_api, name="data_api"),
     url(r'^data/(?P<observation_id>\w+)/$', views.observation_api, name="observation_api"),
-    url(r'^def/terms', views.terms_api, name="terms_api"),
+    url(r'^def/terms/$', views.terms_api, name="terms_api"),
+    url(r'^def/terms/(?P<term_key>\w+)/$', views.term_api, name="term_api"),
     
     # Login 
     url(r'^login', login, {'template_name': 'libstat/login.html'}, name='login'),

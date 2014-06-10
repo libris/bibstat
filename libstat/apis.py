@@ -9,6 +9,27 @@ import datetime
 from libstat.models import Variable, OpenData
 from libstat.utils import parse_datetime_from_isodate_str
 
+data_context = {
+    u"@context": {
+        u"@vocab": u"{}/def/terms#".format(settings.API_BASE_URL),
+        u"@base": u"{}/data/".format(settings.API_BASE_URL)
+    }
+}
+
+term_context = {
+    u"@context": {
+        u"xsd": u"http://www.w3.org/2001/XMLSchema#",
+        u"rdfs": u"http://www.w3.org/1999/02/22-rdf-syntax-ns#",
+        u"rdf": u"http://www.w3.org/2000/01/rdf-schema#",
+        u"qb": u"http://purl.org/linked-data/cube#",
+        u"@language": u"sv",
+        u"label": u"rdfs:label",
+        u"range": {u"@id": u"rdfs:range", u"@type": u"@id"},
+        u"comment": u"rdfs:comment",
+        u"subClassOf": {u"@id": u"rdfs:subClassOf", u"@type": u"@id"}
+    }
+}
+
 """
     OpenDataApi
     TODO: DO this for now?
@@ -46,15 +67,11 @@ def data_api(request):
     observations = []
     for item in objects:
         observations.append(item.to_dict())
-    data = {
-        u"@context": {
-            u"observations": u"@graph",
-            u"@vocab": u"{}/def/terms#".format(settings.API_BASE_URL),
-            u"@base": u"{}/data/".format(settings.API_BASE_URL)
-        },
-        u"observations": observations
-    }
-        
+    
+    data = data_context
+    data[u"@context"][u"observations"] =  u"@graph"
+    data[u"observations"] = observations
+    
     return HttpResponse(json.dumps(data), content_type="application/ld+json")
 
 
@@ -62,17 +79,11 @@ def data_api(request):
     Observation Api
 """
 def observation_api(request, observation_id):
-    context = {
-        u"@context": {
-            u"@vocab": u"{}/def/terms#".format(settings.API_BASE_URL),
-            u"@base": u"{}/data/".format(settings.API_BASE_URL)
-        }
-    }
     try:
         open_data = OpenData.objects.get(pk=observation_id)
     except Exception:
         raise Http404
-    observation = dict(context.items() + open_data.to_dict().items())
+    observation = dict(data_context.items() + open_data.to_dict().items())
     return HttpResponse(json.dumps(observation), content_type="application/ld+json")
 
 """
@@ -125,20 +136,15 @@ def terms_api(request):
     for v in variables:
         vars.append(v.to_dict())
     
-    terms = {
-        u"@context": {
-            u"xsd": u"http://www.w3.org/2001/XMLSchema#",
-            u"rdfs": u"http://www.w3.org/1999/02/22-rdf-syntax-ns#",
-            u"rdf": u"http://www.w3.org/2000/01/rdf-schema#",
-            u"qb": u"http://purl.org/linked-data/cube#",
-            u"@language": u"sv",
-            u"terms": u"@graph",
-            u"label": u"rdfs:label",
-            u"range": {u"@id": u"rdfs:range", u"@type": u"@id"},
-            u"comment": u"rdfs:comment",
-            u"subClassOf": {u"@id": u"rdfs:subClassOf", u"@type": u"@id"}
-        },
-        u"terms": vars
-    }
+    terms = term_context
+    terms[u"@context"][u"terms"] = u"@graph"
+    terms[u"terms"] = vars
     return HttpResponse(json.dumps(terms), content_type="application/ld+json")
 
+def term_api(request, term_key):
+    try:
+        term = Variable.objects.get(key=term_key)
+    except Exception:
+        raise Http404
+    data = dict(term_context.items() + term.to_dict(id_prefix="").items())
+    return HttpResponse(json.dumps(data), content_type="application/ld+json")
