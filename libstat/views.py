@@ -3,6 +3,7 @@ from django.shortcuts import render
 from django.core.urlresolvers import reverse
 from django.http import HttpResponse, HttpResponseRedirect
 from django.http import Http404
+from django.conf import settings
 
 from libstat.models import Variable, SurveyResponse
 from django.contrib.auth.decorators import permission_required
@@ -63,7 +64,8 @@ def survey_responses(request):
          'sample_years': sample_years,
          'survey_responses': s_responses,
          'target_group': target_group,
-         'sample_year': sample_year
+         'sample_year': sample_year,
+         'bibdb_library_base_url': u"{}/library".format(settings.BIBDB_BASE_URL)
     }
     return render(request, 'libstat/survey_responses.html', context)
 

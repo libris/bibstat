@@ -129,11 +129,28 @@ class SurveyObservation(EmbeddedDocument):
     def __unicode__(self):
         return u"{0}: {1}".format(self.variable, self.value)
 
+class Library(EmbeddedDocument):
+    bibdb_name = StringField()
+    bibdb_id = StringField(max_length=100)
+    bibdb_sigel = StringField(max_length=10)
+
+    municipality_name = StringField(max_length=100)
+    municipality_code = StringField(max_length=10)
+    county_code = StringField(max_length=10)
+    
+    school_id = StringField(max_length=10)
+    
+    def __unicode__(self):
+        return u"libdb [{}, {}, {}]".format(self.bibdb_id, self.bibdb_sigel, self.bibdb_name)
+    
+
 class SurveyResponse(Document):
-    library = StringField(max_length=100, required=True, unique_with='sample_year')
+    library_name = StringField(max_length=100, required=True, unique_with='sample_year')
     sample_year = IntField(required=True)
     target_group = StringField(required=True, choices=SURVEY_TARGET_GROUPS)
     
+    library = EmbeddedDocumentField(Library) #TODO
+
     published_at = DateTimeField()
 
     date_created = DateTimeField(required=True, default=datetime.utcnow)
@@ -150,8 +167,8 @@ class SurveyResponse(Document):
         return targetGroups[self.target_group]
     
     def publish(self):
-        # TODO: Publishing date as a parameter to enable setting correct date for old data
-        print(u"Publishing SurveyResponse {} {} {}".format(self.id, self.library, self.sample_year))
+        # TODO: Publishing date as a parameter to enable setting correct date for old data?
+        print(u"Publishing SurveyResponse {} {} {}".format(self.id, self.library_name, self.sample_year))
         publishing_date = datetime.utcnow()
         
         for obs in self.observations:
@@ -159,10 +176,12 @@ class SurveyResponse(Document):
             if obs._is_public and obs.value != None:
                 # TODO: Warn if already is_published?
                 data_item = None
-                existing = OpenData.objects.filter(library=self.library, sample_year=self.sample_year, variable=obs.variable)
+                existing = OpenData.objects.filter(library_name=self.library_name, sample_year=self.sample_year, variable=obs.variable)
                 if(len(existing) == 0):
-                    data_item = OpenData(library=self.library, sample_year=self.sample_year, variable=obs.variable, 
+                    data_item = OpenData(library_name=self.library_name, sample_year=self.sample_year, variable=obs.variable, 
                                          target_group=self.target_group, date_created=publishing_date)
+                    if self.library and self.library.bibdb_id:
+                        data_item.library_id = self.library.bibdb_id
                 else:
                     data_item = existing.get(0)
                 
@@ -175,11 +194,12 @@ class SurveyResponse(Document):
         self.save()
       
     def __unicode__(self):
-        return u"{} {} {}".format(self.target_group, self.library, self.sample_year)
+        return u"{} {} {}".format(self.target_group, self.library_name, self.sample_year)
 
 
 class OpenData(Document):
-    library = StringField(max_length=100, required=True, unique_with=['sample_year', 'variable'])
+    library_name = StringField(max_length=100, required=True, unique_with=['sample_year', 'variable'])
+    library_id = StringField(max_length=100) #TODO
     sample_year = IntField(required=True)
     target_group = StringField(required=True, choices=SURVEY_TARGET_GROUPS)
     variable = ReferenceField(Variable, required=True)
@@ -201,17 +221,22 @@ class OpenData(Document):
         return self.date_modified.strftime(ISO8601_utc_format)
     
     def to_dict(self):
-        return {
+        _dict = {
                 u"@id": str(self.id),
                 u"@type": u"Observation",
-                u"library": {u"@id": u"{}/library/{}".format(settings.BIBDB_BASE_URL, self.library)},
+                u"library": {u"@id": u"{}/library/{}".format(settings.BIBDB_BASE_URL, self.library_name)},
                 u"sampleYear": self.sample_year,
                 u"targetGroup": self.target_group,
                 self.variable.key: self.value,
                 u"published": self.date_created_str(),
                 u"modified": self.date_modified_str()
         };
+        if self.library_id:
+            _dict[u"library"] = {u"@id": u"{}/library/{}".format(settings.BIBDB_BASE_URL, self.library_id)}
+        else:
+            _dict[u"library"] = {u"name": self.library_name}
+        return _dict
 
     def __unicode__(self):
-      return u"{} {} {} {} {}".format(self.library, self.sample_year, self.target_group, self.variable.key, self.value)
+      return u"{} {} {} {} {}".format(self.library_name, self.sample_year, self.target_group, self.variable.key, self.value)
   

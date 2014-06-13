@@ -79,7 +79,13 @@
               <tr>
                 <td>{{ sr.published_at|date:"Y-m-d H:i" }}</td>
                 <td>{{ sr.sample_year }}</td>
-                <td>{{ sr.library }}</td>
+                <td>
+                  {% if sr.library and sr.library.bibdb_sigel %}
+                    <a href="{{bibdb_library_base_url}}/{{sr.library.bibdb_id}}" >{{ sr.library_name }}</a>
+                  {% else %}
+                    {{ sr.library_name }}
+                  {% endif %}
+                </td>
                 <td>{{ sr.target_group__desc }}</td>
               </tr>
             {% endfor %}

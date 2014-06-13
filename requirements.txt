@@ -2,4 +2,4 @@ Django==1.6.4
 mongoengine==0.8.7
 xlrd==0.9.3
 pytz==2014.4
-
+requests==2.3.0
