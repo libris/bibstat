@@ -60,11 +60,11 @@ class UtilsTest(MongoTestCase):
 """
 class SurveyResponseTest(MongoTestCase):
     def setUp(self):
-        v1 = Variable(key=u"folk5", alias=u"folk5", description=u"Antal bemannade serviceställen, sammanräknat", is_public=True, type="xsd:integer", target_groups=["public"])
+        v1 = Variable(key=u"folk5", description=u"Antal bemannade serviceställen, sammanräknat", type="integer", is_public=True, target_groups=["public"])
         v1.save()
-        v2 = Variable(key=u"folk6", alias=u"folk6", description=u"Är huvudbiblioteket i er kommun integrerat med ett skolbibliotek? 1=ja", is_public=True, type="xsd:integer", target_groups=["public"])
+        v2 = Variable(key=u"folk6", description=u"Är huvudbiblioteket i er kommun integrerat med ett skolbibliotek? 1=ja", type="boolean", is_public=True, target_groups=["public"])
         v2.save()
-        v3 = Variable(key=u"folk8", alias=u"folk8", description=u"Textkommentar", is_public=False, type="xsd:string", target_groups=["public"])
+        v3 = Variable(key=u"folk8", description=u"Textkommentar", type="string", is_public=False, target_groups=["public"])
         v3.save()
         sr = SurveyResponse(library_name="KARLSTAD STADSBIBLIOTEK", sample_year=2013, target_group="public", observations=[])
         sr.library = Library(bibdb_id=u"323", bibdb_sigel="Kld1", bibdb_name=u"Karlstad stadsbibliotek")
@@ -119,7 +119,7 @@ class SurveyResponseTest(MongoTestCase):
     
 class OpenDataTest(MongoTestCase):
     def setUp(self):
-        v = Variable(key=u"folk5", alias=u"folk5", description=u"Antal bemannade serviceställen, sammanräknat", is_public=True, type="xsd:integer", target_groups=["public"])
+        v = Variable(key=u"folk5", description=u"Antal bemannade serviceställen, sammanräknat", type="integer", is_public=True, target_groups=["public"])
         v.save()
         publishing_date = datetime(2014, 06, 03, 15, 28, 31)
         d1 = OpenData(library_name=u"KARLSTAD STADSBIBLIOTEK", library_id=u"323", sample_year=2013, target_group="public", variable=v, value=6, date_created=publishing_date, date_modified=publishing_date)
@@ -160,7 +160,7 @@ class OpenDataTest(MongoTestCase):
        
 class VariableTest(MongoTestCase):
     def setUp(self):
-        v = Variable(key=u"folk5", alias=u"folk5", description=u"Antal bemannade serviceställen, sammanräknat", is_public=True, type="xsd:integer", target_groups=["public"])
+        v = Variable(key=u"folk5", description=u"Antal bemannade serviceställen, sammanräknat", type="integer", is_public=True, target_groups=["public"])
         v.save()
     
     def test_should_transform_object_to_dict(self):
@@ -178,9 +178,9 @@ class VariableTest(MongoTestCase):
 """
 class OpenDataApiTest(MongoTestCase):
     def setUp(self):
-        v1 = Variable(key=u"folk5", alias=u"folk5", description=u"Antal bemannade serviceställen, sammanräknat", is_public=True, type="xsd:integer", target_groups=["public"])
+        v1 = Variable(key=u"folk5", description=u"Antal bemannade serviceställen, sammanräknat", type="integer", is_public=True, target_groups=["public"])
         v1.save()
-        v2 = Variable(key=u"folk6", alias=u"folk6", description=u"Är huvudbiblioteket i er kommun integrerat med ett skolbibliotek? 1=ja", is_public=True, type="xsd:integer", target_groups=["public"])
+        v2 = Variable(key=u"folk6", description=u"Är huvudbiblioteket i er kommun integrerat med ett skolbibliotek? 1=ja", type="integer", is_public=True, target_groups=["public"])
         v2.save()
         
         creation_date = datetime(2014, 05, 27, 8, 00, 00)
@@ -254,7 +254,7 @@ class OpenDataApiTest(MongoTestCase):
 
 class ObservationApiTest(MongoTestCase):
     def setUp(self):
-        v1 = Variable(key=u"folk5", alias=u"folk5", description=u"Antal bemannade serviceställen, sammanräknat", is_public=True, type="xsd:integer", target_groups=["public"])
+        v1 = Variable(key=u"folk5", description=u"Antal bemannade serviceställen, sammanräknat", type="integer", is_public=True, target_groups=["public"])
         v1.save()
         date1 = datetime(2014, 06, 02, 17, 57, 16)
         obs = OpenData(library_name=u"NORRBOTTENS LÄNSBIBLIOTEK", library_id=u"81", sample_year=2013, target_group="public", variable=v1, value=7, date_created=date1, date_modified=date1)
@@ -291,7 +291,7 @@ class ObservationApiTest(MongoTestCase):
         
 class TermsApiTest(MongoTestCase):
     def setUp(self):
-        v = Variable(key=u"folk5", alias=u"folk5", description=u"Antal bemannade serviceställen, sammanräknat", is_public=True, type="xsd:integer", target_groups=["public"])
+        v = Variable(key=u"folk5", description=u"Antal bemannade serviceställen, sammanräknat", type="integer", is_public=True, target_groups=["public"])
         v.save()
     
     def test_response_should_return_jsonld(self):
@@ -334,7 +334,7 @@ class TermsApiTest(MongoTestCase):
         
 class TermApiTest(MongoTestCase):
     def setUp(self):
-        v1 = Variable(key=u"folk5", alias=u"folk5", description=u"Antal bemannade serviceställen, sammanräknat", is_public=True, type="xsd:integer", target_groups=["public"])
+        v1 = Variable(key=u"folk5", description=u"Antal bemannade serviceställen, sammanräknat", type="integer", is_public=True, target_groups=["public"])
         v1.save()
     
     def test_response_should_return_jsonld(self):

@@ -15,13 +15,14 @@ SCHOOL_LIBRARY = ("school", "Skolbibliotek")
 SURVEY_TARGET_GROUPS = (PUBLIC_LIBRARY, RESEARCH_LIBRARY, HOSPITAL_LIBRARY, SCHOOL_LIBRARY)
 targetGroups = dict(SURVEY_TARGET_GROUPS)
 
-TYPE_STRING = u"string", u"Text"
-TYPE_BOOLEAN = u"boolean", u"Boolean"
-TYPE_INTEGER = u"integer", u"Heltal"
-TYPE_DECIMAL = u"decimal", u"Decimaltal"
-TYPE_PERCENT = u"percent", u"Procent"
+TYPE_STRING = u"string", u"xsd:string"
+TYPE_BOOLEAN = u"boolean", u"xsd:boolean"
+TYPE_INTEGER = u"integer", u"xsd:integer"
+TYPE_DECIMAL = u"decimal", u"xsd:decimal"
+TYPE_PERCENT = u"percent", u"xsd:decimal"
 
 VARIABLE_TYPES = (TYPE_STRING, TYPE_BOOLEAN, TYPE_INTEGER, TYPE_DECIMAL, TYPE_PERCENT)
+variable_types = dict(VARIABLE_TYPES)
 
 class Variable(Document):
     key = StringField(max_length=100, required=True, unique=True)
@@ -50,9 +51,13 @@ class Variable(Document):
             u"@id": u"{}{}".format(id_prefix, self.key),
             u"@type": u"qb:MeasureProperty",
             u"comment": self.description,
-            u"range": self.type
+            u"range": self.type_to_rdf_type(self.type)
         };
-
+    
+    def type_to_rdf_type(self, type):
+        return variable_types[type]
+    
+    
     def __unicode__(self):
         return self.key
 
