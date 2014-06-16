@@ -1,30 +1,46 @@
 # -*- coding: UTF-8 -*-
 from django.core.management.base import BaseCommand, CommandError
-from libstat.models import Variable, PUBLIC_LIBRARY, RESEARCH_LIBRARY, HOSPITAL_LIBRARY, SCHOOL_LIBRARY
+from optparse import make_option
+
+from libstat.models import Variable, PUBLIC_LIBRARY, RESEARCH_LIBRARY, HOSPITAL_LIBRARY, SCHOOL_LIBRARY, TYPE_STRING, TYPE_BOOLEAN, TYPE_INTEGER, TYPE_DECIMAL, TYPE_PERCENT
 from xlrd import open_workbook
 
 class Command(BaseCommand):
-    args = "<file> [LibraryType]"
-    help = "Imports statistical variables from a spreadsheet"
+    variableTypes = { 
+        u"Text": TYPE_STRING[0], 
+        u"Numerisk": TYPE_STRING[0], 
+        u"Boolesk": TYPE_BOOLEAN[0], 
+        u"Integer": TYPE_INTEGER[0], 
+        u"Decimal två": TYPE_DECIMAL[0], 
+        u"Decimal ett": TYPE_DECIMAL[0],  
+        u"Procent": TYPE_PERCENT[0]
+    }
     
-    libraryTypes = { "public": PUBLIC_LIBRARY, "research": RESEARCH_LIBRARY, "hospital": HOSPITAL_LIBRARY, "school": SCHOOL_LIBRARY}
+    isPublic = {
+        u"Öppet": True,
+        u"Inte": False
+    }
+    
+    nonMeasurementCategories = [u"Bakgrundsvariabel", u"Tid", u"Befolkning", u"Bakgrundsvariabler"]
 
+    help = "Imports statistical variables from a spreadsheet"
+  
+    option_list = BaseCommand.option_list + (
+        make_option(u'--target_group', dest=u"target_group", type=u'choice', choices=[PUBLIC_LIBRARY[0], RESEARCH_LIBRARY[0], HOSPITAL_LIBRARY[0], SCHOOL_LIBRARY[0]],
+            help=u'Target group; public, research, hospital, school'),
+        make_option('--file', dest="file", type='string', 
+            help='File; Absolute path to source spreadsheet. I.e. /home/MyUser/documents/sourcefile.xlsx'),
+    )
+    
     def handle(self, *args, **options):
-        if(len(args) != 2):
-            self.stdout.write("Usage: python manage.py import_variables <SourceFile> [LibraryType]\n\n")
-            self.stdout.write("\tfile: Absolute path to source spreadsheet. I.e. /home/MyUser/documents/sourcefile.xlsx")
-            self.stdout.write("\tLibraryType; public, research, hospital, school")
+        if not options["target_group"] or not options["file"]:
+            self.stdout.write("Usage: python manage.py import_variables --file=</path/to/file> --target_group=<public|research|hospital|school>\n\n")
             return
         
-        file = args[0]
-        library_type = args[1]
+        file = options["file"]
+        target_group = options["target_group"]
 
-        if library_type not in self.libraryTypes.keys():
-            self.stdout.write(u"Invalid LibraryType '{}', aborting".format(library_type))
-            return
-        target_group = self.libraryTypes[library_type]
-
-        self.stdout.write(u"Importing {} variables from: {}".format(target_group[0], file))
+        self.stdout.write(u"Importing {} variables from: {}".format(target_group, file))
 
         book = open_workbook(file)
         work_sheet = book.sheet_by_index(0)
@@ -32,33 +48,42 @@ class Command(BaseCommand):
         for i in range(1, work_sheet.nrows):
             row = work_sheet.row_values(i)
             
-            #Columns: 0-Alias, 1-Description, 2-Comment (optional), 3-Is public, 4-Variable type, 5-Variable (optional)
-            alias = row[0].strip()
+            #Columns: 0=Ordningsnummer, 1=Beskrivning, 2=Huvudgrupp, 3=Undergrupp, 4=Enhet, 5=Visas öppet/Visas inte
+            key = row[0].strip()
             description = row[1].strip()
-            comment = row[2].strip()
-            is_public = bool(row[3].strip())
+            category = row[2].strip()
+            sub_category = row[3].strip()
             variable_type = row[4].strip()
-            variable = None #TODO: Define in file then -> row[5].strip()
-
-            if not variable:
-                variable = alias
+            is_public = row[5].strip()
                 
-            # TODO: Använd sdmx-dimension:refArea="http://dbpedia.org/resource/Botkyrka_Municipality" och library="http://bibdb.libris.kb.se/library/123" 
-            # för kommun resp. biblioteksfält
+            if variable_type not in self.variableTypes.keys():
+                raise CommandError(u"Invalid variable type: {} for key: {}".format(variable_type, key))
+            else:
+                variable_type = self.variableTypes[variable_type]
             
-            existing_vars = Variable.objects.filter(key=variable)
+            if is_public not in self.isPublic.keys():
+                raise CommandError(u"Invalid public/private column value: {} for key: {}".format(is_public, key))
+            else:
+                is_public = self.isPublic[is_public]
+                
+            if category in self.nonMeasurementCategories:
+                is_public = False
+
+            existing_vars = Variable.objects.filter(key=key)
             if len(existing_vars) == 0:
-                object = Variable(key=variable, alias=alias, description=description, comment=comment, 
-                                  is_public=is_public, type=variable_type, target_groups=[target_group[0]])
+                object = Variable(key=key, description=description, category=category, sub_category=sub_category, 
+                                  type=variable_type, is_public=is_public, target_groups=[target_group], )
                 object.save()
-                self.stdout.write("IMPORTED: key={}, alias={}, is_public={}, target_groups={}".format(object.key, object.alias, object.is_public, object.target_groups))
+                self.stdout.write(u"IMPORTED: key={}, description={}, is_public={}".format(object.key, object.description, object.is_public))
             else:
                 object = existing_vars[0]
-                if target_group not in object.target_groups:
-                    object.target_groups.append(target_group)
-                    object.save()
-                    self.stdout.write("UPDATED: Added target_group to {}. target_groups={}".format(object.key, object.target_groups))
-                else:
-                    self.stdout.write("SKIPPED: {} already exists".format(object.key))
-            
+                object.description = description
+                object.category = category
+                object.sub_category = sub_category
+                object.type = variable_type
+                object.is_public = is_public
+                object.target_groups = [target_group]
+                object.save()
+                self.stdout.write(u"UPDATED: key={}, description={}, is_public={}".format(object.key, object.description, object.is_public))
 
+            

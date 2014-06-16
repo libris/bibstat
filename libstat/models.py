@@ -15,17 +15,25 @@ SCHOOL_LIBRARY = ("school", "Skolbibliotek")
 SURVEY_TARGET_GROUPS = (PUBLIC_LIBRARY, RESEARCH_LIBRARY, HOSPITAL_LIBRARY, SCHOOL_LIBRARY)
 targetGroups = dict(SURVEY_TARGET_GROUPS)
 
+TYPE_STRING = u"string", u"Text"
+TYPE_BOOLEAN = u"boolean", u"Boolean"
+TYPE_INTEGER = u"integer", u"Heltal"
+TYPE_DECIMAL = u"decimal", u"Decimaltal"
+TYPE_PERCENT = u"percent", u"Procent"
+
+VARIABLE_TYPES = (TYPE_STRING, TYPE_BOOLEAN, TYPE_INTEGER, TYPE_DECIMAL, TYPE_PERCENT)
 
 class Variable(Document):
     key = StringField(max_length=100, required=True, unique=True)
-    alias = StringField(max_length=100, unique=True)
-    
-    description = StringField(max_length=300, required=True)
+    description = StringField(required=True)
     comment = StringField(max_length=200)
     is_public = BooleanField(required=True, default=True)
-    type = StringField(max_length=100, required=True)
+    type = StringField(max_length=100, required=True, choices=VARIABLE_TYPES)
     
     target_groups = ListField(StringField(max_length=20, choices=SURVEY_TARGET_GROUPS), required=True)
+    
+    category = StringField(max_length=100)
+    sub_category = StringField(max_length=100)
 
     meta = {
         'collection': 'libstat_variables'
