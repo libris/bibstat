@@ -160,7 +160,48 @@ class ImportVariablesTest(MongoTestCase):
         self.assertEquals(len(Variable.objects.all()), 163)
         # Check target_group after
         self.assertEquals(Variable.objects.filter(key="Forsk111")[0].target_groups, [u"hospital"]) 
+        
+    def test_should_import_hospital_lib_variables(self):
+        args = []
+        opts = {"file": "data/sjukhus_termer.xlsx", "target_group": "hospital"}
+        call_command('import_variables', *args, **opts)
+        
+        # Check that all variables have been imported
+        self.assertEquals(len(Variable.objects.all()), 151)
+        
+        sjukhus1 = Variable.objects.filter(key="Sjukhus1")[0] # Private (by category "Bakgrundsvariabler", type "Text"
+        sjukhus9 = Variable.objects.filter(key="Sjukhus9")[0] # Public, type "Decimal två"
+        sjukhus151 = Variable.objects.filter(key="Sjukhus151")[0] # Private, type "Integer"
+         
+        # Check visibility
+        self.assertEquals(sjukhus1.is_public, False)
+        self.assertEquals(sjukhus9.is_public, True)
+        self.assertEquals(sjukhus151.is_public, False)
+         
+        # Check types
+        self.assertEquals(sjukhus1.type, u"string")
+        self.assertEquals(sjukhus9.type, u"decimal")
+        self.assertEquals(sjukhus151.type, u"integer")
 
+    def test_should_update_hospital_lib_variables(self):
+        args = []
+        opts = {"file": "data/sjukhus_termer.xlsx", "target_group": "hospital"}
+        call_command('import_variables', *args, **opts)
+        
+        # Check that all variables have been imported
+        self.assertEquals(len(Variable.objects.all()), 151)
+        # Check target_group before
+        self.assertEquals(Variable.objects.filter(key="Sjukhus23")[0].target_groups, [u"hospital"])
+        
+        # Changing target group to avoid having to modify terms file
+        args = []
+        opts = {"file": "data/sjukhus_termer.xlsx", "target_group": "hospital"}
+        call_command('import_variables', *args, **opts)
+        
+         # Check that no new variables have been created
+        self.assertEquals(len(Variable.objects.all()), 151)
+        # Check target_group after
+        self.assertEquals(Variable.objects.filter(key="Sjukhus23")[0].target_groups, [u"hospital"])
         
 """
     Util functions test cases

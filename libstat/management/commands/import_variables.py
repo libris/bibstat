@@ -74,7 +74,7 @@ class Command(BaseCommand):
                 object = Variable(key=key, description=description, category=category, sub_category=sub_category, 
                                   type=variable_type, is_public=is_public, target_groups=[target_group], )
                 object.save()
-                self.stdout.write(u"IMPORTED: key={}, description={}, is_public={}".format(object.key, object.description, object.is_public))
+                self.stdout.write(u"IMPORTED: key={}, is_public={}".format(object.key, object.is_public))
             else:
                 object = existing_vars[0]
                 object.description = description
@@ -84,6 +84,6 @@ class Command(BaseCommand):
                 object.is_public = is_public
                 object.target_groups = [target_group]
                 object.save()
-                self.stdout.write(u"UPDATED: key={}, description={}, is_public={}".format(object.key, object.description, object.is_public))
+                self.stdout.write(u"UPDATED: key={}, is_public={}".format(object.key, object.is_public))
 
             
