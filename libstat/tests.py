@@ -203,6 +203,55 @@ class ImportVariablesTest(MongoTestCase):
         # Check target_group after
         self.assertEquals(Variable.objects.filter(key="Sjukhus23")[0].target_groups, [u"hospital"])
         
+    def test_should_import_school_lib_variables(self):
+        args = []
+        opts = {"file": "data/skol_termer.xlsx", "target_group": "school"}
+        call_command('import_variables', *args, **opts)
+        
+        # Check that all variables have been imported
+        self.assertEquals(len(Variable.objects.all()), 138)
+        
+        skol5 = Variable.objects.filter(key="Skol5")[0] # Private (by category "Bakgrundsvariabel"), type "Text"
+        skol16 = Variable.objects.filter(key="Skol16")[0] # Private (by category "Bakgrundsvariabel"), type "Numerisk"
+        skol40 = Variable.objects.filter(key="Skol40")[0] # Public, type "Decimal två"
+        skol54 = Variable.objects.filter(key="Skol54")[0] # Private, type "Boolesk"
+        skol107 = Variable.objects.filter(key="Skol107")[0] # Public, type "Integer"
+        
+        # Check visibility
+        self.assertEquals(skol5.is_public, False)
+        self.assertEquals(skol16.is_public, False)
+        self.assertEquals(skol40.is_public, True)
+        self.assertEquals(skol54.is_public, False)
+        self.assertEquals(skol107.is_public, True)
+        
+        # Check types
+        self.assertEquals(skol5.type, u"string")
+        self.assertEquals(skol16.type, u"string")
+        self.assertEquals(skol40.type, u"decimal")
+        self.assertEquals(skol54.type, u"boolean")
+        self.assertEquals(skol107.type, u"integer")
+    
+    def test_should_update_school_lib_variables(self):
+        args = []
+        opts = {"file": "data/skol_termer.xlsx", "target_group": "school"}
+        call_command('import_variables', *args, **opts)
+        
+        # Check that all variables have been imported
+        self.assertEquals(len(Variable.objects.all()), 138)
+        # Check target_group before
+        self.assertEquals(Variable.objects.filter(key="Skol5")[0].target_groups, [u"school"])
+        
+        # Changing target group to avoid having to modify terms file
+        args = []
+        opts = {"file": "data/skol_termer.xlsx", "target_group": "research"}
+        call_command('import_variables', *args, **opts)
+        
+        # Check that no new variables have been created
+        self.assertEquals(len(Variable.objects.all()), 138)
+        # Check target_group after
+        self.assertEquals(Variable.objects.filter(key="Skol5")[0].target_groups, [u"research"])
+        
+        
 """
     Util functions test cases
 """
