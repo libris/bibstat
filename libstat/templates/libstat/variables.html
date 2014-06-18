@@ -29,8 +29,8 @@
         <thead>
           <tr>
             <th class="column key">{% trans "Nyckel" %}</th>
-            <th class="column desc">{% trans "Beskrivning" %}</th>
-            <th class="column comment">{% trans "Kommentar" %}</th>
+            <th class="column desc">{% trans "Huvudgrupp" %}</th>
+            <th class="column comment">{% trans "Undergrupp" %}</th>
             <th class="column is_public">{% trans "Publik" %}</th>
             <th class="column target_groups">{% trans "Målgrupper" %}</th>
           </tr>
@@ -40,8 +40,8 @@
           {% for v in variables %}
             <tr>
               <td>{{ v.key }}</td>
-              <td>{{ v.description }}</td>
-              <td>{{ v.comment }}</td>
+              <td>{{ v.category }}</td>
+              <td>{{ v.sub_category }}</td>
               <td>{{ v.is_public|yesno }}</td>
               <td>{{ v.target_groups__descriptions|join:", " }}</td>
             </tr>
