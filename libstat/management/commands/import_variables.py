@@ -2,7 +2,9 @@
 from django.core.management.base import BaseCommand, CommandError
 from optparse import make_option
 
-from libstat.models import Variable, PUBLIC_LIBRARY, RESEARCH_LIBRARY, HOSPITAL_LIBRARY, SCHOOL_LIBRARY, TYPE_STRING, TYPE_BOOLEAN, TYPE_INTEGER, TYPE_DECIMAL, TYPE_PERCENT
+from libstat.models import Variable
+from libstat.models import PUBLIC_LIBRARY, RESEARCH_LIBRARY, HOSPITAL_LIBRARY, SCHOOL_LIBRARY, TYPE_STRING, TYPE_BOOLEAN, TYPE_INTEGER, TYPE_LONG, TYPE_DECIMAL, TYPE_PERCENT
+from libstat.models import DATA_IMPORT_nonMeasurementCategories
 from xlrd import open_workbook
 
 class Command(BaseCommand):
@@ -11,6 +13,7 @@ class Command(BaseCommand):
         u"Numerisk": TYPE_STRING[0], 
         u"Boolesk": TYPE_BOOLEAN[0], 
         u"Integer": TYPE_INTEGER[0], 
+        u"Long": TYPE_LONG[0],
         u"Decimal två": TYPE_DECIMAL[0], 
         u"Decimal ett": TYPE_DECIMAL[0],  
         u"Procent": TYPE_PERCENT[0]
@@ -21,8 +24,6 @@ class Command(BaseCommand):
         u"Inte": False
     }
     
-    nonMeasurementCategories = [u"Bakgrundsvariabel", u"Tid", u"Befolkning", u"Bakgrundsvariabler"]
-
     help = "Imports statistical variables from a spreadsheet"
   
     option_list = BaseCommand.option_list + (
@@ -40,11 +41,13 @@ class Command(BaseCommand):
         file = options["file"]
         target_group = options["target_group"]
 
-        self.stdout.write(u"Importing {} variables from: {}".format(target_group, file))
+        self.stdout.write(u"Importing {} variables from: {}...".format(target_group, file))
 
         book = open_workbook(file)
         work_sheet = book.sheet_by_index(0)
-
+        imported_variables = 0
+        updated_variables = 0
+        
         for i in range(1, work_sheet.nrows):
             row = work_sheet.row_values(i)
             
@@ -66,7 +69,7 @@ class Command(BaseCommand):
             else:
                 is_public = self.isPublic[is_public]
                 
-            if category in self.nonMeasurementCategories:
+            if category in DATA_IMPORT_nonMeasurementCategories:
                 is_public = False
 
             existing_vars = Variable.objects.filter(key=key)
@@ -74,7 +77,8 @@ class Command(BaseCommand):
                 object = Variable(key=key, description=description, category=category, sub_category=sub_category, 
                                   type=variable_type, is_public=is_public, target_groups=[target_group], )
                 object.save()
-                self.stdout.write(u"IMPORTED: key={}, is_public={}".format(object.key, object.is_public))
+                imported_variables += 1
+                #self.stdout.write(u"IMPORTED: key={}, is_public={}".format(object.key, object.is_public))
             else:
                 object = existing_vars[0]
                 object.description = description
@@ -84,6 +88,8 @@ class Command(BaseCommand):
                 object.is_public = is_public
                 object.target_groups = [target_group]
                 object.save()
-                self.stdout.write(u"UPDATED: key={}, is_public={}".format(object.key, object.is_public))
+                updated_variables += 1
+                #self.stdout.write(u"UPDATED: key={}, is_public={}".format(object.key, object.is_public))
 
+        self.stdout.write(u"...{} {} variables imported, {} updated.".format(imported_variables, target_group, updated_variables))
             

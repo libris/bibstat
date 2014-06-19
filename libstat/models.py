@@ -15,14 +15,20 @@ SCHOOL_LIBRARY = ("school", "Skolbibliotek")
 SURVEY_TARGET_GROUPS = (PUBLIC_LIBRARY, RESEARCH_LIBRARY, HOSPITAL_LIBRARY, SCHOOL_LIBRARY)
 targetGroups = dict(SURVEY_TARGET_GROUPS)
 
-TYPE_STRING = u"string", u"xsd:string"
-TYPE_BOOLEAN = u"boolean", u"xsd:boolean"
-TYPE_INTEGER = u"integer", u"xsd:integer"
-TYPE_DECIMAL = u"decimal", u"xsd:decimal"
-TYPE_PERCENT = u"percent", u"xsd:decimal"
+TYPE_STRING = (u"string", u"xsd:string")
+TYPE_BOOLEAN = (u"boolean", u"xsd:boolean")
+TYPE_INTEGER = (u"integer", u"xsd:integer")
+TYPE_LONG = (u"long", u"xsd:long")
+TYPE_DECIMAL = (u"decimal", u"xsd:decimal")
+TYPE_PERCENT = (u"percent", u"xsd:integer")
 
-VARIABLE_TYPES = (TYPE_STRING, TYPE_BOOLEAN, TYPE_INTEGER, TYPE_DECIMAL, TYPE_PERCENT)
+VARIABLE_TYPES = (TYPE_STRING, TYPE_BOOLEAN, TYPE_INTEGER, TYPE_LONG, TYPE_DECIMAL, TYPE_PERCENT)
 variable_types = dict(VARIABLE_TYPES)
+
+"""
+    Useful definitions when importing data from spreadsheets
+"""
+DATA_IMPORT_nonMeasurementCategories = [u"Bakgrundsvariabel", u"Tid", u"Befolkning", u"Bakgrundsvariabler"]
 
 class Variable(Document):
     key = StringField(max_length=100, required=True, unique=True)
@@ -146,17 +152,28 @@ class Library(EmbeddedDocument):
     bibdb_name = StringField()
     bibdb_id = StringField(max_length=100)
     bibdb_sigel = StringField(max_length=10)
-
-    municipality_name = StringField(max_length=100)
-    municipality_code = StringField(max_length=10)
-    county_code = StringField(max_length=10)
-    
-    school_id = StringField(max_length=10)
     
     def __unicode__(self):
         return u"libdb [{}, {}, {}]".format(self.bibdb_id, self.bibdb_sigel, self.bibdb_name)
-    
 
+class SurveyResponseMetadata(EmbeddedDocument):
+    # Public
+    municipality_name = StringField(max_length=100)
+    municipality_code = StringField(max_length=6)
+    
+    #Private
+    respondent_name = StringField(max_length=100)
+    respondent_email = StringField(max_length=100)
+    respondent_phone = StringField(max_length=100)
+    
+    # Private
+    survey_time_hours = IntField()
+    survey_time_minutes = IntField()
+    
+    # Private
+    population_nation = LongField()
+    population_0to14y = LongField()
+    
 class SurveyResponse(Document):
     library_name = StringField(max_length=100, required=True, unique_with='sample_year')
     sample_year = IntField(required=True)
@@ -170,6 +187,8 @@ class SurveyResponse(Document):
     date_modified = DateTimeField(required=True, default=datetime.utcnow)
     
     observations = ListField(EmbeddedDocumentField(SurveyObservation))
+    
+    metadata = EmbeddedDocumentField(SurveyResponseMetadata)
 
     meta = {
         'collection': 'libstat_survey_responses',
