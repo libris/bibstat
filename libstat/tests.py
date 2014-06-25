@@ -129,18 +129,24 @@ class ImportVariablesTest(MongoTestCase):
         forsk1 = Variable.objects.filter(key="Forsk1")[0] # Private (by category "Bakgrundsvariabler", type "Text"
         forsk2 = Variable.objects.filter(key="Forsk2")[0] # Private, type "Integer"
         forsk8 = Variable.objects.filter(key="Forsk8")[0] # Public, type "Decimal två"
+        forsk19 = Variable.objects.filter(key="Forsk19")[0] # Public, type "Procent"
+        forsk29 = Variable.objects.filter(key="Forsk29")[0] # Public, type "Long"
         forsk154 = Variable.objects.filter(key="Forsk154")[0] # Public, type "Decimal ett"
         
         # Check visibility
         self.assertEquals(forsk1.is_public, False)
         self.assertEquals(forsk2.is_public, False)
         self.assertEquals(forsk8.is_public, True)
+        self.assertEquals(forsk19.is_public, True)
+        self.assertEquals(forsk29.is_public, True)
         self.assertEquals(forsk154.is_public, True)
         
         # Check types
         self.assertEquals(forsk1.type, u"string")
         self.assertEquals(forsk2.type, u"integer")
         self.assertEquals(forsk8.type, u"decimal")
+        self.assertEquals(forsk19.type, u"percent")
+        self.assertEquals(forsk29.type, u"long")
         self.assertEquals(forsk154.type, u"decimal")
     
     
