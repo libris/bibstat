@@ -71,6 +71,7 @@ class ImportVariablesTest(MongoTestCase):
         folk7 = Variable.objects.filter(key="Folk7")[0] # Private, type "Numerisk"
         folk8 = Variable.objects.filter(key="Folk8")[0] # Public, type "Boolesk"
         folk26 = Variable.objects.filter(key="Folk26")[0] # Public, type "Decimal två"
+        folk38 = Variable.objects.filter(key="Folk38")[0] # Public, type "Long"
         folk52 = Variable.objects.filter(key="Folk52")[0] # Public, type "Procent"
         folk54 = Variable.objects.filter(key="Folk54")[0] # Public, type "Decimal ett"
         folk201 = Variable.objects.filter(key="Folk201")[0] # Private, type "Integer", last row
@@ -80,6 +81,7 @@ class ImportVariablesTest(MongoTestCase):
         self.assertFalse(folk7.is_public)
         self.assertTrue(folk8.is_public)
         self.assertTrue(folk26.is_public)
+        self.assertTrue(folk38.is_public)
         self.assertTrue(folk52.is_public)
         self.assertTrue(folk54.is_public)
         self.assertFalse(folk201.is_public)
@@ -89,6 +91,7 @@ class ImportVariablesTest(MongoTestCase):
         self.assertEquals(folk7.type, u"string")
         self.assertEquals(folk8.type, u"boolean")
         self.assertEquals(folk26.type, u"decimal")
+        self.assertEquals(folk38.type, u"long")
         self.assertEquals(folk52.type, u"percent")
         self.assertEquals(folk54.type, u"decimal")
         self.assertEquals(folk201.type, u"integer")
@@ -251,6 +254,54 @@ class ImportVariablesTest(MongoTestCase):
         # Check target_group after
         self.assertEquals(Variable.objects.filter(key="Skol5")[0].target_groups, [u"research"])
         
+
+class ImportSurveyResponsesTest(MongoTestCase):
+    def setUp(self):
+        args = []
+        opts = {"file": "data/folk_termer.xlsx", "target_group": "public"}
+        call_command('import_variables', *args, **opts)
+        
+        # Check that all variables have been imported
+        self.assertEquals(len(Variable.objects.all()), 201)
+        
+    def test_import_survey_responses_requires_file_option(self):
+        args = []
+        opts = {"target_group": "public", "year": 2012}
+        call_command('import_survey_responses', *args, **opts)
+        
+        self.assertEquals(len(SurveyResponse.objects.all()), 0)
+
+
+    def test_import_variables_requires_target_group_option(self):
+        args = []
+        opts = {"file": "libstat/test/data/Folk2012.xls", "year": 2012}
+        call_command('import_survey_responses', *args, **opts)
+        
+        self.assertEquals(len(SurveyResponse.objects.all()), 0)
+    
+    def test_import_variables_requires_year_option(self):
+        args = []
+        opts = {"file": "libstat/test/data/Folk2012.xls", "target_group": "public"}
+        call_command('import_survey_responses', *args, **opts)
+        
+        self.assertEquals(len(SurveyResponse.objects.all()), 0)
+    
+    def test_should_import_public_lib_survey_responses(self):
+        args = []
+        opts = {"file": "libstat/test/data/Folk2012.xls", "target_group": "public", "year": 2012}
+        call_command('import_survey_responses', *args, **opts)
+        
+        self.assertEquals(len(SurveyResponse.objects.all()), 290)
+        self.assertTrue(SurveyResponse.objects.filter(library_name=u"KARLSTADS STADSBIBLIOTEK")[0].library == None)
+        
+    def test_import_survey_responses_with_library_lookup(self):
+        args = []
+        opts = {"file": "libstat/test/data/Folk2012.xls", "target_group": "public", "year": 2012, "use_bibdb": "True"}
+        call_command('import_survey_responses', *args, **opts)
+        
+        self.assertEquals(len(SurveyResponse.objects.all()), 290)
+        self.assertTrue(SurveyResponse.objects.filter(library_name=u"KARLSTADS STADSBIBLIOTEK")[0].library != None)
+
         
 """
     Util functions test cases

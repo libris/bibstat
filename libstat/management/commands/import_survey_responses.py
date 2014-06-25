@@ -52,7 +52,7 @@ class Command(BaseCommand):
 
         work_sheet = None
         try: 
-            book = open_workbook(file_name)
+            book = open_workbook(file_name, verbosity=0)
             work_sheet = book.sheet_by_name(str(year))
         except XLRDError as xld_e:
             raise CommandError(u"No data for year {} in workbook: {}".format(year, xld_e))
@@ -74,7 +74,7 @@ class Command(BaseCommand):
         variable_keys = []
         library_column_index = None
         
-        # TODO: Hantera summafält i forsk!
+        # TODO: Hantera summafält i forsk! T ex kommunkod saknas eller namn börjar med "Summa"...
         for i in range(0, work_sheet.ncols):
             key = work_sheet.cell_value(0, i)
             vars = Variable.objects.filter(key=key)
