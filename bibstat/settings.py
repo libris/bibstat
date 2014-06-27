@@ -29,12 +29,12 @@ DEBUG = False
 TEMPLATE_DEBUG = False
 
 ALLOWED_HOSTS = [
-    ".bibdbclone.libris.kb.se",
-    ".bibdbclone.libris.kb.se.",
+    ".bibstat-stg.libris.kb.se",
+    ".bibstat-stg.libris.kb.se.",
 ]
 
 # Base url for api, i.e. http://stats.kb.se
-API_BASE_URL = "http://bibdbclone.libris.kb.se/statistics"
+API_BASE_URL = "http://bibstat-stg.libris.kb.se/statistics"
 BIBDB_BASE_URL = "http://bibdbclone.libris.kb.se"
 
 # DB connection details
