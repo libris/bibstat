@@ -12,23 +12,48 @@ https://docs.djangoproject.com/en/1.6/ref/settings/
 import os
 BASE_DIR = os.path.dirname(os.path.dirname(__file__))
 
-
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/1.6/howto/deployment/checklist/
 
+"""
+----------------------------------------------------------
+Environment specific settings, hostnames, usernames e t c
+----------------------------------------------------------
+"""
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = '3x%=t4cm@eszqbwuw@00f**ol@8^kqomtm8-%x&5_ydq9rm(nl'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
-TEMPLATE_DEBUG = True
+TEMPLATE_DEBUG = False
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = [
+    ".bibdbclone.libris.kb.se",
+    ".bibdbclone.libris.kb.se.",
+]
 
+# Base url for api, i.e. http://stats.kb.se
+API_BASE_URL = "http://bibdbclone.libris.kb.se/statistics"
+BIBDB_BASE_URL = "http://bibdbclone.libris.kb.se"
+
+# DB connection details
+MONGODB_HOST = 'localhost'
+MONGODB_NAME = 'bibstat'
+MONGODB_USER = 'bibstat'
+MONGODB_PASSWD = 'bibstat'
+
+# Override above with local settings if present
+try:
+    from settings_local import *
+except ImportError:
+    print "local settings could not be imported"
+
+"""
+-----------------------------------------------------------
+"""
 
 # Application definition
-
 INSTALLED_APPS = (
     # Django standard apps
     'django.contrib.auth',
@@ -92,10 +117,6 @@ STATICFILES_DIRS = (
 
 LOGIN_REDIRECT_URL = 'libstat.views.index'
 
-# Base url for api, i.e. http://stats.kb.se
-API_BASE_URL = "http://localhost:8000/statistics"
-BIBDB_BASE_URL = "http://bibdb.libris.kb.se"
-
 # MongoEngine settings
 #
 import mongoengine
@@ -114,10 +135,6 @@ SESSION_SERIALIZER = 'mongoengine.django.sessions.BSONSerializer'
 SESSION_COOKIE_AGE = 60*60*1   
 
 # Initialize MongoDB connection
-MONGODB_USER = 'bibstat'
-MONGODB_PASSWD = 'bibstat'
-MONGODB_HOST = 'localhost'
-MONGODB_NAME = 'bibstat'
 MONGODB_DATABASE_HOST = 'mongodb://%s:%s@%s/%s' % (MONGODB_USER, MONGODB_PASSWD, MONGODB_HOST, MONGODB_NAME)
 
 #mongoengine.connect(MONGODB_NAME, host=MONGODB_DATABASE_HOST)
