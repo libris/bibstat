@@ -4,6 +4,7 @@ from django.test import TestCase
 from django.conf import settings
 from django.core.urlresolvers import reverse
 from django.core.management import call_command
+from django.core.management.base import CommandError
 
 from datetime import datetime
 import json
@@ -291,6 +292,16 @@ class ImportSurveyResponsesTest(MongoTestCase):
         call_command('import_survey_responses', *args, **opts)
         
         self.assertEquals(len(SurveyResponse.objects.all()), 0)
+        
+    def test_import_survey_responses_should_abort_if_invalid_year(self):
+        args = []
+        opts = {"file": "libstat/test/data/Folk2012.xls", "target_group": "public", "year": '201b'}
+        self.assertRaises(CommandError, call_command, 'import_survey_responses', *args, **opts)
+    
+    def test_import_survey_responses_should_abort_if_data_for_year_not_in_file(self):
+        args = []
+        opts = {"file": "libstat/test/data/Folk2012.xls", "target_group": "public", "year": 2013}
+        self.assertRaises(CommandError, call_command, 'import_survey_responses', *args, **opts)
     
     def test_should_import_public_lib_survey_responses(self):
         args = []
