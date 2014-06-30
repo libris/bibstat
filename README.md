@@ -45,16 +45,19 @@ Starta server:
 	$ python manage.py runserver
 	
 Skapa superanvändare:
-    $ python manage.py createsuperuser --username=super --email=noone@example.org 
-    passwd: super
+	
+	$ python manage.py createsuperuser --username=super --email=noone@example.org 
+	passwd: super
     
 Läs in statistiktermer (finns incheckade):
-	$ python manage.py import_variables --file=data/folk_termer.xlsx --target_group=public
+	
+	$ python manage.py import_variables --file=data/folk_termer.xlsx --target_group=public	
 	$ python manage.py import_variables --file=data/forsk_termer.xlsx --target_group=research
 	$ python manage.py import_variables --file=data/skol_termer.xlsx --target_group=school
 	$ python manage.py import_variables --file=data/sjukhus_termer.xlsx --target_group=hospital
 
 Läs in statistikdata, exempelvis folkbibliotekfil som innehåller åren 2010 t o m 2013 (finns på ...?)
+	
 	$ python manage.py import_survey_responses --file=/tmp/Folkbiblioteksexport_superfil_20140625_ver2.xlsx --target_group=public --year=2013
 	$ python manage.py import_survey_responses --file=/tmp/Folkbiblioteksexport_superfil_20140625_ver2.xlsx --target_group=public --year=2012
 	$ python manage.py import_survey_responses --file=/tmp/Folkbiblioteksexport_superfil_20140625_ver2.xlsx --target_group=public --year=2011
