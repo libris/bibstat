@@ -20,7 +20,8 @@ urlpatterns = patterns('libstat.views',
     
     # Admin views
     url(r'^variables/$',views.variables, name='variables'),
-    url(r'^variables/(?P<variable_id>\w+)/$',views.variable_detail, name='variable_detail'),
+    #url(r'^variables/(?P<variable_id>\w+)/$',views.variable_detail, name='variable_detail'),
+    url(r'^variables/(?P<variable_id>\w+)/$',views.edit_variable, name='edit_variable'),
     url(r'^survey_responses/$',views.survey_responses, name='survey_responses'),
     url(r'^survey_responses/publish$',views.publish_survey_responses, name='publish_survey_responses'),
 )

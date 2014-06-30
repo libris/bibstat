@@ -33,7 +33,10 @@ DATA_IMPORT_nonMeasurementCategories = [u"Bakgrundsvariabel", u"Tid", u"Befolkni
 class Variable(Document):
     key = StringField(max_length=100, required=True, unique=True)
     description = StringField(required=True)
+    
+    # Comment is a private field and should never be returned as open data
     comment = StringField(max_length=200)
+    
     is_public = BooleanField(required=True, default=True)
     type = StringField(max_length=100, required=True, choices=VARIABLE_TYPES)
     

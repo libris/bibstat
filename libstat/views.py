@@ -47,6 +47,19 @@ def variable_detail(request, variable_id):
     return render(request, 'libstat/variable_detail.html', context)
 
 @permission_required('is_superuser', login_url='login')
+def edit_variable(request, variable_id):
+    try: 
+        v = Variable.objects.get(pk=variable_id)
+    except Exception:
+        raise Http404
+
+    if request.method == "POST":
+        pass
+        
+    context = {'variable': v }
+    return render(request, 'libstat/modals/edit_variable.html', context)
+
+@permission_required('is_superuser', login_url='login')
 def survey_responses(request):
     s_responses = []
     

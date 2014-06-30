@@ -39,7 +39,7 @@
         {% if variables %}
           {% for v in variables %}
             <tr>
-              <td>{{ v.key }}</td>
+              <td><a class="edit-variable" href="#" data-form="{% url 'edit_variable' v.id %}" title="{% trans 'Visa/Ändra' %}">{{ v.key }}</a></td>
               <td>{{ v.category }}</td>
               <td>{{ v.sub_category }}</td>
               <td>{{ v.is_public|yesno }}</td>
@@ -50,6 +50,11 @@
         </tbody>
       </table>
     </div>
+    
+    <!-- Modals -->
+    <div class="modal fade" id="editVariableModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    </div>
   
-  </div>  
+  </div>
+
 {% endblock %}

@@ -1,0 +1,100 @@
+{% load i18n %}
+
+<form role="form" class="edit-variable-form" method="post" action=".">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">{% trans 'Stäng' %}</span></button>
+        <h4 class="modal-title">{{variable.key}}</h4>
+      </div>
+      <div class="modal-body">
+        {% csrf_token %}
+        <div class="form-group">
+            <label for="edit-variable-category">{% trans "Huvudgrupp" %}</label>
+            <input id="edit-variable-category" name="category" type="text" value="{{variable.category}}" class="form-control"/>
+        </div>
+        <div class="form-group">
+            <label for="edit-variable-sub_category">{% trans "Undergrupp" %}</label>
+            <input id="edit-variable-sub_category" name="sub_category" type="text" value="{{variable.sub_category}}" class="form-control"/>
+        </div>
+        <div class="form-group">
+            <label>{% trans "Enhet" %}</label>
+            <div>
+                <label class="radio-inline">
+                    <input name="type" id="type_integer" type="radio" value="integer" {% if variable.type == 'integer' %}checked="checked"{% endif %}/>
+                    Integer
+                </label>
+                <label class="radio-inline">
+                    <input name="type" id="type_long" type="radio" value="long" {% if variable.type == 'long' %}checked="checked"{% endif %}/>
+                    Long
+                </label>
+                <label class="radio-inline">
+                    <input name="type" id="type_decimal" type="radio" value="decimal" {% if variable.type == 'decimal' %}checked="checked"{% endif %}/>
+                    Decimal
+                </label>
+                <label class="radio-inline">
+                    <input name="type" id="type_percent" type="radio" value="percent" {% if variable.type == 'percent' %}checked="checked"{% endif %}/>
+                    Procent
+                </label>
+                <label class="radio-inline">
+                    <input name="type" id="type_boolean" type="radio" value="boolean" {% if variable.type == 'boolean' %}checked="checked"{% endif %}/>
+                    Boolesk
+                </label>
+                <label class="radio-inline">
+                    <input name="type" id="type_string" type="radio" value="string" {% if variable.type == 'string' %}checked="checked"{% endif %}/>
+                    Text
+                </label>
+            </div>
+        </div>
+        <div class="form-group">
+            <label>{% trans "Synlighet" %}</label>
+            <div class="radio">
+                <label>
+                    <input name="is_public" id="is_public-yes" type="radio" value="True" {% if variable.is_public %}checked="checked"{% endif %}/>
+                    {% trans "Publik term, visas som öppen data" %}
+                </label>
+            </div>
+            <div class="radio">
+                <label>
+                    <input name="is_public" id="is_public-no" type="radio" value="False" {% if not variable.is_public %}checked="checked"{% endif %}/>
+                    {% trans "Privat term, visas endast för administratör i detta gränssnitt" %}
+                </label>
+            </div>
+        </div>
+        <div class="form-group">
+            <label>{% trans "Målgrupper" %}</label>
+            <div>
+                <label for="target_group_public" class="checkbox-inline">
+                    <input id="target_group_public" type="checkbox" name="target_groups" value="public" {% if 'public' in variable.target_groups %}checked="checked"{% endif %}/>
+                    {% trans 'Folkbibliotek' %}
+                </label>
+                <label for="target_group_research" class="checkbox-inline">
+                    <input id="target_group_research" type="checkbox" name="target_groups" value="research" {% if 'research' in variable.target_groups %}checked="checked"{% endif %}/>
+                    {% trans "Forskningsbibliotek" %}
+                </label>
+                <label for="target_group_hospital" class="checkbox-inline">
+                    <input id="target_group_hospital" type="checkbox" name="target_groups" value="hospital" {% if 'hospital' in variable.target_groups %}checked="checked"{% endif %}/>
+                    {% trans "Sjukhusbibliotek" %}
+                </label>
+                <label for="target_group_school" class="checkbox-inline">
+                    <input id="target_group_school" type="checkbox" name="target_groups" value="school" {% if 'school' in variable.target_groups %}checked="checked"{% endif %}/>
+                    {% trans "Skolbibliotek" %}
+                </label>
+            </div>
+        </div>
+        <div class="form-group">
+            <label for="edit-variable-description">{% trans "Beskrivning" %}</label>
+            <textarea id="edit-variable-description" name="description" class="form-control">{{variable.description}}</textarea>
+        </div>
+        <div class="form-group">
+            <label for="edit-variable-comment">{% trans "Kommentar (visas ej publikt)" %}</label>
+            <textarea id="edit-variable-comment" name="comment" class="form-control">{% if variable.comment %}{{variable.comment}}{% endif %}</textarea>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <input type="submit" class="btn btn-default" data-dismiss="modal" value="Avbryt" />
+        <input type="submit" class="btn btn-primary" value="Spara ändringar" />
+      </div>
+    </div>
+  </div>
+</form>
