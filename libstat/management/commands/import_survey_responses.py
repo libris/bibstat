@@ -99,8 +99,10 @@ class Command(BaseCommand):
                 library_name = None
                 library = None
                 lib_col_value = row[library_column_index]
-                # Research libraries file has sum rows mixed with library response rows
-                if lib_col_value and isinstance(lib_col_value, basestring) and not lib_col_value.startswith("Summa") and not lib_col_value.startswith("summa"):
+                # Research libraries file and hospital libraries file has summary rows mixed with library response rows
+                if lib_col_value and isinstance(lib_col_value, basestring) \
+                        and not lib_col_value.startswith("Summa") and not lib_col_value.startswith("summa") \
+                        and not lib_col_value.startswith("Riket"):
                     library_name = lib_col_value.strip()
                 
                 if library_name:
