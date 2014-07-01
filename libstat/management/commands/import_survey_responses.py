@@ -72,9 +72,8 @@ class Command(BaseCommand):
                 self.stderr.write(u"No connection to Bibdb, importing without libraries: {}".format(e))
 
         variable_keys = []
-        library_column_index = None
-        
-        # TODO: Hantera summafält i forsk! T ex kommunkod saknas eller namn börjar med "Summa"...
+        library_column_index = -1
+
         for i in range(0, work_sheet.ncols):
             key = work_sheet.cell_value(0, i)
             vars = Variable.objects.filter(key=key)
@@ -82,12 +81,13 @@ class Command(BaseCommand):
                 v = vars[0]
                 if v.sub_category in self.library_name_value:
                     library_column_index = i
+                    self.stdout.write(u"Found library identifier '{}':'{}' in column: {}".format(key, v.sub_category, i))
                 variable_keys.append((i, key, v))
 
             else:
                 self.stdout.write("Unknown variable key {}, skipping".format(key))
         
-        if not library_column_index:
+        if library_column_index == -1:
             raise CommandError(u"Library identifier variable not found, aborting!")
 
         imported_responses = 0
@@ -96,11 +96,11 @@ class Command(BaseCommand):
             for i in range(2, work_sheet.nrows):
                 row = work_sheet.row_values(i)
                 
-                # TODO: Lookup library in bibdb!
                 library_name = None
                 library = None
                 lib_col_value = row[library_column_index]
-                if lib_col_value and isinstance(lib_col_value, basestring):
+                # Research libraries file has sum rows mixed with library response rows
+                if lib_col_value and isinstance(lib_col_value, basestring) and not lib_col_value.startswith("Summa") and not lib_col_value.startswith("summa"):
                     library_name = lib_col_value.strip()
                 
                 if library_name:
@@ -145,11 +145,11 @@ class Command(BaseCommand):
                             sr.save()
 #                             self.stdout.write(u"Updating survey response for {} {} with library {}".format(year, library_name, library.bibdb_sigel))
                     
-#                     else:
-#                         self.stdout.write(u"Survey response for {} already exists for year {}, skipping".format(library_name, year))
+                    else:
+                        self.stdout.write(u"Survey response for {} already exists for year {}, skipping".format(library_name, year))
                         
-#                 else:
-#                     self.stdout.write(u"No library name, skipping row {}".format(i))
+                else:
+                    self.stdout.write(u"No library name, skipping row {}".format(i))
             
             self.stdout.write(u"...{} survey responses imported".format(imported_responses))
                               
