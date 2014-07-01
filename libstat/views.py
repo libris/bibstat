@@ -71,6 +71,8 @@ def survey_responses(request):
     
     # TODO: Cache sample_years
     sample_years = SurveyResponse.objects.distinct("sample_year")
+    sample_years.sort()
+    sample_years.reverse()
     
     action = request.GET.get("action", "")
     target_group = request.GET.get("target_group", "")
