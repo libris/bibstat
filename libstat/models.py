@@ -20,7 +20,7 @@ TYPE_BOOLEAN = (u"boolean", u"xsd:boolean")
 TYPE_INTEGER = (u"integer", u"xsd:integer")
 TYPE_LONG = (u"long", u"xsd:long")
 TYPE_DECIMAL = (u"decimal", u"xsd:decimal")
-TYPE_PERCENT = (u"percent", u"xsd:integer")
+TYPE_PERCENT = (u"percent", u"xsd:decimal")
 
 VARIABLE_TYPES = (TYPE_STRING, TYPE_BOOLEAN, TYPE_INTEGER, TYPE_LONG, TYPE_DECIMAL, TYPE_PERCENT)
 variable_types = dict(VARIABLE_TYPES)

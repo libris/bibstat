@@ -11,6 +11,7 @@ import json
 
 from libstat.models import Variable, OpenData, SurveyResponse, SurveyObservation, Library
 from libstat.utils import parse_datetime_from_isodate_str
+from libstat.apis import term_context
 
 """
     Test case and test runner for use with Mongoengine
@@ -619,6 +620,8 @@ class TermApiTest(MongoTestCase):
     def setUp(self):
         v1 = Variable(key=u"folk5", description=u"Antal bemannade serviceställen, sammanräknat", type="integer", is_public=True, target_groups=["public"])
         v1.save()
+        v2 = Variable(key=u"folk6", description=u"Är huvudbiblioteket i er kommun integrerat med ett skolbibliotek? 1=ja", type="integer", is_public=True, target_groups=["public"])
+        v2.save()
     
     def test_response_should_return_jsonld(self):
         response = self.client.get(reverse("term_api", kwargs={ "term_key": "folk5"}))
@@ -640,6 +643,8 @@ class TermApiTest(MongoTestCase):
     def test_should_return_one_term(self):
         response = self.client.get(reverse("term_api", kwargs={ "term_key": "folk5"}))
         data = json.loads(response.content)
+        self.assertEquals(len(data), 5)
+        self.assertEquals(data[u"@context"], term_context[u"@context"])
         self.assertEquals(data[u"@id"], u"folk5"),
         self.assertEquals(data[u"@type"], u"qb:MeasureProperty"),
         self.assertEquals(data[u"comment"], u"Antal bemannade serviceställen, sammanräknat"),

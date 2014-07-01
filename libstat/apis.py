@@ -34,9 +34,6 @@ term_context = {
 
 """
     OpenDataApi
-    TODO: DO this for now?
-    "library": { "name": "BOTKYRKA BIBILIOTEK" },
-        
 """
 def data_api(request):
     from_date = parse_datetime_from_isodate_str(request.GET.get("from_date", None))
