@@ -1,11 +1,13 @@
 # -*- coding: utf-8 -*-
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from django.core.urlresolvers import reverse
+from django.core.exceptions import ValidationError
 from django.http import HttpResponse, HttpResponseRedirect
 from django.http import Http404
 from django.conf import settings
 
 from libstat.models import Variable, SurveyResponse
+from libstat.forms import *
 from django.contrib.auth.decorators import permission_required
 
 from libstat.apis import *
@@ -38,15 +40,6 @@ def variables(request):
     return render(request, 'libstat/variables.html', context)
 
 @permission_required('is_superuser', login_url='login')
-def variable_detail(request, variable_id):
-    try: 
-        v = Variable.objects.get(pk=variable_id)
-    except Exception:
-        raise Http404
-    context = {'variable': v }
-    return render(request, 'libstat/variable_detail.html', context)
-
-@permission_required('is_superuser', login_url='login')
 def edit_variable(request, variable_id):
     try: 
         v = Variable.objects.get(pk=variable_id)
@@ -54,9 +47,22 @@ def edit_variable(request, variable_id):
         raise Http404
 
     if request.method == "POST":
-        pass
+        # TODO: work in progress...
+        form = VariableForm(request.POST)
+        if form.is_valid():
+#             try:
+#                 form.save(v)
+#                 return HttpResponse(u"Variable updated")
+#             except ValidationError as ve:
+#                 for error_message in ve.messages:
+#                     form.add_form_error(error_message)
+            return HttpResponse(u"Variable updated")
+        else:
+            print form.errors
+    else:    
+        form = VariableForm(instance=v)
         
-    context = {'variable': v }
+    context = {'form': form }
     return render(request, 'libstat/modals/edit_variable.html', context)
 
 @permission_required('is_superuser', login_url='login')

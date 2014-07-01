@@ -1,47 +1,50 @@
 {% load i18n %}
 
-<form role="form" class="edit-variable-form" method="post" action=".">
+<!-- <form role="form" class="edit-variable-form" method="post" action="{% url 'edit_variable' form.instance.id %}"> -->
   <div class="modal-dialog">
     <div class="modal-content">
       <div class="modal-header">
         <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">{% trans 'Stäng' %}</span></button>
-        <h4 class="modal-title">{{variable.key}}</h4>
+        <h4 class="modal-title">{{form.instance.key}}</h4>
       </div>
       <div class="modal-body">
         {% csrf_token %}
-        <div class="form-group">
-            <label for="edit-variable-category">{% trans "Huvudgrupp" %}</label>
-            <input id="edit-variable-category" name="category" type="text" value="{{variable.category}}" class="form-control"/>
+        <div class="errors">
+            {{ form.errors }}
         </div>
         <div class="form-group">
-            <label for="edit-variable-sub_category">{% trans "Undergrupp" %}</label>
-            <input id="edit-variable-sub_category" name="sub_category" type="text" value="{{variable.sub_category}}" class="form-control"/>
+            <label for="id_category">{% trans "Huvudgrupp" %}</label>
+            <input id="id_category" name="category" type="text" value="{{form.instance.category}}" class="form-control"/>
+        </div>
+        <div class="form-group">
+            <label for="id_sub_category">{% trans "Undergrupp" %}</label>
+            <input id="id_sub_category" name="sub_category" type="text" value="{{form.instance.sub_category}}" class="form-control"/>
         </div>
         <div class="form-group">
             <label>{% trans "Enhet" %}</label>
             <div>
                 <label class="radio-inline">
-                    <input name="type" id="type_integer" type="radio" value="integer" {% if variable.type == 'integer' %}checked="checked"{% endif %}/>
+                    <input name="type" id="id_type_integer" type="radio" value="integer" {% if form.instance.type == 'integer' %}checked="checked"{% endif %}/>
                     Integer
                 </label>
                 <label class="radio-inline">
-                    <input name="type" id="type_long" type="radio" value="long" {% if variable.type == 'long' %}checked="checked"{% endif %}/>
+                    <input name="type" id="id_type_long" type="radio" value="long" {% if form.instance.type == 'long' %}checked="checked"{% endif %}/>
                     Long
                 </label>
                 <label class="radio-inline">
-                    <input name="type" id="type_decimal" type="radio" value="decimal" {% if variable.type == 'decimal' %}checked="checked"{% endif %}/>
+                    <input name="type" id="id_type_decimal" type="radio" value="decimal" {% if form.instance.type == 'decimal' %}checked="checked"{% endif %}/>
                     Decimal
                 </label>
                 <label class="radio-inline">
-                    <input name="type" id="type_percent" type="radio" value="percent" {% if variable.type == 'percent' %}checked="checked"{% endif %}/>
+                    <input name="type" id="id_type_percent" type="radio" value="percent" {% if form.instance.type == 'percent' %}checked="checked"{% endif %}/>
                     Procent
                 </label>
                 <label class="radio-inline">
-                    <input name="type" id="type_boolean" type="radio" value="boolean" {% if variable.type == 'boolean' %}checked="checked"{% endif %}/>
+                    <input name="type" id="id_type_boolean" type="radio" value="boolean" {% if form.instance.type == 'boolean' %}checked="checked"{% endif %}/>
                     Boolesk
                 </label>
                 <label class="radio-inline">
-                    <input name="type" id="type_string" type="radio" value="string" {% if variable.type == 'string' %}checked="checked"{% endif %}/>
+                    <input name="type" id="id_type_string" type="radio" value="string" {% if form.instance.type == 'string' %}checked="checked"{% endif %}/>
                     Text
                 </label>
             </div>
@@ -50,13 +53,13 @@
             <label>{% trans "Synlighet" %}</label>
             <div class="radio">
                 <label>
-                    <input name="is_public" id="is_public-yes" type="radio" value="True" {% if variable.is_public %}checked="checked"{% endif %}/>
+                    <input name="is_public" id="id_is_public_yes" type="radio" value="True" {% if form.instance.is_public %}checked="checked"{% endif %}/>
                     {% trans "Publik term, visas som öppen data" %}
                 </label>
             </div>
             <div class="radio">
                 <label>
-                    <input name="is_public" id="is_public-no" type="radio" value="False" {% if not variable.is_public %}checked="checked"{% endif %}/>
+                    <input name="is_public" id="id_is_public_no" type="radio" value="False" {% if not form.instance.is_public %}checked="checked"{% endif %}/>
                     {% trans "Privat term, visas endast för administratör i detta gränssnitt" %}
                 </label>
             </div>
@@ -64,37 +67,62 @@
         <div class="form-group">
             <label>{% trans "Målgrupper" %}</label>
             <div>
-                <label for="target_group_public" class="checkbox-inline">
-                    <input id="target_group_public" type="checkbox" name="target_groups" value="public" {% if 'public' in variable.target_groups %}checked="checked"{% endif %}/>
+                <label for="id_target_group_public" class="checkbox-inline">
+                    <input name="target_groups" id="id_target_group_public" type="checkbox" value="public" {% if 'public' in form.instance.target_groups %}checked="checked"{% endif %}/>
                     {% trans 'Folkbibliotek' %}
                 </label>
-                <label for="target_group_research" class="checkbox-inline">
-                    <input id="target_group_research" type="checkbox" name="target_groups" value="research" {% if 'research' in variable.target_groups %}checked="checked"{% endif %}/>
+                <label for="id_target_group_research" class="checkbox-inline">
+                    <input name="target_groups" id="id_target_group_research" type="checkbox" value="research" {% if 'research' in form.instance.target_groups %}checked="checked"{% endif %}/>
                     {% trans "Forskningsbibliotek" %}
                 </label>
-                <label for="target_group_hospital" class="checkbox-inline">
-                    <input id="target_group_hospital" type="checkbox" name="target_groups" value="hospital" {% if 'hospital' in variable.target_groups %}checked="checked"{% endif %}/>
+                <label for="id_target_group_hospital" class="checkbox-inline">
+                    <input name="target_groups" id="id_target_group_hospital" type="checkbox" value="hospital" {% if 'hospital' in form.instance.target_groups %}checked="checked"{% endif %}/>
                     {% trans "Sjukhusbibliotek" %}
                 </label>
-                <label for="target_group_school" class="checkbox-inline">
-                    <input id="target_group_school" type="checkbox" name="target_groups" value="school" {% if 'school' in variable.target_groups %}checked="checked"{% endif %}/>
+                <label for="id_target_group_school" class="checkbox-inline">
+                    <input name="target_groups" id="id_target_group_school" type="checkbox" value="school" {% if 'school' in form.instance.target_groups %}checked="checked"{% endif %}/>
                     {% trans "Skolbibliotek" %}
                 </label>
             </div>
         </div>
         <div class="form-group">
-            <label for="edit-variable-description">{% trans "Beskrivning" %}</label>
-            <textarea id="edit-variable-description" name="description" class="form-control">{{variable.description}}</textarea>
+            <label for="description">{% trans "Beskrivning" %}</label>
+            <textarea id="id_description" name="description" class="form-control">{{form.instance.description}}</textarea>
         </div>
         <div class="form-group">
-            <label for="edit-variable-comment">{% trans "Kommentar (visas ej publikt)" %}</label>
-            <textarea id="edit-variable-comment" name="comment" class="form-control">{% if variable.comment %}{{variable.comment}}{% endif %}</textarea>
+            <label for="comment">{% trans "Kommentar (visas ej publikt)" %}</label>
+            <textarea id="id-comment" name="comment" class="form-control">{% if form.instance.comment %}{{form.instance.comment}}{% endif %}</textarea>
         </div>
       </div>
+      <!--
       <div class="modal-footer">
-        <input type="submit" class="btn btn-default" data-dismiss="modal" value="Avbryt" />
+        <button type="button" class="btn btn-default" data-dismiss="modal" >{% trans "Avbryt" %}</button>
         <input type="submit" class="btn btn-primary" value="Spara ändringar" />
       </div>
+      -->
     </div>
   </div>
-</form>
+<!-- </form> -->
+
+<script type="text/javascript">
+$(document).ready(function() { 
+	$('.edit-variable-form').on('submit', function(event) {
+	    $.ajax({ 
+	    	type: $(this).attr('method'), 
+	        url: this.action, 
+	        data: $(this).serialize(),
+	        context: this,
+	        success: function(data, status) {
+	            //$('#editVariableModal').html(data)
+	            $('#editVariableModal').modal('hide')
+	            window.location.reload(true);
+	        }, 
+	        error: function(data, status) {
+	        	//$('#editVariableModal').html(data)
+	        	console.info("Ogiltig data")
+	        }
+	    });
+	    return false;
+	});
+});
+</script>
