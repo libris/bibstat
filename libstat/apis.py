@@ -19,8 +19,8 @@ data_context = {
 term_context = {
     u"@context": {
         u"xsd": u"http://www.w3.org/2001/XMLSchema#",
-        u"rdfs": u"http://www.w3.org/1999/02/22-rdf-syntax-ns#",
-        u"rdf": u"http://www.w3.org/2000/01/rdf-schema#",
+        u"rdf": u"http://www.w3.org/1999/02/22-rdf-syntax-ns#",
+        u"rdfs": u"http://www.w3.org/2000/01/rdf-schema#",
         u"foaf": u"http://xmlns.com/foaf/0.1/",
         u"qb": u"http://purl.org/linked-data/cube#",
         u"@language": u"sv",
