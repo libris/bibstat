@@ -100,7 +100,10 @@ def publish_survey_responses(request):
         
         s_responses = SurveyResponse.objects.by_year_or_group(sample_year=sample_year, target_group=target_group)
         for sr in s_responses:
-            sr.publish()
+            try:
+                sr.publish()
+            except Exception as e:
+                print u"Error when publishing survey response {} {} {}: {}".format(sr.sample_year, sr.target_groups, sr.library_name, e)
         
     # TODO: There has to be a better way to do this...
     return HttpResponseRedirect(u"{}{}".format(reverse("survey_responses"), u"?action=list&target_group={}&sample_year={}".format(target_group, sample_year)))
