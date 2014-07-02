@@ -451,7 +451,7 @@ class VariableTest(MongoTestCase):
         object = Variable.objects.first()
         expectedVariableDict = {
             u"@id": u"#folk5",
-            u"@type": u"qb:MeasureProperty",
+            u"@type": [u"rdf:Property", u"qb:MeasureProperty"],
             u"comment": u"Antal bemannade serviceställen, sammanräknat",
             u"range": u"xsd:integer"
         }
@@ -646,7 +646,7 @@ class TermApiTest(MongoTestCase):
         self.assertEquals(len(data), 5)
         self.assertEquals(data[u"@context"], term_context[u"@context"])
         self.assertEquals(data[u"@id"], u"folk5"),
-        self.assertEquals(data[u"@type"], u"qb:MeasureProperty"),
+        self.assertEquals(data[u"@type"], [u"rdf:Property", u"qb:MeasureProperty"]),
         self.assertEquals(data[u"comment"], u"Antal bemannade serviceställen, sammanräknat"),
         self.assertEquals(data[u"range"], u"xsd:integer")
         

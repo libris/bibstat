@@ -58,7 +58,7 @@ class Variable(Document):
     def to_dict(self, id_prefix="#"):
         return {
             u"@id": u"{}{}".format(id_prefix, self.key),
-            u"@type": u"qb:MeasureProperty",
+            u"@type": [u"rdf:Property", u"qb:MeasureProperty"],
             u"comment": self.description,
             u"range": self.type_to_rdf_type(self.type)
         };
