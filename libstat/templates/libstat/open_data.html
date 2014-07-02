@@ -4,7 +4,7 @@
 {% block content %}
   <div class="container">
     
-    <div class="row row-offcanvas row-offcanvas-right">
+    <div class="row row-offcanvas row-offcanvas-right" typeof="Dataset" resource="#bibstat">
 
         <div class="col-xs-12 col-sm-9">
           <p class="pull-right visible-xs">
@@ -15,40 +15,42 @@
             <p>
               {% blocktrans %}
               Den officiella biblioteksstatistiken finns tillgänglig som öppen länkad data via Kungliga Bibliotekets API:er.
-              Här kommer snart en beskrivning av API:ernas uppbyggnad och vilka URL:er som kan användas.
+              Data finns för folkbibliotek, forskningsbibliotek, sjukhusbibliotek och skolbibliotek från år 2010 och framåt i
+              samma utsträckning som de dokument som finns presenterade i dokumentform på 
+              <a href="http://www.kb.se/bibliotek/Statistik-kvalitet/biblioteksstatistik">Kungliga bibliotekets webbplats</a>.
               {% endblocktrans %}</p>
           </div>
-          <!-- 
           <div class="row">
             <div class="col-1 col-sm-12 col-lg-12">
-              <h2>Rubrik</h2>
-              <p>Donec id elit non mi porta gravida at eget metus. Fusce dapibus, tellus ac cursus commodo, tortor mauris condimentum nibh, ut fermentum massa justo sit amet risus. Etiam porta sem malesuada magna mollis euismod. Donec sed odio dui. </p>
-              <p><a class="btn btn-default" href="#" role="button">{% trans "Läs mer" %} &raquo;</a></p>
+                <h2 property="name">{% trans "Sveriges officiella biblioteksstatistik" %}</h2>
+                <p property="description">
+                  {% blocktrans %}
+                    Den officiella svenska biblioteksstatistiken för folkbibliotek, forskningsbibliotek, sjukhusbibliotek och skolbibliotek.
+                  {% endblocktrans %}
+                </p>
+                <p>
+                  {% trans "Format" %}: 
+                  <a property="void:feature" href="http://www.w3.org/ns/formats/JSON-LD">JSON-LD</a>
+                </p>
+                <p>
+                  {% trans "Licens" %}: 
+                  <a property="publishingPrinciples dc:license" href="http://creativecommons.org/publicdomain/zero/1.0/">
+                    <abbr lang="en" title="Creative Commons Zero">CC0</abbr>
+                  </a>
+                </p>
+                <p property="provider" typeof="Person">
+                  {% trans "Kontaktperson" %}:
+                  <span property="name">Cecilia Ranemo</span>
+                </p>
             </div>
           </div>
-          <div class="row">
-            <div class="col-1 col-sm-12 col-lg-12">
-              <h2>Rubrik</h2>
-              <p>Donec id elit non mi porta gravida at eget metus. Fusce dapibus, tellus ac cursus commodo, tortor mauris condimentum nibh, ut fermentum massa justo sit amet risus. Etiam porta sem malesuada magna mollis euismod. Donec sed odio dui. </p>
-              <p><a class="btn btn-default" href="#" role="button">{% trans "Läs mer" %} &raquo;</a></p>
-            </div>
-          </div>
-          <div class="row">
-            <div class="col-1 col-sm-12 col-lg-12">
-              <h2>Rubrik</h2>
-              <p>Donec id elit non mi porta gravida at eget metus. Fusce dapibus, tellus ac cursus commodo, tortor mauris condimentum nibh, ut fermentum massa justo sit amet risus. Etiam porta sem malesuada magna mollis euismod. Donec sed odio dui. </p>
-              <p><a class="btn btn-default" href="#" role="button">{% trans "Läs mer" %} &raquo;</a></p>
-            </div>
-          </div>
-          -->
         </div>
 
         <div class="col-xs-6 col-sm-3 sidebar-offcanvas" id="sidebar" role="navigation">
+          <h4>{% trans "Dataset" %}</h4>
           <div class="list-group">
-            <a href="#" class="list-group-item">{% trans "Folkbiblioteken" %}</a>
-            <a href="#" class="list-group-item">{% trans "Forskningsbiblioteken" %}</a>
-            <a href="#" class="list-group-item">{% trans "Sjukhusbiblioteken" %}</a>
-            <a href="#" class="list-group-item">{% trans "Skolbiblioteken" %}</a>
+            <a href="{% url 'data_api' %}" class="list-group-item" property="void:dataDump">{% trans "Biblioteksstatistik" %}</a>
+            <a href="{% url 'terms_api' %}" class="list-group-item">{% trans "Termer" %}</a>
           </div>
         </div><!--/span-->
       </div><!--/row-->
