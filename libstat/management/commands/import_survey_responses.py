@@ -5,6 +5,7 @@ from optparse import make_option
 from django.conf import settings
 from libstat.models import SurveyResponse, SurveyObservation, Variable, Library, SurveyResponseMetadata
 from libstat.models import PUBLIC_LIBRARY, RESEARCH_LIBRARY, HOSPITAL_LIBRARY, SCHOOL_LIBRARY, DATA_IMPORT_nonMeasurementCategories
+from libstat.models import TYPE_BOOLEAN, TYPE_INTEGER, TYPE_LONG
 from xlrd import open_workbook
 from xlrd.biffh import XLRDError
 import re
@@ -127,11 +128,24 @@ class Command(BaseCommand):
                         if library:
                             sr.library = library #TODO
                         for n, key, variable in variable_keys:
-                            # TODO: Parsa booleanvärden som 1==True, allt annat False ('', ' ', 0, 2 är möjliga false-värden)
-                            # TODO: Parsa procentvärden som heltal
                             value = row[n]
-                            if (isinstance(value, str) and value.strip() == "") or value == 0:
+                            
+                            # Default number value format seemst to be float, need to convert properly
+                            if isinstance(value, (int, float, long)):
+                                if value == 0:
+                                    # Zero is to be interpreted as "no value given" because of bad data quality
+                                    value = None
+                                elif variable.type == TYPE_BOOLEAN[0]:
+                                    value = (True if value == 1 else False)
+                                elif variable.type == TYPE_INTEGER[0]:
+                                    value = int(value)
+                                elif variable.type == TYPE_LONG[0]:
+                                    value = long(value)
+                            
+                            if (isinstance(value, str) and value.strip() == ""):
+                                # Empty string is to be interpreted as "no value given" because of bad data quality
                                 value = None
+                                
                             sr.observations.append(SurveyObservation(variable=variable, value=value, _source_key=key, _is_public=variable.is_public))
                             #self._extract_metadata(key, value, sr_metadata)
                         
