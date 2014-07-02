@@ -261,7 +261,7 @@ class OpenData(Document):
                 u"@type": u"Observation",
                 u"library": {u"@id": u"{}/library/{}".format(settings.BIBDB_BASE_URL, self.library_name)},
                 u"sampleYear": self.sample_year,
-                u"targetGroup": self.target_group,
+                u"targetGroup": targetGroups[self.target_group],
                 self.variable.key: self.value,
                 u"published": self.date_created_str(),
                 u"modified": self.date_modified_str()

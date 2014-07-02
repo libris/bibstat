@@ -12,7 +12,10 @@ from libstat.utils import parse_datetime_from_isodate_str
 data_context = {
     u"@context": {
         u"@vocab": u"{}/def/terms#".format(settings.API_BASE_URL),
-        u"@base": u"{}/data/".format(settings.API_BASE_URL)
+        u"@base": u"{}/data/".format(settings.API_BASE_URL),
+        u"@language": u"sv",
+        u"foaf": u"http://xmlns.com/foaf/0.1/",
+        u"name": u"foaf:name"
     }
 }
 
@@ -21,14 +24,12 @@ term_context = {
         u"xsd": u"http://www.w3.org/2001/XMLSchema#",
         u"rdf": u"http://www.w3.org/1999/02/22-rdf-syntax-ns#",
         u"rdfs": u"http://www.w3.org/2000/01/rdf-schema#",
-        u"foaf": u"http://xmlns.com/foaf/0.1/",
         u"qb": u"http://purl.org/linked-data/cube#",
         u"@language": u"sv",
         u"label": u"rdfs:label",
         u"range": {u"@id": u"rdfs:range", u"@type": u"@id"},
         u"comment": u"rdfs:comment",
-        u"subClassOf": {u"@id": u"rdfs:subClassOf", u"@type": u"@id"},
-        u"name": u"foaf:name"
+        u"subClassOf": {u"@id": u"rdfs:subClassOf", u"@type": u"@id"}
     }
 }
 

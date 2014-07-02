@@ -419,7 +419,7 @@ class OpenDataTest(MongoTestCase):
             u"folk5": 6, 
             u"library": {u"@id": u"{}/library/323".format(settings.BIBDB_BASE_URL)},
             u"sampleYear": 2013,
-            u"targetGroup": u"public",
+            u"targetGroup": u"Folkbibliotek",
             # u"targetGroup": {u"@id": u"public"}, #TODO
             u"published": "2014-06-03T15:28:31.000000Z",
             u"modified": "2014-06-03T15:28:31.000000Z" 
@@ -434,7 +434,7 @@ class OpenDataTest(MongoTestCase):
             u"folk5": 6, 
             u"library": {u"name": u"NORRBOTTENS LÄNSBIBLIOTEK"},
             u"sampleYear": 2013,
-            u"targetGroup": u"public",
+            u"targetGroup": u"Folkbibliotek",
             # u"targetGroup": {u"@id": u"public"}, #TODO
             u"published": "2014-06-03T15:28:31.000000Z",
             u"modified": "2014-06-03T15:28:31.000000Z" 
@@ -588,7 +588,6 @@ class TermsApiTest(MongoTestCase):
         self.assertEqual(data[u"@context"][u"xsd"], u"http://www.w3.org/2001/XMLSchema#")
         self.assertEqual(data[u"@context"][u"rdf"], u"http://www.w3.org/1999/02/22-rdf-syntax-ns#")
         self.assertEqual(data[u"@context"][u"rdfs"], u"http://www.w3.org/2000/01/rdf-schema#")
-        self.assertEqual(data[u"@context"][u"foaf"], u"http://xmlns.com/foaf/0.1/")
         self.assertEqual(data[u"@context"][u"qb"], u"http://purl.org/linked-data/cube#")
         self.assertEqual(data[u"@context"][u"terms"], u"@graph")
         self.assertEqual(data[u"@context"][u"@language"], u"sv")
@@ -596,7 +595,6 @@ class TermsApiTest(MongoTestCase):
         self.assertEqual(data[u"@context"][u"range"], {u"@id": u"rdfs:range", u"@type": u"@id"})
         self.assertEqual(data[u"@context"][u"comment"], u"rdfs:comment")
         self.assertEqual(data[u"@context"][u"subClassOf"], {u"@id": u"rdfs:subClassOf", u"@type": u"@id"})
-        self.assertEqual(data[u"@context"][u"name"], u"foaf:name")
         
     def test_should_contain_hardcoded_terms(self):
         response = self.client.get(reverse("terms_api"))
