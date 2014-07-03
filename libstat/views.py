@@ -22,7 +22,8 @@ def index(request):
 def open_data(request):
     context = {
         "nav_start_css": "",
-        "nav_open_data_css": "active"
+        "nav_open_data_css": "active",
+        "api_base_url": settings.API_BASE_URL
     }
     return render(request, 'libstat/open_data.html', context)
 

@@ -26,6 +26,7 @@
                 <p property="description">
                   {% blocktrans %}
                     Den officiella svenska biblioteksstatistiken för folkbibliotek, forskningsbibliotek, sjukhusbibliotek och skolbibliotek.
+                    Gränssnittet mot den öppna datan är för tillfället under utveckling och kan komma att ändras framöver.
                   {% endblocktrans %}
                 </p>
                 <p>
@@ -38,9 +39,80 @@
                     <abbr lang="en" title="Creative Commons Zero">CC0</abbr>
                   </a>
                 </p>
+                <p>
+                  {% trans "Status" %}: Beta
+                </p>
                 <p property="provider" typeof="Person">
                   {% trans "Kontaktperson" %}:
                   <span property="name">Cecilia Ranemo</span>
+                </p>
+                <h3>API</h3>
+                <p>
+                  <h4>Biblioteksstatistik <small>BETA</small></h4>
+                  <dl id="data-params">
+                    <dt>{% trans "Innehåll" %}</dt>
+                    <dd>
+                      {% blocktrans %}
+                        Observationer för den officiella svenska biblioteksstatistiken. En observation är en mätpunkt för 
+                        ett bibliotek/en organisation, ett mätår och en term. API finns för att hämta en lista av termdefinitioner.
+                      {% endblocktrans %}
+                    </dd>
+                    <dt>URL</dt>
+                    <dd>
+                      {{api_base_url}}/data?term=Term&amp;date_from=YYYY-MM-DDTHH:mm:ss&amp;date_to=YYYY-MM-DDTHH:mm:ss&amp;limit=limit&amp;offset=offset
+                    </dd>
+                    <dt>{% trans "Parameter" %}: term</dt>
+                    <dd>
+                      {% blocktrans %}
+                        Hämta endast observationer för en viss term, ex: Folk54. Anges ingen term så hämtas observationer för samtliga termer.
+                      {% endblocktrans %}
+                    </dd>
+                    <dt>{% trans "Parameter" %}: date_from</dt>
+                    <dd>
+                      {% blocktrans %}
+                        Hämta endast observationer som uppdaterats från och med ett visst datum, ex: 2014-07-03T07:39:27.
+                        Datum anges formatterat enligt ISO-8601, tidszon är alltid UTC och behöver inte anges.
+                        Anges inte parametern 'date_from' så hämtas samtliga observationer oavsett uppdateringsdatum.
+                      {% endblocktrans %}
+                    </dd>
+                    <dt>{% trans "Parameter" %}: date_to</dt>
+                    <dd>
+                      {% blocktrans %}
+                        Hämta endast observationer som uppdaterats innan ett visst datum, ex: 2014-07-03T07:39:28.
+                        Datum anges formatterat enligt ISO-8601, tidszon är alltid UTC och behöver inte anges.
+                        Anges inte parametern 'date_to' så hämtas samtliga observationer oavsett uppdateringsdatum.
+                      {% endblocktrans %}
+                    </dd>
+                    <dt>{% trans "Parameter" %}: limit</dt>
+                    <dd>
+                      {% blocktrans %}
+                        Använd för att begränsa antalet returnerade observationer och kan kombineras med parametern 'offset' för att paginera resultatet, ex: 50.
+                        Anges inte parametern 'limit' så returneras 100 observationer.
+                      {% endblocktrans %}
+                    </dd>
+                    <dt>{% trans "Parameter" %}: offset</dt>
+                    <dd>
+                      {% blocktrans %}
+                        Används för att paginera ett resultat och anger vilken position i resultatet som ska vara första returnerade observation, ex: 200.
+                        Anges inte parametern 'offset' så börjar resultatet från position 0.
+                      {% endblocktrans %}
+                    </dd>
+                  </dl>
+                </p>
+                <p>
+                  <h4>Termer <small>BETA</small></h4>
+                  <dl id="data-params">
+                    <dt>{% trans "Innehåll" %}</dt>
+                    <dd>
+                      {% blocktrans %}
+                        Definitioner av de termer som används i biblioteksstatistiken.
+                      {% endblocktrans %}
+                    </dd>
+                    <dt>URL</dt>
+                    <dd>
+                      {{api_base_url}}/def/terms
+                    </dd>
+                  </dl>
                 </p>
             </div>
           </div>
@@ -49,7 +121,7 @@
         <div class="col-xs-6 col-sm-3 sidebar-offcanvas" id="sidebar" role="navigation">
           <h4>{% trans "Dataset" %}</h4>
           <div class="list-group">
-            <a href="{% url 'data_api' %}" class="list-group-item" property="void:dataDump">{% trans "Biblioteksstatistik" %}</a>
+            <a href="{% url 'data_api' %}" class="list-group-item">{% trans "Biblioteksstatistik" %}</a>
             <a href="{% url 'terms_api' %}" class="list-group-item">{% trans "Termer" %}</a>
           </div>
         </div><!--/span-->
