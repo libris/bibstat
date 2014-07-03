@@ -104,7 +104,8 @@ def publish_survey_responses(request):
             try:
                 sr.publish()
             except Exception as e:
-                print u"Error when publishing survey response {} {} {}: {}".format(sr.sample_year, sr.target_groups, sr.library_name, e)
+                print u"Error when publishing survey response {}:".format(sr.id)
+                print e
         
     # TODO: There has to be a better way to do this...
     return HttpResponseRedirect(u"{}{}".format(reverse("survey_responses"), u"?action=list&target_group={}&sample_year={}".format(target_group, sample_year)))

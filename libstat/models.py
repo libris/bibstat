@@ -203,7 +203,7 @@ class SurveyResponse(Document):
     
     def publish(self):
         # TODO: Publishing date as a parameter to enable setting correct date for old data?
-        print(u"Publishing SurveyResponse {} {} {}".format(self.id, self.library_name, self.sample_year))
+        print(u"Publishing SurveyResponse {}".format(self.id))
         publishing_date = datetime.utcnow()
         
         for obs in self.observations:
