@@ -35,7 +35,7 @@ ALLOWED_HOSTS = [
 
 # Base url for api, i.e. http://stats.kb.se
 API_BASE_URL = "http://bibstat-stg.libris.kb.se/statistics"
-BIBDB_BASE_URL = "http://bibdbclone.libris.kb.se"
+BIBDB_BASE_URL = "http://bibdb-stg.libris.kb.se"
 
 # DB connection details
 MONGODB_HOST = 'localhost'
