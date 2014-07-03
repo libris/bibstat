@@ -137,8 +137,8 @@ SESSION_COOKIE_AGE = 60*60*1
 # Initialize MongoDB connection
 MONGODB_DATABASE_HOST = 'mongodb://%s:%s@%s/%s' % (MONGODB_USER, MONGODB_PASSWD, MONGODB_HOST, MONGODB_NAME)
 
-#mongoengine.connect(MONGODB_NAME, host=MONGODB_DATABASE_HOST)
-mongoengine.connect(MONGODB_NAME)
+mongoengine.connect(MONGODB_NAME, host=MONGODB_DATABASE_HOST)
+#mongoengine.connect(MONGODB_NAME)
 
 # Use custom test runner to skip setup/teardown of fixtures for test database
 TEST_RUNNER = 'libstat.tests.MongoEngineTestRunner'
