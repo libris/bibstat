@@ -11,7 +11,7 @@ KB bibstat - Biblioteksstatistiken
 
 Se instruktioner på http://docs.mongodb.org/manual/tutorial/install-mongodb-on-red-hat-centos-or-fedora-linux/
 
-1 Skapa en yum konfigurationsfil för mongodb `/etc/yum.repos.d/mongodb.repo` med följande innehåll:
+1. Skapa en yum konfigurationsfil för mongodb `/etc/yum.repos.d/mongodb.repo` med följande innehåll:
 
 	[mongodb]
 	name=MongoDB Repository
@@ -19,11 +19,47 @@ Se instruktioner på http://docs.mongodb.org/manual/tutorial/install-mongodb-on-
 	gpgcheck=0
 	enabled=1
 
-2 Installera senaste mongodb
+2. Installera senaste mongodb
 
 	$ sudo yum install mongodb-org
 
+3 Konfigurera användare och access för mongodb
 
+För lokala miljöer är det enklast att hoppa över detta steg om man vill kunna köra testerna. 
+Annars måste man sätta upp en databasanvändare som har behörighet att skapa och radera databaser.
+Glöm inte att ersätta exempellösenorden nedan med riktiga lösenord...
+
+3.1. Skapa admin-användare	
+
+	$ mongo
+	$> use admin
+	$> db.createUser({user:"admin", pwd:"admin", roles: ["root"]})
+	$> db.runCommand({usersInfo:"admin", showPrivileges:true })
+
+3.2. Aktivera autenticering och starta om mongod
+	
+	$ sudo vi /etc/mongod.conf
+
+Se till att följande rader är avkommenterade:
+
+	bind_ip = 127.0.0.1
+	auth = true
+	
+Starta om mongodb
+
+	$ sudo service mongod restart
+	
+Testa autenticeringen
+	
+	$ mongo admin
+	$> db.auth("admin", "admin")
+
+3.3. Skapa användare för bibstat (inloggad i mongodb som admin)
+
+	$> use bibstat
+	$> db.createUser({user:"bibstat", pwd:"bibstat", roles:["readWrite"]})
+	$> db.runCommand({usersInfo:"bibstat", showPrivileges:true })
+	
 ## Skapa lokal Python-miljö ##
 
 Stå i Django-applikationens rotkatalog.
