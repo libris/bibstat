@@ -23,20 +23,20 @@ Se instruktioner på http://docs.mongodb.org/manual/tutorial/install-mongodb-on-
 
 	$ sudo yum install mongodb-org
 
-3 Konfigurera användare och access för mongodb
+3. Konfigurera användare och access för mongodb
 
 För lokala miljöer är det enklast att hoppa över detta steg om man vill kunna köra testerna. 
 Annars måste man sätta upp en databasanvändare som har behörighet att skapa och radera databaser.
 Glöm inte att ersätta exempellösenorden nedan med riktiga lösenord...
 
-3.1. Skapa admin-användare	
+Skapa admin-användare	
 
 	$ mongo
 	$> use admin
 	$> db.createUser({user:"admin", pwd:"admin", roles: ["root"]})
 	$> db.runCommand({usersInfo:"admin", showPrivileges:true })
 
-3.2. Aktivera autenticering och starta om mongod
+Aktivera autenticering och starta om mongod
 	
 	$ sudo vi /etc/mongod.conf
 
@@ -54,7 +54,7 @@ Testa autenticeringen
 	$ mongo admin
 	$> db.auth("admin", "admin")
 
-3.3. Skapa användare för bibstat (inloggad i mongodb som admin)
+Skapa användare för bibstat (inloggad i mongodb som admin)
 
 	$> use bibstat
 	$> db.createUser({user:"bibstat", pwd:"bibstat", roles:["readWrite"]})
