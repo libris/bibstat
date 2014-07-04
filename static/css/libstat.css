@@ -26,3 +26,8 @@
   background-color: #428BCA;
   color: #ffffff;
 }
+
+/* Publish suvey responses */
+.publish-survey-responses-form .submit-publish {
+    margin-top: -86px;
+}

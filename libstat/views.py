@@ -93,19 +93,28 @@ def survey_responses(request):
 
 @permission_required('is_superuser', login_url='login')
 def publish_survey_responses(request):
+    MAX_PUBLISH_LIMIT = 500
+        
     if request.method == "POST":
         target_group = request.POST.get("target_group", "")
         sample_year = request.POST.get("sample_year", "")
+        survey_response_ids = request.POST.getlist("survey-response-ids", [])
         
-        print(u"Publish requested for {} {}".format(target_group, sample_year))
+        print u"Publish requested for {} survey response ids".format(len(survey_response_ids))
         
-        s_responses = SurveyResponse.objects.by_year_or_group(sample_year=sample_year, target_group=target_group)
-        for sr in s_responses:
-            try:
-                sr.publish()
-            except Exception as e:
-                print u"Error when publishing survey response {}:".format(sr.id)
-                print e
+        if len(survey_response_ids) > MAX_PUBLISH_LIMIT:
+            survey_response_ids = survey_response_ids[:MAX_PUBLISH_LIMIT]
+            print u"That seems like an awful lot of objects to handle in one transaction, limiting to first {}".format(MAX_PUBLISH_LIMIT)
+            
+        
+        if len(survey_response_ids) > 0:
+            s_responses = SurveyResponse.objects.filter(id__in=survey_response_ids)
+            for sr in s_responses:
+                try:
+                    sr.publish()
+                except Exception as e:
+                    print u"Error when publishing survey response {}:".format(sr.id)
+                    print e
         
     # TODO: There has to be a better way to do this...
     return HttpResponseRedirect(u"{}{}".format(reverse("survey_responses"), u"?action=list&target_group={}&sample_year={}".format(target_group, sample_year)))

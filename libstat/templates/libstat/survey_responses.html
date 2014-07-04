@@ -22,41 +22,37 @@
         </div>
         
         <div class="row">
-          <div class="col-md-6">
+          <div class="col-md-8">
             <form action="." method="GET" role="form" class="form-inline">
-              {% csrf_token %}
-              <div class="form-group">
-                <select name="sample_year" class="form-control" value={{sample_year}}>
-                  <option value="" {% if not sample_year %}selected="selected"{% endif %}>{% trans "År" %}</option>
-                  {% for year in sample_years %}
-                    <option value="{{year}}" {% ifequal year|slugify sample_year %}selected="selected"{% endifequal %}>{{year}}</option>
-                  {% endfor %}
-                </select>
-              </div>
-              <div class="form-group">
-                <select name="target_group" class="form-control" value="{{target_group}}">
-                  <option value="" {% if not target_group %}selected="selected"{% endif %}>{% trans "Målgrupp" %}</option>
-                  <option value="public" {% ifequal target_group "public" %}selected="selected"{% endifequal %}>{% trans 'Folkbibliotek' %}</option>
-                  <option value="research" {% ifequal target_group "research" %}selected="selected"{% endifequal %}>{% trans "Forskningsbibliotek" %}</option>
-                  <option value="hospital" {% ifequal target_group "hospital" %}selected="selected"{% endifequal %}>{% trans "Sjukhusbibliotek" %}</option>
-                  <option value="school" {% ifequal target_group "school" %}selected="selected"{% endifequal %}>{% trans "Skolbibliotek" %}</option>
-                </select>
-              </div>
-              <div class="form-group">
-                <button type="submit" name="action" value="list" class="btn btn-default">{% trans "Lista enkätsvar" %}</button>
-              </div>
+                {% csrf_token %}
+                <div class="form-group">
+                  <select name="sample_year" class="form-control" value={{sample_year}}>
+                    <option value="" {% if not sample_year %}selected="selected"{% endif %}>{% trans "År" %}</option>
+                    {% for year in sample_years %}
+                      <option value="{{year}}" {% ifequal year|slugify sample_year %}selected="selected"{% endifequal %}>{{year}}</option>
+                    {% endfor %}
+                  </select>
+                </div>
+                <div class="form-group">
+                  <select name="target_group" class="form-control" value="{{target_group}}">
+                    <option value="" {% if not target_group %}selected="selected"{% endif %}>{% trans "Målgrupp" %}</option>
+                    <option value="public" {% ifequal target_group "public" %}selected="selected"{% endifequal %}>{% trans 'Folkbibliotek' %}</option>
+                    <option value="research" {% ifequal target_group "research" %}selected="selected"{% endifequal %}>{% trans "Forskningsbibliotek" %}</option>
+                    <option value="hospital" {% ifequal target_group "hospital" %}selected="selected"{% endifequal %}>{% trans "Sjukhusbibliotek" %}</option>
+                    <option value="school" {% ifequal target_group "school" %}selected="selected"{% endifequal %}>{% trans "Skolbibliotek" %}</option>
+                  </select>
+                </div>
+                <!-- <div class="form-group">
+                  <input type="checkbox" name="unpublished_only" value="true"/>
+                  {% trans "Endast opublicerade" %}
+                </div> -->
+                <div class="form-group">
+                  <button type="submit" name="action" value="list" class="btn btn-default">{% trans "Lista enkätsvar" %}</button>
+                </div>
             </form>
           </div>
           
-          <div class="col-md-6">
-            <form action="{% url 'publish_survey_responses' %}" method="POST" role="form" class="form-inline">
-              {% csrf_token %}
-              <input type="hidden" name="sample_year" value="{{sample_year}}"/>
-              <input type="hidden" name="target_group" value="{{target_group}}"/>
-              <div class="form-group pull-right">
-                <button type="submit" name="action" value="publish" class="btn btn-primary">{% trans "Publicera urval" %}</button>
-              </div>
-            </form>
+          <div class="col-md-4">
           </div>
         </div>
       </div>
@@ -64,34 +60,46 @@
     
     <div class="panel panel-default">
       <div class="panel-body">
-        <table class="table variables">
-          <thead>
-            <tr>
-              <th class="column published">{% trans "Publicerad" %}</th>
-              <th class="column sample_year">{% trans "År" %}</th>
-              <th class="column library">{% trans "Bibliotek" %}</th>
-              <th class="column target_group">{% trans "Målgrupp" %}</th>
-            </tr>
-          </thead>
-          <tbody>
+        <form action="{% url 'publish_survey_responses' %}" method="POST" role="form" class="form-inline publish-survey-responses-form">
           {% if survey_responses %}
-            {% for sr in survey_responses %}
-              <tr>
-                <td>{{ sr.published_at|date:"Y-m-d H:i" }}</td>
-                <td>{{ sr.sample_year }}</td>
-                <td>
-                  {% if sr.library and sr.library.bibdb_sigel %}
-                    <a href="{{bibdb_library_base_url}}/{{sr.library.bibdb_id}}" >{{ sr.library_name }}</a>
-                  {% else %}
-                    {{ sr.library_name }}
-                  {% endif %}
-                </td>
-                <td>{{ sr.target_group__desc }}</td>
-              </tr>
-            {% endfor %}
+            {% csrf_token %}
+            <input type="hidden" name="sample_year" value="{{sample_year}}"/>
+            <input type="hidden" name="target_group" value="{{target_group}}"/>
+            <div class="form-group pull-right submit-publish">
+              <button type="submit" name="action" value="publish" class="btn btn-primary">{% trans "Publicera urval" %}</button>
+            </div>
           {% endif %}
-          </tbody>
-        </table>
+          <table class="table survey_responses">
+            <thead>
+              <tr>
+                <th class="column selection"><input title="{% trans 'Markera alla' %}" class="select-all" type="checkbox" value="all"/></th>
+                <th class="column published">{% trans "Publicerad" %}</th>
+                <th class="column sample_year">{% trans "År" %}</th>
+                <th class="column library">{% trans "Bibliotek" %}</th>
+                <th class="column target_group">{% trans "Målgrupp" %}</th>
+              </tr>
+            </thead>
+            <tbody>
+            {% if survey_responses %}
+              {% for sr in survey_responses %}
+                <tr>
+                  <td><input title="{% trans 'Välj' %}" class="select-one" name="survey-response-ids" type="checkbox" value="{{sr.id}}"/></td>
+                  <td>{{ sr.published_at|date:"Y-m-d H:i" }}</td>
+                  <td>{{ sr.sample_year }}</td>
+                  <td>
+                    {% if sr.library and sr.library.bibdb_sigel %}
+                      <a href="{{bibdb_library_base_url}}/{{sr.library.bibdb_id}}" >{{ sr.library_name }}</a>
+                    {% else %}
+                      {{ sr.library_name }}
+                    {% endif %}
+                  </td>
+                  <td>{{ sr.target_group__desc }}</td>
+                </tr>
+              {% endfor %}
+            {% endif %}
+            </tbody>
+          </table>
+        </form>
       </div>
     </div>
     
