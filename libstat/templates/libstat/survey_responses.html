@@ -42,10 +42,10 @@
                     <option value="school" {% ifequal target_group "school" %}selected="selected"{% endifequal %}>{% trans "Skolbibliotek" %}</option>
                   </select>
                 </div>
-                <!-- <div class="form-group">
-                  <input type="checkbox" name="unpublished_only" value="true"/>
+                <div class="form-group">
+                  <input type="checkbox" name="unpublished_only" value="True" {% if unpublished_only == True %}checked="checked"{% endif %}/>
                   {% trans "Endast opublicerade" %}
-                </div> -->
+                </div>
                 <div class="form-group">
                   <button type="submit" name="action" value="list" class="btn btn-default">{% trans "Lista enkätsvar" %}</button>
                 </div>

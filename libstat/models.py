@@ -127,12 +127,21 @@ class Survey(Document):
 
 class SurveyResponseQuerySet(QuerySet):
   
-    def by_year_or_group(self, sample_year=None, target_group=None  ):
+    def by_year_or_group(self, sample_year=None, target_group=None):
         filters = {}
         if target_group:
             filters["target_group"] = target_group
         if sample_year:
             filters["sample_year"] = int(sample_year)
+        return self.filter(__raw__=filters)
+    
+    def unpublished_by_year_or_group(self, sample_year=None, target_group=None):
+        filters = {}
+        if target_group:
+            filters["target_group"] = target_group
+        if sample_year:
+            filters["sample_year"] = int(sample_year)
+        filters["published_at__isnull"] = True
         return self.filter(__raw__=filters)
   
   

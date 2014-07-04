@@ -78,15 +78,25 @@ def survey_responses(request):
     action = request.GET.get("action", "")
     target_group = request.GET.get("target_group", "")
     sample_year = request.GET.get("sample_year", "")
+    unpublished_only = request.GET.get("unpublished_only", False);
+    if "True" == unpublished_only:
+        unpublished_only = True
+    else:
+        unpublished_only = False
     
     if action == "list":
-        s_responses = SurveyResponse.objects.by_year_or_group(sample_year=sample_year, target_group=target_group).order_by("library")
+        # TODO: Pagination
+        if unpublished_only:
+            s_responses = SurveyResponse.objects.unpublished_by_year_or_group(sample_year=sample_year, target_group=target_group).order_by("library")
+        else:
+            s_responses = SurveyResponse.objects.by_year_or_group(sample_year=sample_year, target_group=target_group).order_by("library")
   
     context = { 
          'sample_years': sample_years,
          'survey_responses': s_responses,
          'target_group': target_group,
          'sample_year': sample_year,
+         'unpublished_only': unpublished_only,
          'bibdb_library_base_url': u"{}/library".format(settings.BIBDB_BASE_URL)
     }
     return render(request, 'libstat/survey_responses.html', context)
