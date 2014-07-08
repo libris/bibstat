@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 from django.http import HttpResponse, Http404
 from django.conf import settings
+from django.core.urlresolvers import reverse
+
 from mongoengine.queryset import Q
 
 import json
@@ -10,28 +12,73 @@ from libstat.models import Variable, OpenData
 from libstat.utils import parse_datetime_from_isodate_str
 
 data_context = {
-    u"@context": {
-        u"@vocab": u"{}/def/terms#".format(settings.API_BASE_URL),
-        u"@base": u"{}/data/".format(settings.API_BASE_URL),
-        u"@language": u"sv",
-        u"foaf": u"http://xmlns.com/foaf/0.1/",
-        u"name": u"foaf:name"
-    }
+    u"@vocab": u"{}/def/terms/".format(settings.API_BASE_URL),
+    u"@base": u"{}/data/".format(settings.API_BASE_URL),
+    u"@language": u"sv",
+    u"foaf": u"http://xmlns.com/foaf/0.1/",
+    u"name": u"foaf:name",
+    u"observations": u"@graph"
 }
 
 term_context = {
-    u"@context": {
-        u"xsd": u"http://www.w3.org/2001/XMLSchema#",
-        u"rdf": u"http://www.w3.org/1999/02/22-rdf-syntax-ns#",
-        u"rdfs": u"http://www.w3.org/2000/01/rdf-schema#",
-        u"qb": u"http://purl.org/linked-data/cube#",
-        u"@language": u"sv",
-        u"label": u"rdfs:label",
-        u"range": {u"@id": u"rdfs:range", u"@type": u"@id"},
-        u"comment": u"rdfs:comment",
-        u"subClassOf": {u"@id": u"rdfs:subClassOf", u"@type": u"@id"}
-    }
+    u"xsd": u"http://www.w3.org/2001/XMLSchema#",
+    u"rdf": u"http://www.w3.org/1999/02/22-rdf-syntax-ns#",
+    u"rdfs": u"http://www.w3.org/2000/01/rdf-schema#",
+    u"qb": u"http://purl.org/linked-data/cube#",
+    u"@language": u"sv",
+    u"label": u"rdfs:label",
+    u"range": {u"@id": u"rdfs:range", u"@type": u"@id"},
+    u"comment": u"rdfs:comment",
+    u"subClassOf": {u"@id": u"rdfs:subClassOf", u"@type": u"@id"},
+    u"@base": u"{}/def/terms/".format(settings.API_BASE_URL),
+    u"terms": u"@graph"
 }
+
+core_terms = [
+    {
+        u"@id": u"library",
+        u"@type": [u"rdf:Property", u"qb:DimensionProperty"],
+        u"range": u"https://schema.org/Organization",
+        u"label": u"Bibliotek"
+    },
+    {
+        u"@id": u"sampleYear",
+        u"@type": [u"rdf:Property", u"qb:DimensionProperty"],
+        u"label": u"Mätår",
+        u"comment": u"Det mätår som statistikuppgiften avser",
+        u"range": u"xsd:gYear"
+    },
+    {
+        u"@id": u"targetGroup",
+        u"@type": [u"rdf:Property", u"qb:DimensionProperty"],
+        u"label": u"Målgrupp",
+        u"comment": u"Den målgrupp som svarande bibliotek ingår i.",
+        u"range": u"xsd:string"
+    },
+    {
+        u"@id": u"modified",
+        u"@type": u"rdf:Property",
+        u"label": u"Uppdaterad",
+        u"comment": u"Datum då mätvärdet senast uppdaterades",
+        u"range": u"xsd:dateTime"
+    },
+    {
+        u"@id": u"published",
+        u"@type": u"rdf:Property",
+        u"label": u"Publicerad",
+        u"comment": u"Datum då mätvärdet först publicerades",
+        u"range": u"xsd:dateTime"
+    },
+    {
+        u"@id": u"Observation",
+        u"@type": u"rdfs:Class", 
+        u"label": u"Observation",
+        u"comment": u"En observation för ett bibiliotek, mätår och variabel",
+        u"subClassOf": u"qb:Observation"
+    }
+]
+
+core_term_ids = {term [u"@id"] for term in core_terms}
 
 """
     OpenDataApi
@@ -68,8 +115,7 @@ def data_api(request):
     for item in objects:
         observations.append(item.to_dict())
     
-    data = data_context
-    data[u"@context"][u"observations"] =  u"@graph"
+    data = {u"@context": data_context}
     data[u"observations"] = observations
     
     return HttpResponse(json.dumps(data), content_type="application/ld+json")
@@ -83,68 +129,33 @@ def observation_api(request, observation_id):
         open_data = OpenData.objects.get(pk=observation_id)
     except Exception:
         raise Http404
-    observation = dict(data_context.items() + open_data.to_dict().items())
+    observation = {u"@context": data_context}
+    observation.update(open_data.to_dict())
     return HttpResponse(json.dumps(observation), content_type="application/ld+json")
 
 """
     TermsApi
 """
 def terms_api(request):
-    vars = []
-    vars.append({
-        u"@id": u"#library",
-        u"@type": [u"rdf:Property", u"qb:DimensionProperty"],
-        u"range": u"https://schema.org/Organization",
-        u"label": u"Bibliotek"
-    })
-    vars.append({
-        u"@id": u"#sampleYear",
-        u"@type": [u"rdf:Property", u"qb:DimensionProperty"],
-        u"label": u"Mätår",
-        u"comment": u"Det mätår som statistikuppgiften avser",
-        u"range": u"xsd:gYear"
-    })
-    vars.append({
-        u"@id": u"#targetGroup",
-        u"@type": [u"rdf:Property", u"qb:DimensionProperty"],
-        u"label": u"Målgrupp",
-        u"comment": u"Den målgrupp som svarande bibliotek ingår i.",
-        u"range": u"xsd:string"
-    })
-    vars.append({
-        u"@id": u"#modified",
-        u"@type": u"rdf:Property",
-        u"label": u"Uppdaterad",
-        u"comment": u"Datum då mätvärdet senast uppdaterades",
-        u"range": u"xsd:DateTime"
-    })
-    vars.append({
-        u"@id": u"#published",
-        u"@type": u"rdf:Property",
-        u"label": u"Publicerad",
-        u"comment": u"Datum då mätvärdet först publicerades",
-        u"range": u"xsd:dateTime"
-    })
-    vars.append({
-        u"@id": u"#Observation",
-        u"@type": u"rdfs:Class", 
-        u"label": u"Observation",
-        u"comment": u"En observation för ett bibiliotek, mätår och variabel",
-        u"subClassOf": u"qb:Observation"
-    })
+    terms = core_terms[:]
     variables = Variable.objects.filter(is_public=True).order_by("key")
     for v in variables:
-        vars.append(v.to_dict())
-    
-    terms = term_context
-    terms[u"@context"][u"terms"] = u"@graph"
-    terms[u"terms"] = vars
-    return HttpResponse(json.dumps(terms), content_type="application/ld+json")
+        terms.append(v.to_dict())
+
+    data = {u"@context": term_context}
+    data[u"terms"] = terms
+    return HttpResponse(json.dumps(data), content_type="application/ld+json")
 
 def term_api(request, term_key):
     try:
         term = Variable.objects.get(key=term_key)
     except Exception:
-        raise Http404
-    data = dict(term_context.items() + term.to_dict(id_prefix="").items())
+        if term_key in core_term_ids:
+            http303 = HttpResponse(content="", status=303)
+            http303["Location"] = reverse("terms_api")
+            return http303
+        else:
+            raise Http404
+    data = {u"@context": term_context}
+    data.update(term.to_dict())
     return HttpResponse(json.dumps(data), content_type="application/ld+json")

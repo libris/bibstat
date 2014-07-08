@@ -497,7 +497,7 @@ class VariableTest(MongoTestCase):
     def test_should_transform_object_to_dict(self):
         object = Variable.objects.first()
         expectedVariableDict = {
-            u"@id": u"#folk5",
+            u"@id": u"folk5",
             u"@type": [u"rdf:Property", u"qb:MeasureProperty"],
             u"comment": u"Antal bemannade serviceställen, sammanräknat",
             u"range": u"xsd:integer"
@@ -534,7 +534,7 @@ class OpenDataApiTest(MongoTestCase):
     def test_response_should_contain_context(self):
         response = self.client.get(reverse("data_api"))
         data = json.loads(response.content)
-        self.assertEqual(data[u"@context"][u"@vocab"], u"{}/def/terms#".format(settings.API_BASE_URL)),
+        self.assertEqual(data[u"@context"][u"@vocab"], u"{}/def/terms/".format(settings.API_BASE_URL)),
         self.assertEquals(data[u"@context"][u"@base"], u"{}/data/".format(settings.API_BASE_URL))
         self.assertEqual(data[u"@context"][u"observations"], u"@graph")
     
@@ -600,7 +600,7 @@ class ObservationApiTest(MongoTestCase):
         obs = OpenData.objects.first()
         response = self.client.get(reverse("observation_api", kwargs={ "observation_id": str(obs.id)}))
         data = json.loads(response.content)
-        self.assertEqual(data[u"@context"][u"@vocab"], u"{}/def/terms#".format(settings.API_BASE_URL)),
+        self.assertEqual(data[u"@context"][u"@vocab"], u"{}/def/terms/".format(settings.API_BASE_URL)),
         self.assertEquals(data[u"@context"][u"@base"], u"{}/data/".format(settings.API_BASE_URL))
         
     def test_should_return_one_observation(self):
@@ -647,18 +647,18 @@ class TermsApiTest(MongoTestCase):
         response = self.client.get(reverse("terms_api"))
         data = json.loads(response.content)
         ids = [term[u"@id"] for term in data[u"terms"]]
-        self.assertTrue(u"#library" in ids)
-        self.assertTrue(u"#sampleYear" in ids)
-        self.assertTrue(u"#targetGroup" in ids)
-        self.assertTrue(u"#modified" in ids)
-        self.assertTrue(u"#published" in ids)
-        self.assertTrue(u"#Observation" in ids)
+        self.assertTrue(u"library" in ids)
+        self.assertTrue(u"sampleYear" in ids)
+        self.assertTrue(u"targetGroup" in ids)
+        self.assertTrue(u"modified" in ids)
+        self.assertTrue(u"published" in ids)
+        self.assertTrue(u"Observation" in ids)
     
     def test_should_return_all_variables(self):
         response = self.client.get(reverse("terms_api"))
         data = json.loads(response.content)
         ids = [term[u"@id"] for term in data[u"terms"]]
-        self.assertTrue(u"#folk5" in ids)
+        self.assertTrue(u"folk5" in ids)
         
         
 class TermApiTest(MongoTestCase):
@@ -689,7 +689,7 @@ class TermApiTest(MongoTestCase):
         response = self.client.get(reverse("term_api", kwargs={ "term_key": "folk5"}))
         data = json.loads(response.content)
         self.assertEquals(len(data), 5)
-        self.assertEquals(data[u"@context"], term_context[u"@context"])
+        self.assertEquals(data[u"@context"], term_context)
         self.assertEquals(data[u"@id"], u"folk5"),
         self.assertEquals(data[u"@type"], [u"rdf:Property", u"qb:MeasureProperty"]),
         self.assertEquals(data[u"comment"], u"Antal bemannade serviceställen, sammanräknat"),

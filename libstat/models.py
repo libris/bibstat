@@ -55,7 +55,7 @@ class Variable(Document):
             display_names.append(targetGroups[tg])
         return display_names
   
-    def to_dict(self, id_prefix="#"):
+    def to_dict(self, id_prefix=""):
         return {
             u"@id": u"{}{}".format(id_prefix, self.key),
             u"@type": [u"rdf:Property", u"qb:MeasureProperty"],
