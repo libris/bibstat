@@ -24,6 +24,7 @@ term_context = {
     u"xsd": u"http://www.w3.org/2001/XMLSchema#",
     u"rdf": u"http://www.w3.org/1999/02/22-rdf-syntax-ns#",
     u"rdfs": u"http://www.w3.org/2000/01/rdf-schema#",
+    u"owl": u"http://www.w3.org/2002/07/owl#",
     u"qb": u"http://purl.org/linked-data/cube#",
     u"@language": u"sv",
     u"label": u"rdfs:label",
@@ -31,7 +32,14 @@ term_context = {
     u"comment": u"rdfs:comment",
     u"subClassOf": {u"@id": u"rdfs:subClassOf", u"@type": u"@id"},
     u"@base": u"{}/def/terms/".format(settings.API_BASE_URL),
-    u"terms": u"@graph"
+    u"terms": {u"@reverse": u"rdfs:isDefinedBy"}
+}
+
+terms_vocab = {
+    "@context": term_context,
+    "@id": "",
+    "@type": "owl:Ontology",
+    u"label": u"Termer för Sveriges biblioteksstatistik"
 }
 
 core_terms = [
@@ -115,8 +123,7 @@ def data_api(request):
     for item in objects:
         observations.append(item.to_dict())
     
-    data = {u"@context": data_context}
-    data[u"observations"] = observations
+    data = {u"@context": data_context, u"observations": observations}
     
     return HttpResponse(json.dumps(data), content_type="application/ld+json")
 
@@ -141,9 +148,7 @@ def terms_api(request):
     variables = Variable.objects.filter(is_public=True).order_by("key")
     for v in variables:
         terms.append(v.to_dict())
-
-    data = {u"@context": term_context}
-    data[u"terms"] = terms
+    data = dict(terms_vocab, terms=terms)
     return HttpResponse(json.dumps(data), content_type="application/ld+json")
 
 def term_api(request, term_key):
@@ -158,4 +163,5 @@ def term_api(request, term_key):
             raise Http404
     data = {u"@context": term_context}
     data.update(term.to_dict())
+    data["rdfs:isDefinedBy"] = {"@id": terms_vocab["@id"]}
     return HttpResponse(json.dumps(data), content_type="application/ld+json")
