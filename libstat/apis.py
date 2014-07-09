@@ -14,13 +14,26 @@ from libstat.utils import parse_datetime_from_isodate_str
 data_context = {
     u"@vocab": u"{}/def/terms/".format(settings.API_BASE_URL),
     u"xsd": u"http://www.w3.org/2001/XMLSchema#",
+    u"qb": u"http://purl.org/linked-data/cube#",
+    u"xhv": u"http://www.w3.org/1999/xhtml/vocab#",
     u"foaf": u"http://xmlns.com/foaf/0.1/",
     u"@base": u"{}/data/".format(settings.API_BASE_URL),
     u"@language": u"sv",
-    u"name": u"foaf:name",
+    u"DataSet": u"qb:DataSet",
+    u"Observation": u"qb:Observation",
+    u"observations": {u"@id": u"qb:observation", u"@container": u"@set"},
+    u"dataSet": {u"@id": u"qb:dataSet", u"@type": u"@id"},
+    u"next": {u"@id": u"xhv:next", u"@type": u"@id"},
     u"published": {u"@type": "xsd:dateTime"},
     u"modified": {u"@type": "xsd:dateTime"},
-    u"observations": u"@graph"
+    u"name": u"foaf:name"
+}
+
+data_set = {
+    "@context": data_context,
+    "@id": "",
+    "@type": "DataSet",
+    u"label": u"Sveriges biblioteksstatistik"
 }
 
 term_context = {
@@ -131,7 +144,9 @@ def data_api(request):
     for item in objects:
         observations.append(item.to_dict())
     
-    data = {u"@context": data_context, u"observations": observations}
+    data = dict(data_set, observations=observations)
+    if len(observations) >= limit:
+        data[u"next"] = u"?limit={}&offset={}".format(limit, offset + limit)
     
     return HttpResponse(json.dumps(data), content_type="application/ld+json")
 
@@ -146,6 +161,7 @@ def observation_api(request, observation_id):
         raise Http404
     observation = {u"@context": data_context}
     observation.update(open_data.to_dict())
+    observation["dataSet"] = data_set["@id"]
     return HttpResponse(json.dumps(observation), content_type="application/ld+json")
 
 """

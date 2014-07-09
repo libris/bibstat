@@ -11,7 +11,7 @@ import json
 
 from libstat.models import Variable, OpenData, SurveyResponse, SurveyObservation, Library
 from libstat.utils import parse_datetime_from_isodate_str
-from libstat.apis import term_context
+from libstat.apis import data_context, term_context
 
 """
     Test case and test runner for use with Mongoengine
@@ -534,9 +534,7 @@ class OpenDataApiTest(MongoTestCase):
     def test_response_should_contain_context(self):
         response = self.client.get(reverse("data_api"))
         data = json.loads(response.content)
-        self.assertEqual(data[u"@context"][u"@vocab"], u"{}/def/terms/".format(settings.API_BASE_URL)),
-        self.assertEquals(data[u"@context"][u"@base"], u"{}/data/".format(settings.API_BASE_URL))
-        self.assertEqual(data[u"@context"][u"observations"], u"@graph")
+        self.assertEquals(data[u"@context"], data_context)
     
     def test_should_not_filter_by_date_unless_requested(self):
         response = self.client.get(reverse("data_api"))
