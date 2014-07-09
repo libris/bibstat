@@ -13,10 +13,13 @@ from libstat.utils import parse_datetime_from_isodate_str
 
 data_context = {
     u"@vocab": u"{}/def/terms/".format(settings.API_BASE_URL),
+    u"xsd": u"http://www.w3.org/2001/XMLSchema#",
+    u"foaf": u"http://xmlns.com/foaf/0.1/",
     u"@base": u"{}/data/".format(settings.API_BASE_URL),
     u"@language": u"sv",
-    u"foaf": u"http://xmlns.com/foaf/0.1/",
     u"name": u"foaf:name",
+    u"published": {u"@type": "xsd:dateTime"},
+    u"modified": {u"@type": "xsd:dateTime"},
     u"observations": u"@graph"
 }
 
@@ -25,13 +28,16 @@ term_context = {
     u"rdf": u"http://www.w3.org/1999/02/22-rdf-syntax-ns#",
     u"rdfs": u"http://www.w3.org/2000/01/rdf-schema#",
     u"owl": u"http://www.w3.org/2002/07/owl#",
+    u"dcterms": "http://purl.org/dc/terms/",
     u"qb": u"http://purl.org/linked-data/cube#",
+    u"@base": u"{}/def/terms/".format(settings.API_BASE_URL),
     u"@language": u"sv",
     u"label": u"rdfs:label",
     u"range": {u"@id": u"rdfs:range", u"@type": u"@id"},
     u"comment": u"rdfs:comment",
     u"subClassOf": {u"@id": u"rdfs:subClassOf", u"@type": u"@id"},
-    u"@base": u"{}/def/terms/".format(settings.API_BASE_URL),
+    u"subPropertyOf": {u"@id": u"rdfs:subPropertyOf", u"@type": u"@id"},
+    u"isDefinedBy": {u"@id": u"rdfs:isDefinedBy", u"@type": u"@id"},
     u"terms": {u"@reverse": u"rdfs:isDefinedBy"}
 }
 
@@ -66,6 +72,7 @@ core_terms = [
     {
         u"@id": u"modified",
         u"@type": u"rdf:Property",
+        u"subPropertyOf": "dcterms:modified",
         u"label": u"Uppdaterad",
         u"comment": u"Datum då mätvärdet senast uppdaterades",
         u"range": u"xsd:dateTime"
@@ -73,6 +80,7 @@ core_terms = [
     {
         u"@id": u"published",
         u"@type": u"rdf:Property",
+        u"subPropertyOf": "dcterms:issued",
         u"label": u"Publicerad",
         u"comment": u"Datum då mätvärdet först publicerades",
         u"range": u"xsd:dateTime"
@@ -80,9 +88,9 @@ core_terms = [
     {
         u"@id": u"Observation",
         u"@type": u"rdfs:Class", 
+        u"subClassOf": u"qb:Observation",
         u"label": u"Observation",
-        u"comment": u"En observation för ett bibiliotek, mätår och variabel",
-        u"subClassOf": u"qb:Observation"
+        u"comment": u"En observation för ett bibiliotek, mätår och variabel"
     }
 ]
 
@@ -163,5 +171,5 @@ def term_api(request, term_key):
             raise Http404
     data = {u"@context": term_context}
     data.update(term.to_dict())
-    data["rdfs:isDefinedBy"] = {"@id": terms_vocab["@id"]}
+    data["isDefinedBy"] = terms_vocab["@id"]
     return HttpResponse(json.dumps(data), content_type="application/ld+json")
