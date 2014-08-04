@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 from django.conf.urls import patterns, include, url
 from libstat import views
-from django.contrib.auth.views import login, logout
+from django.contrib.auth.views import logout
 
 urlpatterns = patterns('libstat.views',
     # Public views
@@ -15,7 +15,7 @@ urlpatterns = patterns('libstat.views',
     url(r'^def/terms/(?P<term_key>\w+)/$', views.term_api, name="term_api"),
     
     # Login 
-    url(r'^login', login, {'template_name': 'libstat/login.html'}, name='login'),
+    url(r'^login', views.login, name='login'),
     url(r'^logout', logout, {'next_page': 'index'}, name='logout'),
     
     # Admin views

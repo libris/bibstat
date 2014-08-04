@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, resolve_url
 from django.core.urlresolvers import reverse
 from django.core.exceptions import ValidationError
 from django.http import HttpResponse, HttpResponseRedirect
@@ -9,6 +9,12 @@ from django.conf import settings
 from libstat.models import Variable, SurveyResponse
 from libstat.forms import *
 from django.contrib.auth.decorators import permission_required
+from django.contrib.auth.forms import AuthenticationForm
+from django.contrib.auth import login as auth_login
+from django.utils.http import is_safe_url
+from django.views.decorators.debug import sensitive_post_parameters
+from django.views.decorators.csrf import csrf_protect
+from django.views.decorators.cache import never_cache
 
 from libstat.apis import *
 
@@ -26,8 +32,51 @@ def open_data(request):
         "api_base_url": settings.API_BASE_URL
     }
     return render(request, 'libstat/open_data.html', context)
+    
+@sensitive_post_parameters()
+@csrf_protect
+@never_cache
+def login(request):
 
-@permission_required('is_superuser', login_url='login')
+    redirect_to = _get_listview_from_modalview(request.REQUEST.get("next", ""))
+
+    if request.method == "POST":
+        form = AuthenticationForm(request, data=request.POST)
+        if form.is_valid():
+
+            # Ensure the user-originating redirection url is safe.
+            if not is_safe_url(url=redirect_to, host=request.get_host()):
+                redirect_to = resolve_url(settings.LOGIN_REDIRECT_URL)
+
+            # Okay, security check complete. Log the user in.
+            auth_login(request, form.get_user())
+
+            context = {
+                'next': redirect_to
+            }
+            return HttpResponse(json.dumps(context), content_type="application/json")
+        else:
+            context = {
+                'errors': form.errors,
+                'next': redirect_to
+            }
+            return HttpResponse(json.dumps(context), content_type="application/json")
+            
+    else:
+        form = AuthenticationForm(request)
+
+    context = {
+        'form': form,
+        'next': redirect_to,
+    }
+    return render(request, 'libstat/modals/login.html', context)
+
+def _get_listview_from_modalview(relative_url=""):
+    if reverse("variables") in relative_url:
+        return reverse("variables")
+    
+
+@permission_required('is_superuser', login_url='index')
 def variables(request):
     target_group = request.GET.get("target_group", "")
     if target_group:
@@ -66,7 +115,7 @@ def edit_variable(request, variable_id):
     context = {'form': form }
     return render(request, 'libstat/modals/edit_variable.html', context)
 
-@permission_required('is_superuser', login_url='login')
+@permission_required('is_superuser', login_url='index')
 def survey_responses(request):
     s_responses = []
     
@@ -101,7 +150,7 @@ def survey_responses(request):
     }
     return render(request, 'libstat/survey_responses.html', context)
 
-@permission_required('is_superuser', login_url='login')
+@permission_required('is_superuser', login_url='index')
 def publish_survey_responses(request):
     MAX_PUBLISH_LIMIT = 500
         

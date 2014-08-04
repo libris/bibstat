@@ -71,7 +71,7 @@
                 <li class="navbar-text">{% trans "Inloggad som" %} {{user.username}}</li>
                 <li><a href="{% url 'logout' %}">{% trans "Logga ut" %}</a></li>
               {% else %}
-                <li><a href="{% url 'login' %}">{% trans "Logga in" %}</a></li>
+                <li><a class="show-login-modal" href="#" data-form="{% url 'login' %}">{% trans "Logga in" %}</a></li>
               {% endif %}
             </ul>
           </div><!--/.navbar-collapse -->
@@ -81,6 +81,10 @@
 	
 	<div id="content">
         {% block content %}{% endblock %}
+    </div>
+    
+    <!-- Login modal -->
+    <div class="modal fade" id="loginModal" tabindex="-1" role="dialog" aria-labelledby="loginLabel" aria-hidden="true">
     </div>
 
     <!-- Bootstrap core JavaScript
