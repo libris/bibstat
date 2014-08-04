@@ -282,31 +282,31 @@ class ImportSurveyResponsesTest(MongoTestCase):
 
     def test_import_variables_requires_target_group_option(self):
         args = []
-        opts = {"file": "libstat/test/data/Folk2012.xlsx", "year": 2012}
+        opts = {"file": "libstat/tests/data/Folk2012.xlsx", "year": 2012}
         call_command('import_survey_responses', *args, **opts)
         
         self.assertEquals(len(SurveyResponse.objects.all()), 0)
     
     def test_import_variables_requires_year_option(self):
         args = []
-        opts = {"file": "libstat/test/data/Folk2012.xlsx", "target_group": "public"}
+        opts = {"file": "libstat/tests/data/Folk2012.xlsx", "target_group": "public"}
         call_command('import_survey_responses', *args, **opts)
         
         self.assertEquals(len(SurveyResponse.objects.all()), 0)
         
     def test_import_survey_responses_should_abort_if_invalid_year(self):
         args = []
-        opts = {"file": "libstat/test/data/Folk2012.xlsx", "target_group": "public", "year": '201b'}
+        opts = {"file": "libstat/tests/data/Folk2012.xlsx", "target_group": "public", "year": '201b'}
         self.assertRaises(CommandError, call_command, 'import_survey_responses', *args, **opts)
     
     def test_import_survey_responses_should_abort_if_data_for_year_not_in_file(self):
         args = []
-        opts = {"file": "libstat/test/data/Folk2012.xlsx", "target_group": "public", "year": 2013}
+        opts = {"file": "libstat/tests/data/Folk2012.xlsx", "target_group": "public", "year": 2013}
         self.assertRaises(CommandError, call_command, 'import_survey_responses', *args, **opts)
     
     def test_should_import_public_lib_survey_responses(self):
         args = []
-        opts = {"file": "libstat/test/data/Folk2012.xlsx", "target_group": "public", "year": 2012}
+        opts = {"file": "libstat/tests/data/Folk2012.xlsx", "target_group": "public", "year": 2012}
         call_command('import_survey_responses', *args, **opts)
         
         self.assertEquals(len(SurveyResponse.objects.all()), 288)
@@ -361,7 +361,7 @@ class ImportSurveyResponsesTest(MongoTestCase):
         
     def test_import_survey_responses_with_library_lookup(self):
         args = []
-        opts = {"file": "libstat/test/data/Folk2012.xlsx", "target_group": "public", "year": 2012, "use_bibdb": "True"}
+        opts = {"file": "libstat/tests/data/Folk2012.xlsx", "target_group": "public", "year": 2012, "use_bibdb": "True"}
         call_command('import_survey_responses', *args, **opts)
         
         self.assertEquals(len(SurveyResponse.objects.all()), 288)
