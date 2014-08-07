@@ -7,6 +7,9 @@ from django.conf import settings
 
 from libstat.utils import ISO8601_utc_format
 
+import logging
+logger = logging.getLogger(__name__)
+
 PUBLIC_LIBRARY = ("public", "Folkbibliotek")
 RESEARCH_LIBRARY = ("research", "Forskningsbibliotek")
 HOSPITAL_LIBRARY = ("hospital", "Sjukhusbibliotek")
@@ -214,7 +217,7 @@ class SurveyResponse(Document):
     
     def publish(self):
         # TODO: Publishing date as a parameter to enable setting correct date for old data?
-        print(u"Publishing SurveyResponse {}".format(self.id))
+        logger.debug(u"Publishing SurveyResponse {}".format(self.id))
         publishing_date = datetime.utcnow()
         
         for obs in self.observations:

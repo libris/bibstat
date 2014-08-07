@@ -11,6 +11,9 @@ import datetime
 from libstat.models import Variable, OpenData
 from libstat.utils import parse_datetime_from_isodate_str
 
+import logging
+logger = logging.getLogger(__name__)
+
 data_context = {
     u"@vocab": u"{}/def/terms/".format(settings.API_BASE_URL),
     u"xsd": u"http://www.w3.org/2001/XMLSchema#",
@@ -131,13 +134,13 @@ def data_api(request):
     if term:
         try:
             variable = Variable.objects.get(key=term)
-            print u"Fetching statistics data for term {} published between {} and {}, items {} to {}".format(variable.key, from_date, to_date, offset, offset + limit)
+            logger.debug(u"Fetching statistics data for term {} published between {} and {}, items {} to {}".format(variable.key, from_date, to_date, offset, offset + limit))
             objects = OpenData.objects.filter(Q(variable=variable) & modified_from_query & modified_to_query).skip(offset).limit(limit)
         except Exception:
-            print u"Unknown variable {}, skipping..".format(term)
+            logger.warn(u"Unknown variable {}, skipping..".format(term))
             
     else:
-        print u"Fetching statistics data published between {} and {}, items {} to {}".format(from_date, to_date, offset, offset + limit)
+        logger.debug(u"Fetching statistics data published between {} and {}, items {} to {}".format(from_date, to_date, offset, offset + limit))
         objects = OpenData.objects.filter(modified_from_query & modified_to_query).skip(offset).limit(limit)
 
     observations = []
