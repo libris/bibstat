@@ -3,8 +3,9 @@ SECRET_KEY = '3x%=t4cm@eszqbwuw@00f**ol@8^kqomtm8-%x&5_ydq9rm(nl'
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
-
 TEMPLATE_DEBUG = True
+
+LOG_LEVEL = 'DEBUG'
 
 ALLOWED_HOSTS = []
 

@@ -43,6 +43,8 @@ MONGODB_NAME = 'bibstat'
 MONGODB_USER = 'bibstat'
 MONGODB_PASSWD = 'bibstat'
 
+LOG_LEVEL = 'WARNING'
+
 # Override above with local settings if present
 try:
     from settings_local import *
@@ -117,8 +119,53 @@ STATICFILES_DIRS = (
 
 LOGIN_REDIRECT_URL = 'libstat.views.index'
 
-# MongoEngine settings
-#
+"""
+    Logging
+"""
+LOGGING = {
+    'version': 1,
+    'formatters': {
+        'verbose': {
+            'format': '%(levelname)s %(asctime)s %(module)s %(process)d %(thread)d %(message)s'
+        },
+        'simple': {
+            'format': '%(levelname)s %(asctime)s %(message)s'
+        },
+    },
+    'handlers': {
+        'console': {
+            'level': 'DEBUG',
+            'class': 'logging.StreamHandler',
+            'formatter': 'verbose'
+            },
+        'file': {
+            'level': 'DEBUG',
+            'class': 'logging.FileHandler',
+            'filename': 'logs/bibstat.log',
+            'formatter': 'verbose'
+            },
+        },
+    'loggers': {
+        'django.request': {
+            'handlers': ['file'],
+            'level': LOG_LEVEL,
+            'propagate': True,
+            },
+        'libstat': {
+            'handlers': ['file'],
+            'level': LOG_LEVEL,
+            'propagate': True,
+            },
+        }
+    }
+if DEBUG:
+    # make all loggers use the console.
+    for logger in LOGGING['loggers']:
+        LOGGING['loggers'][logger]['handlers'] = ['console']
+
+"""
+    MongoEngine settings
+"""
 import mongoengine
 
 # Enable some basic auth features such as get_user(). Define a custom user model if advanced auth features are required
