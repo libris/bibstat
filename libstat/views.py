@@ -18,6 +18,9 @@ from django.views.decorators.cache import never_cache
 
 from libstat.apis import *
 
+import logging
+logger = logging.getLogger(__name__)
+
 def index(request):
     context = {
         "nav_start_css": "active",
@@ -97,18 +100,22 @@ def edit_variable(request, variable_id):
         raise Http404
 
     if request.method == "POST":
-        # TODO: work in progress...
-        form = VariableForm(request.POST)
+        errors = {}
+        form = VariableForm(request.POST, instance=v)
         if form.is_valid():
-#             try:
-#                 form.save(v)
-#                 return HttpResponse(u"Variable updated")
-#             except ValidationError as ve:
-#                 for error_message in ve.messages:
-#                     form.add_form_error(error_message)
-            return HttpResponse(u"Variable updated")
+            try:
+                v = form.save();
+                return HttpResponse(v.to_json(), content_type="application/json")
+            except Exception as e:
+                logger.warning(u"Error updating Variable {}: {}".format(variable_id, e))
+                errors['__all__'] = [u"Kan inte uppdatera term {}".format(v.key)]
+                
         else:
-            print form.errors
+            errors = form.errors
+        context = {
+            'errors': errors
+        }
+        return HttpResponse(json.dumps(context), content_type="application/json")
     else:    
         form = VariableForm(instance=v)
         
@@ -159,11 +166,11 @@ def publish_survey_responses(request):
         sample_year = request.POST.get("sample_year", "")
         survey_response_ids = request.POST.getlist("survey-response-ids", [])
         
-        print u"Publish requested for {} survey response ids".format(len(survey_response_ids))
+        logger.info(u"Publish requested for {} survey response ids".format(len(survey_response_ids)))
         
         if len(survey_response_ids) > MAX_PUBLISH_LIMIT:
             survey_response_ids = survey_response_ids[:MAX_PUBLISH_LIMIT]
-            print u"That seems like an awful lot of objects to handle in one transaction, limiting to first {}".format(MAX_PUBLISH_LIMIT)
+            logger.warning(u"That seems like an awful lot of objects to handle in one transaction, limiting to first {}".format(MAX_PUBLISH_LIMIT))
             
         
         if len(survey_response_ids) > 0:
@@ -172,7 +179,7 @@ def publish_survey_responses(request):
                 try:
                     sr.publish()
                 except Exception as e:
-                    print u"Error when publishing survey response {}:".format(sr.id)
+                    logger.error(u"Error when publishing survey response {}:".format(sr.id))
                     print e
         
     # TODO: There has to be a better way to do this...

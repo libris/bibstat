@@ -1,6 +1,6 @@
 {% load i18n %}
 
-<!-- <form role="form" class="edit-variable-form" method="post" action="{% url 'edit_variable' form.instance.id %}"> -->
+<form role="form" class="edit-variable-form" method="post" action="{% url 'edit_variable' form.instance.id %}">
   <div class="modal-dialog">
     <div class="modal-content">
       <div class="modal-header">
@@ -9,117 +9,101 @@
       </div>
       <div class="modal-body">
         {% csrf_token %}
-        <div class="errors">
-            {{ form.errors }}
-        </div>
+        <span class="text-danger errors all"></span>
         <div class="form-group">
             <label for="id_category">{% trans "Huvudgrupp" %}</label>
-            <input id="id_category" name="category" type="text" value="{{form.instance.category}}" class="form-control"/>
+            {{form.category}}
+            <span class="text-danger errors category"></span>
         </div>
         <div class="form-group">
             <label for="id_sub_category">{% trans "Undergrupp" %}</label>
-            <input id="id_sub_category" name="sub_category" type="text" value="{{form.instance.sub_category}}" class="form-control"/>
+            {{form.sub_category}}
+            <span class="text-danger errors sub_category"></span>
         </div>
         <div class="form-group">
             <label>{% trans "Enhet" %}</label>
             <div>
+              {% for type_choice in form.type %}
                 <label class="radio-inline">
-                    <input name="type" id="id_type_integer" type="radio" value="integer" {% if form.instance.type == 'integer' %}checked="checked"{% endif %}/>
-                    Integer
+                    {{type_choice.tag}}
+                    {{type_choice.choice_label}}
                 </label>
-                <label class="radio-inline">
-                    <input name="type" id="id_type_long" type="radio" value="long" {% if form.instance.type == 'long' %}checked="checked"{% endif %}/>
-                    Long
-                </label>
-                <label class="radio-inline">
-                    <input name="type" id="id_type_decimal" type="radio" value="decimal" {% if form.instance.type == 'decimal' %}checked="checked"{% endif %}/>
-                    Decimal
-                </label>
-                <label class="radio-inline">
-                    <input name="type" id="id_type_percent" type="radio" value="percent" {% if form.instance.type == 'percent' %}checked="checked"{% endif %}/>
-                    Procent
-                </label>
-                <label class="radio-inline">
-                    <input name="type" id="id_type_boolean" type="radio" value="boolean" {% if form.instance.type == 'boolean' %}checked="checked"{% endif %}/>
-                    Boolesk
-                </label>
-                <label class="radio-inline">
-                    <input name="type" id="id_type_string" type="radio" value="string" {% if form.instance.type == 'string' %}checked="checked"{% endif %}/>
-                    Text
-                </label>
+              {% endfor %}
             </div>
+            <span class="text-danger errors type"></span>
         </div>
         <div class="form-group">
             <label>{% trans "Synlighet" %}</label>
-            <div class="radio">
-                <label>
-                    <input name="is_public" id="id_is_public_yes" type="radio" value="True" {% if form.instance.is_public %}checked="checked"{% endif %}/>
-                    {% trans "Publik term, visas som öppen data" %}
-                </label>
+            <div class="checkbox">
+              {{form.is_public}}
+              {% trans "Publik term, visas som öppen data" %}
             </div>
-            <div class="radio">
-                <label>
-                    <input name="is_public" id="id_is_public_no" type="radio" value="False" {% if not form.instance.is_public %}checked="checked"{% endif %}/>
-                    {% trans "Privat term, visas endast för administratör i detta gränssnitt" %}
-                </label>
-            </div>
+            <span class="text-danger errors is_public"></span>
         </div>
         <div class="form-group">
             <label>{% trans "Målgrupper" %}</label>
             <div>
-                <label for="id_target_group_public" class="checkbox-inline">
-                    <input name="target_groups" id="id_target_group_public" type="checkbox" value="public" {% if 'public' in form.instance.target_groups %}checked="checked"{% endif %}/>
-                    {% trans 'Folkbibliotek' %}
+              {% for target_group in form.target_groups %}
+                <label class="checkbox-inline">
+                  {{target_group.tag}}
+                  {{target_group.choice_label}}
                 </label>
-                <label for="id_target_group_research" class="checkbox-inline">
-                    <input name="target_groups" id="id_target_group_research" type="checkbox" value="research" {% if 'research' in form.instance.target_groups %}checked="checked"{% endif %}/>
-                    {% trans "Forskningsbibliotek" %}
-                </label>
-                <label for="id_target_group_hospital" class="checkbox-inline">
-                    <input name="target_groups" id="id_target_group_hospital" type="checkbox" value="hospital" {% if 'hospital' in form.instance.target_groups %}checked="checked"{% endif %}/>
-                    {% trans "Sjukhusbibliotek" %}
-                </label>
-                <label for="id_target_group_school" class="checkbox-inline">
-                    <input name="target_groups" id="id_target_group_school" type="checkbox" value="school" {% if 'school' in form.instance.target_groups %}checked="checked"{% endif %}/>
-                    {% trans "Skolbibliotek" %}
-                </label>
+              {% endfor %}
             </div>
+            <span class="text-danger errors target_groups"></span>
         </div>
         <div class="form-group">
             <label for="description">{% trans "Beskrivning" %}</label>
-            <textarea id="id_description" name="description" class="form-control">{{form.instance.description}}</textarea>
+            {{form.description}}
+            <span class="text-danger errors description"></span>
         </div>
         <div class="form-group">
             <label for="comment">{% trans "Kommentar (visas ej publikt)" %}</label>
-            <textarea id="id-comment" name="comment" class="form-control">{% if form.instance.comment %}{{form.instance.comment}}{% endif %}</textarea>
+            {{form.comment}}
+            <span class="text-danger errors comment"></span>
         </div>
       </div>
-      <!--
+      
       <div class="modal-footer">
         <button type="button" class="btn btn-default" data-dismiss="modal" >{% trans "Avbryt" %}</button>
         <input type="submit" class="btn btn-primary" value="Spara ändringar" />
       </div>
-      -->
+      
     </div>
   </div>
-<!-- </form> -->
+</form>
 
 <script type="text/javascript">
 $(document).ready(function() { 
-	$('.edit-variable-form').on('submit', function(event) {
-	    $.ajax({ 
+	$('.edit-variable-form').submit(function(event) {
+		event.preventDefault();
+		
+		var self = this;
+		$(self).find(".errors").text("");
+	    
+		$.ajax({ 
 	    	type: $(this).attr('method'), 
 	        url: this.action, 
 	        data: $(this).serialize(),
 	        context: this,
 	        success: function(data, status) {
-	            //$('#editVariableModal').html(data)
-	            $('#editVariableModal').modal('hide')
-	            window.location.reload(true);
+	        	if(data.errors) {
+	        		$(self).find(".errors.category").text(data.errors.category);
+	        		$(self).find(".errors.sub_category").text(data.errors.category);
+	        		$(self).find(".errors.type").text(data.errors.type);
+	        		$(self).find(".errors.is_public").text(data.errors.is_public);
+	        		$(self).find(".errors.target_groups").text(data.errors.target_groups);
+	        		$(self).find(".errors.description").text(data.errors.description);
+	        		$(self).find(".errors.comment").text(data.errors.comment);
+	        		$(self).find(".errors.all").text(data.errors.__all__);
+	        	} else {
+    	            console.info("saved variable: ", data)
+    	            $('#editVariableModal').modal('hide')
+    	            window.location.reload(true);
+	        	}
 	        }, 
 	        error: function(data, status) {
-	        	//$('#editVariableModal').html(data)
-	        	console.info("Ogiltig data")
+	        	console.info("An error occured while saving variable!")
 	        }
 	    });
 	    return false;
