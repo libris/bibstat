@@ -138,21 +138,21 @@ LOGGING = {
             'class': 'logging.StreamHandler',
             'formatter': 'verbose'
             },
-        'file': {
-            'level': 'DEBUG',
-            'class': 'logging.FileHandler',
-            'filename': 'logs/bibstat.log',
-            'formatter': 'verbose'
-            },
+#         'file': {
+#             'level': 'DEBUG',
+#             'class': 'logging.FileHandler',
+#             'filename': 'logs/bibstat.log',
+#             'formatter': 'verbose'
+#             },
         },
     'loggers': {
         'django.request': {
-            'handlers': ['file'],
+            'handlers': ['console'],
             'level': LOG_LEVEL,
             'propagate': True,
             },
         'libstat': {
-            'handlers': ['file'],
+            'handlers': ['console'],
             'level': LOG_LEVEL,
             'propagate': True,
             },
