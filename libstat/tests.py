@@ -30,6 +30,8 @@ class MongoTestCase(TestCase):
         from mongoengine.connection import connect, disconnect
         disconnect()
         connect(self.mongodb_name)
+        from mongoengine.django.mongo_auth.models import MongoUser
+        MongoUser.objects.create_superuser("admin", "admin@example.com", "admin")
         
 #     def _fixture_teardown(self):
 #         pass
@@ -688,4 +690,54 @@ class TermApiTest(MongoTestCase):
     def test_should_return_404_if_term_not_found(self):
         response = self.client.get(reverse("term_api", kwargs={ "term_key": "foo"}))
         self.assertEqual(response.status_code, 404)
+"""
+View test cases
+"""        
+class EditVariableTest(MongoTestCase):
+    def setUp(self):
+        self.v1 = Variable(key=u"folk5", description=u"Antal bemannade serviceställen, sammanräknat", type="integer", is_public=True, target_groups=["public"])
+        self.v1.save()
+        
+        self.new_category = u"Organisation"
+        self.new_sub_category = u"Bemannade serviceställen"
+        self.new_type = u"string"
+        self.new_target_groups = [u"research"]
+        self.new_description = u"Summering"
+        self.new_comment = u"Inga kommentarer"
+        
+        self.url = reverse("edit_variable", kwargs={"variable_id":str(self.v1.id)})
+        self.client.login(username="admin", password="admin")
+
+    def test_should_update_variable(self):
+        response = self.client.post(self.url, {u"category": self.new_category, u"sub_category": self.new_sub_category, 
+                               u"type": self.new_type, u"target_groups": self.new_target_groups, u"description": self.new_description, 
+                               u"comment": self.new_comment})
+        self.assertEquals(response.status_code,200)
+        data = json.loads(response.content)
+        self.assertFalse('errors' in data)
+        
+        result = Variable.objects.get(pk=self.v1.id)
+        self.assertEquals(result.key, u"folk5")
+        self.assertEquals(result.category, self.new_category)
+        self.assertEquals(result.sub_category, self.new_sub_category)
+        self.assertEquals(result.type, self.new_type)
+        self.assertFalse(result.is_public)
+        self.assertEquals(result.target_groups, self.new_target_groups)
+        self.assertEquals(result.description, self.new_description)
+        self.assertEquals(result.comment, self.new_comment)
+    
+    def test_should_return_validation_errors_when_omitting_mandatory_fields(self):
+        response = self.client.post(self.url, {})
+        self.assertEquals(response.status_code,200)
+        
+        data = json.loads(response.content)
+        self.assertTrue(len(data['errors']) == 3)
+        self.assertEquals(data['errors'][u'type'], [u'Detta fält måste fyllas i.'])
+        self.assertEquals(data['errors'][u'target_groups'], [u'Detta fält måste fyllas i.'])
+        self.assertEquals(data['errors'][u'description'], [u'Detta fält måste fyllas i.'])
+        
+        
+        
+        
+    
     
