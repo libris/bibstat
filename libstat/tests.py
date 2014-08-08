@@ -693,7 +693,7 @@ class TermApiTest(MongoTestCase):
 """
 View test cases
 """        
-class EditVariableTest(MongoTestCase):
+class EditVariableViewTest(MongoTestCase):
     def setUp(self):
         self.v1 = Variable(key=u"folk5", description=u"Antal bemannade serviceställen, sammanräknat", type="integer", is_public=True, target_groups=["public"])
         self.v1.save()
@@ -737,7 +737,43 @@ class EditVariableTest(MongoTestCase):
         self.assertEquals(data['errors'][u'description'], [u'Detta fält måste fyllas i.'])
         
         
+class SurveyResponsesViewTest(MongoTestCase):
+    def setUp(self):
+        self.survey_response = SurveyResponse(library_name="KARLSTAD STADSBIBLIOTEK", sample_year=2013, target_group="public", observations=[])
+        self.survey_response.save()
+        sr2 = SurveyResponse(library_name="NORRBOTTENS LÄNSBIBLIOTEK", sample_year=2012, target_group="public", observations=[]);
+        sr2.save()
+        sr3 = SurveyResponse(library_name="Sjukhusbiblioteken i Dalarnas län", sample_year=2013, target_group="hospital", observations=[]);
+        sr3.save()
         
+        self.client.login(username="admin", password="admin")
+    
+    def test_should_not_fetch_survey_responses_unless_list_action_provided(self):
+        response = self.client.get(reverse("survey_responses"))
+        self.assertEquals(len(response.context["survey_responses"]), 0)
         
+    def test_should_list_survey_responses_by_year(self):
+        response = self.client.get("{}?action=list&sample_year=2012".format(reverse("survey_responses")))
+        self.assertEquals(len(response.context["survey_responses"]), 1)
+    
+    def test_should_list_survey_responses_by_target_group(self):
+        response = self.client.get("{}?action=list&target_group=public".format(reverse("survey_responses")))
+        self.assertEquals(len(response.context["survey_responses"]), 2)
+    
+    def test_should_list_survey_responses_by_year_and_target_group(self):
+        response = self.client.get("{}?action=list&target_group=public&sample_year=2013".format(reverse("survey_responses")))
+        self.assertEquals(len(response.context["survey_responses"]), 1)
+        self.assertEquals(response.context["survey_responses"][0].library_name, "KARLSTAD STADSBIBLIOTEK")
+        
+    def test_each_survey_response_should_have_checkbox_for_actions(self):
+        response = self.client.get("{}?action=list&target_group=public&sample_year=2013".format(reverse("survey_responses")))
+        self.assertContains(response, u'<input title="Välj" class="select-one" name="survey-response-ids" type="checkbox" value="{}"/>'.format(self.survey_response.id), 
+                            count=1, status_code=200, html=True)
+        
+#     def test_each_survey_response_should_have_a_link_to_details_view(self):
+#         response = self.client.get("{}?action=list&target_group=public&sample_year=2013".format(reverse("survey_responses")))
+#         self.assertContains(response, u'<a title="Visa/redigera enkätsvar" href="{}"/>'
+#                             .format(reverse("edit_survey_response", kwargs={"survey_response_id":str(self.survey_response.id)})), 
+#                             count=1, status_code=200, html=True)
     
     
