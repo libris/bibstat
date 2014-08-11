@@ -39,10 +39,13 @@ $(document).ready(function() {
 
 	/* Make Survey Responses table sortable */
 	$(".table.survey_responses").addClass("tablesorter").tablesorter({
-		headers : {
-			// disable sorting of the first column
-			0 : {
-				sorter : false
+		headers: {
+			// disable sorting of the first and last column
+			0: {
+				sorter: false
+			},
+			5: {
+				sorter: false
 			}
 		},
 		sortList : [ [ 3, 0 ] ]

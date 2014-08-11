@@ -1,0 +1,47 @@
+{% extends "libstat/base.html" %}
+{% load i18n %}
+
+{% block content %}
+  <div class="container">
+
+    <div class="page-header">
+      <h1>{% trans "Statistikenkät" %} {{form.instance.sample_year}} <small>{{form.instance.target_group__desc}}</small></h1>
+    </div>
+    
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        {% if form.instance.latest_version_published  %}
+          {% trans "Publicerad" %} {{form.instance.published_at}}
+        {% elif form.instance.latest_version_modified %}
+          {% trans "Enkätsvaret har ändrats sedan senaste publicering " %} {{form.instance.published_at}}
+        {% elif form.instance.not_published %}
+          {% trans "Enkätsvaret har ännu inte publicerats" %}
+        {% endif %}
+      </div>
+      <div class="panel-body">
+        <form action="" method="POST" role="form" class="form edit-survey-response-form">
+          {% csrf_token %}
+          <div class="form-group">
+            <label for="id_library_name">{% trans "Svarande bibliotek/organisation" %}</label>
+            {{form.library_name}}
+          </div>
+          {% for obs_form in observation_forms %}
+            <div class="form-group">
+              <label for="{{obs_form.instance.variable.key}}">{{obs_form.instance.variable.key}} - {{obs_form.instance.variable.description}}</label>
+              {{obs_form.value}}
+              <!-- <input type="text" class="form-control" value="{{obs_form.document.value}}"/> -->
+            </div>
+          {% endfor %}
+          <!-- 
+          {% for observation in form.instance.observations %}
+            <div class="form-group">
+              <label for="{{observation.variable.key}}">{{observation.variable.key}} - {{observation.variable.description}}</label>
+              <input type="text" class="form-control" value="{{observation.value}}"/>
+            </div>
+          {% endfor %}
+           -->
+        </form>
+      </div>
+    </div>
+  </div>
+{% endblock %}

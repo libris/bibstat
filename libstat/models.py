@@ -49,10 +49,18 @@ class Variable(Document):
     
     category = StringField(max_length=100)
     sub_category = StringField(max_length=100)
+    
+    question = StringField()
+    question_part = StringField()
+    summary_of = ListField()
 
     meta = {
         'collection': 'libstat_variables'
     }
+    
+    @property
+    def is_summary_auto_field(self):
+        return len(self.summary_of) > 0 and not self.question and not self.question_part
     
     def target_groups__descriptions(self):
         display_names = []
@@ -211,6 +219,18 @@ class SurveyResponse(Document):
         'collection': 'libstat_survey_responses',
         'queryset_class': SurveyResponseQuerySet,
     }
+    
+    @property
+    def latest_version_published(self):
+        return self.published_at and self.published_at >= self.date_modified
+    
+    @property
+    def latest_version_not_published(self):
+        return self.published_at and self.published_at < self.date_modified 
+    
+    @property
+    def not_published(self):
+        return not self.published_at
     
     def target_group__desc(self):
         return targetGroups[self.target_group]

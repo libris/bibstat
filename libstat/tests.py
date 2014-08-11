@@ -493,18 +493,50 @@ class OpenDataTest(MongoTestCase):
        
 class VariableTest(MongoTestCase):
     def setUp(self):
-        v = Variable(key=u"folk5", description=u"Antal bemannade serviceställen, sammanräknat", type="integer", is_public=True, target_groups=["public"])
-        v.save()
+        self.v = Variable(key=u"Folk10", description=u"Antal bemannade servicesställen", type="integer", is_public=True, target_groups=["public"])
+        self.v.save()
+        
+        self.v2 = Variable(key=u"Folk35", description=u"Antal årsverken övrig personal", type="decimal", is_public=True, target_groups=["public"])
+        self.v2.question = u"Hur många årsverken utfördes av personal i folkbiblioteksverksamheten under 2012?"
+        self.v2.question_part = u"Antal årsverken övrig personal (ej städpersonal)"
+        self.v2.save()
+        
+        self.v3 = Variable(key=u"Folk31", description=u"Antal årsverken totalt", type="decimal", is_public=True, target_groups=["public"])
+        self.v3.summary_of = [self.v2]
+        self.v3.save()
+        
+        self.v4 = Variable(key=u"Folk69", description=u"Totalt nyförvärv AV-medier", type="integer", is_public=True, target_groups=["public"])
+        self.v4.question = u"Hur många nyförvärv av AV-media gjordes under 2012?"
+        self.v4.save()
+        
     
     def test_should_transform_object_to_dict(self):
-        object = Variable.objects.first()
+        folk10 = Variable.objects.get(pk=self.v.id)
         expectedVariableDict = {
-            u"@id": u"folk5",
+            u"@id": u"Folk10",
             u"@type": [u"rdf:Property", u"qb:MeasureProperty"],
-            u"comment": u"Antal bemannade serviceställen, sammanräknat",
+            u"comment": u"Antal bemannade servicesställen",
             u"range": u"xsd:integer"
         }
-        self.assertEqual(object.to_dict(), expectedVariableDict)
+        self.assertEqual(folk10.to_dict(), expectedVariableDict)
+    
+    def test_variable_should_have_question_and_question_part(self):
+        folk35 = Variable.objects.get(pk=self.v2.id)
+        self.assertTrue(hasattr(folk35, "question") and folk35.question == u"Hur många årsverken utfördes av personal i folkbiblioteksverksamheten under 2012?")
+        self.assertTrue(hasattr(folk35, "question_part") and folk35.question_part == u"Antal årsverken övrig personal (ej städpersonal)")
+        
+    def test_summary_variable_without_question_or_question_part_is_summary_auto_field(self):
+        folk31 = Variable.objects.get(pk=self.v3.id)
+        self.assertTrue(folk31.is_summary_auto_field)
+        # THis field is automatically summarized in survey and the user cannot change the value
+        
+    def test_summary_variable_with_question_or_question_part_is_summary_field(self):
+        folk69 = Variable.objects.get(pk=self.v4.id)
+        self.assertFalse(folk69.is_summary_auto_field)
+        # This field is automatically summarized in survey, but value can be changed by user.
+        # TODO: Maybe a is_summary_field helper property on model could for this state?
+    
+    
     
 """
     API test cases
@@ -695,7 +727,7 @@ View test cases
 """        
 class EditVariableViewTest(MongoTestCase):
     def setUp(self):
-        self.v1 = Variable(key=u"folk5", description=u"Antal bemannade serviceställen, sammanräknat", type="integer", is_public=True, target_groups=["public"])
+        self.v1 = Variable(key=u"Folk10", description=u"Antal bemannade serviceställen", type="integer", is_public=True, target_groups=["public"])
         self.v1.save()
         
         self.new_category = u"Organisation"
@@ -717,7 +749,7 @@ class EditVariableViewTest(MongoTestCase):
         self.assertFalse('errors' in data)
         
         result = Variable.objects.get(pk=self.v1.id)
-        self.assertEquals(result.key, u"folk5")
+        self.assertEquals(result.key, u"Folk10")
         self.assertEquals(result.category, self.new_category)
         self.assertEquals(result.sub_category, self.new_sub_category)
         self.assertEquals(result.type, self.new_type)
@@ -735,6 +767,18 @@ class EditVariableViewTest(MongoTestCase):
         self.assertEquals(data['errors'][u'type'], [u'Detta fält måste fyllas i.'])
         self.assertEquals(data['errors'][u'target_groups'], [u'Detta fält måste fyllas i.'])
         self.assertEquals(data['errors'][u'description'], [u'Detta fält måste fyllas i.'])
+        
+    def test_variable_key_should_not_be_editable(self):
+        response = self.client.post(self.url, {u"key": u"TheNewKey", u"type": self.new_type, u"target_groups": self.new_target_groups, u"description": self.new_description})
+        self.assertEquals(response.status_code,200)
+        result = Variable.objects.get(pk=self.v1.id)
+        self.assertEquals(result.key, u"Folk10")
+        
+    # TODO: Borde man kunna ändra synlighet? Inte om det redan finns publik data eller inlämnade enkätsvar väl? Kommer kräva ompublicering av alla enkätsvar som har variabeln...
+    
+    # TODO: Borde man kunna ta bort en målgrupp? Samma som ovan.
+    
+    # TODO: Borde man kunna ändra enhet? Samma som ovan.
         
         
 class SurveyResponsesViewTest(MongoTestCase):
@@ -770,10 +814,35 @@ class SurveyResponsesViewTest(MongoTestCase):
         self.assertContains(response, u'<input title="Välj" class="select-one" name="survey-response-ids" type="checkbox" value="{}"/>'.format(self.survey_response.id), 
                             count=1, status_code=200, html=True)
         
-#     def test_each_survey_response_should_have_a_link_to_details_view(self):
-#         response = self.client.get("{}?action=list&target_group=public&sample_year=2013".format(reverse("survey_responses")))
-#         self.assertContains(response, u'<a title="Visa/redigera enkätsvar" href="{}"/>'
-#                             .format(reverse("edit_survey_response", kwargs={"survey_response_id":str(self.survey_response.id)})), 
-#                             count=1, status_code=200, html=True)
+    def test_each_survey_response_should_have_a_link_to_details_view(self):
+        response = self.client.get("{}?action=list&target_group=public&sample_year=2013".format(reverse("survey_responses")))
+        self.assertContains(response, u'<a href="{}" title="Visa/redigera enkätsvar">Visa/redigera</a>'
+                            .format(reverse("edit_survey_response", kwargs={"survey_response_id":str(self.survey_response.id)})), 
+                            count=1, status_code=200, html=True)
+        
+class EditSurveyResponseViewTest(MongoTestCase):
+    def setUp(self):
+        v1 = Variable(key=u"folk5", description=u"Antal bemannade serviceställen, sammanräknat", type="integer", is_public=True, target_groups=["public"])
+        v1.save()
+        v2 = Variable(key=u"folk6", description=u"Är huvudbiblioteket i er kommun integrerat med ett skolbibliotek? 1=ja", type="boolean", is_public=True, target_groups=["public"])
+        v2.save()
+        v3 = Variable(key=u"folk8", description=u"Textkommentar", type="string", is_public=False, target_groups=["public"])
+        v3.save()
+        self.survey_response = SurveyResponse(library_name="KARLSTAD STADSBIBLIOTEK", sample_year=2013, target_group="public", observations=[])
+        self.survey_response.observations.append(SurveyObservation(variable=v1, value=7, _source_key="folk5", _is_public=v1.is_public))
+        self.survey_response.observations.append(SurveyObservation(variable=v2, value=None, _source_key="folk6", _is_public=v2.is_public))
+        self.survey_response.observations.append(SurveyObservation(variable=v3, value=u"Här är en kommentar", _source_key="folk8", _is_public=v3.is_public))
+        self.survey_response.save()
+        
+        self.client.login(username="admin", password="admin")
+        
+    def test_view_requires_superuser_login(self):
+        # TODO:
+        pass
+    
+    def test_should_show_survey_response_details(self):
+        response = self.client.get(reverse("edit_survey_response", kwargs={"survey_response_id":str(self.survey_response.id)}))
+        self.assertEquals(response.status_code, 200)
+        
     
     

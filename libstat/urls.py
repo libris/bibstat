@@ -23,4 +23,5 @@ urlpatterns = patterns('libstat.views',
     url(r'^variables/(?P<variable_id>\w+)/$',views.edit_variable, name='edit_variable'),
     url(r'^survey_responses/$',views.survey_responses, name='survey_responses'),
     url(r'^survey_responses/publish$',views.publish_survey_responses, name='publish_survey_responses'),
+    url(r'^survey_responses/(?P<survey_response_id>\w+)/$',views.edit_survey_response, name='edit_survey_response'),
 )

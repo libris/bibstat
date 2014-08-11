@@ -77,6 +77,7 @@
                 <th class="column sample_year">{% trans "År" %}</th>
                 <th class="column library">{% trans "Bibliotek" %}</th>
                 <th class="column target_group">{% trans "Målgrupp" %}</th>
+                <th class="column actions"></th>
               </tr>
             </thead>
             <tbody>
@@ -94,6 +95,7 @@
                     {% endif %}
                   </td>
                   <td>{{ sr.target_group__desc }}</td>
+                  <td><a title="{%trans 'Visa/redigera enkätsvar' %}" href="{% url 'edit_survey_response' sr.id %}">Visa/redigera</a></td>
                 </tr>
               {% endfor %}
             {% endif %}
