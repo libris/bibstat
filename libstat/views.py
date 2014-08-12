@@ -40,9 +40,11 @@ def open_data(request):
 @csrf_protect
 @never_cache
 def login(request):
-
+    """
+        Login modal view
+    """
     redirect_to = _get_listview_from_modalview(request.REQUEST.get("next", ""))
-
+    
     if request.method == "POST":
         form = AuthenticationForm(request, data=request.POST)
         if form.is_valid():
@@ -77,6 +79,7 @@ def login(request):
 def _get_listview_from_modalview(relative_url=""):
     if reverse("variables") in relative_url:
         return reverse("variables")
+    return relative_url
     
 
 @permission_required('is_superuser', login_url='index')
@@ -94,6 +97,9 @@ def variables(request):
 
 @permission_required('is_superuser', login_url='login')
 def edit_variable(request, variable_id):
+    """
+        Edit variable modal view
+    """
     try: 
         v = Variable.objects.get(pk=variable_id)
     except Exception:
