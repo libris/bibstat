@@ -198,14 +198,14 @@ def edit_survey_response(request, survey_response_id):
     except:
         raise Http404
     
-    form = SurveyResponseForm(instance=survey_response)
-    observation_forms = []
-    for i in range(len(survey_response.observations)):
-        observation_forms.append(SurveyObservationForm(parent_document=survey_response, position=i))
+    form = CustomSurveyResponseForm(instance=survey_response)
+#     observation_forms = []
+#     for i in range(len(survey_response.observations)):
+#         observation_forms.append(SurveyObservationForm(parent_document=survey_response, position=i))
          
     context = {
         'form': form, 
-        'observation_forms': observation_forms
+#         'observation_forms': observation_forms
     }
     return render(request, 'libstat/edit_survey_response.html', context)
     

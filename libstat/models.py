@@ -172,6 +172,10 @@ class SurveyObservation(EmbeddedDocument):
 
     def __unicode__(self):
         return u"{0}: {1}".format(self.variable, self.value)
+    
+    @property
+    def instance_id(self):
+        return self._instance.id
 
 class Library(EmbeddedDocument):
     bibdb_name = StringField()
@@ -189,7 +193,7 @@ class SurveyResponseMetadata(EmbeddedDocument):
     #Private
     respondent_name = StringField(max_length=100)
     respondent_email = StringField(max_length=100)
-    respondent_phone = StringField(max_length=100)
+    respondent_phone = StringField(max_length=20)
     
     # Private
     survey_time_hours = IntField()
@@ -205,15 +209,13 @@ class SurveyResponse(Document):
     target_group = StringField(required=True, choices=SURVEY_TARGET_GROUPS)
     
     library = EmbeddedDocumentField(Library) #TODO
+    metadata = EmbeddedDocumentField(SurveyResponseMetadata) # TODO
 
     published_at = DateTimeField()
-
     date_created = DateTimeField(required=True, default=datetime.utcnow)
     date_modified = DateTimeField(required=True, default=datetime.utcnow)
     
     observations = ListField(EmbeddedDocumentField(SurveyObservation))
-    
-    metadata = EmbeddedDocumentField(SurveyResponseMetadata)
 
     meta = {
         'collection': 'libstat_survey_responses',

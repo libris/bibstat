@@ -11,6 +11,16 @@
         {% csrf_token %}
         <span class="text-danger errors all"></span>
         <div class="form-group">
+            <label for="id_question">{% trans "Formulärfråga" %}</label>
+            {{form.question}}
+            <span class="text-danger errors question"></span>
+        </div>
+        <div class="form-group">
+            <label for="id_question_part">{% trans "Delfråga" %}</label>
+            {{form.question_part}}
+            <span class="text-danger errors question_part"></span>
+        </div>
+        <div class="form-group">
             <label for="id_category">{% trans "Huvudgrupp" %}</label>
             {{form.category}}
             <span class="text-danger errors category"></span>
@@ -88,6 +98,8 @@ $(document).ready(function() {
 	        context: this,
 	        success: function(data, status) {
 	        	if(data.errors) {
+	        		$(self).find(".errors.question").text(data.errors.question);
+	        		$(self).find(".errors.question_part").text(data.errors.question_part);
 	        		$(self).find(".errors.category").text(data.errors.category);
 	        		$(self).find(".errors.sub_category").text(data.errors.category);
 	        		$(self).find(".errors.type").text(data.errors.type);

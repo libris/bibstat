@@ -31,3 +31,27 @@
 .publish-survey-responses-form .submit-publish {
     margin-top: -86px;
 }
+
+/* Get actual width of form inputs without using class form-inline */
+.form-control.width-auto {
+    width: auto;
+}
+
+/* Form validation messages */
+.form-validation {
+    font-style: italic;
+}
+.form-validation.after {
+    margin-left: 6px;
+}
+
+/* Custom panel styles */
+.panel-default.inverse > .panel-heading {
+    background-color: #ffffff;
+}
+.panel-default.inverse > .panel-body {
+    background-color: #f5f5f5;
+}
+.panel-default.inverse > .panel-footer {
+    background-color: #f5f5f5;
+}
