@@ -854,7 +854,8 @@ class EditSurveyResponseViewTest(MongoTestCase):
     def test_should_update_survey_response(self):
         response = self.client.post(self.url, {u"sample_year": u"2013", u"target_group": u"public", u"library_name": u"Karlstad Stadsbibliotek",
                                                u"municipality_name": u"Karlstads kommun", u"municipality_code": u"1780", 
-                                               u"respondent_name": u"Åsa Hansen", u"respondent_email": u"asa.hansen@karlstad.se", u"respondent_phone": u"054-540 23 72"})
+                                               u"respondent_name": u"Åsa Hansen", u"respondent_email": u"asa.hansen@karlstad.se", u"respondent_phone": u"054-540 23 72"},
+                                    follow=True)
         self.assertEquals(response.status_code,200)
         result = SurveyResponse.objects.get(pk=self.survey_response.id)
         self.assertEquals(result.sample_year, 2013)
@@ -869,8 +870,9 @@ class EditSurveyResponseViewTest(MongoTestCase):
     def test_should_not_update_sample_year_or_target_group_for_existing_SurveyResponse(self):
         response = self.client.post(self.url, {u"sample_year": u"2014", u"target_group": u"research", u"library_name": u"Karlstad Stadsbibliotek",
                                                u"municipality_name": u"Karlstads kommun", u"municipality_code": u"1780", 
-                                               u"respondent_name": u"Åsa Hansen", u"respondent_email": u"asa.hansen@karlstad.se", u"respondent_phone": u"054-540 23 72"})
-        self.assertEquals(response.status_code,200)
+                                               u"respondent_name": u"Åsa Hansen", u"respondent_email": u"asa.hansen@karlstad.se", u"respondent_phone": u"054-540 23 72"}, 
+                                    follow=True)
+        self.assertEquals(response.status_code, 200)
         result = SurveyResponse.objects.get(pk=self.survey_response.id)
         self.assertEquals(result.sample_year, 2013)
         self.assertEquals(result.target_group, u"public")
@@ -878,7 +880,8 @@ class EditSurveyResponseViewTest(MongoTestCase):
     def test_should_handle_non_unique_library_name(self):
         response = self.client.post(self.url, {u"sample_year": u"2013", u"target_group": u"public", u"library_name": u"ALE BIBLIOTEK",
                                                u"municipality_name": u"Karlstads kommun", u"municipality_code": u"1780", 
-                                               u"respondent_name": u"Åsa Hansen", u"respondent_email": u"asa.hansen@karlstad.se", u"respondent_phone": u"054-540 23 72"})
+                                               u"respondent_name": u"Åsa Hansen", u"respondent_email": u"asa.hansen@karlstad.se", u"respondent_phone": u"054-540 23 72"},
+                                    follow=True)
         
         self.assertEquals(response.context['form']._errors['library_name'], [u"Det finns redan ett enkätsvar för detta bibliotek"])
         

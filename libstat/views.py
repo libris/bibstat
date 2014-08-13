@@ -114,7 +114,9 @@ def edit_variable(request, variable_id):
         if form.is_valid():
             try:
                 v = form.save();
+                # No redirect since this is displayed as a modal and we do a javascript redirect if no form errors
                 return HttpResponse(v.to_json(), content_type="application/json")
+            
             except NotUniqueError as nue:
                 logger.warning(u"A Variable with key {} already exists: {}".format(v.key, nue))
                 errors['key'] = [u"Det finns redan en term med nyckel {}".format(v.key)]
@@ -209,6 +211,8 @@ def edit_survey_response(request, survey_response_id):
         if form.is_valid():
             try:
                 survey_response = form.save();
+                return redirect("edit_survey_response", survey_response_id)
+            
             except NotUniqueError as nue:
                 logger.warning(u"A SurveyResponse with library_name {} already exists for year {}: {}".format(survey_response.library_name, survey_response.sample_year, nue))
                 form._errors['library_name'] = ErrorList([u"Det finns redan ett enkätsvar för detta bibliotek"])
