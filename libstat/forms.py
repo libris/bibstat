@@ -50,7 +50,7 @@ class CustomSurveyResponseForm(forms.Form):
     municipality_code = forms.CharField(required=False, max_length=6, widget=forms.TextInput(attrs={'class': 'form-control width-auto', 'size': '6'}))
     
     respondent_name = forms.CharField(required=False, max_length=100, widget=forms.TextInput(attrs={'class': 'form-control width-auto', 'size': '58'}))
-    respondent_email = forms.CharField(required=False, max_length=100, widget=forms.TextInput(attrs={'class': 'form-control width-auto', 'size': '58'}))
+    respondent_email = forms.EmailField(required=False, max_length=100, widget=forms.EmailInput(attrs={'class': 'form-control width-auto', 'size': '58'}))
     respondent_phone = forms.CharField(required=False, max_length=20, widget=forms.TextInput(attrs={'class': 'form-control width-auto', 'size': '20'}))
     
     def __init__(self, *args, **kwargs):
@@ -82,8 +82,8 @@ class CustomSurveyResponseForm(forms.Form):
     def save(self, commit=True):
       surveyResponse = self.instance if self.instance else SurveyResponse()
       surveyResponse.library_name = self.cleaned_data['library_name']
-      surveyResponse.sample_year = self.cleaned_data['sample_year']
-      surveyResponse.target_group = self.cleaned_data['target_group']
+      surveyResponse.sample_year = self.instance.sample_year if self.instance else self.cleaned_data['sample_year']
+      surveyResponse.target_group = self.instance.target_group if self.instance else self.cleaned_data['target_group']
       
       surveyResponse.metadata = self.instance.metadata if self.instance.metadata and (self.cleaned_data['municipality_name'] or self.cleaned_data['municipality_code']) else SurveyResponseMetadata()
       surveyResponse.metadata.municipality_name = self.cleaned_data['municipality_name']
