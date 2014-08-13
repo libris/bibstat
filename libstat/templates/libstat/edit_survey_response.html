@@ -3,29 +3,29 @@
 
 {% block content %}
   <div class="container">
+    <div class="page-header">
+      <h1>{% trans "Statistikenkät" %} {{form.instance.sample_year|add:"1"}}</h1>
+    </div>
 
     <div class="row">
       <div class="col-md-8">
-        <div class="page-header">
-          <h1>{% trans "Statistikenkät" %} {{form.instance.sample_year|add:"1"}}</h1>
-        </div>
-    
-        <form action="" method="POST" role="form" class="form edit-survey-response-form">
+        <form action="{% url 'edit_survey_response' form.instance.id %}" method="POST" role="form" class="form edit-survey-response-form">
           {% csrf_token %}
           
           <div class="panel panel-default inverse">
             <div class="panel-heading">
-              <h3 class="panel-title">Respondentdata</h3>
+              <h3 class="panel-title">{% trans "Information om enkät och respondent" %}</h3>
             </div>
             <div class="panel-body">
             
               <div class="form-group">
+                <!-- TODO: {{ form.errors.all }} ?? __all__?? -->
                 <div class="row">
                   <div class="col-md-3">
                     <label for="id_sample_year">{% trans "Mätår" %}:</label>
                   </div>
                   <div class="col-md-9">
-                    <span>{{form.instance.sample_year}}</span>
+                    <span class="sample_year">{{form.instance.sample_year}}</span>
                     {{form.sample_year}}
                   </div>
                 </div>
@@ -34,42 +34,40 @@
                     <label for="id_target_group">{% trans "Målgrupp" %}:</label>
                   </div>
                   <div class="col-md-9">             
-                    <span>{{form.instance.target_group__desc}}</span>
+                    <span class="target_group">{{form.instance.target_group__desc}}</span>
                     {{form.target_group}}
                    </div>
                 </div>
                 <div class="row">
                   <div class="col-md-3">
-                    <label for="date_modified">{% trans "Senast ändrad" %}:</label>
+                    <label>{% trans "Senast ändrad" %}:</label>
                   </div>
                   <div class="col-md-9">
-                    <span id="date_modified">{{form.instance.date_modified|date:"Y-m-d H:i"}}</span> <!--TODO:  <span>av Cecilia Ranemo</span> -->
+                    <span class="date_modified">{{form.instance.date_modified|date:"Y-m-d H:i"}}</span> <!--TODO:  <span>av Cecilia Ranemo</span> -->
                   </div>
                 </div>
                 <div class="row">
                   <div class="col-md-3">
-                    <label for="published_at">{% trans "Publicerad" %}:</label>
+                    <label>{% trans "Publicerad" %}:</label>
                   </div>
                   <div class="col-md-9">
-                    <span id="published_at">
-                      {% if form.instance.latest_version_published  %}
-                        <span class="published_at">{{form.instance.published_at|date:"Y-m-d H:i"}}</span> 
-                        <!--TODO: <span>av Cecilia Ranemo.</span> -->
-                      {% elif form.instance.latest_version_modified %}
-                        <span class="published_at">{{form.instance.published_at|date:"Y-m-d H:i"}}</span> 
-                        <!--TODO: <span>av Cecilia Ranemo</span> --> 
-                        <span class="text-warning form-validation after">{% trans "Enkätsvaret har ändrats efter senaste publicering " %}</span>
-                      {% elif form.instance.not_published %}
-                        <span class="published_at">{% trans "Ej publicerad" %}</span>
-                      {% endif %}
-                    </span>
+                    {% if form.instance.latest_version_published  %}
+                      <span class="published_at">{{form.instance.published_at|date:"Y-m-d H:i"}}</span> 
+                      <!--TODO: <span>av Cecilia Ranemo.</span> -->
+                    {% elif form.instance.latest_version_modified %}
+                      <span class="published_at">{{form.instance.published_at|date:"Y-m-d H:i"}}</span> 
+                      <!--TODO: <span>av Cecilia Ranemo</span> --> 
+                      <span class="text-warning form-validation after">{% trans "Enkätsvaret har ändrats efter senaste publicering " %}</span>
+                    {% elif form.instance.not_published %}
+                      <span class="published_at">{% trans "Ej publicerad" %}</span>
+                    {% endif %}
                   </div>
                 </div>
               </div>
               
               <div class="row">
                 <div class="col-md-12">
-                  <label>{% trans "Svarande bibliotek" %}</label>
+                  <label>{% trans "Svarande bibliotek/organisation" %}</label>
                 </div>
               </div>
               <!-- Nested panel, it seems to work... -->
@@ -81,6 +79,7 @@
                     </div>
                     <div class="col-md-9">
                       {{form.library_name}}
+                      <span class="text-danger errors library_name">{{form.library_name.errors }}</span>
                     </div>
                   </div>
                   <div class="row form-group">
@@ -89,6 +88,7 @@
                     </div>
                     <div class="col-md-9">
                       {{form.municipality_name}}
+                      <span class="text-danger errors municipality_name">{{form.municipality_name.errors }}</span>
                     </div>
                   </div>
                   <div class="row form-group">
@@ -97,6 +97,7 @@
                     </div>
                     <div class="col-md-9">
                       {{form.municipality_code}}
+                      <span class="text-danger errors municipality_code">{{form.municipality_code.errors }}</span>
                     </div>
                   </div>
                 </div>
@@ -116,6 +117,7 @@
                     </div>
                     <div class="col-md-9">
                       {{form.respondent_name}}
+                      <span class="text-danger errors respondent_name">{{form.respondent_name.errors }}</span>
                     </div>
                   </div>
                   <div class="row form-group">
@@ -124,6 +126,7 @@
                     </div>
                     <div class="col-md-9">
                       {{form.respondent_email}}
+                      <span class="text-danger errors respondent_email">{{form.respondent_email.errors }}</span>
                     </div>
                   </div>
                   <div class="row form-group">
@@ -132,6 +135,7 @@
                     </div>
                     <div class="col-md-9">
                       {{form.respondent_phone}}
+                      <span class="text-danger errors respondent_phone">{{form.respondent_phone.errors }}</span>
                     </div>
                   </div>
                 </div>
@@ -143,7 +147,17 @@
 
             </div><!-- panel-body -->
           </div><!-- panel -->
+        </form>
+      </div><!-- col -->
 
+      <div class="col-md-4"></div>
+    </div><!-- row -->
+
+    <div class="row">
+      
+      <div class="col-md-8">
+         <form action="" method="POST" role="form" class="form edit-survey-observations-form">
+          <h2>{% trans "Enkätfrågor" %}</h2>
           {% for observation in form.instance.observations %}
             <div class="form-group">
               <label for="{{observation.variable.key}}">
@@ -180,8 +194,10 @@
             </div>
           {% endfor %}
         </form>
-      </div>
+      </div><!-- col -->
+      
       <div class="col-md-4"></div>
-    </div>
-  </div>
+    </div><!-- row -->
+    
+  </div><!-- container -->
 {% endblock %}

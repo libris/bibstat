@@ -16,6 +16,9 @@ from django.views.decorators.debug import sensitive_post_parameters
 from django.views.decorators.csrf import csrf_protect
 from django.views.decorators.cache import never_cache
 
+from mongoengine.errors import NotUniqueError
+from django.forms.util import ErrorList
+
 from libstat.apis import *
 
 import logging
@@ -112,6 +115,9 @@ def edit_variable(request, variable_id):
             try:
                 v = form.save();
                 return HttpResponse(v.to_json(), content_type="application/json")
+            except NotUniqueError as nue:
+                logger.warning(u"A Variable with key {} already exists: {}".format(v.key, nue))
+                errors['key'] = [u"Det finns redan en term med nyckel {}".format(v.key)]
             except Exception as e:
                 logger.warning(u"Error updating Variable {}: {}".format(variable_id, e))
                 errors['__all__'] = [u"Kan inte uppdatera term {}".format(v.key)]
@@ -197,15 +203,25 @@ def edit_survey_response(request, survey_response_id):
         survey_response = SurveyResponse.objects.get(pk=survey_response_id)
     except:
         raise Http404
-    
-    form = CustomSurveyResponseForm(instance=survey_response)
-#     observation_forms = []
-#     for i in range(len(survey_response.observations)):
-#         observation_forms.append(SurveyObservationForm(parent_document=survey_response, position=i))
+    if request.method == "POST":
+        form = CustomSurveyResponseForm(request.POST, instance=survey_response)
+        
+        if form.is_valid():
+            try:
+                survey_response = form.save();
+            except NotUniqueError as nue:
+                logger.warning(u"A SurveyResponse with library_name {} already exists for year {}: {}".format(survey_response.library_name, survey_response.sample_year, nue))
+                form._errors['library_name'] = ErrorList([u"Det finns redan ett enkätsvar för detta bibliotek"])
+            except Exception as e:
+                logger.warning(u"Error updating SurveyResponse {}: {}".format(survey_response_id, e))
+                form._errors['__all__'] = ErrorList([u"Kan inte uppdatera enkätsvar"])
+        else:
+            logger.debug(u"Form has validation errors: {}".format(form.errors))
+    else:
+        form = CustomSurveyResponseForm(instance=survey_response)
          
     context = {
         'form': form, 
-#         'observation_forms': observation_forms
     }
     return render(request, 'libstat/edit_survey_response.html', context)
     

@@ -822,27 +822,64 @@ class SurveyResponsesViewTest(MongoTestCase):
         
 class EditSurveyResponseViewTest(MongoTestCase):
     def setUp(self):
-        v1 = Variable(key=u"folk5", description=u"Antal bemannade serviceställen, sammanräknat", type="integer", is_public=True, target_groups=["public"])
-        v1.save()
-        v2 = Variable(key=u"folk6", description=u"Är huvudbiblioteket i er kommun integrerat med ett skolbibliotek? 1=ja", type="boolean", is_public=True, target_groups=["public"])
-        v2.save()
-        v3 = Variable(key=u"folk8", description=u"Textkommentar", type="string", is_public=False, target_groups=["public"])
-        v3.save()
+#         v1 = Variable(key=u"folk5", description=u"Antal bemannade serviceställen, sammanräknat", type="integer", is_public=True, target_groups=["public"])
+#         v1.save()
+#         v2 = Variable(key=u"folk6", description=u"Är huvudbiblioteket i er kommun integrerat med ett skolbibliotek? 1=ja", type="boolean", is_public=True, target_groups=["public"])
+#         v2.save()
+#         v3 = Variable(key=u"folk8", description=u"Textkommentar", type="string", is_public=False, target_groups=["public"])
+#         v3.save()
         self.survey_response = SurveyResponse(library_name="KARLSTAD STADSBIBLIOTEK", sample_year=2013, target_group="public", observations=[])
-        self.survey_response.observations.append(SurveyObservation(variable=v1, value=7, _source_key="folk5", _is_public=v1.is_public))
-        self.survey_response.observations.append(SurveyObservation(variable=v2, value=None, _source_key="folk6", _is_public=v2.is_public))
-        self.survey_response.observations.append(SurveyObservation(variable=v3, value=u"Här är en kommentar", _source_key="folk8", _is_public=v3.is_public))
+#         self.survey_response.observations.append(SurveyObservation(variable=v1, value=7, _source_key="folk5", _is_public=v1.is_public))
+#         self.survey_response.observations.append(SurveyObservation(variable=v2, value=None, _source_key="folk6", _is_public=v2.is_public))
+#         self.survey_response.observations.append(SurveyObservation(variable=v3, value=u"Här är en kommentar", _source_key="folk8", _is_public=v3.is_public))
         self.survey_response.save()
         
+        sr2 = SurveyResponse(library_name="ALE BIBLIOTEK", sample_year=2013, target_group="public", observations=[])
+        sr2.save()
+        
+        self.url = reverse("edit_survey_response", kwargs={"survey_response_id":str(self.survey_response.id)})
         self.client.login(username="admin", password="admin")
         
     def test_view_requires_superuser_login(self):
         # TODO:
         pass
     
-    def test_should_show_survey_response_details(self):
+    def test_should_have_hidden_inputs_for_mandatory_fields_that_are_not_editable(self):
         response = self.client.get(reverse("edit_survey_response", kwargs={"survey_response_id":str(self.survey_response.id)}))
-        self.assertEquals(response.status_code, 200)
+        self.assertContains(response, u'<input type="hidden" value="2013" name="sample_year" id="id_sample_year">'
+                            .format(self.url), count=1, status_code=200, html=True)
+        self.assertContains(response, u'<input type="hidden" value="public" name="target_group" id="id_target_group">'
+                            .format(self.url), count=1, status_code=200, html=True)
         
-    
+    def test_should_update_survey_response(self):
+        response = self.client.post(self.url, {u"sample_year": u"2013", u"target_group": u"public", u"library_name": u"Karlstad Stadsbibliotek",
+                                               u"municipality_name": u"Karlstads kommun", u"municipality_code": u"1780", 
+                                               u"respondent_name": u"Åsa Hansen", u"respondent_email": u"asa.hansen@karlstad.se", u"respondent_phone": u"054-540 23 72"})
+        self.assertEquals(response.status_code,200)
+        result = SurveyResponse.objects.get(pk=self.survey_response.id)
+        self.assertEquals(result.sample_year, 2013)
+        self.assertEquals(result.target_group, u"public")
+        self.assertEquals(result.library_name, u"Karlstad Stadsbibliotek")
+        self.assertEquals(result.metadata.municipality_name, u"Karlstads kommun")
+        self.assertEquals(result.metadata.municipality_code, u"1780")
+        self.assertEquals(result.metadata.respondent_name, u"Åsa Hansen")
+        self.assertEquals(result.metadata.respondent_email, u"asa.hansen@karlstad.se")
+        self.assertEquals(result.metadata.respondent_phone, u"054-540 23 72")
+        
+    def test_should_not_update_sample_year_or_target_group_for_existing_SurveyResponse(self):
+        response = self.client.post(self.url, {u"sample_year": u"2014", u"target_group": u"research", u"library_name": u"Karlstad Stadsbibliotek",
+                                               u"municipality_name": u"Karlstads kommun", u"municipality_code": u"1780", 
+                                               u"respondent_name": u"Åsa Hansen", u"respondent_email": u"asa.hansen@karlstad.se", u"respondent_phone": u"054-540 23 72"})
+        self.assertEquals(response.status_code,200)
+        result = SurveyResponse.objects.get(pk=self.survey_response.id)
+        self.assertEquals(result.sample_year, 2013)
+        self.assertEquals(result.target_group, u"public")
+        
+    def test_should_handle_non_unique_library_name(self):
+        response = self.client.post(self.url, {u"sample_year": u"2013", u"target_group": u"public", u"library_name": u"ALE BIBLIOTEK",
+                                               u"municipality_name": u"Karlstads kommun", u"municipality_code": u"1780", 
+                                               u"respondent_name": u"Åsa Hansen", u"respondent_email": u"asa.hansen@karlstad.se", u"respondent_phone": u"054-540 23 72"})
+        
+        self.assertEquals(response.context['form']._errors['library_name'], [u"Det finns redan ett enkätsvar för detta bibliotek"])
+        
     

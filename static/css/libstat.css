@@ -38,6 +38,10 @@
 }
 
 /* Form validation messages */
+.errorlist {
+    list-style: none outside none;
+    padding: 0;
+}
 .form-validation {
     font-style: italic;
 }
