@@ -62,6 +62,19 @@ class Variable(Document):
     def is_summary_auto_field(self):
         return len(self.summary_of) > 0 and not self.question and not self.question_part
     
+    """
+        Return a label for this Variable.
+        If the Variable has both question and question_part, an array will be returned. Otherwise a unicode string.
+    """
+    @property
+    def label(self):
+        if self.question and self.question_part:
+            return [self.question, self.question_part] 
+        elif self.question:
+            return self.question 
+        else:
+            return self.description
+    
     def target_groups__descriptions(self):
         display_names = []
         for tg in self.target_groups:
@@ -164,7 +177,7 @@ class SurveyObservation(EmbeddedDocument):
     # Need to allow None/null values to indicate invalid or missing responses in old data
     value = DynamicField() 
 
-    # Keeping the original key reference from spreadsheet for traceability
+    # Storing variable key on observation to avoid having to fetch variables all the time.
     _source_key = StringField(max_length=100)
     
     # Public API Optimization and traceability (was this field public at the time of the survey?)
@@ -204,7 +217,7 @@ class SurveyResponseMetadata(EmbeddedDocument):
     population_0to14y = LongField()
     
 class SurveyResponse(Document):
-    library_name = StringField(max_length=100, required=True, unique_with='sample_year')
+    library_name = StringField(max_length=100, required=True, unique_with='sample_year') #TODO: BOrde det inte vara unique_with["sample_year","target_group"]??
     sample_year = IntField(required=True)
     target_group = StringField(required=True, choices=SURVEY_TARGET_GROUPS)
     
@@ -263,6 +276,10 @@ class SurveyResponse(Document):
         self.published_at = publishing_date
         self.date_modified = publishing_date
         self.save()
+    
+    def observation_by_key(self, key):
+        hits = [obs for obs in self.observations if obs._source_key == key]
+        return hits[0] if len(hits) > 0 else None
       
     def __unicode__(self):
         return u"{} {} {}".format(self.target_group, self.library_name, self.sample_year)

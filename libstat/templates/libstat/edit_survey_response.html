@@ -158,39 +158,10 @@
       <div class="col-md-8">
          <form action="" method="POST" role="form" class="form edit-survey-observations-form">
           <h2>{% trans "Enkätfrågor" %}</h2>
-          {% for observation in form.instance.observations %}
+          {% for field in observations_form %}
             <div class="form-group">
-              <label for="{{observation.variable.key}}">
-                {{observation.variable.key}}
-                {% if observation.variable.question %}
-                  {{observation.variable.question}}
-                {% else %}
-                  {{observation.variable.description}}
-                {% endif %}
-                <span class="text-danger">DEBUG: {{observation.value}} ({{observation.variable.type}})</span>
-              </label>
-              {% if observation.variable.type == "string" %}
-                <input type="text" name="{{observation.variable.key}}" id="observation_{{observation.instance_id}}" class="form-control" value="{{observation.value}}"/>
-              {% elif observation.variable.type == "boolean" %}
-                <div class="radio">
-                  <label>
-                    <input type="radio" name="{{observation.variable.key}}" id="observation_{{observation.instance_id}}" value="True" {% if observation.value == True %}checked="checked"{% endif %}/>
-                    {% trans "Ja" %}
-                  </label>
-                </div>
-                <div class="radio">
-                  <label>
-                    <input type="radio" name="{{observation.variable.key}}" id="observation_{{observation.instance_id}}" value="False" {% if observation.value == False %}checked="checked"{% endif %}/>
-                    {% trans "Nej" %}
-                  </label>
-                </div>
-              {% elif observation.variable.type == "integer" or observation.variable.type == "long" %}
-                 <input type="number" name="{{observation.variable.key}}" id="observation_{{observation.instance_id}}" class="form-control" value="{{observation.value}}"/>
-              {% elif observation.variable.type == "decimal" %}
-                <input type="text" name="{{observation.variable.key}}" id="observation_{{observation.instance_id}}" class="form-control" value="{{observation.value}}"/>
-              {% elif observation.variable.type == "percent" %}
-                <input type="number" name="{{observation.variable.key}}" id="observation_{{observation.instance_id}}" class="form-control" value="{% widthratio observation.value 1 100 %}"/>
-              {% endif %}
+              {{field.label}}
+              {{field}}
             </div>
           {% endfor %}
         </form>
