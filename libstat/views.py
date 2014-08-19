@@ -205,6 +205,10 @@ def edit_survey_response(request, survey_response_id):
         survey_response = SurveyResponse.objects.get(pk=survey_response_id)
     except:
         raise Http404
+    
+    # Needed to render the other form in the view
+    observations_form = SurveyObservationsForm(instance=survey_response)
+    
     if request.method == "POST":
         form = SurveyResponseForm(request.POST, instance=survey_response)
         
@@ -223,16 +227,22 @@ def edit_survey_response(request, survey_response_id):
             logger.debug(u"Form has validation errors: {}".format(form.errors))
     else:
         form = SurveyResponseForm(instance=survey_response)
-        observations_form = SurveyObservationsForm(instance=survey_response)
          
+    return _render_survey_response_view(request, form, observations_form)
+
+def _render_survey_response_view(request, survey_response_form, survey_observations_form):
     context = {
-        'form': form, 
-        'observations_form': observations_form,
+        'form': survey_response_form, 
+        'observations_form': survey_observations_form,
     }
     return render(request, 'libstat/edit_survey_response.html', context)
 
 @permission_required('is_superuser', login_url='index')
 def edit_survey_observations(request, survey_response_id):
+    """
+        Handling saving of survey observations in a separate view method.
+        Called from view edit_survey_response.
+    """
     try:
         survey_response = SurveyResponse.objects.get(pk=survey_response_id)
     except:
@@ -243,13 +253,11 @@ def edit_survey_observations(request, survey_response_id):
         if form.is_valid():
             try:
                 survey_response = form.save()
-                return redirect("edit_survey_response", survey_response_id)
             except Exception as e:
                  logger.warning(u"Error updating SurveyResponse observations {}: {}".format(survey_response_id, e))
                  form._errors['__all__'] = ErrorList([u"Kan inte uppdatera enkätsvar"])
         else:
             logger.debug(u"Form has validation errors: {}".format(form.errors))
-            #TODO: Render instead of redirect!
+            return _render_survey_response_view(request, SurveyResponseForm(instance=survey_response), form)
     
-    # Only POST supported for now
     return redirect("edit_survey_response", survey_response_id)

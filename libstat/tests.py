@@ -976,5 +976,19 @@ class EditSurveyObservationsViewTest(MongoTestCase):
         self.assertEqual(result.observation_by_key(u"folk35").value, 8.9)
         self.assertEqual(result.observation_by_key(u"folk52").value, 0.61)
         self.assertEqual(result.observation_by_key(u"folk38").value, 9999999999999L)
+        
+    def test_should_return_validation_errors_if_wrong_data_type(self):
+        response = self.client.post(self.url, {u"folk5": u"5.72",
+                                               u"folk6": u"foo", 
+                                               u"folk8": None,
+                                               u"folk35": u"8", 
+                                               u"folk52": u"0.61", 
+                                               u"folk38": u"9999999999999.999999999"}, 
+                                    follow=True)
+        self.assertEquals(response.status_code, 200)
+        self.assertEquals(response.context['observations_form']._errors['folk5'], [u"Fyll i ett heltal."])
+        self.assertEquals(response.context['observations_form']._errors['folk6'], [u"Välj ett giltigt alternativ. foo finns inte bland tillg\xe4ngliga alternativ."])
+        self.assertEquals(response.context['observations_form']._errors['folk52'], [u"Fyll i ett heltal."])
+        self.assertEquals(response.context['observations_form']._errors['folk38'], [u"Fyll i ett heltal."])
     
          
