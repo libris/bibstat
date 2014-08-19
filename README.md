@@ -101,6 +101,4 @@ Läs in statistikdata, exempelvis folkbibliotekfil som innehåller åren 2010 t 
 
 ### Kör tester ###
 
-	$ python manage.py test libstat
-
-
+	$ python manage.py test
