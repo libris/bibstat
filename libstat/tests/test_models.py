@@ -1,6 +1,6 @@
 # -*- coding: UTF-8 -*-
 from libstat.tests import MongoTestCase
-from libstat.models import Variable, OpenData, SurveyResponse, SurveyObservation, Library
+from libstat.models import *
 
 from datetime import datetime
 import json
@@ -24,11 +24,10 @@ class SurveyResponseTest(MongoTestCase):
         sr.observations.append(SurveyObservation(variable=v2, value=None, _source_key="folk6", _is_public=v2.is_public))
         sr.observations.append(SurveyObservation(variable=v3, value=u"Här är en kommentar", _source_key="folk8", _is_public=v3.is_public))
         self.survey_response = sr.save()
-        
+    
     
     def test_should_export_public_non_null_observations_to_openData(self):
-        survey_response = SurveyResponse.objects.first()
-        survey_response.publish()
+        self.survey_response.publish()
         
         data = OpenData.objects.all()
         self.assertEquals(len(data), 1)
@@ -43,16 +42,19 @@ class SurveyResponseTest(MongoTestCase):
         self.assertTrue(open_data.date_modified)
         self.assertTrue(open_data.date_created)
         self.assertEquals(open_data.date_created, open_data.date_modified)
+        
+        sr = SurveyResponse.objects.get(pk=self.survey_response.id)
+        self.assertEquals(open_data.date_created, sr.published_at)
+        
     
     def test_should_overwrite_value_and_date_modified_for_existing_openData(self):
-        survey_response = SurveyResponse.objects.first()
-        survey_response.publish()
+        self.survey_response.publish()
 
-        for obs in survey_response.observations:
+        for obs in self.survey_response.observations:
             if obs.variable.key == "folk5":
                 obs.value = 9
-        survey_response.save()
-        survey_response.publish()
+        self.survey_response.save()
+        self.survey_response.publish()
         
         data = OpenData.objects.all()
         self.assertEquals(len(data), 1)
@@ -68,8 +70,82 @@ class SurveyResponseTest(MongoTestCase):
         self.assertTrue(open_data.date_created)
         self.assertNotEquals(open_data.date_created, open_data.date_modified)
         
+        
     def test_should_get_observation_by_variable_key(self):
         self.assertEquals(self.survey_response.observation_by_key("folk8").value, u"Här är en kommentar")
+        
+        
+    def test_should_store_version_when_updating_existing_object(self):
+        sr = self.survey_response
+        sr.library_name = u"Karlstad"
+        
+        sr.metadata = SurveyResponseMetadata(municipality_name=u"Karlstad kommun", 
+                                                               municipality_code=u"1780", 
+                                                               responent_name=u"Karl Karlsson", 
+                                                               respondent_email=u"karl.karlsson@karlstad.se", 
+                                                               respondent_phone=u"054-540 23 72")
+        sr.library.bibdb_id = u"276"
+        self.survey_response = sr.save()
+        
+        self.assertEquals(self.survey_response.library_name, u"Karlstad")
+        
+        versions = SurveyResponseVersion.objects.filter(survey_response_id=self.survey_response.id)
+        self.assertEquals(len(versions), 1)
+        self.assertEquals(versions[0].survey_response_id, self.survey_response.id)
+        # Version should contain values before update
+        self.assertEquals(versions[0].library_name, u"KARLSTAD STADSBIBLIOTEK")
+        self.assertEquals(versions[0].metadata, None)
+        self.assertEquals(versions[0].library.bibdb_id, u"323")
+        
+    def test_should_store_one_version_for_each_change(self):
+        self.survey_response.library.bibdb_id = u"321"
+        self.survey_response.save()
+        self.assertEquals(len(SurveyResponseVersion.objects.filter(survey_response_id=self.survey_response.id)), 1)
+        
+        self.survey_response.library.bibdb_id = u"197"
+        self.survey_response.save()
+        self.assertEquals(len(SurveyResponseVersion.objects.filter(survey_response_id=self.survey_response.id)), 2)
+        
+    def test_should_store_version_when_updating_observations_for_existing_objects(self):
+        self.survey_response.observation_by_key(u"folk5").value = 5
+        self.survey_response.save()
+        
+        updated_sr = SurveyResponse.objects.get(pk=self.survey_response.id)
+        self.assertEquals(updated_sr.observation_by_key(u"folk5").value, 5)
+        
+        versions = SurveyResponseVersion.objects.filter(survey_response_id=self.survey_response.id)
+        self.assertEquals(len(versions), 1)
+        self.assertEquals(versions[0].observation_by_key(u"folk5").value, 7)
+    
+    def test_should_not_store_version_when_creating_object(self):
+        sr = SurveyResponse(library_name=u"Some name", sample_year=2014, target_group=u"research", observations=[])
+        sr.save()
+        
+        versions = SurveyResponseVersion.objects.filter(survey_response_id=self.survey_response.id)
+        self.assertEquals(len(versions), 0)
+        
+    def test_should_set_modified_date_when_updating_existing_object(self):
+        self.survey_response.library_name = u"Stadsbiblioteket i Karlstad"
+        updated_survey_response = self.survey_response.save()
+
+        versions = SurveyResponseVersion.objects.filter(survey_response_id=self.survey_response.id)
+        self.assertEquals(len(versions), 1)
+        
+        self.assertTrue(updated_survey_response.date_modified > versions[0].date_modified)
+        
+        
+    def test_should_set_modified_date_when_creating_object(self):
+        self.assertEquals(self.survey_response.date_modified, self.survey_response.date_created)
+        
+        
+    def test_should_set_published_date_and_modified_date_when_publishing(self):
+        self.assertTrue(self.survey_response.published_at == None)
+        date_modified = self.survey_response.date_modified
+        
+        self.survey_response.publish()
+        
+        self.assertTrue(self.survey_response.published_at != None)
+        self.assertTrue(self.survey_response.date_modified > date_modified)
         
     
 class OpenDataTest(MongoTestCase):

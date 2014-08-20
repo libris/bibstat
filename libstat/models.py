@@ -1,5 +1,7 @@
 # -*- coding: UTF-8 -*-
 from mongoengine import *
+from mongoengine import signals
+
 from pip._vendor.pkg_resources import require
 from mongoengine.queryset.queryset import QuerySet
 from datetime import datetime
@@ -24,6 +26,8 @@ TYPE_INTEGER = (u"integer", u"Integer")
 TYPE_LONG = (u"long", u"Long")
 TYPE_DECIMAL = (u"decimal", u"Decimal")
 TYPE_PERCENT = (u"percent", u"Procent")
+#TODO: TYPE_DECIMAL1 = (u"decimal1", u"1 decimals noggrannhet"), Type_DECIMAL2 = (u"decimal2", u"2 decimalers noggrannhet") isf TYPE_DECIMAL
+#TODO: TYPE_TEXT = (u"text", u"Text") för kommentarer (textarea), TYPE_STRING=(u"string", u"Textsträng") för icke-numeriska värden "numerical" (input)
 
 VARIABLE_TYPES = (TYPE_STRING, TYPE_BOOLEAN, TYPE_INTEGER, TYPE_LONG, TYPE_DECIMAL, TYPE_PERCENT)
 variable_types = dict(VARIABLE_TYPES)
@@ -50,6 +54,7 @@ class Variable(Document):
     category = StringField(max_length=100)
     sub_category = StringField(max_length=100)
     
+    # TODO: Inför frågor/delfrågor i termdokument och kör om importen
     question = StringField()
     question_part = StringField()
     summary_of = ListField()
@@ -95,53 +100,12 @@ class Variable(Document):
     
     def __unicode__(self):
         return self.key
-
-"""
-    Question
-    {
-        "id": "093ur093u0983029823098",
-        "parent": null, 
-        "question": "Hur stort bokbestånd hade folkbiblioteket totalt den 31 december 2012?",
-        "variable": null
-    },
-    {
-        "id": "f79d87f9sd6fs7f6s7d6f9s7df",
-        "parent": "093ur093u0983029823098", 
-        "question": "Hur stort bokbestånd hade folkbiblioteket totalt den 31 december 2012?",
-        "variable": "sd6f6s8fa9df9ad7f9a7df9"
-    },
-    -------- OR PERHAPS:
-    {
-        "id": "093ur093u0983029823098",
-        "question": "Hur stort bokbestånd hade folkbiblioteket totalt den 31 december 2012?",
-        "variable": null, 
-        "question_parts": [
-            {
-                "part": "Skönlitteratur för vuxna",
-                "variable": "sd6f6s8fa9df9ad7f9a7df9"
-            },
-            {
-                "part": "Skönlitteratur för barn",
-                "variable": "2309482039r8203982"
-            }
-        ]
-    }
-"""
-class Question(Document):
-    parent = ReferenceField('Question')
-    question = StringField(required=True)
-     
-    # Not required if this is a parent question
-    variable = ReferenceField(Variable)
-     
-    meta = {
-        'collection': 'libstat_questions'
-    }
+ 
  
 class Survey(Document):
     target_group = StringField(max_length=20, required=True, choices=SURVEY_TARGET_GROUPS)
     sample_year = IntField(required=True)
-    questions = ListField(ReferenceField(Question), required=True)
+    questions = ListField(ReferenceField(Variable), required=True)
      
     meta = {
         'collection': 'libstat_surveys'
@@ -199,6 +163,8 @@ class Library(EmbeddedDocument):
         return u"libdb [{}, {}, {}]".format(self.bibdb_id, self.bibdb_sigel, self.bibdb_name)
 
 class SurveyResponseMetadata(EmbeddedDocument):
+    # TODO: Migrera data från observations till denna modell!
+    
     # Public
     municipality_name = StringField(max_length=100)
     municipality_code = StringField(max_length=6)
@@ -216,8 +182,11 @@ class SurveyResponseMetadata(EmbeddedDocument):
     population_nation = LongField()
     population_0to14y = LongField()
     
-class SurveyResponse(Document):
-    library_name = StringField(max_length=100, required=True, unique_with='sample_year') #TODO: BOrde det inte vara unique_with["sample_year","target_group"]??
+    
+class SurveyResponseBase(Document):
+    """
+        Abstract base class for SurveyResponse and backup/logging model SurveyResponseVersion.
+    """
     sample_year = IntField(required=True)
     target_group = StringField(required=True, choices=SURVEY_TARGET_GROUPS)
     
@@ -229,11 +198,60 @@ class SurveyResponse(Document):
     date_modified = DateTimeField(required=True, default=datetime.utcnow)
     
     observations = ListField(EmbeddedDocumentField(SurveyObservation))
+    
+    meta = {
+        'abstract': True,
+    }
+    
+    def observation_by_key(self, key):
+        hits = [obs for obs in self.observations if obs._source_key == key]
+        return hits[0] if len(hits) > 0 else None
 
+
+class SurveyResponseDraft(SurveyResponseBase):
+    """
+        TODO: A draft for a survey response, where the library has not yet completed the survey.
+        When the survey is completed, the draft should be copied to a SurveyResponse object. 
+    """  
+     #TODO: Borde det inte vara unique_with["sample_year","target_group"]??
+    library_name = StringField(max_length=100, required=True, unique_with='sample_year') 
+    
+    meta = {
+        'collection': 'libstat_survey_response_drafts'
+    }
+    
+        
+class SurveyResponse(SurveyResponseBase):
+    """
+        A single survey response for a library, sample year (and target group).
+    """
+     #TODO: Borde det inte vara unique_with["sample_year","target_group"]??
+    library_name = StringField(max_length=100, required=True, unique_with='sample_year') 
+    
     meta = {
         'collection': 'libstat_survey_responses',
         'queryset_class': SurveyResponseQuerySet,
     }
+    
+    @classmethod
+    def store_version_and_update_date_modified(cls, sender, document, **kwargs):
+        if document.id: 
+            changed_fields = document.__dict__["_changed_fields"] if "_changed_fields" in document.__dict__ else []
+            if changed_fields == [u"published_at"]:
+                logger.debug(u"PRE SAVE: Survey response has been published, using publishing date as modified date")
+                document.date_modified = document.published_at
+            else:
+                logger.info(u"PRE SAVE: Fields {} have changed, creating survey response version from current version".format(changed_fields))
+                query_set = SurveyResponse.objects.filter(pk=document.id)
+                assert len(query_set) > 0 # Need to do something with query_set since it is lazy loaded. Otherwise nothing will be cloned.
+                versions = query_set.clone_into(SurveyResponseVersion.objects)
+                for v in versions:
+                    v.id = None
+                    v.survey_response_id = document.id
+                    v.save()
+        else:
+            logger.debug("PRE SAVE: Creation of new object, setting modified date to value of creation date")
+            document.date_modified = document.date_created
     
     @property
     def latest_version_published(self):
@@ -274,18 +292,37 @@ class SurveyResponse(Document):
                 data_item.save()
             
         self.published_at = publishing_date
-        self.date_modified = publishing_date
         self.save()
-    
-    def observation_by_key(self, key):
-        hits = [obs for obs in self.observations if obs._source_key == key]
-        return hits[0] if len(hits) > 0 else None
       
     def __unicode__(self):
         return u"{} {} {}".format(self.target_group, self.library_name, self.sample_year)
 
 
+class SurveyResponseVersion(SurveyResponseBase):
+    """
+        Backup/logging of changes in a SurveyResponse.
+        
+        Prior to any changes in a SurveyResponse, a new copy should be stored as a SurveyResponseVersion.
+    """
+    # Not unique to enable storage of multiple versions
+    library_name = StringField(max_length=100, required=True) 
+    
+    survey_response_id = ObjectIdField(required=True)
+ 
+    meta = {
+        'collection': 'libstat_survey_response_versions',
+        'ordering': ['-date_modified']
+    }
+
+
+
 class OpenData(Document):
+    """
+        Open, published data based on survey observations.
+        
+        OpenData objects are created when publishing a SurveyResponse.
+    """
+    
     library_name = StringField(max_length=100, required=True, unique_with=['sample_year', 'variable'])
     library_id = StringField(max_length=100) #TODO
     sample_year = IntField(required=True)
@@ -327,4 +364,8 @@ class OpenData(Document):
 
     def __unicode__(self):
       return u"{} {} {} {} {}".format(self.library_name, self.sample_year, self.target_group, self.variable.key, self.value)
-  
+ 
+"""
+    Post/pre save actions and other signals
+"""
+signals.pre_save.connect(SurveyResponse.store_version_and_update_date_modified, sender=SurveyResponse)
