@@ -72,7 +72,7 @@ class SurveyResponseForm(forms.Form):
             self.fields['library_name'] = library_name
             
             
-    def save(self, commit=True):
+    def save(self, commit=True, user=None):
       surveyResponse = self.instance if self.instance else SurveyResponse()
       surveyResponse.library_name = self.cleaned_data['library_name']
       surveyResponse.sample_year = self.instance.sample_year if self.instance else self.cleaned_data['sample_year']
@@ -84,6 +84,8 @@ class SurveyResponseForm(forms.Form):
       surveyResponse.metadata.respondent_name = self.cleaned_data['respondent_name']
       surveyResponse.metadata.respondent_email = self.cleaned_data['respondent_email']
       surveyResponse.metadata.respondent_phone = self.cleaned_data['respondent_phone']
+      
+      surveyResponse.modified_by = user
       
       if commit:
           surveyResponse.save()
@@ -142,7 +144,7 @@ class SurveyObservationsForm(forms.Form):
                                                                            widget = forms.TextInput(attrs={'class': 'form-control'}), 
                                                                            label = label, 
                                                                            initial = observation.value)
-    def save(self, commit=True):
+    def save(self, commit=True, user=None):
         if not self.instance:
             raise ValidationError(_(u"Enkätsvar finns inte, kan inte uppdatera"), code=u"missing_instance")
         
@@ -165,6 +167,8 @@ class SurveyObservationsForm(forms.Form):
                 observation.value = float(value)/100 if value else None
             else:
                 observation.value = value
+        
+        surveyResponse.modified_by = user
         
         if commit:
             surveyResponse.save()

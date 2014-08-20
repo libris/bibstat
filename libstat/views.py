@@ -214,7 +214,7 @@ def edit_survey_response(request, survey_response_id):
         
         if form.is_valid():
             try:
-                survey_response = form.save();
+                survey_response = form.save(user=request.user);
                 return redirect("edit_survey_response", survey_response_id)
             
             except NotUniqueError as nue:
@@ -252,7 +252,7 @@ def edit_survey_observations(request, survey_response_id):
         form = SurveyObservationsForm(request.POST, instance=survey_response)
         if form.is_valid():
             try:
-                survey_response = form.save()
+                survey_response = form.save(user=request.user)
             except Exception as e:
                  logger.warning(u"Error updating SurveyResponse observations {}: {}".format(survey_response_id, e))
                  form._errors['__all__'] = ErrorList([u"Kan inte uppdatera enkätsvar"])

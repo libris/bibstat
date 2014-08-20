@@ -198,8 +198,10 @@ class SurveyResponseBase(Document):
     published_by = ReferenceField(User)
     
     date_created = DateTimeField(required=True, default=datetime.utcnow)
+    created_by = ReferenceField(User)
     
     date_modified = DateTimeField(required=True, default=datetime.utcnow)
+    modified_by = ReferenceField(User)
     
     observations = ListField(EmbeddedDocumentField(SurveyObservation))
     
@@ -243,6 +245,7 @@ class SurveyResponse(SurveyResponseBase):
             if hasattr(document, "_action_publish"):
                 #logger.debug(u"PRE SAVE: Survey response has been published, using publishing date as modified date")
                 document.date_modified = document.published_at
+                document.modified_by = document.published_by
             else:
                 changed_fields = document.__dict__["_changed_fields"] if "_changed_fields" in document.__dict__ else []
                 logger.info(u"PRE SAVE: Fields {} have changed, creating survey response version from current version".format(changed_fields))
@@ -254,9 +257,11 @@ class SurveyResponse(SurveyResponseBase):
                     v.survey_response_id = document.id
                     v.save()
                 document.date_modified = datetime.now()
+                # field modified_by is set in form
         else:
             #logger.debug("PRE SAVE: Creation of new object, setting modified date to value of creation date")
             document.date_modified = document.date_created
+            document.modified_by = document.created_by
     
     @property
     def latest_version_published(self):

@@ -13,19 +13,21 @@ from django.conf import settings
 """
 class SurveyResponseTest(MongoTestCase):
     def setUp(self):
+        self.current_user = User.objects.filter(username="admin")[0]
+
         v1 = Variable(key=u"folk5", description=u"Antal bemannade serviceställen, sammanräknat", type="integer", is_public=True, target_groups=["public"])
         v1.save()
         v2 = Variable(key=u"folk6", description=u"Är huvudbiblioteket i er kommun integrerat med ett skolbibliotek? 1=ja", type="boolean", is_public=True, target_groups=["public"])
         v2.save()
         v3 = Variable(key=u"folk8", description=u"Textkommentar", type="string", is_public=False, target_groups=["public"])
         v3.save()
-        sr = SurveyResponse(library_name="KARLSTAD STADSBIBLIOTEK", sample_year=2013, target_group="public", observations=[])
+        
+        sr = SurveyResponse(library_name="KARLSTAD STADSBIBLIOTEK", sample_year=2013, target_group="public", observations=[], created_by=self.current_user)
         sr.library = Library(bibdb_id=u"323", bibdb_sigel="Kld1", bibdb_name=u"Karlstad stadsbibliotek")
         sr.observations.append(SurveyObservation(variable=v1, value=7, _source_key="folk5", _is_public=v1.is_public))
         sr.observations.append(SurveyObservation(variable=v2, value=None, _source_key="folk6", _is_public=v2.is_public))
         sr.observations.append(SurveyObservation(variable=v3, value=u"Här är en kommentar", _source_key="folk8", _is_public=v3.is_public))
         self.survey_response = sr.save()
-        self.current_user = User.objects.filter(username="admin")[0]
     
     
     def test_should_export_public_non_null_observations_to_openData(self):
@@ -140,6 +142,7 @@ class SurveyResponseTest(MongoTestCase):
         
     def test_should_set_modified_date_when_creating_object(self):
         self.assertEquals(self.survey_response.date_modified, self.survey_response.date_created)
+        self.assertEquals(self.survey_response.modified_by, self.current_user)
         
         
     def test_should_set_published_date_and_modified_date_when_publishing(self):
@@ -151,6 +154,7 @@ class SurveyResponseTest(MongoTestCase):
         self.assertTrue(self.survey_response.published_at != None)
         self.assertTrue(self.survey_response.date_modified > date_modified)
         self.assertTrue(self.survey_response.published_by, self.current_user)
+        self.assertTrue(self.survey_response.modified_by, self.current_user)
         
     
 class OpenDataTest(MongoTestCase):

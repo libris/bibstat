@@ -43,7 +43,8 @@
                     <label>{% trans "Senast ändrad" %}:</label>
                   </div>
                   <div class="col-md-10">
-                    <span class="date_modified">{{form.instance.date_modified|date:"Y-m-d H:i"}}</span> <!--TODO:  <span>av Cecilia Ranemo</span> -->
+                    <span class="date_modified">{{form.instance.date_modified|date:"Y-m-d H:i"}}</span> 
+                    <span class="modified_by">{% if form.instance.modified_by %}av {{form.instance.modified_by}}{% endif %}</span>
                   </div>
                 </div>
                 <div class="row">
@@ -51,16 +52,8 @@
                     <label>{% trans "Publicerad" %}:</label>
                   </div>
                   <div class="col-md-10">
-                    {% if form.instance.latest_version_published  %}
-                      <span class="published_at">{{form.instance.published_at|date:"Y-m-d H:i"}}</span> 
-                      <!--TODO: <span>av Cecilia Ranemo.</span> -->
-                    {% elif form.instance.latest_version_modified %}
-                      <span class="published_at">{{form.instance.published_at|date:"Y-m-d H:i"}}</span> 
-                      <!--TODO: <span>av Cecilia Ranemo</span> --> 
-                      <span class="text-warning form-validation after">{% trans "Enkätsvaret har ändrats efter senaste publicering " %}</span>
-                    {% elif form.instance.not_published %}
-                      <span class="published_at">{% trans "Ej publicerad" %}</span>
-                    {% endif %}
+                    <span class="published_at">{{form.instance.published_at|date:"Y-m-d H:i"}}</span>
+                    <span class="published-by">{% if form.instance.published_by %}av {{form.instance.published_by}}{% endif %}</span>
                   </div>
                 </div>
               </div>

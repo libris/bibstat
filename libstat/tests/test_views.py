@@ -149,6 +149,7 @@ class EditSurveyResponseViewTest(MongoTestCase):
         
         self.url = reverse("edit_survey_response", kwargs={"survey_response_id":str(self.survey_response.id)})
         self.client.login(username="admin", password="admin")
+        self.current_user = User.objects.filter(username="admin")[0]
         
     def test_view_requires_superuser_login(self):
         # TODO:
@@ -176,6 +177,7 @@ class EditSurveyResponseViewTest(MongoTestCase):
         self.assertEquals(result.metadata.respondent_name, u"Åsa Hansen")
         self.assertEquals(result.metadata.respondent_email, u"asa.hansen@karlstad.se")
         self.assertEquals(result.metadata.respondent_phone, u"054-540 23 72")
+        self.assertEquals(result.modified_by, self.current_user)
         
     def test_should_not_update_sample_year_or_target_group_for_existing_SurveyResponse(self):
         response = self.client.post(self.url, {u"sample_year": u"2014", u"target_group": u"research", u"library_name": u"Karlstad Stadsbibliotek",
@@ -233,6 +235,7 @@ class EditSurveyObservationsViewTest(MongoTestCase):
         self.obs_folk38 = self.survey_response.observations[5]   
         self.url = reverse("edit_survey_observations", kwargs={"survey_response_id":str(self.survey_response.id)})
         self.client.login(username="admin", password="admin")
+        self.current_user = User.objects.filter(username="admin")[0]
         
     def test_should_edit_survey_observations(self):
         response = self.client.post(self.url, {u"folk5": u"5", 
@@ -250,6 +253,7 @@ class EditSurveyObservationsViewTest(MongoTestCase):
         self.assertEqual(result.observation_by_key(u"folk35").value, 8.9)
         self.assertEqual(result.observation_by_key(u"folk52").value, 0.61)
         self.assertEqual(result.observation_by_key(u"folk38").value, 9999999999999L)
+        self.assertEquals(result.modified_by, self.current_user)
         
     def test_should_return_validation_errors_if_wrong_data_type(self):
         response = self.client.post(self.url, {u"folk5": u"5.72",
