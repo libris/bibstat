@@ -129,12 +129,13 @@ class SurveyResponseTest(MongoTestCase):
         
     def test_should_set_modified_date_when_updating_existing_object(self):
         self.survey_response.library_name = u"Stadsbiblioteket i Karlstad"
-        updated_survey_response = self.survey_response.save()
+        self.survey_response.save()
 
         versions = SurveyResponseVersion.objects.filter(survey_response_id=self.survey_response.id)
         self.assertEquals(len(versions), 1)
         
-        self.assertTrue(updated_survey_response.date_modified > versions[0].date_modified)
+        sr = SurveyResponse.objects.get(pk=self.survey_response.id)
+        self.assertTrue(sr.date_modified > versions[0].date_modified)
         
         
     def test_should_set_modified_date_when_creating_object(self):

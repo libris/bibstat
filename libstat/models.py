@@ -253,6 +253,7 @@ class SurveyResponse(SurveyResponseBase):
                     v.id = None
                     v.survey_response_id = document.id
                     v.save()
+                document.date_modified = datetime.now()
         else:
             #logger.debug("PRE SAVE: Creation of new object, setting modified date to value of creation date")
             document.date_modified = document.date_created
