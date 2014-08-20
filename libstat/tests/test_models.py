@@ -1,6 +1,7 @@
 # -*- coding: UTF-8 -*-
 from libstat.tests import MongoTestCase
 from libstat.models import *
+from mongoengine.django.auth import User
 
 from datetime import datetime
 import json
@@ -24,10 +25,11 @@ class SurveyResponseTest(MongoTestCase):
         sr.observations.append(SurveyObservation(variable=v2, value=None, _source_key="folk6", _is_public=v2.is_public))
         sr.observations.append(SurveyObservation(variable=v3, value=u"Här är en kommentar", _source_key="folk8", _is_public=v3.is_public))
         self.survey_response = sr.save()
+        self.current_user = User.objects.filter(username="admin")[0]
     
     
     def test_should_export_public_non_null_observations_to_openData(self):
-        self.survey_response.publish()
+        self.survey_response.publish(user=self.current_user)
         
         data = OpenData.objects.all()
         self.assertEquals(len(data), 1)
@@ -45,16 +47,17 @@ class SurveyResponseTest(MongoTestCase):
         
         sr = SurveyResponse.objects.get(pk=self.survey_response.id)
         self.assertEquals(open_data.date_created, sr.published_at)
+        self.assertEquals(sr.published_by, self.current_user)
         
     
     def test_should_overwrite_value_and_date_modified_for_existing_openData(self):
-        self.survey_response.publish()
+        self.survey_response.publish(user=self.current_user)
 
         for obs in self.survey_response.observations:
             if obs.variable.key == "folk5":
                 obs.value = 9
         self.survey_response.save()
-        self.survey_response.publish()
+        self.survey_response.publish(user=self.current_user)
         
         data = OpenData.objects.all()
         self.assertEquals(len(data), 1)
@@ -142,10 +145,11 @@ class SurveyResponseTest(MongoTestCase):
         self.assertTrue(self.survey_response.published_at == None)
         date_modified = self.survey_response.date_modified
         
-        self.survey_response.publish()
+        self.survey_response.publish(user=self.current_user)
         
         self.assertTrue(self.survey_response.published_at != None)
         self.assertTrue(self.survey_response.date_modified > date_modified)
+        self.assertTrue(self.survey_response.published_by, self.current_user)
         
     
 class OpenDataTest(MongoTestCase):

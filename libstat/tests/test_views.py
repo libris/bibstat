@@ -4,6 +4,7 @@ from libstat.models import Variable, SurveyResponse, SurveyObservation
 
 from django.core.urlresolvers import reverse
 import json
+from mongoengine.django.auth import User
 
 """
 View test cases
@@ -103,6 +104,41 @@ class SurveyResponsesViewTest(MongoTestCase):
                             .format(reverse("edit_survey_response", kwargs={"survey_response_id":str(self.survey_response.id)})), 
                             count=1, status_code=200, html=True)
         
+        
+class PublishSurveyResponsesViewTest(MongoTestCase):
+    def setUp(self):
+        self.survey_response = SurveyResponse(library_name="KARLSTAD STADSBIBLIOTEK", sample_year=2013, target_group="public", observations=[])
+        self.survey_response.save()
+        sr2 = SurveyResponse(library_name="NORRBOTTENS LÄNSBIBLIOTEK", sample_year=2012, target_group="public", observations=[]);
+        sr2.save()
+        sr3 = SurveyResponse(library_name="Sjukhusbiblioteken i Dalarnas län", sample_year=2013, target_group="hospital", observations=[]);
+        sr3.save()
+        
+        self.url = reverse("publish_survey_responses")
+        self.client.login(username="admin", password="admin")
+    
+    def test_should_publish_selection(self):
+        response = self.client.post(self.url, {u"sample_year": u"2013", 
+                                               u"target_group": u"public", 
+                                               u"survey-response-ids": [u"{}".format(self.survey_response.id)]}, 
+                                    follow=True)
+        self.assertEquals(response.status_code, 200)
+        
+        survey_response = SurveyResponse.objects.get(pk=self.survey_response.id)
+        self.assertTrue(survey_response.published_at != None)
+        self.assertEquals(survey_response.published_by, User.objects.filter(username="admin")[0])
+        
+    def test_should_not_publish_unless_selected_ids(self):
+        response = self.client.post(self.url, {u"sample_year": u"2013", 
+                                               u"target_group": u"public", 
+                                               u"survey-response-ids": []}, 
+                                    follow=True)
+        self.assertEquals(response.status_code, 200)
+        survey_response = SurveyResponse.objects.get(pk=self.survey_response.id)
+        self.assertEquals(survey_response.published_at, None)
+        self.assertEquals(survey_response.published_by, None)
+        
+
 class EditSurveyResponseViewTest(MongoTestCase):
     def setUp(self):
         self.survey_response = SurveyResponse(library_name=u"KARLSTAD STADSBIBLIOTEK", sample_year=2013, target_group=u"public", observations=[])

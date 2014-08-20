@@ -1,6 +1,7 @@
 # -*- coding: UTF-8 -*-
 from mongoengine import *
 from mongoengine import signals
+from mongoengine.django.auth import User
 
 from pip._vendor.pkg_resources import require
 from mongoengine.queryset.queryset import QuerySet
@@ -190,11 +191,14 @@ class SurveyResponseBase(Document):
     sample_year = IntField(required=True)
     target_group = StringField(required=True, choices=SURVEY_TARGET_GROUPS)
     
-    library = EmbeddedDocumentField(Library) #TODO
-    metadata = EmbeddedDocumentField(SurveyResponseMetadata) # TODO
+    library = EmbeddedDocumentField(Library)
+    metadata = EmbeddedDocumentField(SurveyResponseMetadata)
 
     published_at = DateTimeField()
+    published_by = ReferenceField(User)
+    
     date_created = DateTimeField(required=True, default=datetime.utcnow)
+    
     date_modified = DateTimeField(required=True, default=datetime.utcnow)
     
     observations = ListField(EmbeddedDocumentField(SurveyObservation))
@@ -236,11 +240,11 @@ class SurveyResponse(SurveyResponseBase):
     @classmethod
     def store_version_and_update_date_modified(cls, sender, document, **kwargs):
         if document.id: 
-            changed_fields = document.__dict__["_changed_fields"] if "_changed_fields" in document.__dict__ else []
-            if changed_fields == [u"published_at"]:
-                logger.debug(u"PRE SAVE: Survey response has been published, using publishing date as modified date")
+            if hasattr(document, "_action_publish"):
+                #logger.debug(u"PRE SAVE: Survey response has been published, using publishing date as modified date")
                 document.date_modified = document.published_at
             else:
+                changed_fields = document.__dict__["_changed_fields"] if "_changed_fields" in document.__dict__ else []
                 logger.info(u"PRE SAVE: Fields {} have changed, creating survey response version from current version".format(changed_fields))
                 query_set = SurveyResponse.objects.filter(pk=document.id)
                 assert len(query_set) > 0 # Need to do something with query_set since it is lazy loaded. Otherwise nothing will be cloned.
@@ -250,7 +254,7 @@ class SurveyResponse(SurveyResponseBase):
                     v.survey_response_id = document.id
                     v.save()
         else:
-            logger.debug("PRE SAVE: Creation of new object, setting modified date to value of creation date")
+            #logger.debug("PRE SAVE: Creation of new object, setting modified date to value of creation date")
             document.date_modified = document.date_created
     
     @property
@@ -268,7 +272,7 @@ class SurveyResponse(SurveyResponseBase):
     def target_group__desc(self):
         return targetGroups[self.target_group]
     
-    def publish(self):
+    def publish(self, user=None):
         # TODO: Publishing date as a parameter to enable setting correct date for old data?
         logger.debug(u"Publishing SurveyResponse {}".format(self.id))
         publishing_date = datetime.utcnow()
@@ -292,6 +296,11 @@ class SurveyResponse(SurveyResponseBase):
                 data_item.save()
             
         self.published_at = publishing_date
+        self.published_by = user
+        
+        # Custom attribute to handle pre-save actions
+        self._action_publish = True 
+        
         self.save()
       
     def __unicode__(self):
