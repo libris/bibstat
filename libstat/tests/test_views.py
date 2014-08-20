@@ -23,6 +23,7 @@ class EditVariableViewTest(MongoTestCase):
         
         self.url = reverse("edit_variable", kwargs={"variable_id":str(self.v1.id)})
         self.client.login(username="admin", password="admin")
+        self.current_user = User.objects.filter(username="admin")[0]
 
     def test_should_update_variable(self):
         response = self.client.post(self.url, {u"category": self.new_category, u"sub_category": self.new_sub_category, 
@@ -41,6 +42,7 @@ class EditVariableViewTest(MongoTestCase):
         self.assertEquals(result.target_groups, self.new_target_groups)
         self.assertEquals(result.description, self.new_description)
         self.assertEquals(result.comment, self.new_comment)
+        self.assertEquals(result.modified_by, self.current_user)
     
     def test_should_return_validation_errors_when_omitting_mandatory_fields(self):
         response = self.client.post(self.url, {})

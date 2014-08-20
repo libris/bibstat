@@ -40,8 +40,10 @@ rdf_variable_types = {TYPE_STRING[0]:u"xsd:string" , TYPE_BOOLEAN[0]: u"xsd:bool
 """
 DATA_IMPORT_nonMeasurementCategories = [u"Bakgrundsvariabel", u"Tid", u"Befolkning", u"Bakgrundsvariabler"]
 
-class Variable(Document):
-    key = StringField(max_length=100, required=True, unique=True)
+class VariableBase(Document):
+    """
+        Abstract base class for Variable and backup/logging model VariableVersion
+    """
     description = StringField(required=True)
     
     # Comment is a private field and should never be returned as open data
@@ -59,10 +61,42 @@ class Variable(Document):
     question = StringField()
     question_part = StringField()
     summary_of = ListField()
+    
+    date_modified = DateTimeField()
+    modified_by = ReferenceField(User)
+    
+    meta = {
+        'abstract': True,
+    }
 
+    
+class Variable(VariableBase):
+    """
+        Representation of a statistical term with corresponding survey question
+    """
+    key = StringField(max_length=100, required=True, unique=True)
+    
     meta = {
         'collection': 'libstat_variables'
     }
+    
+    @classmethod
+    def store_version_and_update_date_modified(cls, sender, document, **kwargs):
+        if document.id: 
+            if not document.date_modified:
+                document.date_modified = document.id.generation_time
+            changed_fields = document.__dict__["_changed_fields"] if "_changed_fields" in document.__dict__ else []
+            logger.info(u"PRE SAVE: Fields {} have changed, creating variable version from current version".format(changed_fields))
+            query_set = Variable.objects.filter(pk=document.id)
+            assert len(query_set) > 0 # Need to do something with query_set since it is lazy loaded. Otherwise nothing will be cloned.
+            versions = query_set.clone_into(VariableVersion.objects)
+            for v in versions:
+                v.id = None
+                v.variable_id = document.id
+                v.save()
+        
+        document.date_modified = datetime.now()
+        # field modified_by is set in form
     
     @property
     def is_summary_auto_field(self):
@@ -102,6 +136,21 @@ class Variable(Document):
     def __unicode__(self):
         return self.key
  
+ 
+class VariableVersion(VariableBase):
+    """
+        Backup/logging of changes in a Variable.
+        
+        Prior to any changes in a Variable, a new copy should be stored as a VariableVersion.
+    """
+    key = StringField(max_length=100, required=True)
+    variable_id = ObjectIdField(required=True)
+ 
+    meta = {
+        'collection': 'libstat_variable_versions',
+        #'ordering': ['-date_modified']
+    }
+     
  
 class Survey(Document):
     target_group = StringField(max_length=20, required=True, choices=SURVEY_TARGET_GROUPS)
@@ -384,3 +433,4 @@ class OpenData(Document):
     Post/pre save actions and other signals
 """
 signals.pre_save.connect(SurveyResponse.store_version_and_update_date_modified, sender=SurveyResponse)
+signals.pre_save.connect(Variable.store_version_and_update_date_modified, sender=Variable)

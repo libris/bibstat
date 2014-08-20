@@ -1,7 +1,4 @@
 # -*- coding: UTF-8 -*-
-from mongodbforms import DocumentForm, EmbeddedDocumentForm
-from libstat.fieldgenerator import FormFieldGenerator
-
 import math
 from collections import OrderedDict
 from django import forms
@@ -9,27 +6,67 @@ from django.utils.safestring import mark_safe
 
 
 from libstat.models import Variable, variable_types, SurveyResponse, SurveyObservation, SURVEY_TARGET_GROUPS, SurveyResponseMetadata
-from libstat.models import TYPE_STRING , TYPE_BOOLEAN, TYPE_INTEGER, TYPE_LONG, TYPE_DECIMAL, TYPE_PERCENT 
+from libstat.models import TYPE_STRING , TYPE_BOOLEAN, TYPE_INTEGER, TYPE_LONG, TYPE_DECIMAL, TYPE_PERCENT, VARIABLE_TYPES
 from django.core.exceptions import ValidationError
 
 #TODO: Define a LoginForm class with extra css-class 'form-control' ?
 
-class VariableForm(DocumentForm):
+class VariableForm(forms.Form):
+    #TODO: On create we need key = forms.CharField(required=True, widget=forms.TextInput(attrs={'class':'form-control'}))
     question = forms.CharField(required=False, widget=forms.TextInput(attrs={'class': 'form-control'}))
     question_part = forms.CharField(required=False, widget=forms.TextInput(attrs={'class': 'form-control'}))
     category = forms.CharField(required=False, widget=forms.TextInput(attrs={'class': 'form-control'}))
     sub_category = forms.CharField(required=False, widget=forms.TextInput(attrs={'class': 'form-control'}))
     
+    type = forms.ChoiceField(required=True, widget=forms.RadioSelect())
+    
     # Since this is a checkbox, a value will only be returned in form if the checkbox is checked. Hence the required=False.
     is_public = forms.BooleanField(required=False, widget=forms.CheckboxInput(attrs={'value':'1'}))
+    
+    target_groups = forms.MultipleChoiceField(required=True, widget=forms.CheckboxSelectMultiple())
     
     description = forms.CharField(widget=forms.Textarea(attrs={'class': 'form-control', 'rows': '2'}))
     comment = forms.CharField(required=False, widget=forms.Textarea(attrs={'class': 'form-control', 'rows': '2'}))
     
-    class Meta:
-        model = Variable
-        fields = ["question", "question_part", "category", "sub_category", "type", "is_public", "target_groups", "description", "comment"]
-        formfield_generator = FormFieldGenerator(widget_overrides={'stringfield_choices': forms.RadioSelect})
+    def __init__(self, *args, **kwargs):
+        self.instance = kwargs.pop('instance', None)
+        
+        super(VariableForm, self).__init__(*args, **kwargs)
+        
+        self.fields['type'].choices = [type for type in VARIABLE_TYPES]
+        self.fields['target_groups'].choices = [target_group for target_group in SURVEY_TARGET_GROUPS]
+        
+        if self.instance:
+            self.fields['question'].initial = self.instance.question
+            self.fields['question_part'].initial = self.instance.question_part
+            self.fields['category'].initial = self.instance.category
+            self.fields['sub_category'].initial = self.instance.sub_category
+            self.fields['type'].initial = self.instance.type
+            self.fields['is_public'].initial = int(self.instance.is_public)
+            self.fields['target_groups'].initial = self.instance.target_groups
+            self.fields['description'].initial = self.instance.description
+            self.fields['comment'].initial = self.instance.comment
+        
+    def save(self, commit=True, user=None):
+        variable = self.instance if self.instance else Variable()
+        variable.key = self.instance.key if self.instance else self.cleaned_data['key']
+        variable.question = self.cleaned_data['question']
+        variable.question_part = self.cleaned_data['question_part']
+        variable.category = self.cleaned_data['category']
+        variable.sub_category = self.cleaned_data['sub_category']
+        variable.type = self.cleaned_data['type']
+        variable.is_public = self.cleaned_data['is_public']
+        variable.target_groups = self.cleaned_data['target_groups']
+        variable.description = self.cleaned_data['description']
+        variable.comment = self.cleaned_data['comment']
+        
+        variable.modified_by = user
+        
+        if commit:
+            variable.save()
+
+        return variable
+    
 
 class SurveyResponseForm(forms.Form):
     """

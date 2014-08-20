@@ -255,4 +255,22 @@ class VariableTest(MongoTestCase):
         folk31 = Variable.objects.get(pk=self.v3.id)
         self.assertEquals(folk31.label, folk31.description)
         
+    def test_should_store_version_when_updating_existing_object(self):
+        self.v.description = u"Totalt antal bemannade serviceställen, summering av antal filialer och huvudbibliotek"
+        self.v.save()
+        
+        versions = VariableVersion.objects.all()
+        self.assertEquals(len(versions), 1)
+        self.assertEquals(versions[0].description, u"Antal bemannade servicesställen")
+        
+    def test_should_set_modified_date_when_updating_existing_object(self):
+        date_modified = self.v.date_modified
+        self.v.description = u"Totalt antal bemannade serviceställen, summering av antal filialer och huvudbibliotek"
+        self.v.save()
+        
+        updated = Variable.objects.get(pk=self.v.id)
+        self.assertTrue(updated.date_modified > date_modified)
+        
+    def test_should_set_modified_date_when_creating_object(self):
+        self.assertTrue(self.v.date_modified != None)
         
