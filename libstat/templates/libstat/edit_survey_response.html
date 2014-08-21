@@ -1,10 +1,21 @@
 {% extends "libstat/base.html" %}
 {% load i18n %}
+{% load libstat_tags %}
 
 {% block content %}
   <div class="container">
     <div class="page-header">
-      <h1>{% trans "Statistikenkät" %} {{form.instance.sample_year|add:"1"}}</h1>
+      <div class="row">
+        <div class="col-md-10">
+          <h1>{% trans "Statistikenkät" %} {{form.instance.sample_year|add:"1"}} <small>{{form.instance.library_name}}</small></h1>
+        </div>
+        <div class="col-md-2 header-actions">
+          <form action="{% url 'publish_survey_response' form.instance.id %}" method="POST" role="form" class="form publish-survey-response-form">
+             {% csrf_token %}
+            <input type="submit" class="btn btn-primary pull-right" value="{% trans 'Publicera' %}"/> 
+          </form>
+        </div>
+      </div>
     </div>
 
     <div class="row">
@@ -17,7 +28,6 @@
               <h3 class="panel-title">{% trans "Information om enkät och svarande organisation" %}</h3>
             </div>
             <div class="panel-body">
-            
               <div class="form-group">
                 <span class="text-danger errors ">{{form.non_field_errors}}</span>
                 <div class="row">
@@ -43,7 +53,7 @@
                     <label>{% trans "Senast ändrad" %}:</label>
                   </div>
                   <div class="col-md-10">
-                    <span class="date_modified">{{form.instance.date_modified|date:"Y-m-d H:i"}}</span> 
+                    <span class="date_modified">{{form.instance.date_modified|utc_tz|date:"Y-m-d H:i"}}</span> 
                     <span class="modified_by">{% if form.instance.modified_by %}av {{form.instance.modified_by}}{% endif %}</span>
                   </div>
                 </div>
@@ -52,8 +62,11 @@
                     <label>{% trans "Publicerad" %}:</label>
                   </div>
                   <div class="col-md-10">
-                    <span class="published_at">{{form.instance.published_at|date:"Y-m-d H:i"}}</span>
+                    <span class="published_at">{{form.instance.published_at|utc_tz|date:"Y-m-d H:i"}}</span>
                     <span class="published-by">{% if form.instance.published_by %}av {{form.instance.published_by}}{% endif %}</span>
+                    {% if not form.instance.latest_version_published %}
+                      <span class="text-warning warnings right">{% trans "Senaste version är inte publicerad" %}</span>
+                    {% endif %}
                   </div>
                 </div>
               </div>

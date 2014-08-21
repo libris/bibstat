@@ -75,12 +75,12 @@ class SurveyResponseForm(forms.Form):
     sample_year = forms.CharField(required=True, max_length=4, widget=forms.HiddenInput) #TODO: Remove or make hidden
     target_group = forms.CharField(required=True, widget=forms.HiddenInput) # TODO: Remove or make hidden
     
-    library_name = forms.CharField(required=True, max_length=100, widget=forms.TextInput(attrs={'class': 'form-control width-auto', 'size': '58'}))
-    municipality_name = forms.CharField(required=False, max_length=100, widget=forms.TextInput(attrs={'class': 'form-control width-auto', 'size': '58'}))
+    library_name = forms.CharField(required=True, max_length=100, widget=forms.TextInput(attrs={'class': 'form-control', 'size': '58'}))
+    municipality_name = forms.CharField(required=False, max_length=100, widget=forms.TextInput(attrs={'class': 'form-control', 'size': '58'}))
     municipality_code = forms.CharField(required=False, max_length=6, widget=forms.TextInput(attrs={'class': 'form-control width-auto', 'size': '6'}))
     
-    respondent_name = forms.CharField(required=False, max_length=100, widget=forms.TextInput(attrs={'class': 'form-control width-auto', 'size': '58'}))
-    respondent_email = forms.EmailField(required=False, max_length=100, widget=forms.EmailInput(attrs={'class': 'form-control width-auto', 'size': '58'}))
+    respondent_name = forms.CharField(required=False, max_length=100, widget=forms.TextInput(attrs={'class': 'form-control', 'size': '58'}))
+    respondent_email = forms.EmailField(required=False, max_length=100, widget=forms.EmailInput(attrs={'class': 'form-control', 'size': '58'}))
     respondent_phone = forms.CharField(required=False, max_length=20, widget=forms.TextInput(attrs={'class': 'form-control width-auto', 'size': '20'}))
     
     def __init__(self, *args, **kwargs):

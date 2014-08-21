@@ -203,7 +203,31 @@ class EditSurveyResponseViewTest(MongoTestCase):
         # Assert below failes because there are 2 survey responses for ALE BIBLIOTEK
 #         self.assertEquals(len(SurveyResponse.objects.filter(library_name=u"ALE BIBLIOTEK")), 1)
 #         self.assertEquals(response.context['form']._errors['library_name'], [u"Det finns redan ett enkätsvar för detta bibliotek"])
+    
+    def test_should_show_publish_button(self):
+        response = self.client.get(reverse("edit_survey_response", kwargs={"survey_response_id":str(self.survey_response.id)}))
+        self.assertContains(response, u'<input type="submit" value="Publicera" class="btn btn-primary pull-right"/>'
+                            .format(self.url), count=1, status_code=200, html=True)
+
+
+class PublishSurveyResponseViewTest(MongoTestCase):
+    def setUp(self):
+        self.survey_response = SurveyResponse(library_name=u"KARLSTAD STADSBIBLIOTEK", sample_year=2013, target_group=u"public", observations=[])
+        self.survey_response.save()
         
+        self.url = reverse("publish_survey_response", kwargs={"survey_response_id":str(self.survey_response.id)})
+        self.edit_survey_response_url = reverse("edit_survey_response", kwargs={"survey_response_id":str(self.survey_response.id)})
+        self.client.login(username="admin", password="admin")
+        self.current_user = User.objects.filter(username="admin")[0]
+        
+    def test_should_publish_survey_response(self):
+        self.assertFalse(self.survey_response.is_published)
+        
+        response = self.client.post(self.url, {}, follow=True)
+        self.assertEquals(response.status_code, 200)
+        
+        result = SurveyResponse.objects.get(pk=self.survey_response.id)
+        self.assertTrue(result.is_published)
     
 class EditSurveyObservationsViewTest(MongoTestCase):
     def setUp(self):

@@ -3,7 +3,7 @@ from libstat.tests import MongoTestCase
 from libstat.models import *
 from mongoengine.django.auth import User
 
-from datetime import datetime
+from datetime import datetime, date, timedelta
 import json
 from django.conf import settings
 
@@ -145,17 +145,30 @@ class SurveyResponseTest(MongoTestCase):
         self.assertEquals(self.survey_response.modified_by, self.current_user)
         
         
-    def test_should_set_published_date_and_modified_date_when_publishing(self):
+    def test_should_set_published_date_but_not_modified_date_when_publishing(self):
         self.assertTrue(self.survey_response.published_at == None)
         date_modified = self.survey_response.date_modified
         
         self.survey_response.publish(user=self.current_user)
         
         self.assertTrue(self.survey_response.published_at != None)
-        self.assertTrue(self.survey_response.date_modified > date_modified)
         self.assertTrue(self.survey_response.published_by, self.current_user)
-        self.assertTrue(self.survey_response.modified_by, self.current_user)
+        self.assertEquals(self.survey_response.date_modified, date_modified)
         
+    def test_latest_version_published(self):
+        self.survey_response.published_at = self.survey_response.date_modified + timedelta(hours=-1)
+        self.assertFalse(self.survey_response.latest_version_published)
+        
+        self.survey_response.published_at = self.survey_response.date_modified
+        self.assertTrue(self.survey_response.latest_version_published)
+        
+    def test_is_published(self):
+        self.assertFalse(self.survey_response.is_published)
+        
+        self.survey_response.published_at = self.survey_response.date_modified
+        self.assertTrue(self.survey_response.is_published)
+        
+
     
 class OpenDataTest(MongoTestCase):
     def setUp(self):

@@ -95,7 +95,7 @@ class Variable(VariableBase):
                 v.variable_id = document.id
                 v.save()
         
-        document.date_modified = datetime.now()
+        document.date_modified = datetime.utcnow()
         # field modified_by is set in form
     
     @property
@@ -292,11 +292,7 @@ class SurveyResponse(SurveyResponseBase):
     @classmethod
     def store_version_and_update_date_modified(cls, sender, document, **kwargs):
         if document.id: 
-            if hasattr(document, "_action_publish"):
-                #logger.debug(u"PRE SAVE: Survey response has been published, using publishing date as modified date")
-                document.date_modified = document.published_at
-                document.modified_by = document.published_by
-            else:
+            if not hasattr(document, "_action_publish"):
                 changed_fields = document.__dict__["_changed_fields"] if "_changed_fields" in document.__dict__ else []
                 logger.info(u"PRE SAVE: Fields {} have changed, creating survey response version from current version".format(changed_fields))
                 query_set = SurveyResponse.objects.filter(pk=document.id)
@@ -306,7 +302,7 @@ class SurveyResponse(SurveyResponseBase):
                     v.id = None
                     v.survey_response_id = document.id
                     v.save()
-                document.date_modified = datetime.now()
+                document.date_modified = datetime.utcnow()
                 # field modified_by is set in form
         else:
             #logger.debug("PRE SAVE: Creation of new object, setting modified date to value of creation date")
@@ -318,12 +314,9 @@ class SurveyResponse(SurveyResponseBase):
         return self.published_at and self.published_at >= self.date_modified
     
     @property
-    def latest_version_not_published(self):
-        return self.published_at and self.published_at < self.date_modified 
+    def is_published(self):
+        return self.published_at != None
     
-    @property
-    def not_published(self):
-        return not self.published_at
     
     def target_group__desc(self):
         return targetGroups[self.target_group]

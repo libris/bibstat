@@ -87,4 +87,13 @@
     margin-left: -20px;
 }
 
+.header-actions {
+  margin-top: 34px;
+}
 
+.warnings {
+    font-style: italic;
+}
+.warnings.right {
+    margin-left: 8px;
+}

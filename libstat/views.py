@@ -200,6 +200,23 @@ def publish_survey_responses(request):
     return HttpResponseRedirect(u"{}{}".format(reverse("survey_responses"), u"?action=list&target_group={}&sample_year={}".format(target_group, sample_year)))
 
 @permission_required('is_superuser', login_url='index')
+def publish_survey_response(request, survey_response_id):
+    try:
+        survey_response = SurveyResponse.objects.get(pk=survey_response_id)
+    except:
+        raise Http404
+    
+    if request.method == "POST":
+        try:
+            survey_response.publish(user=request.user)
+        except Exception as e:
+            logger.error(u"Error when publishing survey response {}:".format(sr.id))
+            print e
+            
+    return redirect("edit_survey_response", survey_response_id)
+    
+    
+@permission_required('is_superuser', login_url='index')
 def edit_survey_response(request, survey_response_id):
     try:
         survey_response = SurveyResponse.objects.get(pk=survey_response_id)
