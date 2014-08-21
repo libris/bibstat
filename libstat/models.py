@@ -237,7 +237,6 @@ class SurveyResponseBase(Document):
     """
         Abstract base class for SurveyResponse and backup/logging model SurveyResponseVersion.
     """
-    sample_year = IntField(required=True)
     target_group = StringField(required=True, choices=SURVEY_TARGET_GROUPS)
     
     library = EmbeddedDocumentField(Library)
@@ -268,8 +267,9 @@ class SurveyResponseDraft(SurveyResponseBase):
         TODO: A draft for a survey response, where the library has not yet completed the survey.
         When the survey is completed, the draft should be copied to a SurveyResponse object. 
     """  
-     #TODO: Borde det inte vara unique_with["sample_year","target_group"]??
+     # Both unique fields need to be in subclasses to enable proper indexing.
     library_name = StringField(max_length=100, required=True, unique_with='sample_year') 
+    sample_year = IntField(required=True)
     
     meta = {
         'collection': 'libstat_survey_response_drafts'
@@ -280,8 +280,9 @@ class SurveyResponse(SurveyResponseBase):
     """
         A single survey response for a library, sample year (and target group).
     """
-     #TODO: Borde det inte vara unique_with["sample_year","target_group"]??
-    library_name = StringField(max_length=100, required=True, unique_with='sample_year') 
+    # Both unique fields need to be in subclasses to enable proper indexing.
+    library_name = StringField(max_length=100, required=True, unique_with='sample_year')
+    sample_year = IntField(required=True) 
     
     meta = {
         'collection': 'libstat_survey_responses',
@@ -368,8 +369,9 @@ class SurveyResponseVersion(SurveyResponseBase):
         
         Prior to any changes in a SurveyResponse, a new copy should be stored as a SurveyResponseVersion.
     """
-    # Not unique to enable storage of multiple versions
-    library_name = StringField(max_length=100, required=True) 
+    # Not unique to enable storage of multiple versions. Both fields need to be in subclasses to enable proper indexing.
+    library_name = StringField(max_length=100, required=True)
+    sample_year = IntField(required=True)
     
     survey_response_id = ObjectIdField(required=True)
  
