@@ -167,6 +167,29 @@ class SurveyResponseTest(MongoTestCase):
         
         self.survey_response.published_at = self.survey_response.date_modified
         self.assertTrue(self.survey_response.is_published)
+
+
+
+class SurveyResponseQuerySetTest(MongoTestCase):
+    def setUp(self):
+        self.publishing_date = datetime(2014, 8, 22, 10, 40, 33, 876)
+        sr1 = SurveyResponse(library_name="KARLSTAD STADSBIBLIOTEK", sample_year=2013, target_group="public", observations=[], published_at=self.publishing_date)
+        self.public_sr_1 = sr1.save()
+        sr2 = SurveyResponse(library_name="NORRBOTTENS LÄNSBIBLIOTEK", sample_year=2012, target_group="public", observations=[], published_at=self.publishing_date);
+        self.public_sr_2 = sr2.save()
+        sr3 = SurveyResponse(library_name="Sjukhusbiblioteken i Dalarnas län", sample_year=2013, target_group="hospital", observations=[]);
+        self.hospital_sr = sr3.save()
+        
+    def test_filter_by_year_or_group(self):
+        self.assertEquals([sr.id for sr in SurveyResponse.objects.by_year_or_group(target_group="public")], [self.public_sr_1.id, self.public_sr_2.id])
+        self.assertEquals([sr.id for sr in SurveyResponse.objects.by_year_or_group(target_group="public", sample_year=2012)], [self.public_sr_2.id])
+        self.assertEquals([sr.id for sr in SurveyResponse.objects.by_year_or_group()], [self.public_sr_1.id, self.public_sr_2.id, self.hospital_sr.id])
+        self.assertEquals([sr.id for sr in SurveyResponse.objects.by_year_or_group(target_group="research")], [])
+        self.assertEquals([sr.id for sr in SurveyResponse.objects.by_year_or_group(sample_year=2014)], [])
+        
+    def test_filter_unpublished_by_year_or_group(self):
+        self.assertEquals([sr.id for sr in SurveyResponse.objects.unpublished_by_year_or_group()], [self.hospital_sr.id])
+        self.assertEquals([sr.id for sr in SurveyResponse.objects.unpublished_by_year_or_group(target_group="public")], [])
         
 
     

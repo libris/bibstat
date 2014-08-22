@@ -1,6 +1,7 @@
 # -*- coding: UTF-8 -*-
 from mongoengine import *
 from mongoengine import signals
+from mongoengine.queryset import Q
 from mongoengine.django.auth import User
 
 from pip._vendor.pkg_resources import require
@@ -69,6 +70,16 @@ class VariableBase(Document):
         'abstract': True,
     }
 
+class VariableDraft(VariableBase):
+    """
+        TODO: A draft of a Variable. When activated a copy Variable instance should be created.
+    """
+    key = StringField(max_length=100, required=True, unique=True)
+    
+    meta = {
+        'collection': 'libstat_variable_drafts'
+    }
+    
     
 class Variable(VariableBase):
     """
@@ -166,23 +177,22 @@ class Survey(Document):
 
 
 class SurveyResponseQuerySet(QuerySet):
+    """
+        Custom query set for SurveyResponse.
+        Contains some nifty prepared queries for fetching SurveyResponses.
+    """
   
     def by_year_or_group(self, sample_year=None, target_group=None):
-        filters = {}
-        if target_group:
-            filters["target_group"] = target_group
-        if sample_year:
-            filters["sample_year"] = int(sample_year)
-        return self.filter(__raw__=filters)
+        target_group_query = Q(target_group=target_group) if target_group else Q()
+        sample_year_query = Q(sample_year=sample_year) if sample_year else Q()
+        return self.filter(target_group_query & sample_year_query)
     
     def unpublished_by_year_or_group(self, sample_year=None, target_group=None):
-        filters = {}
-        if target_group:
-            filters["target_group"] = target_group
-        if sample_year:
-            filters["sample_year"] = int(sample_year)
-        filters["published_at__isnull"] = True
-        return self.filter(__raw__=filters)
+        target_group_query = Q(target_group=target_group) if target_group else Q()
+        sample_year_query = Q(sample_year=sample_year) if sample_year else Q()
+        unpublished_query = Q(published_at=None)
+        #TODO: changed_since_published_query = Q(_is_published=False)
+        return self.filter(unpublished_query & target_group_query & sample_year_query)
   
   
 class SurveyObservation(EmbeddedDocument):
