@@ -85,8 +85,14 @@
             {% if survey_responses %}
               {% for sr in survey_responses %}
                 <tr>
-                  <td><input title="{% trans 'Välj' %}" class="select-one" name="survey-response-ids" type="checkbox" value="{{sr.id}}"/></td>
-                  <td>{{ sr.published_at|utc_tz|date:"Y-m-d H:i" }}</td>
+                  <td>
+                    <input title="{% trans 'Välj' %}" class="select-one" name="survey-response-ids" type="checkbox" value="{{sr.id}}"/>
+                  </td>
+                  <td>
+                      <span {% if not sr.latest_version_published %}class="text-warning bold css3-tooltip cursor-help" title="{% trans 'Senaste version är inte publicerad' %}"{% endif %}>
+                        {{ sr.published_at|utc_tz|date:"Y-m-d H:i" }}
+                      </span>
+                  </td>
                   <td>{{ sr.sample_year }}</td>
                   <td>
                     {% if sr.library and sr.library.bibdb_sigel %}
@@ -96,7 +102,9 @@
                     {% endif %}
                   </td>
                   <td>{{ sr.target_group__desc }}</td>
-                  <td><a title="{%trans 'Visa/redigera enkätsvar' %}" href="{% url 'edit_survey_response' sr.id %}">Visa/redigera</a></td>
+                  <td>
+                    <a title="{%trans 'Visa/redigera enkätsvar' %}" href="{% url 'edit_survey_response' sr.id %}">Visa/redigera</a>
+                  </td>
                 </tr>
               {% endfor %}
             {% endif %}

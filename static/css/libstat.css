@@ -77,23 +77,57 @@
   padding-left: 20px;
 }
 .edit-survey-observations-form .form-group ul label {
-    cursor: pointer;
-    display: inline;
-    font-weight: 400;
+  cursor: pointer;
+  display: inline;
+  font-weight: 400;
 }
 .edit-survey-observations-form .form-group ul input[type="radio"], 
 .edit-survey-observations-form .form-group ul input[type="checkbox"] {
-    float: left;
-    margin-left: -20px;
+  float: left;
+  margin-left: -20px;
+}
+/* Tooltip */
+.css3-tooltip {
+  display: inline;
+  position: relative;
+}
+.css3-tooltip:hover:after{
+    background: #333;
+    background: rgba(0,0,0,.8);
+    border-radius: 5px;
+    bottom: 26px;
+    color: #fff;
+    content: attr(title);
+    left: 20%;
+    padding: 5px 15px;
+    position: absolute;
+    z-index: 98;
+    width: 220px;
+}
+.css3-tooltip:hover:before{
+    border: solid;
+    border-color: #333 transparent;
+    border-width: 6px 6px 0 6px;
+    bottom: 20px;
+    content: "";
+    left: 50%;
+    position: absolute;
+    z-index: 99;
 }
 
+/* General stuff */
 .header-actions {
   margin-top: 34px;
 }
-
 .warnings {
-    font-style: italic;
+  font-style: italic;
 }
 .warnings.right {
-    margin-left: 8px;
+  margin-left: 8px;
+}
+.bold {
+  font-weight: bold;
+}
+.cursor-help {
+  cursor: help;
 }

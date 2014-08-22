@@ -62,11 +62,13 @@
                     <label>{% trans "Publicerad" %}:</label>
                   </div>
                   <div class="col-md-10">
-                    <span class="published_at">{{form.instance.published_at|utc_tz|date:"Y-m-d H:i"}}</span>
-                    <span class="published-by">{% if form.instance.published_by %}av {{form.instance.published_by}}{% endif %}</span>
-                    {% if not form.instance.latest_version_published %}
-                      <span class="text-warning warnings right">{% trans "Senaste version är inte publicerad" %}</span>
-                    {% endif %}
+                    <span {% if not sr.latest_version_published %}class="text-warning bold""{% endif %}>
+                      <span class="published_at">{{form.instance.published_at|utc_tz|date:"Y-m-d H:i"}}</span>
+                      <span class="published-by">{% if form.instance.published_by %}av {{form.instance.published_by}}{% endif %}</span>
+                      {% if not form.instance.latest_version_published %}
+                        <span class="text-warning warnings right">{% trans "Senaste version är inte publicerad" %}</span>
+                      {% endif %}
+                    </span>
                   </div>
                 </div>
               </div>
