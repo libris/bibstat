@@ -139,6 +139,7 @@ def edit_variable(request, variable_id):
 @permission_required('is_superuser', login_url='index')
 def survey_responses(request):
     s_responses = []
+    message = ""
     
     # TODO: Cache sample_years
     sample_years = SurveyResponse.objects.distinct("sample_year")
@@ -158,8 +159,10 @@ def survey_responses(request):
         # TODO: Pagination
         if unpublished_only:
             s_responses = SurveyResponse.objects.unpublished_by_year_or_group(sample_year=sample_year, target_group=target_group).order_by("library")
-        else:
+        elif sample_year or target_group:
             s_responses = SurveyResponse.objects.by_year_or_group(sample_year=sample_year, target_group=target_group).order_by("library")
+        else:
+            message = u"Ange åtminstone ett urvalskriterium för att lista enkätsvar"
   
     context = { 
          'sample_years': sample_years,
@@ -167,7 +170,8 @@ def survey_responses(request):
          'target_group': target_group,
          'sample_year': sample_year,
          'unpublished_only': unpublished_only,
-         'bibdb_library_base_url': u"{}/library".format(settings.BIBDB_BASE_URL)
+         'bibdb_library_base_url': u"{}/library".format(settings.BIBDB_BASE_URL), 
+         'message': message
     }
     return render(request, 'libstat/survey_responses.html', context)
 
