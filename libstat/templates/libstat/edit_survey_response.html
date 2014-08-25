@@ -41,7 +41,7 @@
                 </div>
                 <div class="row">
                   <div class="col-md-2">
-                    <label for="id_target_group">{% trans "Målgrupp" %}:</label>
+                    <label for="id_target_group">{% trans "Bibliotekstyp" %}:</label>
                   </div>
                   <div class="col-md-10">             
                     <span class="target_group">{{form.instance.target_group__desc}}</span>
@@ -62,6 +62,7 @@
                     <label>{% trans "Publicerad" %}:</label>
                   </div>
                   <div class="col-md-10">
+                    {{form.instance.latest_version_published}}
                     <span {% if not form.instance.latest_version_published %}class="text-warning bold""{% endif %}>
                       <span class="published_at">{{form.instance.published_at|utc_tz|date:"Y-m-d H:i"}}</span>
                       <span class="published-by">{% if form.instance.published_by %}av {{form.instance.published_by}}{% endif %}</span>

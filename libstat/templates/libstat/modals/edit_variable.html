@@ -46,12 +46,12 @@
             <label>{% trans "Synlighet" %}</label>
             <div class="checkbox">
               {{form.is_public}}
-              {% trans "Publik term, visas som öppen data" %}
+              {% trans "Termen visas som öppen data" %}
             </div>
             <span class="text-danger errors is_public"></span>
         </div>
         <div class="form-group">
-            <label>{% trans "Målgrupper" %}</label>
+            <label>{% trans "Bibliotekstyper" %}</label>
             <div>
               {% for target_group in form.target_groups %}
                 <label class="checkbox-inline">

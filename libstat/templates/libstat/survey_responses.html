@@ -11,13 +11,13 @@
     
     <div class="panel panel-default">
       <div class="panel-heading">
-        <h3 class="panel-title">{% trans "Enkätsvar uppdelat på målgrupp och år" %}</h3>
+        <h3 class="panel-title">{% trans "Enkätsvar uppdelat på bibliotekstyp och år" %}</h3>
       </div>
       <div class="panel-body">
         <div class="row">
           <div class="col-md-12">
             <p>
-            {% trans "Välj målgrupp och år för att lista enkätsvar" %}
+            {% trans "Välj bibliotekstyp och år för att lista enkätsvar" %}
             <span class="text-warning warnings right">{{message}}</span>
             </p>
           </div>
@@ -37,7 +37,7 @@
                 </div>
                 <div class="form-group">
                   <select name="target_group" class="form-control" value="{{target_group}}">
-                    <option value="" {% if not target_group %}selected="selected"{% endif %}>{% trans "Målgrupp" %}</option>
+                    <option value="" {% if not target_group %}selected="selected"{% endif %}>{% trans "Bibliotekstyp" %}</option>
                     <option value="public" {% ifequal target_group "public" %}selected="selected"{% endifequal %}>{% trans 'Folkbibliotek' %}</option>
                     <option value="research" {% ifequal target_group "research" %}selected="selected"{% endifequal %}>{% trans "Forskningsbibliotek" %}</option>
                     <option value="hospital" {% ifequal target_group "hospital" %}selected="selected"{% endifequal %}>{% trans "Sjukhusbibliotek" %}</option>
@@ -78,7 +78,7 @@
                 <th class="column published">{% trans "Publicerad" %}</th>
                 <th class="column sample_year">{% trans "År" %}</th>
                 <th class="column library">{% trans "Bibliotek" %}</th>
-                <th class="column target_group">{% trans "Målgrupp" %}</th>
+                <th class="column target_group">{% trans "Bibliotekstyp" %}</th>
                 <th class="column actions"></th>
               </tr>
             </thead>

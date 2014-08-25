@@ -63,7 +63,7 @@ class EditVariableViewTest(MongoTestCase):
         
     # TODO: Borde man kunna ändra synlighet? Inte om det redan finns publik data eller inlämnade enkätsvar väl? Kommer kräva ompublicering av alla enkätsvar som har variabeln...
     
-    # TODO: Borde man kunna ta bort en målgrupp? Samma som ovan.
+    # TODO: Borde man kunna ta bort en bibliotekstyp? Samma som ovan.
     
     # TODO: Borde man kunna ändra enhet? Samma som ovan.
         
