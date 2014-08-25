@@ -188,11 +188,11 @@ class SurveyResponseQuerySet(QuerySet):
         return self.filter(target_group_query & sample_year_query)
     
     def unpublished_by_year_or_group(self, sample_year=None, target_group=None):
-        target_group_query = Q(target_group=target_group) if target_group else Q()
-        sample_year_query = Q(sample_year=sample_year) if sample_year else Q()
-        unpublished_query = Q(published_at=None)
-        #TODO: changed_since_published_query = Q(_is_published=False)
-        return self.filter(unpublished_query & target_group_query & sample_year_query)
+        match_target_group = Q(target_group=target_group) if target_group else Q()
+        match_sample_year = Q(sample_year=sample_year) if sample_year else Q()
+        never_published = Q(published_at=None)
+        changed_after_published = Q(_is_published=False)
+        return self.filter(match_target_group & match_sample_year & (changed_after_published | never_published))
   
   
 class SurveyObservation(EmbeddedDocument):
@@ -254,6 +254,8 @@ class SurveyResponseBase(Document):
 
     published_at = DateTimeField()
     published_by = ReferenceField(User)
+    # True if this version is published, False otherwise. Flag needed to optimize search for unpublished SurveyResponses.
+    _is_published = BooleanField() 
     
     date_created = DateTimeField(required=True, default=datetime.utcnow)
     created_by = ReferenceField(User)
@@ -302,7 +304,9 @@ class SurveyResponse(SurveyResponseBase):
     @classmethod
     def store_version_and_update_date_modified(cls, sender, document, **kwargs):
         if document.id: 
-            if not hasattr(document, "_action_publish"):
+            if hasattr(document, "_action_publish"):
+                document._is_published = True
+            else:
                 changed_fields = document.__dict__["_changed_fields"] if "_changed_fields" in document.__dict__ else []
                 logger.info(u"PRE SAVE: Fields {} have changed, creating survey response version from current version".format(changed_fields))
                 query_set = SurveyResponse.objects.filter(pk=document.id)
@@ -313,19 +317,22 @@ class SurveyResponse(SurveyResponseBase):
                     v.survey_response_id = document.id
                     v.save()
                 document.date_modified = datetime.utcnow()
+                document._is_published = False
                 # field modified_by is set in form
         else:
             #logger.debug("PRE SAVE: Creation of new object, setting modified date to value of creation date")
             document.date_modified = document.date_created
             document.modified_by = document.created_by
+            if not hasattr(document, "_is_published"):
+                document._is_published = False
     
     @property
     def latest_version_published(self):
-        return self.published_at and self.published_at >= self.date_modified
+        return self._is_published if self._is_published else (self.published_at != None and self.published_at >= self.date_modified)
     
     @property
     def is_published(self):
-        return self.published_at != None
+        return self._is_published if self._is_published else self.published_at != None
     
     
     def target_group__desc(self):

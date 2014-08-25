@@ -5,6 +5,7 @@ from libstat.models import Variable, SurveyResponse, SurveyObservation
 from django.core.urlresolvers import reverse
 import json
 from mongoengine.django.auth import User
+from datetime import datetime
 
 """
 View test cases
@@ -69,12 +70,13 @@ class EditVariableViewTest(MongoTestCase):
         
 class SurveyResponsesViewTest(MongoTestCase):
     def setUp(self):
-        self.survey_response = SurveyResponse(library_name="KARLSTAD STADSBIBLIOTEK", sample_year=2013, target_group="public", observations=[])
+        self.publishing_date = datetime(2014, 8, 22, 10, 40, 33, 876)
+        self.survey_response = SurveyResponse(library_name=u"KARLSTAD STADSBIBLIOTEK", sample_year=2013, target_group="public", observations=[], published_at=self.publishing_date)
         self.survey_response.save()
-        sr2 = SurveyResponse(library_name="NORRBOTTENS LÄNSBIBLIOTEK", sample_year=2012, target_group="public", observations=[]);
+        sr2 = SurveyResponse(library_name=u"NORRBOTTENS LÄNSBIBLIOTEK", sample_year=2012, target_group="public", observations=[], published_at=self.publishing_date);
         sr2.save()
-        sr3 = SurveyResponse(library_name="Sjukhusbiblioteken i Dalarnas län", sample_year=2013, target_group="hospital", observations=[]);
-        sr3.save()
+        sr3 = SurveyResponse(library_name=u"Sjukhusbiblioteken i Dalarnas län", sample_year=2013, target_group="hospital", observations=[]);
+        self.hospital_sr = sr3.save()
         
         self.client.login(username="admin", password="admin")
     
@@ -93,7 +95,13 @@ class SurveyResponsesViewTest(MongoTestCase):
     def test_should_list_survey_responses_by_year_and_target_group(self):
         response = self.client.get("{}?action=list&target_group=public&sample_year=2013".format(reverse("survey_responses")))
         self.assertEquals(len(response.context["survey_responses"]), 1)
-        self.assertEquals(response.context["survey_responses"][0].library_name, "KARLSTAD STADSBIBLIOTEK")
+        self.assertEquals(response.context["survey_responses"][0].library_name, u"KARLSTAD STADSBIBLIOTEK")
+        
+    def test_should_list_unpublished_survey_responses(self):
+        self.assertFalse(self.hospital_sr.is_published)
+        response = self.client.get("{}?action=list&unpublished_only=True".format(reverse("survey_responses")))
+        self.assertEquals(len(response.context["survey_responses"]), 1)
+        self.assertEquals(response.context["survey_responses"][0].library_name, u"Sjukhusbiblioteken i Dalarnas län")
         
     def test_each_survey_response_should_have_checkbox_for_actions(self):
         response = self.client.get("{}?action=list&target_group=public&sample_year=2013".format(reverse("survey_responses")))
@@ -113,7 +121,7 @@ class PublishSurveyResponsesViewTest(MongoTestCase):
         self.survey_response.save()
         sr2 = SurveyResponse(library_name="NORRBOTTENS LÄNSBIBLIOTEK", sample_year=2012, target_group="public", observations=[]);
         sr2.save()
-        sr3 = SurveyResponse(library_name="Sjukhusbiblioteken i Dalarnas län", sample_year=2013, target_group="hospital", observations=[]);
+        sr3 = SurveyResponse(library_name=u"Sjukhusbiblioteken i Dalarnas län", sample_year=2013, target_group="hospital", observations=[]);
         sr3.save()
         
         self.url = reverse("publish_survey_responses")
