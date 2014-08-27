@@ -151,7 +151,7 @@ def edit_variable(request, variable_id):
     context = {
         'mode': 'edit',
         'form_url': reverse("edit_variable", kwargs={"variable_id": variable_id}),
-        'modal_title': v.key
+        'modal_title': u"{} (utkast)".format(v.key) if v.is_draft else v.key
     }
 
     if request.method == "POST":

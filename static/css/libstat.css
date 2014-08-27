@@ -140,3 +140,11 @@
 .cursor-help {
   cursor: help;
 }
+
+.draft {
+  color: #888888;
+  font-style: italic;
+}
+.draft a {
+  color: #2a6496;
+}

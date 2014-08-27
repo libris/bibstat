@@ -90,7 +90,7 @@
       
       <div class="modal-footer">
         <button type="button" class="btn btn-default" data-dismiss="modal" >{% trans "Avbryt" %}</button>
-        <input type="submit" class="btn btn-primary" value="{% if mode == 'create' %}Spara ukast{% else %}Spara ändringar{% endif %}" />
+        <input type="submit" class="btn btn-primary" value="{% if mode == 'create' or form.instance.is_draft %}Spara ukast{% else %}Spara ändringar{% endif %}" />
       </div>
       
     </div>
