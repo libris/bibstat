@@ -98,6 +98,46 @@ def variables(request):
     }
     return render(request, 'libstat/variables.html', context)
 
+
+
+@permission_required('is_superuser', login_url='login')
+def create_variable(request):
+    """
+        Modal view.
+        Create a new draft Variable instance.
+    """
+    context = {
+        'mode': 'create',
+        'form_url': reverse("create_variable"),
+        'modal_title': u"Ny term (utkast)"
+    }
+    if request.method == "POST":
+        errors = {}
+        form = VariableForm(request.POST)
+        if form.is_valid():
+            try:
+                v = form.save(user=request.user)
+                # No redirect since this is displayed as a modal and we do a javascript redirect if no form errors
+                return HttpResponse(v.to_json(), content_type="application/json")
+            except NotUniqueError as nue:
+                logger.warning(u"A Variable with key {} already exists: {}".format(v.key, nue))
+                errors['key'] = [u"Det finns redan en term med nyckel {}".format(v.key)]
+            except Exception as e:
+                logger.warning(u"Error updating Variable {}: {}".format(variable_id, e))
+                errors['__all__'] = [u"Kan inte uppdatera term {}".format(v.key)]
+        else:
+            errors = form.errors
+            context['errors'] = errors
+            return HttpResponse(json.dumps(context), content_type="application/json")
+            
+    else:
+        form = VariableForm()
+
+    context['form'] = form
+    return render(request, 'libstat/modals/edit_variable.html', context)
+    
+    
+    
 @permission_required('is_superuser', login_url='login')
 def edit_variable(request, variable_id):
     """
@@ -107,6 +147,12 @@ def edit_variable(request, variable_id):
         v = Variable.objects.get(pk=variable_id)
     except Exception:
         raise Http404
+    
+    context = {
+        'mode': 'edit',
+        'form_url': reverse("edit_variable", kwargs={"variable_id": variable_id}),
+        'modal_title': v.key
+    }
 
     if request.method == "POST":
         errors = {}
@@ -126,14 +172,12 @@ def edit_variable(request, variable_id):
                 
         else:
             errors = form.errors
-        context = {
-            'errors': errors
-        }
+        context['errors'] = errors
         return HttpResponse(json.dumps(context), content_type="application/json")
     else:    
         form = VariableForm(instance=v)
         
-    context = {'form': form }
+    context['form'] = form
     return render(request, 'libstat/modals/edit_variable.html', context)
 
 @permission_required('is_superuser', login_url='index')

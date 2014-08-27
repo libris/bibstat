@@ -6,6 +6,8 @@ from mongoengine.django.auth import User
 from datetime import datetime, date, timedelta
 import json
 from django.conf import settings
+from mongoengine.django.sessions import MONGOENGINE_SESSION_COLLECTION
+from mongoengine.errors import DoesNotExist
 
 
 """
@@ -28,7 +30,7 @@ class SurveyResponseTest(MongoTestCase):
         sr.observations.append(SurveyObservation(variable=v2, value=None, _source_key="folk6", _is_public=v2.is_public))
         sr.observations.append(SurveyObservation(variable=v3, value=u"Här är en kommentar", _source_key="folk8", _is_public=v3.is_public))
         self.survey_response = sr.save()
-    
+        
     
     def test_should_export_public_non_null_observations_to_openData(self):
         self.survey_response.publish(user=self.current_user)
@@ -128,7 +130,7 @@ class SurveyResponseTest(MongoTestCase):
         
         versions = SurveyResponseVersion.objects.filter(survey_response_id=self.survey_response.id)
         self.assertEquals(len(versions), 0)
-        
+
     def test_should_set_modified_date_and_by_when_updating_existing_object(self):
         self.survey_response.library_name = u"Stadsbiblioteket i Karlstad"
         self.survey_response.save()
@@ -274,23 +276,64 @@ class OpenDataTest(MongoTestCase):
        self.assertEquals(object.to_dict(), openDataAsDict)
        
        
+       
+class VariableQuerySetTest(MongoTestCase):
+    def setUp(self):
+        v = Variable(key=u"Folk10", description=u"Antal bemannade servicesställen", type="integer", is_public=True, target_groups=["public"])
+        v.save()
+        self.v = Variable.objects.get(pk=v.id)
+        
+        v2 = Variable(key=u"Folk35", description=u"Antal årsverken övrig personal", type="decimal", is_public=False, target_groups=["public"])
+        v2.question = u"Hur många årsverken utfördes av personal i folkbiblioteksverksamheten under 2012?"
+        v2.question_part = u"Antal årsverken övrig personal (ej städpersonal)"
+        v2.save()
+        self.v2 = Variable.objects.get(pk=v2.id)
+        
+        v3 = Variable(key=u"Folk31", description=u"Antal årsverken totalt", type="decimal", is_public=True, target_groups=["public"], id_draft=False)
+        v3.summary_of = [self.v2]
+        v3.save()
+        self.v3 = Variable.objects.get(pk=v3.id)
+        
+        v4 = Variable(key=u"Folk69", description=u"Totalt nyförvärv AV-medier", type="integer", is_public=True, target_groups=["public"], is_draft=True)
+        v4.question = u"Hur många nyförvärv av AV-media gjordes under 2012?"
+        v4.save()
+        self.v4 = Variable.objects.get(pk=v4.id)
+        
+    def test_filter_public_terms(self):
+        result_set = Variable.objects.public_terms()
+        self.assertEquals([v.id for v in result_set], [self.v.id, self.v3.id])
+        
+    def test_filter_public_term_by_key(self):
+        self.assertRaises(DoesNotExist, lambda: Variable.objects.public_term_by_key(None))
+        self.assertRaises(DoesNotExist, lambda: Variable.objects.public_term_by_key("foo"))
+        self.assertEquals(Variable.objects.public_term_by_key("Folk10").id, self.v.id)
+        self.assertRaises(DoesNotExist, lambda: Variable.objects.public_term_by_key("Folk35"))
+        self.assertEquals(Variable.objects.public_term_by_key("Folk31").id, self.v3.id)
+        self.assertRaises(DoesNotExist, lambda: Variable.objects.public_term_by_key("Folk69"))   
+        
+        
+           
 class VariableTest(MongoTestCase):
     def setUp(self):
-        self.v = Variable(key=u"Folk10", description=u"Antal bemannade servicesställen", type="integer", is_public=True, target_groups=["public"])
-        self.v.save()
+        v = Variable(key=u"Folk10", description=u"Antal bemannade servicesställen", type="integer", is_public=True, target_groups=["public"])
+        v.save()
+        self.v = Variable.objects.get(pk=v.id)
         
-        self.v2 = Variable(key=u"Folk35", description=u"Antal årsverken övrig personal", type="decimal", is_public=True, target_groups=["public"])
-        self.v2.question = u"Hur många årsverken utfördes av personal i folkbiblioteksverksamheten under 2012?"
-        self.v2.question_part = u"Antal årsverken övrig personal (ej städpersonal)"
-        self.v2.save()
+        v2 = Variable(key=u"Folk35", description=u"Antal årsverken övrig personal", type="decimal", is_public=True, target_groups=["public"])
+        v2.question = u"Hur många årsverken utfördes av personal i folkbiblioteksverksamheten under 2012?"
+        v2.question_part = u"Antal årsverken övrig personal (ej städpersonal)"
+        v2.save()
+        self.v2 = Variable.objects.get(pk=v2.id)
         
-        self.v3 = Variable(key=u"Folk31", description=u"Antal årsverken totalt", type="decimal", is_public=True, target_groups=["public"])
-        self.v3.summary_of = [self.v2]
-        self.v3.save()
+        v3 = Variable(key=u"Folk31", description=u"Antal årsverken totalt", type="decimal", is_public=True, target_groups=["public"])
+        v3.summary_of = [self.v2]
+        v3.save()
+        self.v3 = Variable.objects.get(pk=v3.id)
         
-        self.v4 = Variable(key=u"Folk69", description=u"Totalt nyförvärv AV-medier", type="integer", is_public=True, target_groups=["public"])
-        self.v4.question = u"Hur många nyförvärv av AV-media gjordes under 2012?"
-        self.v4.save()
+        v4 = Variable(key=u"Folk69", description=u"Totalt nyförvärv AV-medier", type="integer", is_public=True, target_groups=["public"], is_draft=True)
+        v4.question = u"Hur många nyförvärv av AV-media gjordes under 2012?"
+        v4.save()
+        self.v4 = Variable.objects.get(pk=v4.id)
         
     
     def test_should_transform_object_to_dict(self):
@@ -339,6 +382,13 @@ class VariableTest(MongoTestCase):
         self.assertEquals(len(versions), 1)
         self.assertEquals(versions[0].description, u"Antal bemannade servicesställen")
         
+    def test_should_not_store_version_when_updating_draft(self):
+        self.v4.description = u"En ny beskrivning"
+        self.v4.save()
+        
+        versions = VariableVersion.objects.all()
+        self.assertEquals(len(versions), 0)
+        
     def test_should_set_modified_date_when_updating_existing_object(self):
         date_modified = self.v.date_modified
         self.v.description = u"Totalt antal bemannade serviceställen, summering av antal filialer och huvudbibliotek"
@@ -347,6 +397,23 @@ class VariableTest(MongoTestCase):
         updated = Variable.objects.get(pk=self.v.id)
         self.assertTrue(updated.date_modified > date_modified)
         
+    def test_should_set_modified_date_when_updating_draft(self):
+        date_modified = self.v4.date_modified
+        self.v4.description = u"En ny beskrivning"
+        self.v4.save()
+        
+        updated = Variable.objects.get(pk=self.v4.id)
+        self.assertTrue(updated.date_modified > date_modified)
+        
     def test_should_set_modified_date_when_creating_object(self):
         self.assertTrue(self.v.date_modified != None)
+        
+    def test_should_set_modified_date_when_creating_draft(self):
+        self.assertTrue(self.v4.date_modified != None)
+        
+    def test_is_draft(self):
+        self.assertFalse(self.v.is_draft)
+        self.assertFalse(self.v2.is_draft)
+        self.assertFalse(self.v3.is_draft)
+        self.assertTrue(self.v4.is_draft)
         

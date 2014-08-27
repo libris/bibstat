@@ -12,7 +12,6 @@ from django.core.exceptions import ValidationError
 #TODO: Define a LoginForm class with extra css-class 'form-control' ?
 
 class VariableForm(forms.Form):
-    #TODO: On create we need key = forms.CharField(required=True, widget=forms.TextInput(attrs={'class':'form-control'}))
     question = forms.CharField(required=False, widget=forms.TextInput(attrs={'class': 'form-control'}))
     question_part = forms.CharField(required=False, widget=forms.TextInput(attrs={'class': 'form-control'}))
     category = forms.CharField(required=False, widget=forms.TextInput(attrs={'class': 'form-control'}))
@@ -30,8 +29,9 @@ class VariableForm(forms.Form):
     
     def __init__(self, *args, **kwargs):
         self.instance = kwargs.pop('instance', None)
-        
         super(VariableForm, self).__init__(*args, **kwargs)
+        if not self.instance:
+            self.fields['key'] = forms.CharField(required=True, widget=forms.TextInput(attrs={'class':'form-control'}))
         
         self.fields['type'].choices = [type for type in VARIABLE_TYPES]
         self.fields['target_groups'].choices = [target_group for target_group in SURVEY_TARGET_GROUPS]
@@ -46,9 +46,10 @@ class VariableForm(forms.Form):
             self.fields['target_groups'].initial = self.instance.target_groups
             self.fields['description'].initial = self.instance.description
             self.fields['comment'].initial = self.instance.comment
+            
         
     def save(self, commit=True, user=None):
-        variable = self.instance if self.instance else Variable()
+        variable = self.instance if self.instance else Variable(is_draft=True)
         variable.key = self.instance.key if self.instance else self.cleaned_data['key']
         variable.question = self.cleaned_data['question']
         variable.question_part = self.cleaned_data['question_part']

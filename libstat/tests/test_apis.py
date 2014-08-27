@@ -126,6 +126,8 @@ class TermsApiTest(MongoTestCase):
     def setUp(self):
         v = Variable(key=u"folk5", description=u"Antal bemannade serviceställen, sammanräknat", type="integer", is_public=True, target_groups=["public"])
         v.save()
+        v2 = Variable(key=u"Folk69", description=u"Totalt nyförvärv AV-medier", type="integer", is_public=True, target_groups=["public"], is_draft=True)
+        v2.save()
     
     def test_response_should_return_jsonld(self):
         response = self.client.get(reverse("terms_api"))
@@ -153,6 +155,12 @@ class TermsApiTest(MongoTestCase):
         ids = [term[u"@id"] for term in data[u"terms"]]
         self.assertTrue(u"folk5" in ids)
         
+    def test_should_not_return_variable_drafts(self):
+        response = self.client.get(reverse("terms_api"))
+        data = json.loads(response.content)
+        ids = [term[u"@id"] for term in data[u"terms"]]
+        self.assertFalse(u"Folk69" in ids)
+        
         
 class TermApiTest(MongoTestCase):
     def setUp(self):
@@ -160,6 +168,8 @@ class TermApiTest(MongoTestCase):
         v1.save()
         v2 = Variable(key=u"folk6", description=u"Är huvudbiblioteket i er kommun integrerat med ett skolbibliotek? 1=ja", type="integer", is_public=True, target_groups=["public"])
         v2.save()
+        v3 =  Variable(key=u"Folk69", description=u"Totalt nyförvärv AV-medier", type="integer", is_public=True, target_groups=["public"], is_draft=True)
+        v3.save()
     
     def test_response_should_return_jsonld(self):
         response = self.client.get(reverse("term_api", kwargs={ "term_key": "folk5"}))
@@ -191,6 +201,10 @@ class TermApiTest(MongoTestCase):
         
     def test_should_return_404_if_term_not_found(self):
         response = self.client.get(reverse("term_api", kwargs={ "term_key": "foo"}))
+        self.assertEqual(response.status_code, 404)
+        
+    def test_should_return_404_if_term_is_draft(self):
+        response = self.client.get(reverse("term_api", kwargs={ "term_key": "Folk69"}))
         self.assertEqual(response.status_code, 404)
         
         

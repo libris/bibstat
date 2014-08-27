@@ -3,6 +3,7 @@ from mongoengine import *
 from mongoengine import signals
 from mongoengine.queryset import Q
 from mongoengine.django.auth import User
+from mongoengine.errors import DoesNotExist
 
 from pip._vendor.pkg_resources import require
 from mongoengine.queryset.queryset import QuerySet
@@ -41,6 +42,30 @@ rdf_variable_types = {TYPE_STRING[0]:u"xsd:string" , TYPE_BOOLEAN[0]: u"xsd:bool
 """
 DATA_IMPORT_nonMeasurementCategories = [u"Bakgrundsvariabel", u"Tid", u"Befolkning", u"Bakgrundsvariabler"]
 
+
+class VariableQuerySet(QuerySet):
+    """
+        Custom query set for Variable.
+        Contains nifty prepared filters for fetching Variables.
+    """
+  
+    def public_terms(self):
+        public_query = Q(is_public=True)
+        is_draft_not_set_query = Q(is_draft=None)
+        is_not_draft_query = Q(is_draft=False)
+        return self.filter(public_query & (is_draft_not_set_query | is_not_draft_query))
+    
+    def public_term_by_key(self, key):
+        if not key:
+            raise DoesNotExist("No key value given")
+        key_query = Q(key=key)
+        public_query = Q(is_public=True)
+        is_draft_not_set_query = Q(is_draft=None)
+        is_not_draft_query = Q(is_draft=False)
+        return self.get(key_query & public_query & (is_draft_not_set_query | is_not_draft_query))
+    
+    
+
 class VariableBase(Document):
     """
         Abstract base class for Variable and backup/logging model VariableVersion
@@ -66,19 +91,12 @@ class VariableBase(Document):
     date_modified = DateTimeField()
     modified_by = ReferenceField(User)
     
+    is_draft = BooleanField()
+    
     meta = {
         'abstract': True,
     }
 
-class VariableDraft(VariableBase):
-    """
-        TODO: A draft of a Variable. When activated a copy Variable instance should be created.
-    """
-    key = StringField(max_length=100, required=True, unique=True)
-    
-    meta = {
-        'collection': 'libstat_variable_drafts'
-    }
     
     
 class Variable(VariableBase):
@@ -88,14 +106,13 @@ class Variable(VariableBase):
     key = StringField(max_length=100, required=True, unique=True)
     
     meta = {
-        'collection': 'libstat_variables'
+        'collection': 'libstat_variables',
+        'queryset_class': VariableQuerySet
     }
     
     @classmethod
     def store_version_and_update_date_modified(cls, sender, document, **kwargs):
-        if document.id: 
-            if not document.date_modified:
-                document.date_modified = document.id.generation_time
+        if document.id and not document.is_draft: 
             changed_fields = document.__dict__["_changed_fields"] if "_changed_fields" in document.__dict__ else []
             logger.info(u"PRE SAVE: Fields {} have changed, creating variable version from current version".format(changed_fields))
             query_set = Variable.objects.filter(pk=document.id)

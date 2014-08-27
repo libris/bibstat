@@ -39,14 +39,23 @@
 
 /* Form validation messages */
 .errorlist {
-    list-style: none outside none;
-    padding: 0;
+  list-style: none outside none;
+  padding: 0;
 }
 .form-validation {
-    font-style: italic;
+  font-style: italic;
+}
+.has-error .form-validation::before {
+  content: "* ";
 }
 .form-validation.after {
-    margin-left: 6px;
+  margin-left: 6px;
+}
+.form-group .glyphicon {
+  display: none;
+}
+.form-group.has-feedback .glyphicon {
+  display: block;
 }
 
 /* Custom panel styles */

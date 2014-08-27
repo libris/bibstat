@@ -23,6 +23,9 @@
           <a role="button" class="btn btn-default {% if target_group == 'hospital' %}active{% endif %}" href="{% url 'variables' %}?target_group=hospital">{% trans "Sjukhusbibliotek" %}</a>
           <a role="button" class="btn btn-default {% if target_group == 'school' %}active{% endif %}" href="{% url 'variables' %}?target_group=school">{% trans "Skolbibliotek" %}</a>
         </div>
+        <div class="btn-group pull-right">
+          <a role="button" class="create-variable btn btn-primary" href="#" data-form="{% url 'create_variable' %}">{% trans "Skapa term" %}</a>
+        </div>
       </div>
 
       <table class="table variables">
@@ -52,7 +55,7 @@
     </div>
     
     <!-- Modals -->
-    <div class="modal fade" id="editVariableModal" tabindex="-1" role="dialog" aria-labelledby="editVariableLabel" aria-hidden="true">
+    <div class="modal fade" id="variableModal" tabindex="-1" role="dialog" aria-labelledby="editVariableLabel" aria-hidden="true">
     </div>
   
   </div>

@@ -1,6 +1,6 @@
 # -*- coding: UTF-8 -*-
 from libstat.tests import MongoTestCase
-from libstat.models import Variable, SurveyResponse, SurveyObservation
+from libstat.models import Variable, SurveyResponse, SurveyObservation, targetGroups
 
 from django.core.urlresolvers import reverse
 import json
@@ -9,7 +9,109 @@ from datetime import datetime
 
 """
 View test cases
-"""        
+"""
+class VariablesViewTest(MongoTestCase):
+    def setUp(self):
+        v1 = Variable(key=u"Folk10", description=u"Antal bemannade serviceställen", type="integer", is_public=True, target_groups=["public"])
+        self.folk10 = v1.save()
+        v2  = Variable(key=u"Sjukhus102", description=u"Bestånd av tillgängliga medier för personer med läsnedsättning", type="integer", is_public=True, target_groups=["hospital"])
+        self.sjukhus102 = v2.save()
+        
+        self.url = reverse("variables")
+        self.client.login(username="admin", password="admin")
+        
+    def test_view_requires_admin_login(self):
+        self.client.logout()
+        
+        response = self.client.get(self.url)
+        self.assertEquals(response.status_code, 302)
+        
+        self.client.login(username="library_user", password="secret")
+        response = self.client.get(self.url)
+        self.assertEquals(response.status_code, 302)
+        
+        self.client.login(username="admin", password="admin")
+        response = self.client.get(self.url)
+        self.assertEquals(response.status_code, 200)
+        
+    def test_should_list_all_variables(self):
+        response = self.client.get(self.url)
+        self.assertEquals(response.status_code, 200)
+        self.assertEquals(len(response.context["variables"]), 2)
+        
+    def test_should_filter_variables_by_target_group(self):
+        response = self.client.get(u"{}?target_group=hospital".format(self.url))
+        self.assertEquals(response.status_code, 200)
+        self.assertEquals(len(response.context["variables"]), 1)
+        self.assertEquals(response.context["variables"][0].key, u"Sjukhus102")
+        
+    def test_each_variable_should_have_edit_link(self):
+        response = self.client.get(self.url)
+        self.assertContains(response, 
+                            u'<a title="Visa/Ändra" data-form="/statistics/variables/{}/" href="#" class="edit-variable">Folk10</a>'.format(self.folk10.id), 
+                            count=1, 
+                            status_code=200, 
+                            html=True)
+    
+    def test_should_have_button_for_adding_variable(self):
+        response = self.client.get(self.url)
+        self.assertContains(response, 
+                            u'<a class="create-variable btn btn-primary" role="button" href="#" data-form="{}">Skapa term</a>'.format(reverse("create_variable")),
+                            count=1, 
+                            status_code=200, 
+                            html=True)
+    
+    
+
+class CreateVariableViewTest(MongoTestCase):
+    def setUp(self):
+        self.url = reverse("create_variable")
+        self.client.login(username="admin", password="admin")
+        
+    def test_should_get_empty_form(self):
+        response = self.client.get(self.url)
+        self.assertContains(response, u'<h4 class="modal-title">Ny term (utkast)</h4>', count=1, status_code=200, html=True)
+        self.assertContains(response, u'<input type="submit" value="Spara ukast" class="btn btn-primary">', count=1, status_code=200, html=True)
+        
+    def test_should_create_variable_draft(self):
+        response = self.client.post(self.url, 
+                                    { u"key": u"antalManligaBibliotekarier", 
+                                     u"question": u"Hur många anställda personer fanns i biblioteksverksamheten den 1 mars aktuellt mätår?",
+                                     u"question_part": u"Antal anställda bibliotekarier som är män",
+                                     u"category": u"Organisation", 
+                                     u"sub_category": u"Personal", 
+                                     u"type": u"integer", 
+                                     u"is_public": u"True",
+                                     u"target_groups": [u"public", u"research", u"school", u"hospital"], 
+                                     u"description": u"Antal anställda manliga bibliotekarier den 1 mars aktuellt mätår", 
+                                     u"comment": u"Det här är ett utkast" }
+                                    )
+        self.assertEquals(response.status_code,200)
+        data = json.loads(response.content)
+        self.assertFalse('errors' in data)
+        result = Variable.objects.filter(key=u"antalManligaBibliotekarier")[0]
+        self.assertEquals(result.is_draft, True)
+        self.assertEquals(result.question, u"Hur många anställda personer fanns i biblioteksverksamheten den 1 mars aktuellt mätår?")
+        self.assertEquals(result.question_part, u"Antal anställda bibliotekarier som är män")
+        self.assertEquals(result.category, u"Organisation")
+        self.assertEquals(result.sub_category, u"Personal")
+        self.assertEquals(result.type, u"integer")
+        self.assertEquals(result.is_public, True)
+        self.assertEquals(result.target_groups, [u"public", u"research", u"school", u"hospital"])
+        self.assertEquals(result.description, u"Antal anställda manliga bibliotekarier den 1 mars aktuellt mätår")
+        self.assertEquals(result.comment, u"Det här är ett utkast")
+
+    def test_should_return_validation_errors_when_omitting_mandatory_fields(self):
+        response = self.client.post(self.url, {})
+        self.assertEquals(response.status_code,200)
+        
+        data = json.loads(response.content)
+        self.assertEquals(len(data['errors']), 4)
+        self.assertEquals(data['errors'][u'key'], [u'Detta fält måste fyllas i.'])
+        self.assertEquals(data['errors'][u'type'], [u'Detta fält måste fyllas i.'])
+        self.assertEquals(data['errors'][u'target_groups'], [u'Detta fält måste fyllas i.'])
+        self.assertEquals(data['errors'][u'description'], [u'Detta fält måste fyllas i.'])
+    
 class EditVariableViewTest(MongoTestCase):
     def setUp(self):
         self.v1 = Variable(key=u"Folk10", description=u"Antal bemannade serviceställen", type="integer", is_public=True, target_groups=["public"])

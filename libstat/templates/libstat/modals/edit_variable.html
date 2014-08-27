@@ -1,37 +1,50 @@
 {% load i18n %}
 
-<form role="form" class="edit-variable-form" method="post" action="{% url 'edit_variable' form.instance.id %}">
+<form role="form" class="edit-variable-form" method="post" action="{{form_url}}">
   <div class="modal-dialog">
     <div class="modal-content">
       <div class="modal-header">
         <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">{% trans 'Stäng' %}</span></button>
-        <h4 class="modal-title">{{form.instance.key}}</h4>
+        <h4 class="modal-title">{{modal_title}}</h4>
       </div>
       <div class="modal-body">
         {% csrf_token %}
         <span class="text-danger errors all"></span>
-        <div class="form-group">
+        {% if mode == 'create' %}
+          <div class="form-group key" data-field="key">
+             <label for="id_key">{% trans "Nyckel (unik)" %}</label>
+             <span class="text-danger form-validation after"></span>
+             {{form.key}}
+             <span class="glyphicon glyphicon-remove form-control-feedback"></span>
+          </div>
+        {% endif %}
+        <div class="form-group question" data-field="question">
             <label for="id_question">{% trans "Formulärfråga" %}</label>
+            <span class="text-danger form-validation after"></span>
             {{form.question}}
-            <span class="text-danger errors question"></span>
+            <span class="glyphicon glyphicon-remove form-control-feedback"></span>
         </div>
-        <div class="form-group">
+        <div class="form-group question_part" data-field="question_part">
             <label for="id_question_part">{% trans "Delfråga" %}</label>
+            <span class="text-danger form-validation after"></span>
             {{form.question_part}}
-            <span class="text-danger errors question_part"></span>
+            <span class="glyphicon glyphicon-remove form-control-feedback"></span>
         </div>
-        <div class="form-group">
+        <div class="form-group category" data-field="category">
             <label for="id_category">{% trans "Huvudgrupp" %}</label>
+            <span class="text-danger form-validation after"></span>
             {{form.category}}
-            <span class="text-danger errors category"></span>
+            <span class="glyphicon glyphicon-remove form-control-feedback"></span>
         </div>
-        <div class="form-group">
+        <div class="form-group sub_category" data-field="sub_category">
             <label for="id_sub_category">{% trans "Undergrupp" %}</label>
+            <span class="text-danger form-validation after"></span>
             {{form.sub_category}}
-            <span class="text-danger errors sub_category"></span>
+            <span class="glyphicon glyphicon-remove form-control-feedback"></span>
         </div>
-        <div class="form-group">
+        <div class="form-group type" data-field="type">
             <label>{% trans "Enhet" %}</label>
+            <span class="text-danger form-validation after"></span>
             <div>
               {% for type_choice in form.type %}
                 <label class="radio-inline">
@@ -40,18 +53,18 @@
                 </label>
               {% endfor %}
             </div>
-            <span class="text-danger errors type"></span>
         </div>
-        <div class="form-group">
+        <div class="form-group is_public" data-field="is_public">
             <label>{% trans "Synlighet" %}</label>
+            <span class="text-danger form-validation after"></span>
             <div class="checkbox">
               {{form.is_public}}
               {% trans "Termen visas som öppen data" %}
             </div>
-            <span class="text-danger errors is_public"></span>
         </div>
-        <div class="form-group">
+        <div class="form-group target_groups" data-field="target_groups">
             <label>{% trans "Bibliotekstyper" %}</label>
+            <span class="text-danger form-validation after"></span>
             <div>
               {% for target_group in form.target_groups %}
                 <label class="checkbox-inline">
@@ -60,23 +73,24 @@
                 </label>
               {% endfor %}
             </div>
-            <span class="text-danger errors target_groups"></span>
         </div>
-        <div class="form-group">
+        <div class="form-group description" data-field="description">
             <label for="description">{% trans "Beskrivning" %}</label>
+            <span class="text-danger form-validation after"></span>
             {{form.description}}
-            <span class="text-danger errors description"></span>
+            <span class="glyphicon glyphicon-remove form-control-feedback"></span>
         </div>
-        <div class="form-group">
+        <div class="form-group comment" data-field="comment">
             <label for="comment">{% trans "Kommentar (visas ej publikt)" %}</label>
+            <span class="text-danger form-validation after"></span>
             {{form.comment}}
-            <span class="text-danger errors comment"></span>
+            <span class="glyphicon glyphicon-remove form-control-feedback"></span>
         </div>
       </div>
       
       <div class="modal-footer">
         <button type="button" class="btn btn-default" data-dismiss="modal" >{% trans "Avbryt" %}</button>
-        <input type="submit" class="btn btn-primary" value="Spara ändringar" />
+        <input type="submit" class="btn btn-primary" value="{% if mode == 'create' %}Spara ukast{% else %}Spara ändringar{% endif %}" />
       </div>
       
     </div>
@@ -89,7 +103,8 @@ $(document).ready(function() {
 		event.preventDefault();
 		
 		var self = this;
-		$(self).find(".errors").text("");
+		$(self).find(".form-group").removeClass("has-feedback has-error");
+		$(self).find(".form-validation").text("");
 	    
 		$.ajax({ 
 	    	type: $(this).attr('method'), 
@@ -98,19 +113,16 @@ $(document).ready(function() {
 	        context: this,
 	        success: function(data, status) {
 	        	if(data.errors) {
-	        		$(self).find(".errors.question").text(data.errors.question);
-	        		$(self).find(".errors.question_part").text(data.errors.question_part);
-	        		$(self).find(".errors.category").text(data.errors.category);
-	        		$(self).find(".errors.sub_category").text(data.errors.category);
-	        		$(self).find(".errors.type").text(data.errors.type);
-	        		$(self).find(".errors.is_public").text(data.errors.is_public);
-	        		$(self).find(".errors.target_groups").text(data.errors.target_groups);
-	        		$(self).find(".errors.description").text(data.errors.description);
-	        		$(self).find(".errors.comment").text(data.errors.comment);
-	        		$(self).find(".errors.all").text(data.errors.__all__);
+	        		$(".form-group").each(function() {
+	        			var field = $(this).attr("data-field")
+	        			if(data.errors.hasOwnProperty(field)) {
+	        				$(this).addClass("has-feedback has-error");
+	        				$(this).find(".form-validation").text(data.errors[field]);
+	        			}
+	        		})
 	        	} else {
-    	            console.info("saved variable: ", data)
-    	            $('#editVariableModal').modal('hide')
+    	            console.info("saved variable: ", data);
+    	            $('#variableModal').modal('hide');
     	            window.location.reload(true);
 	        	}
 	        }, 

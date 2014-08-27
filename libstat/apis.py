@@ -172,7 +172,8 @@ def observation_api(request, observation_id):
 """
 def terms_api(request):
     terms = core_terms[:]
-    variables = Variable.objects.filter(is_public=True).order_by("key")
+    
+    variables = Variable.objects.public_terms().order_by("key")
     for v in variables:
         terms.append(v.to_dict())
     data = dict(terms_vocab, terms=terms)
@@ -180,7 +181,7 @@ def terms_api(request):
 
 def term_api(request, term_key):
     try:
-        term = Variable.objects.get(key=term_key)
+        term = Variable.objects.public_term_by_key(term_key)
     except Exception:
         if term_key in core_term_ids:
             http303 = HttpResponse(content="", status=303)
