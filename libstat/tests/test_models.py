@@ -8,6 +8,7 @@ import json
 from django.conf import settings
 from mongoengine.django.sessions import MONGOENGINE_SESSION_COLLECTION
 from mongoengine.errors import DoesNotExist
+from bson.objectid import ObjectId
 
 
 """
@@ -416,4 +417,98 @@ class VariableTest(MongoTestCase):
         self.assertFalse(self.v2.is_draft)
         self.assertFalse(self.v3.is_draft)
         self.assertTrue(self.v4.is_draft)
+        
+    def test_is_active(self):
+        self.assertTrue(self.v.is_active)
+        self.assertTrue(self.v2.is_active)
+        self.assertTrue(self.v3.is_active)
+        self.assertFalse(self.v4.is_active)
+        
+    def test_active_variable_should_replace_other_variables(self):
+        self.v2.replace_siblings([self.v.id, self.v3.id])
+        
+        replacement_var = Variable.objects.get(pk=self.v2.id)
+        replaced_var_1 = Variable.objects.get(pk=self.v.id)
+        replaced_var_2 = Variable.objects.get(pk=self.v3.id)
+
+        self.assertEquals(set([v.id for v in replacement_var.replaces]), set([self.v.id, self.v3.id]))
+        self.assertEquals(replaced_var_1.replaced_by.id, self.v2.id)
+        #self.assertEquals(replaced_var_1.is_active, False)
+        self.assertEquals(replaced_var_2.replaced_by.id, self.v2.id)
+        #self.assertEquals(replaced_var_2.is_active, False)
+        
+    def test_draft_variable_should_list_but_not_replace_other_variables(self):
+        self.v4.replace_siblings([self.v2.id])
+        
+        replacement_var = Variable.objects.get(pk=self.v4.id)
+        to_be_replaced = Variable.objects.get(pk=self.v2.id)
+        self.assertEquals(set([v.id for v in replacement_var.replaces]), set([self.v2.id]))
+        self.assertEquals(to_be_replaced.replaced_by, None)
+        #self.assertEquals(to_be_replaced.is_active, True)
+        
+    def test_should_raise_error_if_trying_to_replace_already_replaced_variable(self):
+        self.v.replace_siblings([self.v2.id])
+        
+        self.assertRaises(AttributeError, lambda: self.v3.replace_siblings([self.v2.id]))
+        
+        replacement = Variable.objects.get(pk=self.v.id)
+        unsuccessful_replacement = Variable.objects.get(pk=self.v3.id)
+        to_be_replaced = Variable.objects.get(pk=self.v2.id)
+        self.assertEquals([v.id for v in replacement.replaces],[self.v2.id])
+        self.assertEquals(unsuccessful_replacement.replaces, [])
+        self.assertEquals(to_be_replaced.replaced_by.id, self.v.id)
+        
+    def test_raise_error_if_trying_to_replace_non_existing_variable(self):
+        self.assertRaises(DoesNotExist, lambda: self.v.replace_siblings([ObjectId("53fdec1ca9969003ec144d97")]))
+        
+    def test_should_update_replacements(self):
+        self.v2.replace_siblings([self.v.id, self.v3.id])
+        after_setup = Variable.objects.get(pk=self.v2.id)
+        self.assertEquals(len(VariableVersion.objects.filter(key=self.v.key)), 1)
+        v_modified_date = Variable.objects.get(pk=self.v.id).date_modified
+        
+        # Should leave v unchanged, add v4 and remove v3
+        after_setup.replace_siblings([self.v.id, self.v4.id])
+        
+        replacement_var = Variable.objects.get(pk=self.v2.id)
+        self.assertEquals(set([v.id for v in replacement_var.replaces]), set([self.v.id, self.v4.id]))
+        self.assertEquals(len(VariableVersion.objects.filter(key=self.v.key)), 1)
+        self.assertEquals(Variable.objects.get(pk=self.v.id).date_modified, v_modified_date)
+        self.assertEquals(Variable.objects.get(pk=self.v3.id).replaced_by, None)
+        self.assertEquals(Variable.objects.get(pk=self.v4.id).replaced_by.id, self.v2.id)
+        
+    def test_should_update_replacements_for_draft(self):
+        self.v4.replace_siblings([self.v2.id])
+        after_setup = Variable.objects.get(pk=self.v4.id)
+        
+        after_setup.replace_siblings([self.v2.id, self.v3.id])
+        
+        replacement_var = Variable.objects.get(pk=self.v4.id)
+        
+        self.assertEquals(set([v.id for v in replacement_var.replaces]), set([self.v2.id, self.v3.id]))
+        self.assertEquals(Variable.objects.get(pk=self.v2.id).replaced_by, None)
+        self.assertEquals(len(VariableVersion.objects.filter(key=self.v2.key)), 0)
+        self.assertEquals(Variable.objects.get(pk=self.v3.id).replaced_by, None)
+        self.assertEquals(len(VariableVersion.objects.filter(key=self.v3.key)), 0)
+        
+        
+    def test_should_clear_all_replacements(self):
+        self.v2.replace_siblings([self.v.id, self.v3.id])
+        after_setup = Variable.objects.get(pk=self.v2.id)
+        
+        after_setup.replace_siblings([])
+        self.assertEquals(Variable.objects.get(pk=self.v2.id).replaces, [])
+        self.assertEquals(Variable.objects.get(pk=self.v.id).replaced_by, None)
+        self.assertEquals(Variable.objects.get(pk=self.v3.id).replaced_by, None)
+        
+    def test_should_clear_all_replacements_for_draft(self):
+        self.v4.replace_siblings([self.v2.id])
+        after_setup = Variable.objects.get(pk=self.v4.id)
+        
+        after_setup.replace_siblings([])
+        self.assertEquals(Variable.objects.get(pk=self.v4.id).replaces, [])
+        self.assertEquals(Variable.objects.get(pk=self.v2.id).replaced_by, None)
+        self.assertEquals(len(VariableVersion.objects.filter(key=self.v2.key)), 0)
+        
+        
         

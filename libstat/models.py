@@ -93,10 +93,20 @@ class VariableBase(Document):
     
     is_draft = BooleanField()
     
+    replaces = ListField(ReferenceField("Variable"))
+    replaced_by = ReferenceField("Variable")
+    # TODO: replaced_at = DateTimeField()
+    
     meta = {
         'abstract': True,
     }
-
+    
+    @property
+    def is_active(self):
+        # TODO: Variable will have a "deactivated_at" date/flag that this method will need to handle.
+        # return not self.is_draft and not self.is_deactivated  (---> or not self.deactivated_at > datetime.utcnow() )
+        return False if self.is_draft else True
+    
     
     
 class Variable(VariableBase):
@@ -142,6 +152,45 @@ class Variable(VariableBase):
             return self.question 
         else:
             return self.description
+        
+        
+    def replace_siblings(self, to_be_replaced=[]):
+        """
+            Set this Variable instance as the replacement for a list of sibling Variables.
+        """
+        siblings_to_replace = []
+        if to_be_replaced:
+            # Ensure Variables to be replaced exist and are in the correct state
+            for object_id in to_be_replaced:
+                try:
+                    variable = Variable.objects.get(pk=object_id)
+                    if variable.replaced_by != None and variable.replaced_by.id != self.id:
+                        raise AttributeError(u"Variable {} is already replaced by {}".format(object_id, variable.replaced_by.id))
+                    siblings_to_replace.append(variable)
+                except Exception as e:
+                    logger.error(u"Error while fetching Variable with id {} to be replaced by Variable {}: {}".format(object_id, self.id, e))
+                    raise e
+                
+        siblings_to_release = list(set(self.replaces) - set(siblings_to_replace))
+        siblings_requiring_update = list(set(siblings_to_replace) - set(self.replaces))
+
+        # Release siblings that should no longer be replaced by this instance
+        for to_release in siblings_to_release:
+            if not self.is_draft:
+                to_release.replaced_by = None;
+                to_release.save()
+            self.replaces.remove(to_release)
+       
+        # Replace sibling variables
+        for to_replace in siblings_requiring_update:
+            if not self.is_draft:
+                to_replace.replaced_by = self;
+                to_replace.save()
+            self.replaces.append(to_replace)
+            
+        self.save()
+        
+        
     
     def target_groups__descriptions(self):
         display_names = []
