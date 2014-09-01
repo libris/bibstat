@@ -48,22 +48,22 @@ class VariableQuerySet(QuerySet):
         Custom query set for Variable.
         Contains nifty prepared filters for fetching Variables.
     """
+    is_draft_not_set_query = Q(is_draft=None)
+    is_not_draft_query = Q(is_draft=False)
+    public_query = Q(is_public=True)
   
     def public_terms(self):
-        public_query = Q(is_public=True)
-        is_draft_not_set_query = Q(is_draft=None)
-        is_not_draft_query = Q(is_draft=False)
-        return self.filter(public_query & (is_draft_not_set_query | is_not_draft_query))
+        return self.filter(self.public_query & (self.is_draft_not_set_query | self.is_not_draft_query))
     
     def public_term_by_key(self, key):
         if not key:
             raise DoesNotExist("No key value given")
         key_query = Q(key=key)
-        public_query = Q(is_public=True)
-        is_draft_not_set_query = Q(is_draft=None)
-        is_not_draft_query = Q(is_draft=False)
-        return self.get(key_query & public_query & (is_draft_not_set_query | is_not_draft_query))
+        return self.get(key_query & self.public_query & (self.is_draft_not_set_query | self.is_not_draft_query))
     
+    def replaceable_siblings(self):
+        is_not_replaced_query = Q(replaced_by=None)
+        return self.filter(is_not_replaced_query & (self.is_draft_not_set_query | self.is_not_draft_query))
     
 
 class VariableBase(Document):
@@ -154,10 +154,13 @@ class Variable(VariableBase):
             return self.description
         
         
-    def replace_siblings(self, to_be_replaced=[]):
+    def replace_siblings(self, to_be_replaced=[], commit=False):
         """
-            Set this Variable instance as the replacement for a list of sibling Variables.
+            Set this Variable instance as the replacement for a list of sibling Variables 
+            and return the list of modified siblings.
+            All instances including self will be saved if commit=True
         """
+        modified_siblings = []
         siblings_to_replace = []
         if to_be_replaced:
             # Ensure Variables to be replaced exist and are in the correct state
@@ -178,17 +181,23 @@ class Variable(VariableBase):
         for to_release in siblings_to_release:
             if not self.is_draft:
                 to_release.replaced_by = None;
-                to_release.save()
+                if commit:
+                    to_release.save()
+                modified_siblings.append(to_release)
             self.replaces.remove(to_release)
        
         # Replace sibling variables
         for to_replace in siblings_requiring_update:
             if not self.is_draft:
                 to_replace.replaced_by = self;
-                to_replace.save()
+                if commit:
+                    to_replace.save()
+                modified_siblings.append(to_replace)
             self.replaces.append(to_replace)
             
-        self.save()
+        if commit:
+            self.save()
+        return modified_siblings
         
         
     

@@ -18,6 +18,12 @@
              <span class="glyphicon glyphicon-remove form-control-feedback"></span>
           </div>
         {% endif %}
+        <div class="form-group replaces" data-field="replaces">
+          <label for="id_replaces">{% trans "Ersätter termer" %}</label>
+          <span class="text-danger form-validation after"></span>
+          {{form.replaces}}
+          <span class="glyphicon glyphicon-remove form-control-feedback"></span>
+        </div>
         <div class="form-group question" data-field="question">
             <label for="id_question">{% trans "Formulärfråga" %}</label>
             <span class="text-danger form-validation after"></span>
@@ -98,7 +104,49 @@
 </form>
 
 <script type="text/javascript">
-$(document).ready(function() { 
+$(document).ready(function() {
+	
+/* 	var engine = new Bloodhound({
+		  local: [{value: 'red'}, {value: 'blue'}, {value: 'green'} , {value: 'yellow'}, {value: 'violet'}, {value: 'brown'}, {value: 'purple'}, {value: 'black'}, {value: 'white'}],
+		  datumTokenizer: function(d) {
+		    return Bloodhound.tokenizers.whitespace(d.value); 
+		  },
+		  queryTokenizer: Bloodhound.tokenizers.whitespace 
+	});
+
+	engine.initialize(); */
+	var replaceable_variables = new Bloodhound({
+		datumTokenizer: function(item) {
+			return Bloodhound.tokenizers.whitespace(item.label);
+		},
+		queryTokenizer: Bloodhound.tokenizers.whitespace,
+		limit: 10,
+		prefetch: {
+		    // url points to a json file that contains an array of country names, see
+		    // https://github.com/twitter/typeahead.js/blob/gh-pages/data/countries.json
+		  	url: '/statistics/variables/replaceable',
+		    // the json file contains an array of strings, but the Bloodhound
+		    // suggestion engine expects JavaScript objects so this converts all of
+		    // those strings
+		    filter: function(list) {
+		      return $.map(list, function(variable) { 
+		    	  return { label: variable.key, value: variable._id["$oid"] }; 
+		      });
+		    }
+		 },
+		/*remote: '/statistics/variables/replaceable',*/
+	});
+		 
+	// kicks off the loading/processing of `local` and `prefetch`
+	replaceable_variables.initialize();
+
+	$('#id_replaces').tokenfield({
+	  	typeahead: [null, {
+		  	displayKey: 'label',
+		  	source: replaceable_variables.ttAdapter(),
+	  	}]
+	});
+	
 	$('.edit-variable-form').submit(function(event) {
 		event.preventDefault();
 		

@@ -404,3 +404,37 @@ class EditSurveyObservationsViewTest(MongoTestCase):
         self.assertEquals(response.context['observations_form']._errors['folk6'], [u"Välj ett giltigt alternativ. foo finns inte bland tillg\xe4ngliga alternativ."])
         self.assertEquals(response.context['observations_form']._errors['folk52'], [u"Fyll i ett heltal."])
         self.assertEquals(response.context['observations_form']._errors['folk38'], [u"Fyll i ett heltal."])
+        
+
+class TestReplaceableVariablesApi(MongoTestCase):
+    def setUp(self):
+        v = Variable(key=u"Folk28", description=u"Totalt antal anställda personer som är bibliotekarier och som är män 1 mars.", type="integer", is_public=True, target_groups=["public"])
+        v.save()
+        v2 = Variable(key=u"Forsk21", description=u"Antal anställda manliga bibliotekarier och dokumentalister.", type="integer", is_public=True, _is_draft=True, target_groups=["research"])
+        v2.save()
+        v3 = Variable(key=u"Sjukhus104", description=u"Totalt antal fjärrutlån under kalenderåret - summering av de angivna delsummorna", type="integer", is_public=True, replaced_by=v, target_groups=["hospital"])
+        v3.save()
+        v4 = Variable(key=u"Skol10", description=u"Postort", type="string", is_public=False, target_groups=["school"])
+        v4.save()
+        
+        self.url = reverse("replaceable_variables_api")
+        self.client.login(username="admin", password="admin")
+        
+    def test_view_requires_admin_login(self):
+        self.client.logout()
+        response = self.client.get(self.url)
+        self.assertEquals(response.status_code, 302)
+        
+        self.client.login(username="library_user", password="secret")
+        response = self.client.get(self.url)
+        self.assertEquals(response.status_code, 302)
+        
+        self.client.logout()
+        self.client.login(username="admin", password="admin")
+        response = self.client.get(self.url)
+        self.assertEquals(response.status_code, 200)
+    
+    def test_should_return_replaceable_variables_as_json(self):
+        response = self.client.get(self.url)
+        self.assertEquals(response.status_code, 200)
+    

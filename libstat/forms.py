@@ -27,6 +27,8 @@ class VariableForm(forms.Form):
     description = forms.CharField(widget=forms.Textarea(attrs={'class': 'form-control', 'rows': '2'}))
     comment = forms.CharField(required=False, widget=forms.Textarea(attrs={'class': 'form-control', 'rows': '2'}))
     
+    replaces = forms.CharField(required=False, widget=forms.TextInput(attrs={'class': 'form-control'}))
+    
     def __init__(self, *args, **kwargs):
         self.instance = kwargs.pop('instance', None)
         super(VariableForm, self).__init__(*args, **kwargs)
@@ -46,6 +48,7 @@ class VariableForm(forms.Form):
             self.fields['target_groups'].initial = self.instance.target_groups
             self.fields['description'].initial = self.instance.description
             self.fields['comment'].initial = self.instance.comment
+            self.fields['replaces'].initial = ", ".join([str(v.id) for v in self.instance.replaces]) if self.instance.replaces else ""
             
         
     def save(self, commit=True, user=None):
@@ -61,9 +64,14 @@ class VariableForm(forms.Form):
         variable.description = self.cleaned_data['description']
         variable.comment = self.cleaned_data['comment']
         
+        to_replace = self.cleaned_data['replaces'].split(", ") if self.cleaned_data['replaces'] else []
+        modified_siblings = variable.replace_siblings(to_replace)
+        
         variable.modified_by = user
         
         if commit:
+            for sibling in modified_siblings:
+                sibling.save()
             variable.save()
 
         return variable

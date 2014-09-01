@@ -8,7 +8,7 @@ urlpatterns = patterns('libstat.views',
     url(r'^$',views.index, name='index'),
     url(r'^open_data/$', views.open_data, name="open_data"),
 
-    # API views
+    # Open API views
     url(r'^data/$', views.data_api, name="data_api"),
     url(r'^data/(?P<observation_id>\w+)/$', views.observation_api, name="observation_api"),
     url(r'^def/terms/$', views.terms_api, name="terms_api"),
@@ -27,4 +27,7 @@ urlpatterns = patterns('libstat.views',
     url(r'^survey_responses/(?P<survey_response_id>\w+)/$',views.edit_survey_response, name='edit_survey_response'),
     url(r'^survey_responses/(?P<survey_response_id>\w+)/observations/$',views.edit_survey_observations, name='edit_survey_observations'),
     url(r'^survey_responses/(?P<survey_response_id>\w+)/publish/$',views.publish_survey_response, name='publish_survey_response'),
+    
+    # Admin helper APIs
+    url(r'^variables/replaceable$',views.replaceable_variables_api, name='replaceable_variables_api'),
 )

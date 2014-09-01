@@ -310,7 +310,14 @@ class VariableQuerySetTest(MongoTestCase):
         self.assertEquals(Variable.objects.public_term_by_key("Folk10").id, self.v.id)
         self.assertRaises(DoesNotExist, lambda: Variable.objects.public_term_by_key("Folk35"))
         self.assertEquals(Variable.objects.public_term_by_key("Folk31").id, self.v3.id)
-        self.assertRaises(DoesNotExist, lambda: Variable.objects.public_term_by_key("Folk69"))   
+        self.assertRaises(DoesNotExist, lambda: Variable.objects.public_term_by_key("Folk69"))
+        
+    def test_filter_replaceable_siblings(self):
+        self.v.replaced_by=self.v2
+        self.v.save()
+        
+        result_set = Variable.objects.replaceable_siblings()
+        self.assertEquals([v.id for v in result_set], [self.v2.id, self.v3.id])
         
         
            
@@ -425,7 +432,8 @@ class VariableTest(MongoTestCase):
         self.assertFalse(self.v4.is_active)
         
     def test_active_variable_should_replace_other_variables(self):
-        self.v2.replace_siblings([self.v.id, self.v3.id])
+        modified_siblings = self.v2.replace_siblings([self.v.id, self.v3.id], commit=True)
+        self.assertEquals(set([v.id for v in modified_siblings]), set([self.v.id, self.v3.id]))
         
         replacement_var = Variable.objects.get(pk=self.v2.id)
         replaced_var_1 = Variable.objects.get(pk=self.v.id)
@@ -438,7 +446,8 @@ class VariableTest(MongoTestCase):
         #self.assertEquals(replaced_var_2.is_active, False)
         
     def test_draft_variable_should_list_but_not_replace_other_variables(self):
-        self.v4.replace_siblings([self.v2.id])
+        modified_siblings = self.v4.replace_siblings([self.v2.id], commit=True)
+        self.assertEquals(modified_siblings, [])
         
         replacement_var = Variable.objects.get(pk=self.v4.id)
         to_be_replaced = Variable.objects.get(pk=self.v2.id)
@@ -446,10 +455,21 @@ class VariableTest(MongoTestCase):
         self.assertEquals(to_be_replaced.replaced_by, None)
         #self.assertEquals(to_be_replaced.is_active, True)
         
-    def test_should_raise_error_if_trying_to_replace_already_replaced_variable(self):
-        self.v.replace_siblings([self.v2.id])
+    def test_should_not_commit_replacement_unless_specified(self):
+        modified_siblings = self.v2.replace_siblings([self.v.id])
+        self.assertEquals(set([v.id for v in self.v2.replaces]), set([self.v.id]))
+        self.assertEquals(set([v.id for v in modified_siblings]), set([self.v.id]))
         
-        self.assertRaises(AttributeError, lambda: self.v3.replace_siblings([self.v2.id]))
+        replacement_var = Variable.objects.get(pk=self.v2.id)
+        replaced_var_1 = Variable.objects.get(pk=self.v.id)
+        
+        self.assertEquals(replacement_var.replaces, [])
+        self.assertEquals(replaced_var_1.replaced_by, None)
+        
+    def test_should_raise_error_if_trying_to_replace_already_replaced_variable(self):
+        self.v.replace_siblings([self.v2.id], commit=True)
+        
+        self.assertRaises(AttributeError, lambda: self.v3.replace_siblings([self.v2.id], commit=True))
         
         replacement = Variable.objects.get(pk=self.v.id)
         unsuccessful_replacement = Variable.objects.get(pk=self.v3.id)
@@ -459,16 +479,16 @@ class VariableTest(MongoTestCase):
         self.assertEquals(to_be_replaced.replaced_by.id, self.v.id)
         
     def test_raise_error_if_trying_to_replace_non_existing_variable(self):
-        self.assertRaises(DoesNotExist, lambda: self.v.replace_siblings([ObjectId("53fdec1ca9969003ec144d97")]))
+        self.assertRaises(DoesNotExist, lambda: self.v.replace_siblings([ObjectId("53fdec1ca9969003ec144d97")], commit=True))
         
     def test_should_update_replacements(self):
-        self.v2.replace_siblings([self.v.id, self.v3.id])
+        self.v2.replace_siblings([self.v.id, self.v3.id], commit=True)
         after_setup = Variable.objects.get(pk=self.v2.id)
         self.assertEquals(len(VariableVersion.objects.filter(key=self.v.key)), 1)
         v_modified_date = Variable.objects.get(pk=self.v.id).date_modified
         
         # Should leave v unchanged, add v4 and remove v3
-        after_setup.replace_siblings([self.v.id, self.v4.id])
+        after_setup.replace_siblings([self.v.id, self.v4.id], commit=True)
         
         replacement_var = Variable.objects.get(pk=self.v2.id)
         self.assertEquals(set([v.id for v in replacement_var.replaces]), set([self.v.id, self.v4.id]))
@@ -478,10 +498,10 @@ class VariableTest(MongoTestCase):
         self.assertEquals(Variable.objects.get(pk=self.v4.id).replaced_by.id, self.v2.id)
         
     def test_should_update_replacements_for_draft(self):
-        self.v4.replace_siblings([self.v2.id])
+        modified_siblings = self.v4.replace_siblings([self.v2.id], commit=True)
         after_setup = Variable.objects.get(pk=self.v4.id)
         
-        after_setup.replace_siblings([self.v2.id, self.v3.id])
+        after_setup.replace_siblings([self.v2.id, self.v3.id], commit=True)
         
         replacement_var = Variable.objects.get(pk=self.v4.id)
         
@@ -493,19 +513,19 @@ class VariableTest(MongoTestCase):
         
         
     def test_should_clear_all_replacements(self):
-        self.v2.replace_siblings([self.v.id, self.v3.id])
+        self.v2.replace_siblings([self.v.id, self.v3.id], commit=True)
         after_setup = Variable.objects.get(pk=self.v2.id)
         
-        after_setup.replace_siblings([])
+        after_setup.replace_siblings([], commit=True)
         self.assertEquals(Variable.objects.get(pk=self.v2.id).replaces, [])
         self.assertEquals(Variable.objects.get(pk=self.v.id).replaced_by, None)
         self.assertEquals(Variable.objects.get(pk=self.v3.id).replaced_by, None)
         
     def test_should_clear_all_replacements_for_draft(self):
-        self.v4.replace_siblings([self.v2.id])
+        self.v4.replace_siblings([self.v2.id], commit=True)
         after_setup = Variable.objects.get(pk=self.v4.id)
         
-        after_setup.replace_siblings([])
+        after_setup.replace_siblings([], commit=True)
         self.assertEquals(Variable.objects.get(pk=self.v4.id).replaces, [])
         self.assertEquals(Variable.objects.get(pk=self.v2.id).replaced_by, None)
         self.assertEquals(len(VariableVersion.objects.filter(key=self.v2.key)), 0)

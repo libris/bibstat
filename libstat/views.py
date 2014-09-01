@@ -120,11 +120,11 @@ def create_variable(request):
                 # No redirect since this is displayed as a modal and we do a javascript redirect if no form errors
                 return HttpResponse(v.to_json(), content_type="application/json")
             except NotUniqueError as nue:
-                logger.warning(u"A Variable with key {} already exists: {}".format(v.key, nue))
-                errors['key'] = [u"Det finns redan en term med nyckel {}".format(v.key)]
+                logger.warning(u"A Variable with key {} already exists: {}".format(form.fields["key"], nue))
+                errors['key'] = [u"Det finns redan en term med nyckel {}".format(form.fields["key"])]
             except Exception as e:
-                logger.warning(u"Error updating Variable {}: {}".format(variable_id, e))
-                errors['__all__'] = [u"Kan inte uppdatera term {}".format(v.key)]
+                logger.warning(u"Error creating Variable: {}".format(e))
+                errors['__all__'] = [u"Kan inte skapa term {}".format(form.fields["key"])]
         else:
             errors = form.errors
             context['errors'] = errors
@@ -326,3 +326,12 @@ def edit_survey_observations(request, survey_response_id):
             return _render_survey_response_view(request, SurveyResponseForm(instance=survey_response), form)
     
     return redirect("edit_survey_response", survey_response_id)
+
+
+@permission_required('is_superuser', login_url='index')
+def replaceable_variables_api(request):
+    """
+        Helper Json API method to populate search field for replaceable variables. (Ajax call)
+    """
+    variables = Variable.objects.replaceable_siblings().order_by("key")
+    return HttpResponse(variables.to_json(), content_type="application/json")
