@@ -20,6 +20,7 @@
         {% endif %}
         <div class="form-group replaces" data-field="replaces">
           <label for="id_replaces">{% trans "Ersätter termer" %}</label>
+          <input type="hidden" id="id_replaces_initial" value="{{form.replaces_initial_value}}" />
           <span class="text-danger form-validation after"></span>
           {{form.replaces}}
           <span class="glyphicon glyphicon-remove form-control-feedback"></span>
@@ -105,16 +106,7 @@
 
 <script type="text/javascript">
 $(document).ready(function() {
-	
-/* 	var engine = new Bloodhound({
-		  local: [{value: 'red'}, {value: 'blue'}, {value: 'green'} , {value: 'yellow'}, {value: 'violet'}, {value: 'brown'}, {value: 'purple'}, {value: 'black'}, {value: 'white'}],
-		  datumTokenizer: function(d) {
-		    return Bloodhound.tokenizers.whitespace(d.value); 
-		  },
-		  queryTokenizer: Bloodhound.tokenizers.whitespace 
-	});
 
-	engine.initialize(); */
 	var replaceable_variables = new Bloodhound({
 		datumTokenizer: function(item) {
 			return Bloodhound.tokenizers.whitespace(item.label);
@@ -129,8 +121,8 @@ $(document).ready(function() {
 		    // suggestion engine expects JavaScript objects so this converts all of
 		    // those strings
 		    filter: function(list) {
-		      return $.map(list, function(variable) { 
-		    	  return { label: variable.key, value: variable._id["$oid"] }; 
+		      return $.map(list, function(item) { 
+		    	  return { label: item.key, value: item.id }; 
 		      });
 		    }
 		 },
@@ -139,13 +131,22 @@ $(document).ready(function() {
 		 
 	// kicks off the loading/processing of `local` and `prefetch`
 	replaceable_variables.initialize();
-
+	
+	var initial_tokens = function() {
+		var tokens = []
+		var keysIds = $("#id_replaces_initial").val().split(", ");
+		return $.map(keysIds, function(keyId) {
+			var labelValue = keyId.split(":");
+			return { label: labelValue[0], value: labelValue[1] }; 
+		});
+	}
 	$('#id_replaces').tokenfield({
 	  	typeahead: [null, {
 		  	displayKey: 'label',
 		  	source: replaceable_variables.ttAdapter(),
 	  	}]
-	});
+	}).tokenfield('setTokens', initial_tokens());
+	
 	
 	$('.edit-variable-form').submit(function(event) {
 		event.preventDefault();

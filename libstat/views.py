@@ -334,4 +334,5 @@ def replaceable_variables_api(request):
         Helper Json API method to populate search field for replaceable variables. (Ajax call)
     """
     variables = Variable.objects.replaceable_siblings().order_by("key")
-    return HttpResponse(variables.to_json(), content_type="application/json")
+    data = [{ 'key': v.key, 'id': str(v.id) } for v in variables];
+    return HttpResponse(json.dumps(data), content_type="application/json")

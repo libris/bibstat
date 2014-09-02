@@ -49,6 +49,7 @@ class VariableForm(forms.Form):
             self.fields['description'].initial = self.instance.description
             self.fields['comment'].initial = self.instance.comment
             self.fields['replaces'].initial = ", ".join([str(v.id) for v in self.instance.replaces]) if self.instance.replaces else ""
+            self.replaces_initial_value =  ", ".join(["{}:{}".format(v.key, str(v.id)) for v in self.instance.replaces] if self.instance.replaces else [])
             
         
     def save(self, commit=True, user=None):
