@@ -71,9 +71,12 @@ class VariableForm(forms.Form):
         variable.modified_by = user
         
         if commit:
+            # Need to save variable first and then update references in siblings, transaction will be flagged as dirty otherwise.
+            updated_instance = variable.save()
             for sibling in modified_siblings:
+                if sibling.replaced_by and sibling.replaced_by.id == updated_instance.id:
+                    sibling.replaced_by = updated_instance
                 sibling.save()
-            variable.save()
 
         return variable
     

@@ -116,6 +116,10 @@ class EditVariableViewTest(MongoTestCase):
     def setUp(self):
         self.v1 = Variable(key=u"Folk10", description=u"Antal bemannade serviceställen", type="integer", is_public=True, target_groups=["public"])
         self.v1.save()
+        self.v2  = Variable(key=u"Sjukhus102", description=u"Bestånd av tillgängliga medier för personer med läsnedsättning", type="integer", is_public=True, target_groups=["hospital"])
+        self.v2.save()
+        self.v3  = Variable(key=u"Forsk23", description=u"Antal anställda personer manliga biblioteksassistenter.", type="integer", is_public=True, is_draft=True, target_groups=["research"])
+        self.v3.save()
         
         self.new_category = u"Organisation"
         self.new_sub_category = u"Bemannade serviceställen"
@@ -162,6 +166,32 @@ class EditVariableViewTest(MongoTestCase):
         self.assertEquals(response.status_code,200)
         result = Variable.objects.get(pk=self.v1.id)
         self.assertEquals(result.key, u"Folk10")
+        
+    def test_should_replace_variable(self):
+        response = self.client.post(self.url, {u"type": self.new_type, u"target_groups": self.new_target_groups, u"description": self.new_description, 
+                                               u"replaces": str(self.v2.id)})
+        self.assertEquals(response.status_code,200)
+        data = json.loads(response.content)
+        self.assertFalse('errors' in data)
+        
+        replacing = Variable.objects.get(pk=self.v1.id)
+        replaced = Variable.objects.get(pk=self.v2.id)
+        self.assertEquals([v.id for v in replacing.replaces], [self.v2.id])
+        self.assertEquals(replaced.replaced_by.id, self.v1.id)
+        
+    def test_draft_should_replace_variable(self):
+        response = self.client.post(reverse("edit_variable", kwargs={"variable_id":str(self.v3.id)}), 
+                                    {u"type": self.new_type, u"target_groups": self.new_target_groups, u"description": self.new_description, 
+                                    u"replaces": str(self.v2.id)})
+        self.assertEquals(response.status_code,200)
+        data = json.loads(response.content)
+        self.assertFalse('errors' in data)
+        
+        replacing = Variable.objects.get(pk=self.v3.id)
+        replaced = Variable.objects.get(pk=self.v2.id)
+        self.assertEquals([v.id for v in replacing.replaces], [self.v2.id])
+        self.assertEquals(replaced.replaced_by, None)
+        
         
     # TODO: Borde man kunna ändra synlighet? Inte om det redan finns publik data eller inlämnade enkätsvar väl? Kommer kräva ompublicering av alla enkätsvar som har variabeln...
     
@@ -404,6 +434,7 @@ class EditSurveyObservationsViewTest(MongoTestCase):
         self.assertEquals(response.context['observations_form']._errors['folk6'], [u"Välj ett giltigt alternativ. foo finns inte bland tillg\xe4ngliga alternativ."])
         self.assertEquals(response.context['observations_form']._errors['folk52'], [u"Fyll i ett heltal."])
         self.assertEquals(response.context['observations_form']._errors['folk38'], [u"Fyll i ett heltal."])
+        
         
 
 class TestReplaceableVariablesApi(MongoTestCase):
