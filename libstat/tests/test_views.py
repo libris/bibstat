@@ -409,13 +409,13 @@ class EditSurveyObservationsViewTest(MongoTestCase):
 class TestReplaceableVariablesApi(MongoTestCase):
     def setUp(self):
         v = Variable(key=u"Folk28", description=u"Totalt antal anställda personer som är bibliotekarier och som är män 1 mars.", type="integer", is_public=True, target_groups=["public"])
-        v.save()
-        v2 = Variable(key=u"Forsk21", description=u"Antal anställda manliga bibliotekarier och dokumentalister.", type="integer", is_public=True, _is_draft=True, target_groups=["research"])
-        v2.save()
+        self.active_public = v.save()
+        v2 = Variable(key=u"Forsk21", description=u"Antal anställda manliga bibliotekarier och dokumentalister.", type="integer", is_public=True, is_draft=True, target_groups=["research"])
+        self.draft = v2.save()
         v3 = Variable(key=u"Sjukhus104", description=u"Totalt antal fjärrutlån under kalenderåret - summering av de angivna delsummorna", type="integer", is_public=True, replaced_by=v, target_groups=["hospital"])
-        v3.save()
+        self.already_replaced = v3.save()
         v4 = Variable(key=u"Skol10", description=u"Postort", type="string", is_public=False, target_groups=["school"])
-        v4.save()
+        self.active_private = v4.save()
         
         self.url = reverse("replaceable_variables_api")
         self.client.login(username="admin", password="admin")
@@ -437,4 +437,13 @@ class TestReplaceableVariablesApi(MongoTestCase):
     def test_should_return_replaceable_variables_as_json(self):
         response = self.client.get(self.url)
         self.assertEquals(response.status_code, 200)
+        data = json.loads(response.content)
+        self.assertEquals(data, [{"key":"Folk28", "id":str(self.active_public.id)},
+                                 {"key":"Skol10", "id":str(self.active_private.id)}])
+        
+    def test_should_filter_replaceables_by_key(self):
+        response = self.client.get("{}?q=Fo".format(self.url))
+        self.assertEquals(response.status_code, 200)
+        data = json.loads(response.content)
+        self.assertEquals(data, [{"key":"Folk28", "id":str(self.active_public.id)}])
     

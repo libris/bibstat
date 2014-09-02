@@ -9,7 +9,7 @@
       </div>
       <div class="modal-body">
         {% csrf_token %}
-        <span class="text-danger errors all"></span>
+        <span class="general-errors text-danger form-validation"></span>
         {% if mode == 'create' %}
           <div class="form-group key" data-field="key">
              <label for="id_key">{% trans "Nyckel (unik)" %}</label>
@@ -109,29 +109,21 @@ $(document).ready(function() {
 
 	var replaceable_variables = new Bloodhound({
 		datumTokenizer: function(item) {
-			return Bloodhound.tokenizers.whitespace(item.label);
+			return Bloodhound.tokenizers.whitespace(item.value);
 		},
 		queryTokenizer: Bloodhound.tokenizers.whitespace,
-		limit: 10,
-		prefetch: {
-		    // url points to a json file that contains an array of country names, see
-		    // https://github.com/twitter/typeahead.js/blob/gh-pages/data/countries.json
-		  	url: '/statistics/variables/replaceable',
-		    // the json file contains an array of strings, but the Bloodhound
-		    // suggestion engine expects JavaScript objects so this converts all of
-		    // those strings
+		limit: 20,
+		remote: {
+		  	url: '/statistics/variables/replaceable?q=%QUERY',
 		    filter: function(list) {
 		      return $.map(list, function(item) { 
 		    	  return { label: item.key, value: item.id }; 
 		      });
 		    }
-		 },
-		/*remote: '/statistics/variables/replaceable',*/
+		},
 	});
-		 
 	// kicks off the loading/processing of `local` and `prefetch`
 	replaceable_variables.initialize();
-	
 	var initial_tokens = function() {
 		var tokens = []
 		var keysIds = $("#id_replaces_initial").val().split(", ");
@@ -169,6 +161,9 @@ $(document).ready(function() {
 	        				$(this).find(".form-validation").text(data.errors[field]);
 	        			}
 	        		})
+	        		if(data.errors.hasOwnProperty("__all__")) {
+	        			$(".general-errors").text(data.errors["__all__"]);	
+	        		}
 	        	} else {
     	            console.info("saved variable: ", data);
     	            $('#variableModal').modal('hide');
