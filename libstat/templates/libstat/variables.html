@@ -41,10 +41,10 @@
         <tbody>
         {% if variables %}
           {% for v in variables %}
-            <tr {% if v.is_draft %}class="draft"{% endif %}>
+            <tr class="{{v.state.state}}">
               <td>
                 <a class="edit-variable" href="#" data-form="{% url 'edit_variable' v.id %}" title="{% trans 'Visa/Ändra' %}">
-                  {{ v.key }} {% if v.is_draft %}(utkast){% endif %}
+                  {{ v.key }} {% if not v.is_active %}({{v.state.label}}){% endif %}
                 </a>
               </td>
               <td>{{ v.category }}</td>

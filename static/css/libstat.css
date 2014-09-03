@@ -141,10 +141,15 @@
   cursor: help;
 }
 
-.draft {
+.draft, 
+.replaced {
   color: #888888;
   font-style: italic;
 }
 .draft a {
   color: #2a6496;
+}
+.replaced a {
+  color: #80a9cb;
+  font-style: normal;
 }

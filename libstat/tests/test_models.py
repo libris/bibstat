@@ -441,9 +441,9 @@ class VariableTest(MongoTestCase):
 
         self.assertEquals(set([v.id for v in replacement_var.replaces]), set([self.v.id, self.v3.id]))
         self.assertEquals(replaced_var_1.replaced_by.id, self.v2.id)
-        #self.assertEquals(replaced_var_1.is_active, False)
+        self.assertEquals(replaced_var_1.is_active, False)
         self.assertEquals(replaced_var_2.replaced_by.id, self.v2.id)
-        #self.assertEquals(replaced_var_2.is_active, False)
+        self.assertEquals(replaced_var_2.is_active, False)
         
     def test_draft_variable_should_list_but_not_replace_other_variables(self):
         modified_siblings = self.v4.replace_siblings([self.v2.id], commit=True)
@@ -453,7 +453,7 @@ class VariableTest(MongoTestCase):
         to_be_replaced = Variable.objects.get(pk=self.v2.id)
         self.assertEquals(set([v.id for v in replacement_var.replaces]), set([self.v2.id]))
         self.assertEquals(to_be_replaced.replaced_by, None)
-        #self.assertEquals(to_be_replaced.is_active, True)
+        self.assertEquals(to_be_replaced.is_active, True)
         
     def test_should_not_commit_replacement_unless_specified(self):
         modified_siblings = self.v2.replace_siblings([self.v.id])
