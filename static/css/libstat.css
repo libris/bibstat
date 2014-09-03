@@ -57,6 +57,9 @@
 .form-group.has-feedback .glyphicon {
   display: block;
 }
+.form-group .date .glyphicon {
+  display: inline-block;
+}
 
 /* Custom panel styles */
 .panel-default.inverse > .panel-heading {
@@ -152,4 +155,8 @@
 .replaced a {
   color: #80a9cb;
   font-style: normal;
+}
+
+label.sub-label {
+  font-weight: normal;
 }
