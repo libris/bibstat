@@ -13,6 +13,8 @@ from django.conf import settings
 from libstat.utils import ISO8601_utc_format
 
 import logging
+from django.db.models.fields import DateField
+from cookielib import logger
 logger = logging.getLogger(__name__)
 
 PUBLIC_LIBRARY = ("public", "Folkbibliotek")
@@ -93,6 +95,10 @@ class VariableBase(Document):
     
     is_draft = BooleanField()
     
+    # Only date-part of these fields is relevant,
+    active_from = DateTimeField()
+    active_to = DateTimeField()
+    
     replaces = ListField(ReferenceField("Variable"))
     replaced_by = ReferenceField("Variable")
     
@@ -102,17 +108,34 @@ class VariableBase(Document):
     
     @property
     def is_active(self):
-        return False if self.is_draft or self.replaced_by else True
+        if self.is_draft:
+            return False
+        elif self._is_no_longer_active():
+            return False
+        elif self._is_not_yet_active():
+            return False
+        else:
+            return True
     
     @property
     def state(self):
         if self.is_draft:
             return { u"state": u"draft", u"label": u"utkast" }
         elif self.replaced_by:
-            return { u"state": u"replaced", u"label": u"ersatt av {}".format(self.replaced_by.key) }
+            return { u"state": u"replaced", u"label": u"ersätts av {}".format(self.replaced_by.key) }
+        elif self._is_no_longer_active():
+            return { u"state": u"discontinued", u"label": u"avslutad" }
+        elif self._is_not_yet_active():
+            return { u"state": u"pending", u"label": u"inte aktiv än" }
         else:
             # Cannot use active as state/css class, it's already a class in Bootsrap...
             return { u"state": u"", u"label": u"aktiv"}
+        
+    def _is_no_longer_active(self):
+        return self.active_to and datetime.utcnow().date() > self.active_to.date()
+    
+    def _is_not_yet_active(self):
+        return self.active_from and datetime.utcnow().date() < self.active_from.date()
 
     
     
@@ -161,7 +184,7 @@ class Variable(VariableBase):
             return self.description
         
         
-    def replace_siblings(self, to_be_replaced=[], commit=False):
+    def replace_siblings(self, to_be_replaced=[], switchover_date=None, commit=False):
         """
             Set this Variable instance as the replacement for a list of sibling Variables 
             and return the list of modified siblings.
@@ -176,6 +199,8 @@ class Variable(VariableBase):
                     variable = Variable.objects.get(pk=object_id)
                     if variable.replaced_by != None and variable.replaced_by.id != self.id:
                         raise AttributeError(u"Variable {} is already replaced by {}".format(object_id, variable.replaced_by.id))
+                    if variable.active_to:
+                        logger.warning("Variable {} already has an active_to date {}. This will be overritten by replacement switchover date {}".format(variable.key, variable.active_to, switchover_date))
                     siblings_to_replace.append(variable)
                 except Exception as e:
                     logger.error(u"Error while fetching Variable with id {} to be replaced by Variable {}: {}".format(object_id, self.id, e))
@@ -188,6 +213,7 @@ class Variable(VariableBase):
         for to_release in siblings_to_release:
             if not self.is_draft:
                 to_release.replaced_by = None;
+                to_release.active_to = None;
                 if commit:
                     to_release.save()
                 modified_siblings.append(to_release)
@@ -197,6 +223,7 @@ class Variable(VariableBase):
         for to_replace in siblings_requiring_update:
             if not self.is_draft:
                 to_replace.replaced_by = self;
+                to_replace.active_to = switchover_date if switchover_date else None
                 if commit:
                     to_replace.save()
                 modified_siblings.append(to_replace)

@@ -12,6 +12,9 @@ from django.core.exceptions import ValidationError
 #TODO: Define a LoginForm class with extra css-class 'form-control' ?
 
 class VariableForm(forms.Form):
+    active_from = forms.DateField(required=False, widget=forms.TextInput(attrs={'class': 'form-control'}))
+    active_to = forms.DateField(required=False, widget=forms.TextInput(attrs={'class': 'form-control'}))
+    
     question = forms.CharField(required=False, widget=forms.TextInput(attrs={'class': 'form-control'}))
     question_part = forms.CharField(required=False, widget=forms.TextInput(attrs={'class': 'form-control'}))
     category = forms.CharField(required=False, widget=forms.TextInput(attrs={'class': 'form-control'}))
@@ -39,6 +42,8 @@ class VariableForm(forms.Form):
         self.fields['target_groups'].choices = [target_group for target_group in SURVEY_TARGET_GROUPS]
         
         if self.instance:
+            self.fields['active_from'].initial = self.instance.active_from.date() if self.instance.active_from else None
+            self.fields['active_to'].initial = self.instance.active_to.date() if self.instance.active_to else None
             self.fields['question'].initial = self.instance.question
             self.fields['question_part'].initial = self.instance.question_part
             self.fields['category'].initial = self.instance.category
@@ -55,6 +60,8 @@ class VariableForm(forms.Form):
     def save(self, commit=True, user=None):
         variable = self.instance if self.instance else Variable(is_draft=True)
         variable.key = self.instance.key if self.instance else self.cleaned_data['key']
+        variable.active_from = self.cleaned_data['active_from'] # TODO: konvertera till UTC
+        variable.active_to = self.cleaned_data['active_to'] # TODO: konvertera till UTC
         variable.question = self.cleaned_data['question']
         variable.question_part = self.cleaned_data['question_part']
         variable.category = self.cleaned_data['category']
@@ -66,17 +73,18 @@ class VariableForm(forms.Form):
         variable.comment = self.cleaned_data['comment']
         
         to_replace = self.cleaned_data['replaces'].split(", ") if self.cleaned_data['replaces'] else []
-        modified_siblings = variable.replace_siblings(to_replace)
+        modified_siblings = variable.replace_siblings(to_replace, switchover_date=variable.active_from)
         
         variable.modified_by = user
         
         if commit:
             # Need to save variable first and then update references in siblings, transaction will be flagged as dirty otherwise.
             updated_instance = variable.save()
-            for sibling in modified_siblings:
-                if sibling.replaced_by and sibling.replaced_by.id == updated_instance.id:
-                    sibling.replaced_by = updated_instance
-                sibling.save()
+            if not updated_instance.is_draft:
+                for sibling in modified_siblings:
+                    if sibling.replaced_by and sibling.replaced_by.id == updated_instance.id:
+                        sibling.replaced_by = updated_instance
+                    sibling.save()
 
         return variable
     

@@ -1,4 +1,5 @@
 {% load i18n %}
+{% load libstat_tags %}
 
 <form role="form" class="edit-variable-form" method="post" action="{{form_url}}">
   <div class="modal-dialog">
@@ -22,20 +23,22 @@
         <div class="row">
           <div class="col-md-6">
             <div class="form-group active_from" data-field="key">
-                 <label for="id_key">{% trans "Aktiv fr o m" %}</label>
-                 <span class="text-danger form-validation after"></span>
-                 <div class="input-group date">
-                    <input type="text" class="form-control"><span class="input-group-addon"><i class="glyphicon glyphicon-th"></i></span>
-                  </div>
+              <label for="id_active_from">{% trans "Aktiv fr o m" %}</label>
+              <span class="text-danger form-validation after"></span>
+              <div class="input-group date">
+                 {{form.active_from}}<span class="input-group-addon"><i class="glyphicon glyphicon-th"></i></span>
+              </div>
             </div>
           </div>
           <div class="col-md-6">
-             <div class="form-group active_to" data-field="key">
-                 <label for="id_key">{% trans "Aktiv till" %}</label>
-                 <span class="text-danger form-validation after"></span>
-                 <div class="input-group date">
-                    <input type="text" class="form-control"><span class="input-group-addon"><i class="glyphicon glyphicon-th"></i></span>
-                  </div>
+            <div class="form-group active_to" data-field="key">
+              <label for="id_active_to">{% trans "Aktiv till" %}</label>
+              <span class="text-danger form-validation after"></span>
+              <div class="input-group date">
+                <input id="id_active_to" class="form-control" type="text" name="active_to" 
+                       value="{{form.active_to.value|utc_tz|date:"Y-m-d"}}" {% if form.instance.replaced_by %}disabled="disabled"{% endif %}/>
+                <span class="input-group-addon"><i class="glyphicon glyphicon-th"></i></span>
+              </div>
             </div>
           </div>
         </div>

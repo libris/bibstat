@@ -323,17 +323,20 @@ class VariableQuerySetTest(MongoTestCase):
            
 class VariableTest(MongoTestCase):
     def setUp(self):
-        v = Variable(key=u"Folk10", description=u"Antal bemannade servicesställen", type="integer", is_public=True, target_groups=["public"])
+        v = Variable(key=u"Folk10", description=u"Antal bemannade servicesställen", type="integer", is_public=True, target_groups=["public"], 
+                     active_from=datetime(2010, 1, 1).date())
         v.save()
         self.v = Variable.objects.get(pk=v.id)
         
-        v2 = Variable(key=u"Folk35", description=u"Antal årsverken övrig personal", type="decimal", is_public=True, target_groups=["public"])
+        v2 = Variable(key=u"Folk35", description=u"Antal årsverken övrig personal", type="decimal", is_public=True, target_groups=["public"], 
+                      active_to=datetime(2014, 6, 1).date())
         v2.question = u"Hur många årsverken utfördes av personal i folkbiblioteksverksamheten under 2012?"
         v2.question_part = u"Antal årsverken övrig personal (ej städpersonal)"
         v2.save()
         self.v2 = Variable.objects.get(pk=v2.id)
         
-        v3 = Variable(key=u"Folk31", description=u"Antal årsverken totalt", type="decimal", is_public=True, target_groups=["public"])
+        v3 = Variable(key=u"Folk31", description=u"Antal årsverken totalt", type="decimal", is_public=True, target_groups=["public"], 
+                      active_from=datetime.utcnow().date(), active_to=(datetime.utcnow() + timedelta(days=1)).date())
         v3.summary_of = [self.v2]
         v3.save()
         self.v3 = Variable.objects.get(pk=v3.id)
@@ -427,12 +430,13 @@ class VariableTest(MongoTestCase):
         
     def test_is_active(self):
         self.assertTrue(self.v.is_active)
-        self.assertTrue(self.v2.is_active)
+        self.assertFalse(self.v2.is_active)
         self.assertTrue(self.v3.is_active)
         self.assertFalse(self.v4.is_active)
         
     def test_active_variable_should_replace_other_variables(self):
-        modified_siblings = self.v2.replace_siblings([self.v.id, self.v3.id], commit=True)
+        switchover_date = datetime(2014, 1, 1)
+        modified_siblings = self.v2.replace_siblings([self.v.id, self.v3.id], switchover_date=switchover_date, commit=True)
         self.assertEquals(set([v.id for v in modified_siblings]), set([self.v.id, self.v3.id]))
         
         replacement_var = Variable.objects.get(pk=self.v2.id)
@@ -441,19 +445,22 @@ class VariableTest(MongoTestCase):
 
         self.assertEquals(set([v.id for v in replacement_var.replaces]), set([self.v.id, self.v3.id]))
         self.assertEquals(replaced_var_1.replaced_by.id, self.v2.id)
+        self.assertEquals(replaced_var_1.active_to, switchover_date)
         self.assertEquals(replaced_var_1.is_active, False)
         self.assertEquals(replaced_var_2.replaced_by.id, self.v2.id)
         self.assertEquals(replaced_var_2.is_active, False)
         
     def test_draft_variable_should_list_but_not_replace_other_variables(self):
-        modified_siblings = self.v4.replace_siblings([self.v2.id], commit=True)
+        switchover_date = datetime(2014, 1, 1)
+        modified_siblings = self.v4.replace_siblings([self.v2.id], switchover_date=switchover_date, commit=True)
         self.assertEquals(modified_siblings, [])
         
         replacement_var = Variable.objects.get(pk=self.v4.id)
         to_be_replaced = Variable.objects.get(pk=self.v2.id)
         self.assertEquals(set([v.id for v in replacement_var.replaces]), set([self.v2.id]))
         self.assertEquals(to_be_replaced.replaced_by, None)
-        self.assertEquals(to_be_replaced.is_active, True)
+        self.assertEquals(to_be_replaced.active_to, self.v2.active_to)
+        self.assertEquals(to_be_replaced.is_active, False)
         
     def test_should_not_commit_replacement_unless_specified(self):
         modified_siblings = self.v2.replace_siblings([self.v.id])

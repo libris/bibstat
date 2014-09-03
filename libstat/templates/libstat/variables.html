@@ -44,7 +44,7 @@
             <tr class="{{v.state.state}}">
               <td>
                 <a class="edit-variable" href="#" data-form="{% url 'edit_variable' v.id %}" title="{% trans 'Visa/Ändra' %}">
-                  {{ v.key }} {% if not v.is_active %}({{v.state.label}}){% endif %}
+                  {{ v.key }} {% if v.is_draft %}({{v.state.label}}){% endif %}
                 </a>
               </td>
               <td>{{ v.category }}</td>
