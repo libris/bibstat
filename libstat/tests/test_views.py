@@ -168,7 +168,7 @@ class EditVariableViewTest(MongoTestCase):
         self.assertEquals(result.key, u"Folk10")
         
     def test_should_replace_variable(self):
-        response = self.client.post(self.url, {u"type": self.new_type, u"target_groups": self.new_target_groups, u"description": self.new_description, 
+        response = self.client.post(self.url, {u"active_from": u"2015-01-01", u"type": self.new_type, u"target_groups": self.new_target_groups, u"description": self.new_description, 
                                                u"replaces": str(self.v2.id)})
         self.assertEquals(response.status_code,200)
         data = json.loads(response.content)
@@ -181,7 +181,7 @@ class EditVariableViewTest(MongoTestCase):
         
     def test_draft_should_replace_variable(self):
         response = self.client.post(reverse("edit_variable", kwargs={"variable_id":str(self.v3.id)}), 
-                                    {u"type": self.new_type, u"target_groups": self.new_target_groups, u"description": self.new_description, 
+                                    {u"active_from": u"2015-01-01", u"type": self.new_type, u"target_groups": self.new_target_groups, u"description": self.new_description, 
                                     u"replaces": str(self.v2.id)})
         self.assertEquals(response.status_code,200)
         data = json.loads(response.content)
@@ -192,6 +192,14 @@ class EditVariableViewTest(MongoTestCase):
         self.assertEquals([v.id for v in replacing.replaces], [self.v2.id])
         self.assertEquals(replaced.replaced_by, None)
         
+    def test_replace_requires_active_from(self):
+        response = self.client.post(self.url, {u"type": self.new_type, u"target_groups": self.new_target_groups, u"description": self.new_description, 
+                                               u"replaces": str(self.v2.id)})
+        self.assertEquals(response.status_code,200)
+        data = json.loads(response.content)
+        self.assertTrue('errors' in data)
+        self.assertEquals(data['errors'][u'active_from'], [u'Måste anges'])
+        self.assertEquals(data['errors'][u'replaces'], [u"Ange när ersättning börjar gälla genom att sätta 'Giltig fr o m'"])
         
     # TODO: Borde man kunna ändra synlighet? Inte om det redan finns publik data eller inlämnade enkätsvar väl? Kommer kräva ompublicering av alla enkätsvar som har variabeln...
     
