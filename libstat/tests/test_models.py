@@ -436,18 +436,25 @@ class VariableTest(MongoTestCase):
         
     def test_active_variable_should_replace_other_variables(self):
         switchover_date = datetime(2014, 1, 1)
-        modified_siblings = self.v2.replace_siblings([self.v.id, self.v3.id], switchover_date=switchover_date, commit=True)
+        self.v2.active_from = switchover_date # TODO: Change to using self.active_from instead of switchover_date
+        modified_siblings = self.v2.replace_siblings([self.v.id, self.v3.id], switchover_date=switchover_date.date(), commit=True)
         self.assertEquals(set([v.id for v in modified_siblings]), set([self.v.id, self.v3.id]))
         
-        replacement_var = Variable.objects.get(pk=self.v2.id)
+        replacement = Variable.objects.get(pk=self.v2.id)
         replaced_var_1 = Variable.objects.get(pk=self.v.id)
         replaced_var_2 = Variable.objects.get(pk=self.v3.id)
 
-        self.assertEquals(set([v.id for v in replacement_var.replaces]), set([self.v.id, self.v3.id]))
+        # Replacement should have fields active_from and replaces set
+        self.assertEquals(set([v.id for v in replacement.replaces]), set([self.v.id, self.v3.id]))
+        self.assertEquals(replacement.active_from, switchover_date)
+        
+        # Replaced variables should have fields active_to and replaced_by set.
         self.assertEquals(replaced_var_1.replaced_by.id, self.v2.id)
         self.assertEquals(replaced_var_1.active_to, switchover_date)
         self.assertEquals(replaced_var_1.is_active, False)
+
         self.assertEquals(replaced_var_2.replaced_by.id, self.v2.id)
+        self.assertEquals(replaced_var_2.active_to, switchover_date)
         self.assertEquals(replaced_var_2.is_active, False)
         
     def test_draft_variable_should_list_but_not_replace_other_variables(self):
@@ -489,20 +496,33 @@ class VariableTest(MongoTestCase):
         self.assertRaises(DoesNotExist, lambda: self.v.replace_siblings([ObjectId("53fdec1ca9969003ec144d97")], commit=True))
         
     def test_should_update_replacements(self):
-        self.v2.replace_siblings([self.v.id, self.v3.id], commit=True)
-        after_setup = Variable.objects.get(pk=self.v2.id)
+        self.v2.replace_siblings([self.v.id, self.v3.id], switchover_date=datetime(2014, 12, 31).date(), commit=True)
+        replacement = Variable.objects.get(pk=self.v2.id)
         self.assertEquals(len(VariableVersion.objects.filter(key=self.v.key)), 1)
-        v_modified_date = Variable.objects.get(pk=self.v.id).date_modified
         
-        # Should leave v unchanged, add v4 and remove v3
-        after_setup.replace_siblings([self.v.id, self.v4.id], commit=True)
+        # Should update v, add v4 and remove v3
+        new_switchover_date = datetime(2015, 1, 1).date()
+        replacement.replace_siblings([self.v.id, self.v4.id], switchover_date=new_switchover_date, commit=True)
         
-        replacement_var = Variable.objects.get(pk=self.v2.id)
-        self.assertEquals(set([v.id for v in replacement_var.replaces]), set([self.v.id, self.v4.id]))
-        self.assertEquals(len(VariableVersion.objects.filter(key=self.v.key)), 1)
-        self.assertEquals(Variable.objects.get(pk=self.v.id).date_modified, v_modified_date)
-        self.assertEquals(Variable.objects.get(pk=self.v3.id).replaced_by, None)
-        self.assertEquals(Variable.objects.get(pk=self.v4.id).replaced_by.id, self.v2.id)
+        replacement = Variable.objects.get(pk=self.v2.id)
+        modified_replaced = Variable.objects.get(pk=self.v.id)
+        no_longer_replaced = Variable.objects.get(pk=self.v3.id)
+        new_replaced = Variable.objects.get(pk=self.v4.id)
+
+        # replacement should have updated list of variables (active_from is set outside of this mmethod)
+        self.assertEquals(set([v.id for v in replacement.replaces]), set([modified_replaced.id, new_replaced.id]))
+        
+        # v should have updated active_to date
+        self.assertEquals(modified_replaced.active_to.date(), new_switchover_date)
+        self.assertEquals(modified_replaced.replaced_by.id, replacement.id)
+        
+        # v3 should no longer be replaced
+        self.assertEquals(no_longer_replaced.replaced_by, None)
+        self.assertEquals(no_longer_replaced.active_to, None)
+        
+        # v4 should be replaced
+        self.assertEquals(new_replaced.replaced_by.id, replacement.id)
+        self.assertEquals(new_replaced.active_to.date(), new_switchover_date)
         
     def test_should_update_replacements_for_draft(self):
         modified_siblings = self.v4.replace_siblings([self.v2.id], commit=True)

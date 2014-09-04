@@ -190,50 +190,74 @@ class Variable(VariableBase):
             and return the list of modified siblings.
             All instances including self will be saved if commit=True
         """
-        modified_siblings = []
-        siblings_to_replace = []
+        current_replacements = set(self.replaces)
+        modified_siblings = set()
+        siblings_to_replace = set()
+        switchover_date_has_changed = False
+        
         if to_be_replaced:
             # Ensure Variables to be replaced exist and are in the correct state
             for object_id in to_be_replaced:
                 try:
                     variable = Variable.objects.get(pk=object_id)
-                    if variable.replaced_by != None and variable.replaced_by.id != self.id:
-                        raise AttributeError(u"Variable {} is already replaced by {}".format(object_id, variable.replaced_by.id))
-                    if variable.active_to:
-                        logger.warning("Variable {} already has an active_to date {}. This will be overritten by replacement switchover date {}".format(variable.key, variable.active_to, switchover_date))
-                    siblings_to_replace.append(variable)
+                    if variable.replaced_by != None:
+                        if variable.replaced_by.id != self.id:
+                            raise AttributeError(u"Variable {} is already replaced by {}".format(object_id, variable.replaced_by.id))
+                        elif variable.active_to and variable.active_to != switchover_date:
+                            logger.warning("Variable {} active_to date {} will change. New date is {}".format(variable.key, variable.active_to, switchover_date))
+                            switchover_date_has_changed = True
+                    siblings_to_replace.add(variable)
                 except Exception as e:
                     logger.error(u"Error while fetching Variable with id {} to be replaced by Variable {}: {}".format(object_id, self.id, e))
                     raise e
                 
-        siblings_to_release = list(set(self.replaces) - set(siblings_to_replace))
-        siblings_requiring_update = list(set(siblings_to_replace) - set(self.replaces))
+        siblings_to_release = current_replacements - siblings_to_replace
+        if switchover_date_has_changed:
+            # Added siblings + siblings not being removed
+            siblings_requiring_update = siblings_to_replace
+        else:
+            # Only added siblings
+            siblings_requiring_update = siblings_to_replace - current_replacements
 
         # Release siblings that should no longer be replaced by this instance
         for to_release in siblings_to_release:
             if not self.is_draft:
                 to_release.replaced_by = None;
                 to_release.active_to = None;
-                if commit:
-                    to_release.save()
-                modified_siblings.append(to_release)
-            self.replaces.remove(to_release)
+                modified_siblings.add(to_release)
        
         # Replace sibling variables
         for to_replace in siblings_requiring_update:
             if not self.is_draft:
                 to_replace.replaced_by = self;
                 to_replace.active_to = switchover_date if switchover_date else None
-                if commit:
-                    to_replace.save()
-                modified_siblings.append(to_replace)
-            self.replaces.append(to_replace)
+                modified_siblings.add(to_replace)
+        
+        # Update list of replaced on self
+        self.replaces = list(siblings_to_replace)
             
         if commit:
-            self.save()
+            modified_siblings = self.save_updated_self_and_modified_replaced(modified_siblings)
+            
         return modified_siblings
+    
         
-        
+    def save_updated_self_and_modified_replaced(self, modified_siblings):
+        """
+            When updating both self and siblings with reference to self, we need to save self first
+            and then update the reference in modified siblings before saving then. Otherwise transactions
+            for siblings will be flagged as dirty (and never committed).
+            If self is a draft, siblings will not be saved.
+        """
+        updated_siblings = []
+        updated_instance = self.save()
+        if not updated_instance.is_draft:
+            for sibling in modified_siblings:
+                if sibling.replaced_by and sibling.replaced_by.id == updated_instance.id:
+                    sibling.replaced_by = updated_instance
+                updated_siblings.append(sibling.save())
+        return updated_siblings
+    
     
     def target_groups__descriptions(self):
         display_names = []
