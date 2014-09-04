@@ -10,7 +10,18 @@
       </div>
       <div class="modal-body">
         {% csrf_token %}
+        
         <span class="general-errors text-danger form-validation"></span>
+        
+        {% if form.instance.replaced_by %}
+        <div class="panel panel-default">
+          <div class="panel-body warnings text-warning">
+            <span class="glyphicon glyphicon-warning-sign"></span>
+            <span>{% trans "Ersätts av" %} <a id="replaced_by" href="#" data-form="{% url 'edit_variable' form.instance.replaced_by.id %}">{{form.instance.replaced_by.key}}</a></span>
+          </div>
+        </div>
+        {% endif %}
+
         {% if mode == 'create' %}
           <div class="form-group key" data-field="key">
              <label for="id_key">{% trans "Nyckel (unik)" %}</label>
@@ -20,9 +31,10 @@
           </div>
         {% endif %}
         
+        
         <div class="row">
           <div class="col-md-6">
-            <div class="form-group active_from" data-field="key">
+            <div class="form-group active_from" data-field="active_from">
               <label for="id_active_from">{% trans "Aktiv fr o m" %}</label>
               <span class="text-danger form-validation after"></span>
               <div class="input-group date">
@@ -31,7 +43,7 @@
             </div>
           </div>
           <div class="col-md-6">
-            <div class="form-group active_to" data-field="key">
+            <div class="form-group active_to" data-field="active_to">
               <label for="id_active_to">{% trans "Aktiv till" %}</label>
               <span class="text-danger form-validation after"></span>
               <div class="input-group date">
@@ -176,6 +188,15 @@ $(document).ready(function() {
 	    language: "sv"
 	});
 	
+	$("#replaced_by").click(function(event){
+		event.preventDefault();
+		var url = $(this).data("form"); // get form
+		$("#variableModal").load(url, function() { // load the url into the modal
+			$(this).modal('show'); // display the modal on url load
+		});
+		return false; // prevent the click propagation
+	});
+	
 	$('.edit-variable-form').submit(function(event) {
 		event.preventDefault();
 		
@@ -198,7 +219,7 @@ $(document).ready(function() {
 	        			}
 	        		})
 	        		if(data.errors.hasOwnProperty("__all__")) {
-	        			$(".general-errors").text(data.errors["__all__"]);	
+	        			$(".general-errors").text(data.errors["__all__"]);
 	        		}
 	        	} else {
     	            console.info("saved variable: ", data);
