@@ -7,7 +7,6 @@ from django.utils.safestring import mark_safe
 
 from libstat.models import Variable, variable_types, SurveyResponse, SurveyObservation, SURVEY_TARGET_GROUPS, SurveyResponseMetadata
 from libstat.models import TYPE_STRING , TYPE_BOOLEAN, TYPE_INTEGER, TYPE_LONG, TYPE_DECIMAL, TYPE_PERCENT, VARIABLE_TYPES
-from django.core.exceptions import ValidationError
 
 #TODO: Define a LoginForm class with extra css-class 'form-control' ?
 
@@ -56,6 +55,21 @@ class VariableForm(forms.Form):
             self.fields['replaces'].initial = ", ".join([str(v.id) for v in self.instance.replaces]) if self.instance.replaces else ""
             self.replaces_initial_value =  ", ".join(["{}:{}".format(v.key, str(v.id)) for v in self.instance.replaces] if self.instance.replaces else [])
             
+    
+    def clean(self):
+        cleaned_data = super(VariableForm, self).clean()
+        
+        replaces = cleaned_data['replaces']
+        active_from = cleaned_data['active_from']
+        if replaces and not active_from: 
+            self._errors['replaces'] = self.error_class(["Ange när ersättning börjar gälla genom att sätta 'Aktiv fr o m'"])
+            self._errors['active_from'] = self.error_class([u"Måste anges"])
+            
+            del cleaned_data['replaces']
+            del cleaned_data['active_from']
+        
+        return cleaned_data
+        
         
     def save(self, commit=True, user=None):
         variable = self.instance if self.instance else Variable(is_draft=True)
@@ -87,6 +101,7 @@ class VariableForm(forms.Form):
                     sibling.save()
 
         return variable
+    
     
 
 class SurveyResponseForm(forms.Form):
@@ -204,7 +219,7 @@ class SurveyObservationsForm(forms.Form):
                                                                            initial = observation.value)
     def save(self, commit=True, user=None):
         if not self.instance:
-            raise ValidationError(_(u"Enkätsvar finns inte, kan inte uppdatera"), code=u"missing_instance")
+            raise forms.ValidationError(_(u"Enkätsvar finns inte, kan inte uppdatera"), code=u"missing_instance")
         
         surveyResponse = self.instance
         for observation in surveyResponse.observations:
