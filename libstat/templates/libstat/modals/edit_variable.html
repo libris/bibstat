@@ -13,11 +13,37 @@
         
         <span class="general-errors text-danger form-validation"></span>
         
-        {% if form.instance.replaced_by %}
+        {% if not form.instance.state.state == "current" %}
         <div class="panel panel-default">
-          <div class="panel-body warnings text-warning">
-            <span class="glyphicon glyphicon-warning-sign"></span>
-            <span>{% trans "Ersätts av" %} <a id="replaced_by" href="#" data-form="{% url 'edit_variable' form.instance.replaced_by.id %}">{{form.instance.replaced_by.key}}</a></span>
+          <div class="panel-body warnings">
+            {% if form.instance.replaced_by %}
+              <span class="text-warning">
+                <span class=" glyphicon glyphicon-warning-sign"></span>
+                <span>
+                  {% trans "Ersätts av" %} 
+                  <a id="replaced_by" href="#" data-form="{% url 'edit_variable' form.instance.replaced_by.id %}">{{form.instance.replaced_by.key}}</a>
+                  {% trans "från och med" %} {{form.instance.active_to|utc_tz|date:"Y-m-d"}}
+                </span>
+              </span>
+            {% endif %}
+            {% if form.instance.is_draft %}
+              <span class="text-info">
+                <span class=" glyphicon glyphicon-info-sign"></span>
+                <span>{% trans "Detta är ett utkast som ej är synligt för användare eller som öppen data. För att aktivera utkastet, klicka på knappen 'Aktivera' nedan." %}</span>
+              </span>
+            {% endif %}
+            {% if form.instance.state.state == "pending" %}
+              <span class="text-info">
+                <span class=" glyphicon glyphicon-info-sign"></span>
+                <span>{% trans "Den här termen börjar gälla" %} {{form.instance.active_from|utc_tz|date:"Y-m-d"}}</span>
+              </span>
+            {% endif %}
+            {% if form.instance.state.state == "discontinued" %}
+              <span class="text-info">
+                <span class=" glyphicon glyphicon-info-sign"></span>
+                <span>{% trans "Den här termen slutade vara giltig" %} {{form.instance.active_to|utc_tz|date:"Y-m-d"}}</span>
+              </span>
+            {% endif %}
           </div>
         </div>
         {% endif %}
@@ -35,7 +61,7 @@
         <div class="row">
           <div class="col-md-6">
             <div class="form-group active_from" data-field="active_from">
-              <label for="id_active_from">{% trans "Aktiv fr o m" %}</label>
+              <label for="id_active_from">{% trans "Giltig fr o m" %}</label>
               <span class="text-danger form-validation after"></span>
               <div class="input-group date">
                  {{form.active_from}}<span class="input-group-addon"><i class="glyphicon glyphicon-th"></i></span>
@@ -44,7 +70,7 @@
           </div>
           <div class="col-md-6">
             <div class="form-group active_to" data-field="active_to">
-              <label for="id_active_to">{% trans "Aktiv till" %}</label>
+              <label for="id_active_to">{% trans "Giltig till" %}</label>
               <span class="text-danger form-validation after"></span>
               <div class="input-group date">
                 <input id="id_active_to" class="form-control" type="text" name="active_to" 

@@ -74,8 +74,8 @@ class VariableForm(forms.Form):
     def save(self, commit=True, user=None):
         variable = self.instance if self.instance else Variable(is_draft=True)
         variable.key = self.instance.key if self.instance else self.cleaned_data['key']
-        variable.active_from = self.cleaned_data['active_from'] # TODO: konvertera till UTC
-        variable.active_to = self.cleaned_data['active_to'] # TODO: konvertera till UTC
+        variable.active_from = self.cleaned_data['active_from'] # Need to convert to UTC? It's a date and not a datetime...
+        variable.active_to = self.cleaned_data['active_to'] # Need to convert to UTC? It's a date and not a datetime...
         variable.question = self.cleaned_data['question']
         variable.question_part = self.cleaned_data['question_part']
         variable.category = self.cleaned_data['category']

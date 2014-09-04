@@ -122,14 +122,14 @@ class VariableBase(Document):
         if self.is_draft:
             return { u"state": u"draft", u"label": u"utkast" }
         elif self.replaced_by:
-            return { u"state": u"replaced", u"label": u"ersätts av {}".format(self.replaced_by.key) }
+            return { u"state": u"replaced", u"label": u"ersatt" }
         elif self._is_no_longer_active():
             return { u"state": u"discontinued", u"label": u"avslutad" }
         elif self._is_not_yet_active():
-            return { u"state": u"pending", u"label": u"inte aktiv än" }
+            return { u"state": u"pending", u"label": u"vilande" }
         else:
-            # Cannot use active as state/css class, it's already a class in Bootsrap...
-            return { u"state": u"", u"label": u"aktiv"}
+            # Cannot use 'active' as state/css class, it's already a class in Bootsrap...
+            return { u"state": u"current", u"label": u"aktiv"}
         
     def _is_no_longer_active(self):
         return self.active_to and datetime.utcnow().date() > self.active_to.date()

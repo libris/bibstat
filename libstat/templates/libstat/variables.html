@@ -32,6 +32,7 @@
         <thead>
           <tr>
             <th class="column key">{% trans "Nyckel" %}</th>
+            <th class="column state">{% trans "Status" %}</th>
             <th class="column desc">{% trans "Huvudgrupp" %}</th>
             <th class="column comment">{% trans "Undergrupp" %}</th>
             <th class="column is_public">{% trans "Öppen data" %}</th>
@@ -44,9 +45,10 @@
             <tr class="{{v.state.state}}">
               <td>
                 <a class="edit-variable" href="#" data-form="{% url 'edit_variable' v.id %}" title="{% trans 'Visa/Ändra' %}">
-                  {{ v.key }} {% if v.is_draft %}({{v.state.label}}){% endif %}
+                  {{ v.key }}
                 </a>
               </td>
+              <td>{{ v.state.label }}</td>
               <td>{{ v.category }}</td>
               <td>{{ v.sub_category }}</td>
               <td>{{ v.is_public|yesno }}</td>

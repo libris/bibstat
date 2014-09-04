@@ -27,6 +27,11 @@
   color: #ffffff;
 }
 
+/* List variables */
+.variables .column.header {
+  white-space: nowrap;
+}
+
 /* Publish suvey responses */
 .publish-survey-responses-form .submit-publish {
     margin-top: -86px;
@@ -145,16 +150,25 @@
 }
 
 .draft, 
-.replaced {
+.pending {
+  color: #555555;
+}
+.replaced, 
+.discontinued {
   color: #888888;
   font-style: italic;
 }
-.draft a {
+.draft a,
+.pending a {
   color: #2a6496;
 }
-.replaced a {
+.replaced a, 
+.discontinued a {
   color: #80a9cb;
   font-style: normal;
+}
+.current a {
+  font-weight: bold;
 }
 
 label.sub-label {

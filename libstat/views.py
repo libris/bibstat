@@ -151,7 +151,7 @@ def edit_variable(request, variable_id):
     context = {
         'mode': 'edit',
         'form_url': reverse("edit_variable", kwargs={"variable_id": variable_id}),
-        'modal_title': u"{} ({})".format(v.key, v.state["label"])
+        'modal_title': u"{} ({})".format(v.key, v.state["label"]) if not v.state["state"] == u"current" else v.key
     }
 
     if request.method == "POST":
