@@ -6,7 +6,7 @@ from django.http import HttpResponse, HttpResponseRedirect
 from django.http import Http404
 from django.conf import settings
 
-from libstat.models import Variable, SurveyResponse
+from libstat.models import Variable, SurveyResponse, SURVEY_TARGET_GROUPS
 from libstat.forms import *
 from django.contrib.auth.decorators import permission_required
 from django.contrib.auth.forms import AuthenticationForm
@@ -87,14 +87,19 @@ def _get_listview_from_modalview(relative_url=""):
 
 @permission_required('is_superuser', login_url='index')
 def variables(request):
-    target_group = request.GET.get("target_group", "")
-    if target_group:
-        variables = Variable.objects.filter(target_groups__in=[target_group])
+    target_groups = request.GET.getlist("target_group", [])
+    if target_groups:
+        if target_groups == [u"all"]:
+            target_group_filter = [g[0] for g in SURVEY_TARGET_GROUPS]
+            variables = Variable.objects.filter(target_groups__all = target_group_filter)
+        else:
+            target_group_filter = target_groups
+            variables = Variable.objects.filter(target_groups__in=target_group_filter)
     else:
-        variables = Variable.objects.order_by("key")
+        variables = Variable.objects.all()
     context = { 
         'variables': variables,
-        'target_group': target_group
+        'target_group': target_groups
     }
     return render(request, 'libstat/variables.html', context)
 
@@ -336,8 +341,8 @@ def replaceable_variables_api(request):
     """
     query = request.REQUEST.get("q", None)
     if query:
-        variables = Variable.objects.replaceable_siblings().filter(key__icontains=query).order_by("key")
+        variables = Variable.objects.replaceable_siblings().filter(key__icontains=query)
     else:
-        variables = Variable.objects.replaceable_siblings().order_by("key")
+        variables = Variable.objects.replaceable_siblings()
     data = [{ 'key': v.key, 'id': str(v.id) } for v in variables];
     return HttpResponse(json.dumps(data), content_type="application/json")

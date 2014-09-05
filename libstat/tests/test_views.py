@@ -16,6 +16,8 @@ class VariablesViewTest(MongoTestCase):
         self.folk10 = v1.save()
         v2  = Variable(key=u"Sjukhus102", description=u"Bestånd av tillgängliga medier för personer med läsnedsättning", type="integer", is_public=True, target_groups=["hospital"])
         self.sjukhus102 = v2.save()
+        v3  = Variable(key=u"intäkterTotalt", description=u"Bibliotekets totala intäkter under mätåret", type="long", is_public=True, target_groups=["public", "research", "hospital", "school"])
+        self.totalRevenue = v3.save()
         
         self.url = reverse("variables")
         self.client.login(username="admin", password="admin")
@@ -37,13 +39,27 @@ class VariablesViewTest(MongoTestCase):
     def test_should_list_all_variables(self):
         response = self.client.get(self.url)
         self.assertEquals(response.status_code, 200)
-        self.assertEquals(len(response.context["variables"]), 2)
+        self.assertEquals(len(response.context["variables"]), 3)
         
     def test_should_filter_variables_by_target_group(self):
         response = self.client.get(u"{}?target_group=hospital".format(self.url))
         self.assertEquals(response.status_code, 200)
-        self.assertEquals(len(response.context["variables"]), 1)
+        self.assertEquals(len(response.context["variables"]), 2)
         self.assertEquals(response.context["variables"][0].key, u"Sjukhus102")
+        self.assertEquals(response.context["variables"][1].key, u"intäkterTotalt")
+        
+    def test_should_filter_variables_by_target_group_all(self):
+        response = self.client.get(u"{}?target_group=all".format(self.url))
+        self.assertEquals(response.status_code, 200)
+        self.assertEquals(len(response.context["variables"]), 1)
+        self.assertEquals(response.context["variables"][0].key, u"intäkterTotalt")
+        
+    def test_should_filter_variables_by_list_of_target_groups(self):
+        response = self.client.get(u"{}?target_group=school&target_group=public".format(self.url))
+        self.assertEquals(response.status_code, 200)
+        self.assertEquals(len(response.context["variables"]), 2)
+        self.assertEquals(response.context["variables"][0].key, u"Folk10")
+        self.assertEquals(response.context["variables"][1].key, u"intäkterTotalt")
         
     def test_each_variable_should_have_edit_link(self):
         response = self.client.get(self.url)

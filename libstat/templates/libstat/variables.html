@@ -16,15 +16,21 @@
         <p>
           {% trans "Här listas de termer som används i biblioteksstatistiken" %}
         </p>
-        <div class="btn-group">
-          <a role="button" class="btn btn-default {% if not target_group %}active{% endif %}" href="{% url 'variables' %}">{% trans "Alla" %}</a>
-          <a role="button" class="btn btn-default {% if target_group == 'public' %}active{% endif %}" href="{% url 'variables' %}?target_group=public">{% trans "Folkbibliotek" %}</a>
-          <a role="button" class="btn btn-default {% if target_group == 'research' %}active{% endif %}" href="{% url 'variables' %}?target_group=research">{% trans "Forskningsbibliotek" %}</a>
-          <a role="button" class="btn btn-default {% if target_group == 'hospital' %}active{% endif %}" href="{% url 'variables' %}?target_group=hospital">{% trans "Sjukhusbibliotek" %}</a>
-          <a role="button" class="btn btn-default {% if target_group == 'school' %}active{% endif %}" href="{% url 'variables' %}?target_group=school">{% trans "Skolbibliotek" %}</a>
-        </div>
+        <label>{% trans "Filtrera termer per bibliotekstyp" %}</label><br/>
+        <div class="btn-toolbar">
+          <div class="btn-group">
+            <a role="button" class="btn btn-default {% if target_group == 'public' %}active{% endif %}" href="{% url 'variables' %}?target_group=public">{% trans "Folkbibliotek" %}</a>
+            <a role="button" class="btn btn-default {% if target_group == 'research' %}active{% endif %}" href="{% url 'variables' %}?target_group=research">{% trans "Forskningsbibliotek" %}</a>
+            <a role="button" class="btn btn-default {% if target_group == 'hospital' %}active{% endif %}" href="{% url 'variables' %}?target_group=hospital">{% trans "Sjukhusbibliotek" %}</a>
+            <a role="button" class="btn btn-default {% if target_group == 'school' %}active{% endif %}" href="{% url 'variables' %}?target_group=school">{% trans "Skolbibliotek" %}</a>
+            <a role="button" class="btn btn-default {% if target_group == 'all' %}active{% endif %}" href="{% url 'variables' %}?target_group=all">{% trans "Samtliga bibliotekstyper" %}</a>
+          </div>
+          <div class="btn-group">
+            <a role="button" class="btn" href="{% url 'variables' %}">{% trans "Rensa filter" %}</a>
+          </div>    
         <div class="btn-group pull-right">
           <a role="button" class="create-variable btn btn-primary" href="#" data-form="{% url 'create_variable' %}">{% trans "Skapa term" %}</a>
+        </div>
         </div>
       </div>
 
