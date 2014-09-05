@@ -13,7 +13,7 @@
         
         <span class="general-errors text-danger form-validation"></span>
         
-        {% if not form.instance.state.state == "current" %}
+        {% if  mode == 'edit' and not form.instance.state.state == "current" %}
         <div class="panel panel-default">
           <div class="panel-body warnings">
             {% if form.instance.replaced_by %}
@@ -159,8 +159,16 @@
       </div>
       
       <div class="modal-footer">
+        <input type="hidden" id="submit_action" name="submit_action" value="save"/> 
         <button type="button" class="btn btn-default" data-dismiss="modal" >{% trans "Avbryt" %}</button>
-        <input type="submit" class="btn btn-primary" value="{% if mode == 'create' or form.instance.is_draft %}Spara ukast{% else %}Spara ändringar{% endif %}" />
+        {% if mode == 'create' %}
+          <input type="submit" class="btn btn-primary" value="{% trans 'Spara ukast' %}" />
+        {% elif form.instance.is_draft %}
+          <input type="submit" class="btn btn-primary" value="{% trans 'Spara ukast' %}" />
+          <input type="submit" id="save_and_activate" class="btn btn-primary" value="{% trans 'Spara och aktivera' %}" /> 
+        {% else %}
+          <input type="submit" class="btn btn-primary" value="{% trans 'Spara ändringar' %}" />
+        {% endif %}
       </div>
       
     </div>
@@ -221,6 +229,10 @@ $(document).ready(function() {
 			$(this).modal('show'); // display the modal on url load
 		});
 		return false; // prevent the click propagation
+	});
+	
+	$("#save_and_activate").click(function(event) {
+		$("#submit_action").val("save_and_activate");
 	});
 	
 	$('.edit-variable-form').submit(function(event) {

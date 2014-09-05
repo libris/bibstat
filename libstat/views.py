@@ -153,13 +153,14 @@ def edit_variable(request, variable_id):
         'form_url': reverse("edit_variable", kwargs={"variable_id": variable_id}),
         'modal_title': u"{} ({})".format(v.key, v.state["label"]) if not v.state["state"] == u"current" else v.key
     }
-
+    
     if request.method == "POST":
+        activate = "save_and_activate" == request.POST.get("submit_action", "save")
         errors = {}
         form = VariableForm(request.POST, instance=v)
         if form.is_valid():
             try:
-                v = form.save(user=request.user);
+                v = form.save(user=request.user, activate=activate);
                 # No redirect since this is displayed as a modal and we do a javascript redirect if no form errors
                 return HttpResponse(v.to_json(), content_type="application/json")
             

@@ -201,6 +201,85 @@ class EditVariableViewTest(MongoTestCase):
         self.assertEquals(data['errors'][u'active_from'], [u'Måste anges'])
         self.assertEquals(data['errors'][u'replaces'], [u"Ange när ersättning börjar gälla genom att sätta 'Giltig fr o m'"])
         
+    def test_should_not_be_able_to_edit_active_to_for_replaced(self):
+         # Set up: Replace variable
+        self.v2.replace_siblings([self.v1.id], switchover_date=datetime(2015, 1, 1).date(), commit=True)
+
+        # active_to input should be disabled
+        response = self.client.get(self.url)
+        self.assertContains(response, u'<input type="text" disabled="disabled" value="2015-01-01" name="active_to" class="form-control" id="id_active_to">', 
+                            count=1, status_code=200, html=True)
+    
+        # Posting a new active_to should give validation error
+        response = self.client.post(self.url, {u"type": self.v1.type, u"target_groups": self.v1.target_groups, u"description": self.v1.description, 
+                               u"active_to": u"2014-12-31"})
+        self.assertEquals(response.status_code, 200)
+        data = json.loads(response.content)
+        self.assertTrue('errors' in data)
+        self.assertEquals(data['errors'][u'active_to'], [u'Styrs av ersättande term'])
+        
+        
+    def test_should_be_able_to_activate_draft(self):
+        edit_draft_url = reverse("edit_variable", kwargs={"variable_id":str(self.v3.id)})
+        
+        response = self.client.get(edit_draft_url)
+        self.assertContains(response, u'<input type="submit" value="Spara ukast" class="btn btn-primary">', count=1, status_code=200, html=True)
+        self.assertContains(response, u'<input type="submit" id="save_and_activate" value="Spara och aktivera" class="btn btn-primary">', count=1, status_code=200, html=True)
+        
+        response = self.client.post(edit_draft_url, {u"type": self.v3.type, u"target_groups": self.v3.target_groups, u"description": self.v3.description, 
+                                                     u"submit_action":u"save_and_activate"})
+        self.assertEquals(response.status_code,200)
+        data = json.loads(response.content)
+        self.assertFalse('errors' in data)
+        
+        result = Variable.objects.get(pk=self.v3.id)
+        self.assertEquals(result.is_draft, False)
+        self.assertEquals(result.is_active, True)
+        
+        
+    def test_add_replacements_and_activate_draft_should_replace_siblings(self):
+        edit_draft_url = reverse("edit_variable", kwargs={"variable_id":str(self.v3.id)})
+        response = self.client.post(edit_draft_url, {u"active_from": u"2015-01-01", u"type": self.v3.type, u"target_groups": self.v3.target_groups, 
+                                                     u"description": self.v3.description, u"replaces": str(self.v2.id), u"submit_action":u"save_and_activate"})
+        self.assertEquals(response.status_code,200)
+        data = json.loads(response.content)
+        self.assertFalse('errors' in data)
+        
+        replacing = Variable.objects.get(pk=self.v3.id)
+        replaced_sibling = Variable.objects.get(pk=self.v2.id)
+        switchover_date = datetime(2015, 1, 1)
+
+        self.assertEquals(replacing.is_draft, False)
+        self.assertEquals([v.id for v in replacing.replaces], [replaced_sibling.id])
+        self.assertEquals(replacing.active_from, switchover_date)
+        
+        self.assertEquals(replaced_sibling.replaced_by.id, replacing.id)
+        self.assertEquals(replaced_sibling.active_to, switchover_date)
+        
+        
+    def test_activating_draft_with_existing_replacements_should_replaces_siblings(self):
+        # Set up: Add replacements 
+        self.v3.replace_siblings([self.v2.id], switchover_date=datetime(2015, 1, 1).date(), commit=True)
+        
+        edit_draft_url = reverse("edit_variable", kwargs={"variable_id":str(self.v3.id)})
+        response = self.client.post(edit_draft_url, {u"active_from": u"2015-01-01", u"type": self.v3.type, u"target_groups": self.v3.target_groups, 
+                                                     u"description": self.v3.description, u"replaces": str(self.v2.id), u"submit_action":u"save_and_activate"})
+        self.assertEquals(response.status_code,200)
+        data = json.loads(response.content)
+        self.assertFalse('errors' in data)
+        
+        replacing = Variable.objects.get(pk=self.v3.id)
+        replaced_sibling = Variable.objects.get(pk=self.v2.id)
+        switchover_date = datetime(2015, 1, 1)
+
+        self.assertEquals(replacing.is_draft, False)
+        self.assertEquals([v.id for v in replacing.replaces], [replaced_sibling.id])
+        self.assertEquals(replacing.active_from, switchover_date)
+        
+        self.assertEquals(replaced_sibling.replaced_by.id, replacing.id)
+        self.assertEquals(replaced_sibling.active_to, switchover_date)
+        
+        
     # TODO: Borde man kunna ändra synlighet? Inte om det redan finns publik data eller inlämnade enkätsvar väl? Kommer kräva ompublicering av alla enkätsvar som har variabeln...
     
     # TODO: Borde man kunna ta bort en bibliotekstyp? Samma som ovan.

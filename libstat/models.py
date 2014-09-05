@@ -189,46 +189,44 @@ class Variable(VariableBase):
             Set this Variable instance as the replacement for a list of sibling Variables 
             and return the list of modified siblings.
             All instances including self will be saved if commit=True
+            
+            Important: If commit=False, make sure to use instance method 'save_updated_self_and_modified_replaced(modified_siblings)'
+            to ensure that siblings are not saved for draft variables and that all modifications are actually saved (no dirty transactions).
         """
         current_replacements = set(self.replaces)
         modified_siblings = set()
         siblings_to_replace = set()
-        switchover_date_has_changed = False
         
         if to_be_replaced:
             # Ensure Variables to be replaced exist and are in the correct state
             for object_id in to_be_replaced:
                 try:
                     variable = Variable.objects.get(pk=object_id)
-                    if variable.replaced_by != None:
-                        if variable.replaced_by.id != self.id:
-                            raise AttributeError(u"Variable {} is already replaced by {}".format(object_id, variable.replaced_by.id))
-                        elif variable.active_to and variable.active_to != switchover_date:
-                            logger.warning("Variable {} active_to date {} will change. New date is {}".format(variable.key, variable.active_to, switchover_date))
-                            switchover_date_has_changed = True
+                    if variable.replaced_by != None and variable.replaced_by.id != self.id:
+                        raise AttributeError(u"Variable {} is already replaced by {}".format(object_id, variable.replaced_by.id))
                     siblings_to_replace.add(variable)
                 except Exception as e:
                     logger.error(u"Error while fetching Variable with id {} to be replaced by Variable {}: {}".format(object_id, self.id, e))
                     raise e
                 
         siblings_to_release = current_replacements - siblings_to_replace
-        if switchover_date_has_changed:
-            # Added siblings + siblings not being removed
-            siblings_requiring_update = siblings_to_replace
-        else:
-            # Only added siblings
-            siblings_requiring_update = siblings_to_replace - current_replacements
 
         # Release siblings that should no longer be replaced by this instance
         for to_release in siblings_to_release:
-            if not self.is_draft:
+            if to_release.replaced_by:
                 to_release.replaced_by = None;
                 to_release.active_to = None;
                 modified_siblings.add(to_release)
        
         # Replace sibling variables
-        for to_replace in siblings_requiring_update:
-            if not self.is_draft:
+        for to_replace in siblings_to_replace:
+            """
+                Nota bene: This modifies siblings for drafts as well as active variables. 
+                It is important to use the instance method 'save_updated_self_and_modified_replaced(modified_siblings)'
+                to avoid saving siblings for draft variables.
+            """    
+            if not to_replace.replaced_by or to_replace.replaced_by.id != self.id or to_replace.active_to != switchover_date:
+                print "Sibling needs update: ", to_replace.key
                 to_replace.replaced_by = self;
                 to_replace.active_to = switchover_date if switchover_date else None
                 modified_siblings.add(to_replace)

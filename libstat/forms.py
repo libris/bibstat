@@ -59,8 +59,8 @@ class VariableForm(forms.Form):
     def clean(self):
         cleaned_data = super(VariableForm, self).clean()
         
-        replaces = cleaned_data['replaces']
-        active_from = cleaned_data['active_from']
+        replaces = cleaned_data['replaces'] if 'replaces' in cleaned_data else None
+        active_from = cleaned_data['active_from'] if 'active_from' in cleaned_data else None
         if replaces and not active_from: 
             self._errors['replaces'] = self.error_class(["Ange när ersättning börjar gälla genom att sätta 'Giltig fr o m'"])
             self._errors['active_from'] = self.error_class([u"Måste anges"])
@@ -68,10 +68,16 @@ class VariableForm(forms.Form):
             del cleaned_data['replaces']
             del cleaned_data['active_from']
         
+        active_to = cleaned_data['active_to'] if 'active_to' in cleaned_data else None
+        if self.instance and self.instance.replaced_by and active_to and active_to != self.instance.active_to:
+            self._errors['active_to'] = self.error_class([u"Styrs av ersättande term"])
+        
+            del cleaned_data['active_to']
+        
         return cleaned_data
         
         
-    def save(self, commit=True, user=None):
+    def save(self, commit=True, user=None, activate=False):
         variable = self.instance if self.instance else Variable(is_draft=True)
         variable.key = self.instance.key if self.instance else self.cleaned_data['key']
         variable.active_from = self.cleaned_data['active_from'] # Need to convert to UTC? It's a date and not a datetime...
@@ -85,6 +91,9 @@ class VariableForm(forms.Form):
         variable.target_groups = self.cleaned_data['target_groups']
         variable.description = self.cleaned_data['description']
         variable.comment = self.cleaned_data['comment']
+        if activate:
+            print "Activating"
+            variable.is_draft = False
         
         to_replace = self.cleaned_data['replaces'].split(", ") if self.cleaned_data['replaces'] else []
         modified_siblings = variable.replace_siblings(to_replace, switchover_date=variable.active_from)
