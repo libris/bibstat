@@ -147,6 +147,7 @@ class Variable(VariableBase):
     
     meta = {
         'collection': 'libstat_variables',
+        'ordering': ['key'],
         'queryset_class': VariableQuerySet
     }
     
@@ -226,7 +227,6 @@ class Variable(VariableBase):
                 to avoid saving siblings for draft variables.
             """    
             if not to_replace.replaced_by or to_replace.replaced_by.id != self.id or to_replace.active_to != switchover_date:
-                print "Sibling needs update: ", to_replace.key
                 to_replace.replaced_by = self;
                 to_replace.active_to = switchover_date if switchover_date else None
                 modified_siblings.add(to_replace)

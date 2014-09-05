@@ -173,7 +173,7 @@ def observation_api(request, observation_id):
 def terms_api(request):
     terms = core_terms[:]
     
-    variables = Variable.objects.public_terms().order_by("key")
+    variables = Variable.objects.public_terms()
     for v in variables:
         terms.append(v.to_dict())
     data = dict(terms_vocab, terms=terms)

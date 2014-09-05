@@ -317,7 +317,7 @@ class VariableQuerySetTest(MongoTestCase):
         self.v.save()
         
         result_set = Variable.objects.replaceable_siblings()
-        self.assertEquals([v.id for v in result_set], [self.v2.id, self.v3.id])
+        self.assertEquals([v.id for v in result_set], [self.v3.id, self.v2.id])
         
         
            
@@ -346,6 +346,9 @@ class VariableTest(MongoTestCase):
         v4.save()
         self.v4 = Variable.objects.get(pk=v4.id)
         
+    def test_key_asc_should_be_default_sort_order(self):
+        result = Variable.objects.all()
+        self.assertEquals([v.key for v in result], [u"Folk10", u"Folk31", u"Folk35", u"Folk69"])
     
     def test_should_transform_object_to_dict(self):
         folk10 = Variable.objects.get(pk=self.v.id)
