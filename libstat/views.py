@@ -341,9 +341,9 @@ def replaceable_variables_api(request):
     """
     query = request.REQUEST.get("q", None)
     if query:
-        variables = Variable.objects.replaceable_siblings().filter(key__icontains=query)
+        variables = Variable.objects.replaceable().filter(key__icontains=query)
     else:
-        variables = Variable.objects.replaceable_siblings()
+        variables = Variable.objects.replaceable()
     data = [{ 'key': v.key, 'id': str(v.id) } for v in variables];
     return HttpResponse(json.dumps(data), content_type="application/json")
 
@@ -419,4 +419,17 @@ def edit_survey(request, survey_id):
     context ['form'] = form
     return render(request, 'libstat/edit_survey.html', context)
 
+
+@permission_required('is_superuser', login_url='index')
+def surveyable_variables_api(request):
+    """
+        Helper Json API method to populate search field for surveyable variable when constructing a Survey. (Ajax call)
+    """
+    query = request.REQUEST.get("q", None)
+    if query:
+        variables = Variable.objects.surveyable().filter(key__icontains=query)
+    else:
+        variables = Variable.objects.surveyable()
+    data = [{ 'key': v.key, 'id': str(v.id) } for v in variables];
+    return HttpResponse(json.dumps(data), content_type="application/json")
 

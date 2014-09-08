@@ -33,4 +33,5 @@ urlpatterns = patterns('libstat.views',
     
     # Admin helper APIs
     url(r'^variables/replaceable$',views.replaceable_variables_api, name='replaceable_variables_api'),
+    url(r'^variables/surveyable$',views.surveyable_variables_api, name='surveyable_variables_api'),
 )

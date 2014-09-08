@@ -9,6 +9,7 @@ from django.conf import settings
 from mongoengine.django.sessions import MONGOENGINE_SESSION_COLLECTION
 from mongoengine.errors import DoesNotExist
 from bson.objectid import ObjectId
+from django.db.models.sql.datastructures import DateTime
 
 
 """
@@ -280,21 +281,28 @@ class OpenDataTest(MongoTestCase):
        
 class VariableQuerySetTest(MongoTestCase):
     def setUp(self):
-        v = Variable(key=u"Folk10", description=u"Antal bemannade servicesställen", type="integer", is_public=True, target_groups=["public"])
-        v.save()
-        self.v = Variable.objects.get(pk=v.id)
         
+        # Discontinued (today)
         v2 = Variable(key=u"Folk35", description=u"Antal årsverken övrig personal", type="decimal", is_public=False, target_groups=["public"])
         v2.question = u"Hur många årsverken utfördes av personal i folkbiblioteksverksamheten under 2012?"
         v2.question_part = u"Antal årsverken övrig personal (ej städpersonal)"
+        v2.active_to = datetime.utcnow().date() 
         v2.save()
         self.v2 = Variable.objects.get(pk=v2.id)
         
+        # Replaced
+        v = Variable(key=u"Folk10", description=u"Antal bemannade servicesställen", type="integer", is_public=True, target_groups=["public"])
+        v.replaced_by = self.v2 
+        v.save()
+        self.v = Variable.objects.get(pk=v.id)
+        
+        # Active
         v3 = Variable(key=u"Folk31", description=u"Antal årsverken totalt", type="decimal", is_public=True, target_groups=["public"], id_draft=False)
         v3.summary_of = [self.v2]
         v3.save()
         self.v3 = Variable.objects.get(pk=v3.id)
         
+        # Draft
         v4 = Variable(key=u"Folk69", description=u"Totalt nyförvärv AV-medier", type="integer", is_public=True, target_groups=["public"], is_draft=True)
         v4.question = u"Hur många nyförvärv av AV-media gjordes under 2012?"
         v4.save()
@@ -312,12 +320,13 @@ class VariableQuerySetTest(MongoTestCase):
         self.assertEquals(Variable.objects.public_term_by_key("Folk31").id, self.v3.id)
         self.assertRaises(DoesNotExist, lambda: Variable.objects.public_term_by_key("Folk69"))
         
-    def test_filter_replaceable_siblings(self):
-        self.v.replaced_by=self.v2
-        self.v.save()
-        
-        result_set = Variable.objects.replaceable_siblings()
+    def test_filter_replaceable_should_not_return_drafts_or_replaced(self):
+        result_set = Variable.objects.replaceable()
         self.assertEquals([v.id for v in result_set], [self.v3.id, self.v2.id])
+        
+    def test_filter_surveyable_should_not_return_discontinued_or_replaced(self):
+        result_set = Variable.objects.surveyable()
+        self.assertEquals([v.id for v in result_set], [self.v3.id, self.v4.id])
         
         
            
