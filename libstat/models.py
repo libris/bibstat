@@ -295,16 +295,24 @@ class VariableVersion(VariableBase):
      
  
 class Survey(Document):
-    target_group = StringField(max_length=20, required=True, choices=SURVEY_TARGET_GROUPS)
+    """
+        Representation of a Survey for a sample year and target groups
+    """
+    target_groups = ListField(StringField(max_length=20, required=True, choices=SURVEY_TARGET_GROUPS))
     sample_year = IntField(required=True)
-    questions = ListField(ReferenceField(Variable), required=True)
+    questions = ListField(ReferenceField(Variable))
+    
+    date_modified = DateTimeField(required=True, default=datetime.utcnow())
+    modified_by = ReferenceField(User)
+    
+    is_draft = BooleanField()
      
     meta = {
         'collection': 'libstat_surveys'
     }
      
     def __unicode__(self):
-        return u"{} {}".format(self.target_group, self.sample_year)
+        return u"{} {}".format(self.sample_year, self.target_groups)
 
 
 class SurveyResponseQuerySet(QuerySet):

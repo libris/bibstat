@@ -1,0 +1,77 @@
+{% extends "libstat/base.html" %}
+{% load i18n %}
+
+{% block content %}
+  <div class="container">
+    <div class="page-header">
+      <h1>{% trans "Statistikenkät" %}</small></h1>
+    </div>
+
+    <form action="{{form_url}}" method="POST" role="form" class="form edit-survey-form">
+      {% csrf_token %}
+      
+      <div class="panel panel-default inverse">
+        <div class="panel-body">
+          <div class="form-group sample_year">
+            <label for="id_sample_year">{% trans "Mätår" %}</label>
+            <span class="text-danger form-validation after">{{form.sample_year.errors}}</span>
+            {{form.sample_year}}
+            <span class="glyphicon glyphicon-remove form-control-feaedback"></span>
+          </div>
+          <div class="form-group target_groups" data-field="target_groups">
+            <label>{% trans "Bibliotekstyper" %}</label>
+            <span class="text-danger form-validation after"></span>
+            <div>
+              {% for target_group in form.target_groups %}
+                <label class="checkbox-inline">
+                  {{target_group.tag}}
+                  {{target_group.choice_label}}
+                </label>
+              {% endfor %}
+            </div>
+          </div>
+          <div class="form-group">
+            <input type="submit" class="btn btn-primary pull-right" value="{% trans 'Spara'%}"/>
+          </div>
+        </div><!-- panel-body -->
+      </div><!-- panel -->
+      
+      <div class="page-header">
+        <h2>{% trans "Undersökningens frågor" %}</h2>
+      </div>
+
+      {% for variable in form.instance.questions %}
+        <div class="form-group">
+          {% if variable.sub_question %}
+            <div class='survey-question-order'>
+              <span class='survey-index'>1.</span> <span class='term-key'>{{variable.key}}</span>
+            </div>
+            <div class='survey-question'>{{variable.label.0}}</div>
+            <div class='survey-question-part'>{{variable.label.1}}</div>
+          {% else %}
+            <div class='survey-question-order'>
+              <span class='survey-index'>1.</span> <span class='term-key'>{{variable.key}}</span>
+            </div>
+            <div class='survey-question'>{{variable.label}}</div>
+          {% endif %}
+        </div>
+      {% endfor %}
+
+      <div class="form-inline">
+        <div class="form-group add-question">
+          <label for="add_survey_question">{% trans "Lägg till fråga (term)" %}:</label>
+          <input id="add_survey_question" name="add_survey_question" class="form-control" type="text" />
+        </div>
+        <div class="form-group">
+          <input type="submit" class="btn btn-primary pull-right" value="{% trans 'Lägg till'%}"/>
+        </div>
+      </div>
+
+    </form>
+  
+    <hr>
+    <footer>
+      <p>&copy; {% trans "Kungliga Biblioteket" %} 2014</p>
+    </footer>
+  </div><!-- container -->
+{% endblock %}

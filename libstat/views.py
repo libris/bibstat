@@ -6,7 +6,7 @@ from django.http import HttpResponse, HttpResponseRedirect
 from django.http import Http404
 from django.conf import settings
 
-from libstat.models import Variable, SurveyResponse, SURVEY_TARGET_GROUPS
+from libstat.models import Variable, SurveyResponse, Survey, SURVEY_TARGET_GROUPS
 from libstat.forms import *
 from django.contrib.auth.decorators import permission_required
 from django.contrib.auth.forms import AuthenticationForm
@@ -346,3 +346,75 @@ def replaceable_variables_api(request):
         variables = Variable.objects.replaceable_siblings()
     data = [{ 'key': v.key, 'id': str(v.id) } for v in variables];
     return HttpResponse(json.dumps(data), content_type="application/json")
+
+
+
+@permission_required('is_superuser', login_url='index')
+def surveys(request):
+    """
+        List surveys view
+    """
+    surveys = Survey.objects.all()
+    context = {
+        'surveys': surveys,
+    }
+    return render(request, 'libstat/surveys.html', context)
+
+
+
+@permission_required('is_superuser', login_url='index')
+def create_survey(request):
+    
+    context = {
+        'mode': 'create',
+        'form_url': reverse("create_survey"),
+    }
+    
+    if request.method == "POST":
+        form = SurveyForm(request.POST)
+        if form.is_valid():
+            try:
+                survey = form.save()
+                return redirect("edit_survey", survey.id)
+            except Exception as e:
+                logger.warning(u"Error creating survey: {}".format(e))
+                form._errors['__all__'] = ErrorList([u"Kan inte skapa enkät"])
+
+    else:         
+        form = SurveyForm()
+    
+    context['form'] = form
+    return render(request, 'libstat/edit_survey.html', context)
+
+
+
+@permission_required('is_superuser', login_url='index')
+def edit_survey(request, survey_id):
+    
+    try:
+        survey = Survey.objects.get(pk=survey_id)
+    except:
+        raise Http404
+
+    context = {
+        'mode': 'edit',
+        'form_url': reverse("edit_survey", kwargs={"survey_id": survey_id}),
+    }
+    
+    if request.method == "POST":
+        form = SurveyForm(request.POST, instance=survey)
+        if form.is_valid():
+            try:
+                survey = form.save()
+                return redirect("edit_survey", survey.id)
+            except Exception as e:
+                logger.warning(u"Error creating survey: {}".format(e))
+                form._errors['__all__'] = ErrorList([u"Kan inte skapa enkät"])
+    
+    else:         
+        form = SurveyForm(instance=survey)
+    
+    context ['form'] = form
+    return render(request, 'libstat/edit_survey.html', context)
+
+

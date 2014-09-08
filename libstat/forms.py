@@ -5,7 +5,7 @@ from django import forms
 from django.utils.safestring import mark_safe
 
 
-from libstat.models import Variable, variable_types, SurveyResponse, SurveyObservation, SURVEY_TARGET_GROUPS, SurveyResponseMetadata
+from libstat.models import Variable, variable_types, SurveyResponse, SurveyObservation, SURVEY_TARGET_GROUPS, SurveyResponseMetadata, Survey
 from libstat.models import TYPE_STRING , TYPE_BOOLEAN, TYPE_INTEGER, TYPE_LONG, TYPE_DECIMAL, TYPE_PERCENT, VARIABLE_TYPES
 
 #TODO: Define a LoginForm class with extra css-class 'form-control' ?
@@ -250,3 +250,42 @@ class SurveyObservationsForm(forms.Form):
             surveyResponse.save()
 
         return surveyResponse
+    
+    
+class SurveyForm(forms.Form):
+    
+     sample_year = forms.CharField(required=True, max_length=4, widget=forms.TextInput(attrs={'class': 'form-control width-auto'}))
+     target_groups = forms.MultipleChoiceField(required=True, widget=forms.CheckboxSelectMultiple())
+     
+     add_survey_question = forms.CharField(required=False, widget=forms.TextInput(attrs={'class': 'form-control'}))
+     
+     def __init__(self, *args, **kwargs):
+         self.instance = kwargs.pop('instance', None)
+         super(SurveyForm, self).__init__(*args, **kwargs)
+         
+         self.fields['target_groups'].choices = [target_group for target_group in SURVEY_TARGET_GROUPS]
+         
+         if self.instance:
+             self.fields['sample_year'].initial = self.instance.sample_year
+             self.fields['target_groups'].initial = self.instance.target_groups
+             
+         
+     def save(self, commit=True):
+         survey = self.instance if self.instance else Survey(is_draft=True)
+         survey.sample_year = self.cleaned_data['sample_year']
+         survey.target_groups = self.cleaned_data['target_groups']
+         
+         if 'add_survey_question' in self.cleaned_data:
+            variable_id = self.cleaned_data['add_survey_question']
+            print "Adding variable: ", variable_id
+            variable = Variable.objects.get(pk=variable_id)
+            print "Found variable: ", variable
+            survey.questions.append(variable);
+         
+         if commit:
+             survey.save()
+    
+         return survey
+    
+    
+    

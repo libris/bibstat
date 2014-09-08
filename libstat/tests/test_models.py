@@ -368,12 +368,12 @@ class VariableTest(MongoTestCase):
     def test_summary_variable_without_question_or_question_part_is_summary_auto_field(self):
         folk31 = Variable.objects.get(pk=self.v3.id)
         self.assertTrue(folk31.is_summary_auto_field)
-        # THis field is automatically summarized in survey and the user cannot change the value
+        # THis field is automatically summarized in survey_draft and the user cannot change the value
         
     def test_summary_variable_with_question_or_question_part_is_summary_field(self):
         folk69 = Variable.objects.get(pk=self.v4.id)
         self.assertFalse(folk69.is_summary_auto_field)
-        # This field is automatically summarized in survey, but value can be changed by user.
+        # This field is automatically summarized in survey_draft, but value can be changed by user.
         # TODO: Maybe a is_summary_field helper property on model could for this state?
     
     def test_should_return_question_and_question_part_as_label_if_both_fields_exist(self):
@@ -561,4 +561,30 @@ class VariableTest(MongoTestCase):
         self.assertEquals(len(VariableVersion.objects.filter(key=self.v2.key)), 0)
         
         
+class SurveyTest(MongoTestCase):
+    def setUp(self):
+        v = Variable(key=u"Folk10", description=u"Antal bemannade servicesställen", type="integer", is_public=True, target_groups=["public"])
+        self.folk10 = v.save()
+        
+        v2 = Variable(key=u"Folk35", description=u"Antal årsverken övrig personal", type="decimal", is_public=True, target_groups=["public"],
+                      question=u"Hur många årsverken utfördes av personal i folkbiblioteksverksamheten under 2012?", 
+                      question_part= u"Antal årsverken övrig personal (ej städpersonal)")
+        self.folk35 = v2.save()
+        
+        v3 = Variable(key=u"Folk31", description=u"Antal årsverken totalt", type="decimal", is_public=True, target_groups=["public"])
+        self.folk31 = v3.save()
+        
+        v4 = Variable(key=u"Folk69", description=u"Totalt nyförvärv AV-medier", type="integer", is_public=True, target_groups=["public"], is_draft=True, 
+                      question = u"Hur många nyförvärv av AV-media gjordes under 2012?")
+        self.folk69_draft = v4.save()
+        
+        survey = Survey(sample_year=2014, target_groups=[u"public"], is_draft=False, questions=[self.folk10, self.folk31, self.folk35])
+        self.survey = survey.save()
+
+        survey_draft = Survey(sample_year=2015, target_groups=[u"public", u"research", u"hospital", u"school"], is_draft=True, questions=[])
+        self.survey_draft = survey_draft.save()
+        
+        
+    def test_modified_date_should_be_set(self):
+        self.assertTrue(self.survey.date_modified != None)
         
