@@ -12,22 +12,28 @@
       
       <div class="panel panel-default inverse">
         <div class="panel-body">
-          <div class="form-group sample_year">
-            <label for="id_sample_year">{% trans "Mätår" %}</label>
-            <span class="text-danger form-validation after">{{form.sample_year.errors}}</span>
-            {{form.sample_year}}
-            <span class="glyphicon glyphicon-remove form-control-feaedback"></span>
-          </div>
-          <div class="form-group target_groups" data-field="target_groups">
-            <label>{% trans "Bibliotekstyper" %}</label>
-            <span class="text-danger form-validation after"></span>
-            <div>
-              {% for target_group in form.target_groups %}
-                <label class="checkbox-inline">
-                  {{target_group.tag}}
-                  {{target_group.choice_label}}
-                </label>
-              {% endfor %}
+          <div class="row">
+            <div class="col-md-3">
+              <div class="form-group sample_year{% if form.sample_year.errors %} has-feedback has-error{% endif %}">
+                <label for="id_sample_year">{% trans "Mätår" %}</label>
+                <span class="text-danger form-validation after">{{form.sample_year.errors}}</span>
+                {{form.sample_year}}
+                <span class="glyphicon glyphicon-remove form-control-feedback"></span>
+              </div>
+            </div>
+            <div class="col-md-9">
+              <div class="form-group target_groups {% if form.target_groups.errors %} has-feedback has-error{% endif %}">
+                <label>{% trans "Bibliotekstyper" %}</label>
+                <span class="text-danger form-validation after">{{form.target_groups.errors}}</span>
+                <div>
+                  {% for target_group in form.target_groups %}
+                    <label class="checkbox-inline">
+                      {{target_group.tag}}
+                      {{target_group.choice_label}}
+                    </label>
+                  {% endfor %}
+                </div>
+              </div>
             </div>
           </div>
           <div class="form-group">
@@ -41,7 +47,7 @@
       </div>
 
       {% for variable in form.instance.questions %}
-        <div class="form-group">
+        <div class="form-group question">
           {% if variable.sub_question %}
             <div class='survey-question-order'>
               <span class='survey-index'>{{forloop.counter}}.</span> <span class='term-key'>{{variable.key}}</span>
@@ -57,13 +63,21 @@
         </div>
       {% endfor %}
 
-      <div class="form-inline">
-        <div class="form-group add-question">
-          <label for="add_survey_question">{% trans "Lägg till fråga (term)" %}:</label>
-          <input id="add_survey_question" name="add_survey_question" class="form-control" type="text" />
-        </div>
-        <div class="form-group">
-          <input type="submit" class="btn btn-primary pull-right" value="{% trans 'Lägg till'%}"/>
+      <div class="panel panel-default inverse">
+        <div class="panel-body">
+          <div class="row">
+            <div class="col-md-4">
+              <div class="form-group add-question">
+                <label for="add_survey_question">{% trans "Lägg till fråga (term)" %}:</label>
+                <input id="add_survey_question" name="add_survey_question" class="form-control" type="text" />
+              </div>
+              <div class="form-group">
+                <input type="submit" class="btn btn-primary pull-right" value="{% trans 'Lägg till'%}"/>
+              </div>
+            </div>
+            <div class="col-md-8">
+            </div>
+          </div>
         </div>
       </div>
 

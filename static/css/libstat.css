@@ -56,6 +56,10 @@
 .form-validation.after {
   margin-left: 6px;
 }
+.form-validation.after .errorlist, 
+.form-validation.after .errorlist li {
+  display: inline;
+}
 .form-group .glyphicon {
   display: none;
 }
@@ -103,6 +107,12 @@
   float: left;
   margin-left: -20px;
 }
+
+/* Edit survey */
+.form-group.question {
+  border-bottom: 1px solid #f7f7f7;
+}
+
 /* Tooltip */
 .css3-tooltip {
   display: inline;

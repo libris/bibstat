@@ -8,6 +8,9 @@ from django.utils.safestring import mark_safe
 from libstat.models import Variable, variable_types, SurveyResponse, SurveyObservation, SURVEY_TARGET_GROUPS, SurveyResponseMetadata, Survey
 from libstat.models import TYPE_STRING , TYPE_BOOLEAN, TYPE_INTEGER, TYPE_LONG, TYPE_DECIMAL, TYPE_PERCENT, VARIABLE_TYPES
 
+import logging
+logger = logging.getLogger(__name__)
+
 #TODO: Define a LoginForm class with extra css-class 'form-control' ?
 
 class VariableForm(forms.Form):
@@ -254,7 +257,7 @@ class SurveyObservationsForm(forms.Form):
     
 class SurveyForm(forms.Form):
     
-     sample_year = forms.CharField(required=True, max_length=4, widget=forms.TextInput(attrs={'class': 'form-control width-auto'}))
+     sample_year = forms.CharField(required=True, max_length=4, widget=forms.TextInput(attrs={'class': 'form-control'}))
      target_groups = forms.MultipleChoiceField(required=True, widget=forms.CheckboxSelectMultiple())
      
      add_survey_question = forms.CharField(required=False, widget=forms.TextInput(attrs={'class': 'form-control'}))
@@ -273,12 +276,12 @@ class SurveyForm(forms.Form):
         cleaned_data = super(SurveyForm, self).clean()
         
         if 'add_survey_question' in cleaned_data and cleaned_data['add_survey_question']:
-            print "Cleaning data"
             variable_id = self.cleaned_data['add_survey_question']
             try:
                 # TODO: Should only get active variables!! No drafts or variables that are replaces or will be replaced...
                 self._variable = Variable.objects.get(pk=variable_id)
             except Exception as e:
+                logger.warn(u"Tried to add invalid variable with id {} to survey: {}".format(variable_id, e))
                 self._errors['add_survey_question'] = self.error_class([u"Termen finns inte eller är inte aktiv. Ange en annan term."])
                 del cleaned_data['add_survey_question']
         

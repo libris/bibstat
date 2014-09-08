@@ -88,8 +88,7 @@ $(document).ready(function() {
 		queryTokenizer: Bloodhound.tokenizers.whitespace,
 		limit: 20,
 		remote: {
-			// TODO: Create new helper api with active variables
-		  	url: '/statistics/variables/replaceable?q=%QUERY',
+		  	url: '/statistics/variables/surveyable?q=%QUERY',
 		    filter: function(list) {
 		      return $.map(list, function(item) { 
 		    	  return { label: item.key, value: item.id }; 
@@ -97,21 +96,13 @@ $(document).ready(function() {
 		    }
 		},
 	});
-	// kicks off the loading/processing of `local` and `prefetch`
 	active_variables.initialize();
-//	var initial_tokens = function() {
-//		var tokens = []
-//		var keysIds = $("#id_replaces_initial").val().split(", ");
-//		return $.map(keysIds, function(keyId) {
-//			var labelValue = keyId.split(":");
-//			return { label: labelValue[0], value: labelValue[1] }; 
-//		});
-//	}
 	$('#add_survey_question').tokenfield({
 	  	typeahead: [null, {
 		  	displayKey: 'label',
 		  	source: active_variables.ttAdapter(),
-	  	}]
+	  	}],
+	  	limit: 1
 	});
-//	.tokenfield('setTokens', initial_tokens());
+	//TODO: Disable typeahead autocomplete and cursor if a token already has been set.
 });
