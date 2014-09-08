@@ -44,7 +44,7 @@
                     <label for="id_target_group">{% trans "Bibliotekstyp" %}:</label>
                   </div>
                   <div class="col-md-10">             
-                    <span class="target_group">{{form.instance.target_group__desc}}</span>
+                    <span class="target_group">{{form.instance.target_group|tg_label}}</span>
                     {{form.target_group}}
                    </div>
                 </div>

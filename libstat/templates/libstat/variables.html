@@ -1,5 +1,6 @@
 {% extends "libstat/base.html" %}
 {% load i18n %}
+{% load libstat_tags %}
 
 {% block content %}
   <div class="container">
@@ -58,7 +59,7 @@
               <td>{{ v.category }}</td>
               <td>{{ v.sub_category }}</td>
               <td>{{ v.is_public|yesno }}</td>
-              <td>{{ v.target_groups__descriptions|join:", " }}</td>
+              <td>{{ v.target_groups|tg_label }}</td>
             </tr>
           {% endfor %}
         {% endif %}

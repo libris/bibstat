@@ -102,7 +102,7 @@
                       {{ sr.library_name }}
                     {% endif %}
                   </td>
-                  <td>{{ sr.target_group__desc }}</td>
+                  <td>{{ sr.target_group|tg_label }}</td>
                   <td>
                     <a title="{%trans 'Visa/redigera enkätsvar' %}" href="{% url 'edit_survey_response' sr.id %}">Visa/redigera</a>
                   </td>
