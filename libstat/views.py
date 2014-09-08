@@ -374,7 +374,7 @@ def create_survey(request):
         form = SurveyForm(request.POST)
         if form.is_valid():
             try:
-                survey = form.save()
+                survey = form.save(user=request.user)
                 return redirect("edit_survey", survey.id)
             except Exception as e:
                 logger.warning(u"Error creating survey: {}".format(e))
@@ -405,11 +405,13 @@ def edit_survey(request, survey_id):
         form = SurveyForm(request.POST, instance=survey)
         if form.is_valid():
             try:
-                survey = form.save()
+                survey = form.save(user=request.user)
                 return redirect("edit_survey", survey.id)
             except Exception as e:
                 logger.warning(u"Error creating survey: {}".format(e))
                 form._errors['__all__'] = ErrorList([u"Kan inte skapa enkät"])
+        else:
+            print "Form has errors", form._errors
     
     else:         
         form = SurveyForm(instance=survey)

@@ -269,18 +269,29 @@ class SurveyForm(forms.Form):
              self.fields['sample_year'].initial = self.instance.sample_year
              self.fields['target_groups'].initial = self.instance.target_groups
              
+     def clean(self):
+        cleaned_data = super(SurveyForm, self).clean()
+        
+        if 'add_survey_question' in cleaned_data and cleaned_data['add_survey_question']:
+            print "Cleaning data"
+            variable_id = self.cleaned_data['add_survey_question']
+            try:
+                # TODO: Should only get active variables!! No drafts or variables that are replaces or will be replaced...
+                self._variable = Variable.objects.get(pk=variable_id)
+            except Exception as e:
+                self._errors['add_survey_question'] = self.error_class([u"Termen finns inte eller är inte aktiv. Ange en annan term."])
+                del cleaned_data['add_survey_question']
+        
+        return cleaned_data
+             
          
-     def save(self, commit=True):
+     def save(self, commit=True, user=None):
          survey = self.instance if self.instance else Survey(is_draft=True)
          survey.sample_year = self.cleaned_data['sample_year']
          survey.target_groups = self.cleaned_data['target_groups']
-         
-         if 'add_survey_question' in self.cleaned_data:
-            variable_id = self.cleaned_data['add_survey_question']
-            print "Adding variable: ", variable_id
-            variable = Variable.objects.get(pk=variable_id)
-            print "Found variable: ", variable
-            survey.questions.append(variable);
+         survey.modified_by = user
+         if hasattr(self, "_variable"):
+             survey.questions.append(self._variable);
          
          if commit:
              survey.save()

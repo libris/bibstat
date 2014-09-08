@@ -44,13 +44,13 @@
         <div class="form-group">
           {% if variable.sub_question %}
             <div class='survey-question-order'>
-              <span class='survey-index'>1.</span> <span class='term-key'>{{variable.key}}</span>
+              <span class='survey-index'>{{forloop.counter}}.</span> <span class='term-key'>{{variable.key}}</span>
             </div>
             <div class='survey-question'>{{variable.label.0}}</div>
             <div class='survey-question-part'>{{variable.label.1}}</div>
           {% else %}
             <div class='survey-question-order'>
-              <span class='survey-index'>1.</span> <span class='term-key'>{{variable.key}}</span>
+              <span class='survey-index'>{{forloop.counter}}.</span> <span class='term-key'>{{variable.key}}</span>
             </div>
             <div class='survey-question'>{{variable.label}}</div>
           {% endif %}

@@ -540,7 +540,7 @@ class EditSurveyObservationsViewTest(MongoTestCase):
         
         
 
-class TestReplaceableVariablesApi(MongoTestCase):
+class ReplaceableVariablesApiTest(MongoTestCase):
     def setUp(self):
         v = Variable(key=u"Folk28", description=u"Totalt antal anställda personer som är bibliotekarier och som är män 1 mars.", type="integer", is_public=True, target_groups=["public"])
         self.active_public = v.save()
@@ -582,7 +582,7 @@ class TestReplaceableVariablesApi(MongoTestCase):
         self.assertEquals(data, [{"key":"Folk28", "id":str(self.active_public.id)}])
     
 
-class SurveysView(MongoTestCase):
+class SurveysViewTest(MongoTestCase):
     def setUp(self):
         survey = Survey(sample_year=2014, target_groups=[u"public"], is_draft=False, questions=[])
         self.survey = survey.save()
@@ -622,8 +622,11 @@ class SurveysView(MongoTestCase):
         self.assertContains(response, u'<a href="{}">2015 - Samtliga bibliotekstyper</a>'.format(reverse('edit_survey', kwargs={"survey_id":str(self.survey_draft.id)})), count=1, status_code=200, html=True)
         
 
-class CreateSurveyView(MongoTestCase):
+class CreateSurveyViewTest(MongoTestCase):
     def setUp(self):
+        v = Variable(key=u"Folk28", description=u"Totalt antal anställda personer som är bibliotekarier och som är män 1 mars.", type="integer", is_public=True, target_groups=["public"])
+        self.question = v.save()
+        
         self.url = reverse("create_survey")
         self.client.login(username="admin", password="admin")
         
@@ -640,13 +643,44 @@ class CreateSurveyView(MongoTestCase):
         self.client.login(username="admin", password="admin")
         response = self.client.get(self.url)
         self.assertEquals(response.status_code, 200)
+    
+    def test_create_survey_draft(self):
+        response = self.client.post(self.url, {u"sample_year": "2015", u"target_groups": [u"public", u"school"]}, follow=True)
+        self.assertEquals(response.status_code, 200)
+        self.assertTrue('errors' not in response.context)
         
-class EditSurveyView(MongoTestCase):
+        self.assertEquals(len(Survey.objects.all()), 1)
+        result = Survey.objects.all()[0]
+        self.assertEquals(result.sample_year, 2015)
+        self.assertEquals(result.target_groups, [u"public", u"school"])
+        self.assertEquals(result.is_draft, True)
+        self.assertEquals(result.modified_by.username, u"admin")
+        
+        
+    def test_create_survey_draft_with_question(self):
+        response = self.client.post(self.url, {u"sample_year": "2015", u"target_groups": [u"public", u"school"], u"add_survey_question": self.question.id}, follow=True)
+        self.assertEquals(response.status_code, 200)
+        self.assertTrue('errors' not in response.context)
+        
+        self.assertEquals(len(Survey.objects.all()), 1)
+        result = Survey.objects.all()[0]
+        self.assertEquals(result.sample_year, 2015)
+        self.assertEquals(result.target_groups, [u"public", u"school"])
+        self.assertEquals(result.is_draft, True)
+        self.assertEquals(result.modified_by.username, u"admin")
+        self.assertEquals(result.questions, [self.question])
+        
+        
+        
+class EditSurveyViewTest(MongoTestCase):
     def setUp(self):
-        survey = Survey(sample_year=2014, target_groups=[u"public"], is_draft=False, questions=[])
-        self.survey = survey.save()
+        v = Variable(key=u"Folk28", description=u"Totalt antal anställda personer som är bibliotekarier och som är män 1 mars.", type="integer", is_public=True, target_groups=["public"])
+        self.question = v.save()
+        
+        survey_draft = Survey(sample_year=2014, target_groups=[u"public"], is_draft=True, questions=[])
+        self.survey_draft = survey_draft.save()
 
-        self.url = reverse("edit_survey", kwargs={"survey_id":str(self.survey.id)})
+        self.url = reverse("edit_survey", kwargs={"survey_id":str(self.survey_draft.id)})
         self.client.login(username="admin", password="admin")
         
     def test_view_requires_admin_login(self):
@@ -662,4 +696,23 @@ class EditSurveyView(MongoTestCase):
         self.client.login(username="admin", password="admin")
         response = self.client.get(self.url)
         self.assertEquals(response.status_code, 200)
+        
+    def test_can_edit_survey_draft(self):
+        response = self.client.post(self.url, {u"sample_year": "2015", u"target_groups": [u"public", u"school"]}, follow=True)
+        self.assertEquals(response.status_code, 200)
+        self.assertTrue('errors' not in response.context)
+        
+        result = Survey.objects.get(pk=self.survey_draft.id)
+        self.assertEquals(result.sample_year, 2015)
+        self.assertEquals(result.target_groups, [u"public", u"school"])
+        
+    def test_can_add_questions_to_draft(self):
+        response = self.client.post(self.url, {u"sample_year": self.survey_draft.sample_year, u"target_groups": self.survey_draft.target_groups , 
+                                               u"add_survey_question": self.question.id}, follow=True)
+        self.assertEquals(response.status_code, 200)
+        self.assertTrue('errors' not in response.context)
+        
+        result = Survey.objects.get(pk=self.survey_draft.id)
+        self.assertEquals(result.questions, [self.question])
+        
         
