@@ -6,7 +6,8 @@ from django.http import HttpResponse, HttpResponseRedirect
 from django.http import Http404
 from django.conf import settings
 
-from libstat.models import Variable, SurveyResponse, Survey, SURVEY_TARGET_GROUPS
+from libstat.utils import SURVEY_TARGET_GROUPS
+from libstat.models import Variable, SurveyResponse, Survey
 from libstat.forms import *
 from django.contrib.auth.decorators import permission_required
 from django.contrib.auth.forms import AuthenticationForm
@@ -17,6 +18,7 @@ from django.views.decorators.csrf import csrf_protect
 from django.views.decorators.cache import never_cache
 
 from mongoengine.errors import NotUniqueError
+from mongoengine.queryset import Q
 from django.forms.util import ErrorList
 
 from libstat.apis import *
@@ -341,10 +343,12 @@ def replaceable_variables_api(request):
     """
     query = request.REQUEST.get("q", None)
     if query:
-        variables = Variable.objects.replaceable().filter(key__icontains=query)
+        key_query = Q(key__icontains=query)
+        description_query = Q(description__icontains=query)
+        variables = Variable.objects.replaceable().filter(key_query | description_query)
     else:
         variables = Variable.objects.replaceable()
-    data = [{ 'key': v.key, 'id': str(v.id) } for v in variables];
+    data = [ v.as_simple_dict() for v in variables];
     return HttpResponse(json.dumps(data), content_type="application/json")
 
 

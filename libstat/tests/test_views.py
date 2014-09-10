@@ -1,6 +1,7 @@
 # -*- coding: UTF-8 -*-
 from libstat.tests import MongoTestCase
-from libstat.models import Variable, SurveyResponse, SurveyObservation, targetGroups, Survey
+from libstat.models import Variable, SurveyResponse, SurveyObservation, Survey
+from libstat.utils import targetGroups
 
 from django.core.urlresolvers import reverse
 import json
@@ -572,15 +573,20 @@ class ReplaceableVariablesApiTest(MongoTestCase):
         response = self.client.get(self.url)
         self.assertEquals(response.status_code, 200)
         data = json.loads(response.content)
-        self.assertEquals(data, [{"key":"Folk28", "id":str(self.active_public.id)},
-                                 {"key":"Skol10", "id":str(self.active_private.id)}])
+        self.assertEquals(data, [{"key":"Folk28", "id":str(self.active_public.id), "description": self.active_public.description},
+                                 {"key":"Skol10", "id":str(self.active_private.id), "description": self.active_private.description}])
         
     def test_should_filter_replaceables_by_key(self):
-        response = self.client.get("{}?q=Fo".format(self.url))
+        response = self.client.get("{}?q=fo".format(self.url))
         self.assertEquals(response.status_code, 200)
         data = json.loads(response.content)
-        self.assertEquals(data, [{"key":"Folk28", "id":str(self.active_public.id)}])
-    
+        self.assertEquals(data, [{"key":"Folk28", "id":str(self.active_public.id), "description": self.active_public.description}])
+        
+    def test_should_filter_replaceables_by_description(self):
+        response = self.client.get("{}?q=post".format(self.url))
+        self.assertEquals(response.status_code, 200)
+        data = json.loads(response.content)
+        self.assertEquals(data, [{"key":"Skol10", "id":str(self.active_private.id), "description": self.active_private.description}])
 
 class SurveysViewTest(MongoTestCase):
     def setUp(self):

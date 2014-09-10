@@ -17,8 +17,7 @@ from django.db.models.fields import DateField
 from cookielib import logger
 logger = logging.getLogger(__name__)
 
-from libstat.utils import SURVEY_TARGET_GROUPS, targetGroups 
-from libstat.utils import VARIABLE_TYPES, rdfVariableTypes
+from libstat.utils import SURVEY_TARGET_GROUPS, targetGroups, VARIABLE_TYPES, rdfVariableTypes
 
 
 class VariableQuerySet(QuerySet):

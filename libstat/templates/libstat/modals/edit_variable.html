@@ -188,7 +188,7 @@ $(document).ready(function() {
 		  	url: '/statistics/variables/replaceable?q=%QUERY',
 		    filter: function(list) {
 		      return $.map(list, function(item) { 
-		    	  return { label: item.key, value: item.id }; 
+		    	  return { label: item.key, value: item.id , description: item.description }; 
 		      });
 		    }
 		},
@@ -207,8 +207,18 @@ $(document).ready(function() {
 	  	typeahead: [null, {
 		  	displayKey: 'label',
 		  	source: replaceable_variables.ttAdapter(),
+		  	templates: {
+				empty: "<div class='suggestion empty'><span class='description'>Inga träffar för sökord</span></div>",
+			    suggestion: _.template([
+			    	"<div class='suggestion'><span class='key'><%- label %></span>",
+			    	"<span class='description' title='<%- description %>'><%- ellipsis(description, 120-(label.length+1)) %></span></div>"
+			    ].join("\n")),
+			}
 	  	}]
 	}).tokenfield('setTokens', initial_tokens());
+	$('#id_replaces').on('tokenfield:initialize', function(event){
+		$(this).find(".tt-dropdown-menu").attr("style", "position:relative; top:100%; left:0; zIndex:100; display:none;")
+	});
 	
 	
 	$('.form-group.active_from .input-group.date').datepicker({

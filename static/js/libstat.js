@@ -1,6 +1,14 @@
 /**
  * Javascript functions for libstat
  */
+
+function ellipsis(text, max_chars=50) {
+	if(text && text.length > max_chars) {
+		return text.substr(0, max_chars) + " ...";
+	}
+	return text;
+}
+
 $(document).ready(function() {
 
 	/* Open login modal on redirect */
@@ -103,6 +111,6 @@ $(document).ready(function() {
 		  	source: active_variables.ttAdapter(),
 	  	}],
 	  	limit: 1
+	  	//TODO: Disable typeahead autocomplete and cursor if a token already has been set.
 	});
-	//TODO: Disable typeahead autocomplete and cursor if a token already has been set.
 });
