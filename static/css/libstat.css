@@ -142,6 +142,34 @@
     z-index: 99;
 }
 
+/* Twitter typeahead suggestions */
+.tokenfield.form-control .twitter-typeahead .tt-dropdown-menu {
+  width: 500px;
+}
+.tt-dropdown-menu .suggestion {
+  border-bottom: 1px solid #eeeeee;
+  cursor: pointer;
+}
+.tt-dropdown-menu .suggestion.empty {
+  border: none;
+  display: block;
+  padding: 3px 20px;
+  cursor: default;
+}
+.tt-dropdown-menu .suggestion .key {
+  font-weight: bold;
+  margin-right: 4px;
+}
+.tt-dropdown-menu .suggestion .description {
+  font-style: italic;
+  overflow: hidden;
+}
+
+/* Bootstrap datepicker fix for modals in chrome */
+.datepicker {
+  z-index: 1060 !important;  
+}
+
 /* General stuff */
 .header-actions {
   margin-top: 34px;
@@ -183,27 +211,4 @@
 
 label.sub-label {
   font-weight: normal;
-}
-
-/* Twitter typeahead suggestions */
-.tokenfield.form-control .twitter-typeahead .tt-dropdown-menu {
-  width: 500px;
-}
-.tt-dropdown-menu .suggestion {
-  border-bottom: 1px solid #eeeeee;
-  cursor: pointer;
-}
-.tt-dropdown-menu .suggestion.empty {
-  border: none;
-  display: block;
-  padding: 3px 20px;
-  cursor: default;
-}
-.tt-dropdown-menu .suggestion .key {
-  font-weight: bold;
-  margin-right: 4px;
-}
-.tt-dropdown-menu .suggestion .description {
-  font-style: italic;
-  overflow: hidden;
 }
