@@ -1,8 +1,10 @@
 /**
  * Javascript functions for libstat
  */
+"use strict";
 
-function ellipsis(text, max_chars=50) {
+function ellipsis(text, max_chars) {
+	max_chars = max_chars || 50;
 	if(text && text.length > max_chars) {
 		return text.substr(0, max_chars) + " ...";
 	}
