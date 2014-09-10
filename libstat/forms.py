@@ -4,9 +4,9 @@ from collections import OrderedDict
 from django import forms
 from django.utils.safestring import mark_safe
 
-
-from libstat.models import Variable, variable_types, SurveyResponse, SurveyObservation, SURVEY_TARGET_GROUPS, SurveyResponseMetadata, Survey
-from libstat.models import TYPE_STRING , TYPE_BOOLEAN, TYPE_INTEGER, TYPE_LONG, TYPE_DECIMAL, TYPE_PERCENT, VARIABLE_TYPES
+from libstat.utils import SURVEY_TARGET_GROUPS
+from libstat.utils import TYPE_STRING , TYPE_BOOLEAN, TYPE_INTEGER, TYPE_LONG, TYPE_DECIMAL, TYPE_PERCENT, VARIABLE_TYPES
+from libstat.models import Variable, SurveyResponse, SurveyObservation, SurveyResponseMetadata, Survey
 
 import logging
 logger = logging.getLogger(__name__)

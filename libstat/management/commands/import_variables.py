@@ -2,9 +2,9 @@
 from django.core.management.base import BaseCommand, CommandError
 from optparse import make_option
 
+from libstat.utils import PUBLIC_LIBRARY, RESEARCH_LIBRARY, HOSPITAL_LIBRARY, SCHOOL_LIBRARY, DATA_IMPORT_nonMeasurementCategories
+from libstat.utils import TYPE_STRING, TYPE_BOOLEAN, TYPE_INTEGER, TYPE_LONG, TYPE_DECIMAL, TYPE_PERCENT
 from libstat.models import Variable
-from libstat.models import PUBLIC_LIBRARY, RESEARCH_LIBRARY, HOSPITAL_LIBRARY, SCHOOL_LIBRARY, TYPE_STRING, TYPE_BOOLEAN, TYPE_INTEGER, TYPE_LONG, TYPE_DECIMAL, TYPE_PERCENT
-from libstat.models import DATA_IMPORT_nonMeasurementCategories
 from xlrd import open_workbook
 
 class Command(BaseCommand):

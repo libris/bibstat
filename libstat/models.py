@@ -17,32 +17,8 @@ from django.db.models.fields import DateField
 from cookielib import logger
 logger = logging.getLogger(__name__)
 
-PUBLIC_LIBRARY = ("public", "Folkbibliotek")
-RESEARCH_LIBRARY = ("research", "Forskningsbibliotek")
-HOSPITAL_LIBRARY = ("hospital", "Sjukhusbibliotek")
-SCHOOL_LIBRARY = ("school", "Skolbibliotek")
- 
-SURVEY_TARGET_GROUPS = (PUBLIC_LIBRARY, RESEARCH_LIBRARY, HOSPITAL_LIBRARY, SCHOOL_LIBRARY)
-targetGroups = dict(SURVEY_TARGET_GROUPS)
-
-TYPE_STRING = (u"string", u"Text")
-TYPE_BOOLEAN = (u"boolean", u"Boolesk")
-TYPE_INTEGER = (u"integer", u"Integer")
-TYPE_LONG = (u"long", u"Long")
-TYPE_DECIMAL = (u"decimal", u"Decimal")
-TYPE_PERCENT = (u"percent", u"Procent")
-#TODO: TYPE_DECIMAL1 = (u"decimal1", u"1 decimals noggrannhet"), Type_DECIMAL2 = (u"decimal2", u"2 decimalers noggrannhet") isf TYPE_DECIMAL
-#TODO: TYPE_TEXT = (u"text", u"Text") för kommentarer (textarea), TYPE_STRING=(u"string", u"Textsträng") för icke-numeriska värden "numerical" (input)
-
-VARIABLE_TYPES = (TYPE_STRING, TYPE_BOOLEAN, TYPE_INTEGER, TYPE_LONG, TYPE_DECIMAL, TYPE_PERCENT)
-variable_types = dict(VARIABLE_TYPES)
-rdf_variable_types = {TYPE_STRING[0]:u"xsd:string" , TYPE_BOOLEAN[0]: u"xsd:boolean", TYPE_INTEGER[0]: u"xsd:integer", 
-                      TYPE_LONG[0]: u"xsd:long", TYPE_DECIMAL[0]: u"xsd:decimal", TYPE_PERCENT[0]:u"xsd:decimal" }
-
-"""
-    Useful definitions when importing data from spreadsheets
-"""
-DATA_IMPORT_nonMeasurementCategories = [u"Bakgrundsvariabel", u"Tid", u"Befolkning", u"Bakgrundsvariabler"]
+from libstat.utils import SURVEY_TARGET_GROUPS, targetGroups 
+from libstat.utils import VARIABLE_TYPES, rdfVariableTypes
 
 
 class VariableQuerySet(QuerySet):
@@ -284,8 +260,11 @@ class Variable(VariableBase):
         };
     
     def type_to_rdf_type(self, type):
-        return rdf_variable_types[type]
+        return rdfVariableTypes[type]
     
+    
+    def as_simple_dict(self):
+       return { u'key': self.key, u'id': str(self.id), u'description': self.description } 
     
     def __unicode__(self):
         return self.key

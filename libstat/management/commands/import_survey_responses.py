@@ -3,9 +3,9 @@ from django.core.management.base import BaseCommand, CommandError
 from optparse import make_option
 
 from django.conf import settings
+from libstat.utils import PUBLIC_LIBRARY, RESEARCH_LIBRARY, HOSPITAL_LIBRARY, SCHOOL_LIBRARY, DATA_IMPORT_nonMeasurementCategories
+from libstat.utils import TYPE_BOOLEAN, TYPE_INTEGER, TYPE_LONG
 from libstat.models import SurveyResponse, SurveyObservation, Variable, Library, SurveyResponseMetadata
-from libstat.models import PUBLIC_LIBRARY, RESEARCH_LIBRARY, HOSPITAL_LIBRARY, SCHOOL_LIBRARY, DATA_IMPORT_nonMeasurementCategories
-from libstat.models import TYPE_BOOLEAN, TYPE_INTEGER, TYPE_LONG
 from xlrd import open_workbook
 from xlrd.biffh import XLRDError
 import re

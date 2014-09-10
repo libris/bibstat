@@ -2,7 +2,7 @@
 import pytz
 from datetime import datetime
 from django import template
-from libstat.models import targetGroups
+from libstat.utils import target_groups_label
 
 register = template.Library()
 
@@ -14,22 +14,7 @@ def utc_tz(value):
     return value.replace(tzinfo=pytz.utc) if value and isinstance(value, datetime) else value
 
 def tg_label(value):
-    """
-        Get a label for a list or a single target group key.
-    """
-    display_names = []
-    if value:
-        if isinstance(value, list):
-            if set(value) == set(targetGroups.keys()):
-                display_names.append(u"Samtliga bibliotekstyper")
-            else:
-                for tg in value:
-                    if tg in targetGroups:
-                        display_names.append(targetGroups[tg])
-        else:
-            if value in targetGroups:
-                display_names.append(targetGroups[value])
-    return ", ".join(display_names)
+    return target_groups_label(value)
             
 
 register.filter('utc_tz', utc_tz)
