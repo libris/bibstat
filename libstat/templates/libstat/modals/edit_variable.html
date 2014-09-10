@@ -29,7 +29,7 @@
             {% if form.instance.is_draft %}
               <span class="text-info">
                 <span class=" glyphicon glyphicon-info-sign"></span>
-                <span>{% trans "Detta är ett utkast som ej är synligt för användare eller som öppen data. För att aktivera utkastet, klicka på knappen 'Aktivera' nedan." %}</span>
+                <span>{% trans "Detta är ett utkast som ej är synligt för användare eller som öppna data. För att aktivera utkastet, klicka på knappen 'Aktivera' nedan." %}</span>
               </span>
             {% endif %}
             {% if form.instance.state.state == "pending" %}
@@ -129,7 +129,7 @@
             <span class="text-danger form-validation after"></span>
             <div class="checkbox">
               {{form.is_public}}
-              {% trans "Termen visas som öppen data" %}
+              {% trans "Termen visas som öppna data" %}
             </div>
         </div>
         <div class="form-group target_groups" data-field="target_groups">

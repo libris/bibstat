@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2014-05-26 16:38+0200\n"
+"POT-Creation-Date: 2014-09-10 12:00+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,45 +17,159 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
+#: forms.py:228
+msgid "Enkätsvar finns inte, kan inte uppdatera"
+msgstr ""
+
 #: templates/libstat/base.html:13 templates/libstat/index.html:8
 msgid "Biblioteksstatistiken"
 msgstr "Library statistics"
 
-#: templates/libstat/base.html:51
+#: templates/libstat/base.html:42
 msgid "KB Statistik"
 msgstr "KB Statistics"
 
-#: templates/libstat/base.html:56
+#: templates/libstat/base.html:47
 msgid "Start"
 msgstr "Start"
 
-#: templates/libstat/base.html:57 templates/libstat/open_data.html:14
-msgid "Öppen data"
+#: templates/libstat/base.html:48 templates/libstat/open_data.html:14
+#: templates/libstat/variables.html:45
+#, fuzzy
+msgid "Öppna data"
 msgstr "Open data"
 
-#: templates/libstat/base.html:64
+#: templates/libstat/base.html:55
 msgid "Administrera"
 msgstr "Manage"
 
-#: templates/libstat/base.html:66
+#: templates/libstat/base.html:57 templates/libstat/open_data.html:125
+#: templates/libstat/variables.html:9 templates/libstat/variables.html:14
 msgid "Termer"
 msgstr "Terms"
 
-#: templates/libstat/base.html:67
+#: templates/libstat/base.html:58 templates/libstat/surveys.html:9
+#, fuzzy
+msgid "Enkäter"
+msgstr "Survey responses"
+
+#: templates/libstat/base.html:59
 msgid "Enkätsvar"
 msgstr "Survey responses"
 
-#: templates/libstat/base.html:71
+#: templates/libstat/base.html:63
 msgid "Inloggad som"
 msgstr "Logged in as"
 
-#: templates/libstat/base.html:72
+#: templates/libstat/base.html:64
 msgid "Logga ut"
 msgstr "Sign out"
 
-#: templates/libstat/base.html:74
+#: templates/libstat/base.html:66 templates/libstat/modals/login.html:34
 msgid "Logga in"
 msgstr "Sign in"
+
+#: templates/libstat/edit_survey.html:7
+#: templates/libstat/edit_survey_response.html:10
+#, fuzzy
+msgid "Statistikenkät"
+msgstr "KB Statistics"
+
+#: templates/libstat/edit_survey.html:18
+#: templates/libstat/edit_survey_response.html:35
+msgid "Mätår"
+msgstr ""
+
+#: templates/libstat/edit_survey.html:26
+#: templates/libstat/modals/edit_variable.html:136
+#, fuzzy
+msgid "Bibliotekstyper"
+msgstr "Library statistics"
+
+#: templates/libstat/edit_survey.html:40
+#: templates/libstat/edit_survey_response.html:127
+#: templates/libstat/edit_survey_response.html:154
+msgid "Spara"
+msgstr ""
+
+#: templates/libstat/edit_survey.html:46
+#: templates/libstat/edit_survey_response.html:137
+msgid "Undersökningens frågor"
+msgstr ""
+
+#: templates/libstat/edit_survey.html:71
+msgid "Lägg till fråga (term)"
+msgstr ""
+
+#: templates/libstat/edit_survey.html:75
+msgid "Lägg till"
+msgstr ""
+
+#: templates/libstat/edit_survey.html:88
+#: templates/libstat/edit_survey_response.html:164
+#: templates/libstat/index.html:62 templates/libstat/open_data.html:133
+msgid "Kungliga Biblioteket"
+msgstr "National Library of Sweden"
+
+#: templates/libstat/edit_survey_response.html:15
+msgid "Publicera"
+msgstr ""
+
+#: templates/libstat/edit_survey_response.html:28
+msgid "Information om enkät och svarande organisation"
+msgstr ""
+
+#: templates/libstat/edit_survey_response.html:44
+#: templates/libstat/survey_responses.html:40
+#: templates/libstat/survey_responses.html:81
+#: templates/libstat/variables.html:46
+#, fuzzy
+msgid "Bibliotekstyp"
+msgstr "Library statistics"
+
+#: templates/libstat/edit_survey_response.html:53
+msgid "Senast ändrad"
+msgstr ""
+
+#: templates/libstat/edit_survey_response.html:62
+#: templates/libstat/survey_responses.html:78
+msgid "Publicerad"
+msgstr ""
+
+#: templates/libstat/edit_survey_response.html:69
+#: templates/libstat/survey_responses.html:93
+msgid "Senaste version är inte publicerad"
+msgstr ""
+
+#: templates/libstat/edit_survey_response.html:78
+#, fuzzy
+msgid "Bibliotek/organisation"
+msgstr "Library statistics"
+
+#: templates/libstat/edit_survey_response.html:83
+#: templates/libstat/edit_survey_response.html:107
+msgid "Namn"
+msgstr ""
+
+#: templates/libstat/edit_survey_response.html:88
+msgid "Kommun/län"
+msgstr ""
+
+#: templates/libstat/edit_survey_response.html:93
+msgid "Kommun/länskod"
+msgstr ""
+
+#: templates/libstat/edit_survey_response.html:102
+msgid "Svarande person"
+msgstr ""
+
+#: templates/libstat/edit_survey_response.html:112
+msgid "E-post"
+msgstr ""
+
+#: templates/libstat/edit_survey_response.html:117
+msgid "Telefonnr"
+msgstr ""
 
 #: templates/libstat/index.html:10
 msgid ""
@@ -76,38 +190,354 @@ msgstr ""
 msgid "Läs mer"
 msgstr "Learn more"
 
-#: templates/libstat/index.html:62 templates/libstat/open_data.html:57
-msgid "Kungliga Biblioteket"
-msgstr "National Library of Sweden"
-
 #: templates/libstat/open_data.html:16
 msgid ""
 "\n"
 "              Den officiella biblioteksstatistiken finns tillgänglig som "
 "öppen länkad data via Kungliga Bibliotekets API:er.\n"
-"              Här finns en beskrivning av API:ernas uppbyggnad och vilka URL:"
-"er som kan användas.\n"
+"              Data finns för folkbibliotek, forskningsbibliotek, "
+"sjukhusbibliotek och skolbibliotek från år 2010 och framåt i\n"
+"              samma utsträckning som de dokument som finns presenterade i "
+"dokumentform på \n"
+"              <a href=\"http://www.kb.se/bibliotek/Statistik-kvalitet/"
+"biblioteksstatistik\">Kungliga bibliotekets webbplats</a>.\n"
 "              "
 msgstr ""
 
+#: templates/libstat/open_data.html:25
+#, fuzzy
+msgid "Sveriges officiella biblioteksstatistik"
+msgstr "Library statistics"
+
+#: templates/libstat/open_data.html:27
+msgid ""
+"\n"
+"                    Den officiella svenska biblioteksstatistiken för "
+"folkbibliotek, forskningsbibliotek, sjukhusbibliotek och skolbibliotek.\n"
+"                    Gränssnittet mot den öppna datan är för tillfället under "
+"utveckling och kan komma att ändras framöver.\n"
+"                  "
+msgstr ""
+
+#: templates/libstat/open_data.html:33
+msgid "Format"
+msgstr ""
+
+#: templates/libstat/open_data.html:37
+msgid "Licens"
+msgstr ""
+
+#: templates/libstat/open_data.html:43 templates/libstat/variables.html:42
+msgid "Status"
+msgstr ""
+
 #: templates/libstat/open_data.html:46
-msgid "Folkbiblioteken"
+msgid "Kontaktperson"
+msgstr ""
+
+#: templates/libstat/open_data.html:53 templates/libstat/open_data.html:105
+msgid "Innehåll"
+msgstr ""
+
+#: templates/libstat/open_data.html:55
+msgid ""
+"\n"
+"                        Observationer för den officiella svenska "
+"biblioteksstatistiken. En observation är en mätpunkt för \n"
+"                        ett bibliotek/en organisation, ett mätår och en "
+"term. API finns för att hämta en lista av termdefinitioner.\n"
+"                      "
+msgstr ""
+
+#: templates/libstat/open_data.html:64 templates/libstat/open_data.html:70
+#: templates/libstat/open_data.html:78 templates/libstat/open_data.html:86
+#: templates/libstat/open_data.html:93
+msgid "Parameter"
+msgstr ""
+
+#: templates/libstat/open_data.html:66
+msgid ""
+"\n"
+"                        Hämta endast observationer för en viss term, ex: "
+"Folk54. Anges ingen term så hämtas observationer för samtliga termer.\n"
+"                      "
+msgstr ""
+
+#: templates/libstat/open_data.html:72
+msgid ""
+"\n"
+"                        Hämta endast observationer som uppdaterats från och "
+"med ett visst datum, ex: 2014-07-03T07:39:27.\n"
+"                        Datum anges formatterat enligt ISO-8601, tidszon är "
+"alltid UTC och behöver inte anges.\n"
+"                        Anges inte parametern 'date_from' så hämtas samtliga "
+"observationer oavsett uppdateringsdatum.\n"
+"                      "
+msgstr ""
+
+#: templates/libstat/open_data.html:80
+msgid ""
+"\n"
+"                        Hämta endast observationer som uppdaterats innan ett "
+"visst datum, ex: 2014-07-03T07:39:28.\n"
+"                        Datum anges formatterat enligt ISO-8601, tidszon är "
+"alltid UTC och behöver inte anges.\n"
+"                        Anges inte parametern 'date_to' så hämtas samtliga "
+"observationer oavsett uppdateringsdatum.\n"
+"                      "
+msgstr ""
+
+#: templates/libstat/open_data.html:88
+msgid ""
+"\n"
+"                        Använd för att begränsa antalet returnerade "
+"observationer och kan kombineras med parametern 'offset' för att paginera "
+"resultatet, ex: 50.\n"
+"                        Anges inte parametern 'limit' så returneras 100 "
+"observationer.\n"
+"                      "
+msgstr ""
+
+#: templates/libstat/open_data.html:95
+msgid ""
+"\n"
+"                        Används för att paginera ett resultat och anger "
+"vilken position i resultatet som ska vara första returnerade observation, "
+"ex: 200.\n"
+"                        Anges inte parametern 'offset' så börjar resultatet "
+"från position 0.\n"
+"                      "
+msgstr ""
+
+#: templates/libstat/open_data.html:107
+msgid ""
+"\n"
+"                        Definitioner av de termer som används i "
+"biblioteksstatistiken.\n"
+"                      "
+msgstr ""
+
+#: templates/libstat/open_data.html:122
+msgid "Dataset"
+msgstr ""
+
+#: templates/libstat/open_data.html:124
+#, fuzzy
+msgid "Biblioteksstatistik"
+msgstr "Library statistics"
+
+#: templates/libstat/survey_responses.html:14
+msgid "Enkätsvar uppdelat på bibliotekstyp och år"
+msgstr ""
+
+#: templates/libstat/survey_responses.html:20
+msgid "Välj bibliotekstyp och år för att lista enkätsvar"
+msgstr ""
+
+#: templates/libstat/survey_responses.html:32
+#: templates/libstat/survey_responses.html:79
+msgid "År"
+msgstr ""
+
+#: templates/libstat/survey_responses.html:41
+#: templates/libstat/variables.html:23
+#, fuzzy
+msgid "Folkbibliotek"
 msgstr "Public libraries"
 
-#: templates/libstat/open_data.html:47
-msgid "Forskningsbiblioteken"
+#: templates/libstat/survey_responses.html:42
+#: templates/libstat/variables.html:24
+#, fuzzy
+msgid "Forskningsbibliotek"
 msgstr "Research libraries"
 
-#: templates/libstat/open_data.html:48
-msgid "Sjukhusbiblioteken"
+#: templates/libstat/survey_responses.html:43
+#: templates/libstat/variables.html:25
+#, fuzzy
+msgid "Sjukhusbibliotek"
 msgstr "Hospital libraries"
 
-#: templates/libstat/open_data.html:49
-msgid "Skolbiblioteken"
+#: templates/libstat/survey_responses.html:44
+#: templates/libstat/variables.html:26
+#, fuzzy
+msgid "Skolbibliotek"
 msgstr "School libraries"
 
-#~ msgid "Användarnamn"
-#~ msgstr "Username"
+#: templates/libstat/survey_responses.html:49
+msgid "Där publicering ej utförd"
+msgstr ""
 
-#~ msgid "Lösenord"
-#~ msgstr "Password"
+#: templates/libstat/survey_responses.html:52
+#, fuzzy
+msgid "Lista enkätsvar"
+msgstr "Survey responses"
+
+#: templates/libstat/survey_responses.html:71
+msgid "Publicera urval"
+msgstr ""
+
+#: templates/libstat/survey_responses.html:77
+msgid "Markera alla"
+msgstr ""
+
+#: templates/libstat/survey_responses.html:80
+#, fuzzy
+msgid "Bibliotek"
+msgstr "Public libraries"
+
+#: templates/libstat/survey_responses.html:90
+msgid "Välj"
+msgstr ""
+
+#: templates/libstat/survey_responses.html:107
+msgid "Visa/redigera enkätsvar"
+msgstr ""
+
+#: templates/libstat/surveys.html:16
+msgid ""
+"Här listas de enkäter som används eller har använts för insamling av den "
+"officiella biblioteksstatistiken"
+msgstr ""
+
+#: templates/libstat/surveys.html:21
+msgid "Skapa enkät"
+msgstr ""
+
+#: templates/libstat/variables.html:18
+msgid "Här listas de termer som används i biblioteksstatistiken"
+msgstr ""
+
+#: templates/libstat/variables.html:20
+msgid "Filtrera termer per bibliotekstyp"
+msgstr ""
+
+#: templates/libstat/variables.html:27
+#, fuzzy
+msgid "Samtliga bibliotekstyper"
+msgstr "National Library of Sweden"
+
+#: templates/libstat/variables.html:30
+msgid "Rensa filter"
+msgstr ""
+
+#: templates/libstat/variables.html:33
+msgid "Skapa term"
+msgstr ""
+
+#: templates/libstat/variables.html:41
+msgid "Nyckel"
+msgstr ""
+
+#: templates/libstat/variables.html:43
+#: templates/libstat/modals/edit_variable.html:104
+msgid "Huvudgrupp"
+msgstr ""
+
+#: templates/libstat/variables.html:44
+#: templates/libstat/modals/edit_variable.html:110
+msgid "Undergrupp"
+msgstr ""
+
+#: templates/libstat/variables.html:54
+msgid "Visa/Ändra"
+msgstr ""
+
+#: templates/libstat/modals/edit_variable.html:8
+msgid "Stäng"
+msgstr ""
+
+#: templates/libstat/modals/edit_variable.html:23
+msgid "Ersätts av"
+msgstr ""
+
+#: templates/libstat/modals/edit_variable.html:25
+msgid "från och med"
+msgstr ""
+
+#: templates/libstat/modals/edit_variable.html:32
+msgid ""
+"Detta är ett utkast som ej är synligt för användare eller som öppna data. "
+"För att aktivera utkastet, klicka på knappen 'Aktivera' nedan."
+msgstr ""
+
+#: templates/libstat/modals/edit_variable.html:38
+msgid "Den här termen börjar gälla"
+msgstr ""
+
+#: templates/libstat/modals/edit_variable.html:44
+msgid "Den här termen slutade vara giltig"
+msgstr ""
+
+#: templates/libstat/modals/edit_variable.html:53
+msgid "Nyckel (unik)"
+msgstr ""
+
+#: templates/libstat/modals/edit_variable.html:64
+msgid "Giltig fr o m"
+msgstr ""
+
+#: templates/libstat/modals/edit_variable.html:73
+msgid "Giltig till"
+msgstr ""
+
+#: templates/libstat/modals/edit_variable.html:85
+msgid "Ersätter termer"
+msgstr ""
+
+#: templates/libstat/modals/edit_variable.html:92
+msgid "Formulärfråga"
+msgstr ""
+
+#: templates/libstat/modals/edit_variable.html:98
+msgid "Delfråga"
+msgstr ""
+
+#: templates/libstat/modals/edit_variable.html:116
+msgid "Enhet"
+msgstr ""
+
+#: templates/libstat/modals/edit_variable.html:128
+msgid "Synlighet"
+msgstr ""
+
+#: templates/libstat/modals/edit_variable.html:132
+msgid "Termen visas som öppna data"
+msgstr ""
+
+#: templates/libstat/modals/edit_variable.html:148
+msgid "Beskrivning"
+msgstr ""
+
+#: templates/libstat/modals/edit_variable.html:154
+msgid "Kommentar (visas ej publikt)"
+msgstr ""
+
+#: templates/libstat/modals/edit_variable.html:163
+msgid "Avbryt"
+msgstr ""
+
+#: templates/libstat/modals/edit_variable.html:165
+#: templates/libstat/modals/edit_variable.html:167
+msgid "Spara ukast"
+msgstr ""
+
+#: templates/libstat/modals/edit_variable.html:168
+msgid "Spara och aktivera"
+msgstr ""
+
+#: templates/libstat/modals/edit_variable.html:170
+msgid "Spara ändringar"
+msgstr ""
+
+#: templates/libstat/modals/login.html:13
+#, fuzzy
+msgid "Logga in i Biblioteksstatistiken"
+msgstr "Library statistics"
+
+#: templates/libstat/modals/login.html:18
+msgid "Användarnamn"
+msgstr "Username"
+
+#: templates/libstat/modals/login.html:23
+msgid "Lösenord"
+msgstr "Password"
