@@ -53,3 +53,7 @@ coverage.xml
 docs/_build/
 
 /.settings
+
+# IntelliJ
+.idea/
+*.iml
