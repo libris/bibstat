@@ -88,7 +88,7 @@ class CreateVariableViewTest(MongoTestCase):
     def test_should_get_empty_form(self):
         response = self.client.get(self.url)
         self.assertContains(response, u'<h4 class="modal-title">Ny term (utkast)</h4>', count=1, status_code=200, html=True)
-        self.assertContains(response, u'<input type="submit" value="Spara ukast" class="btn btn-primary">', count=1, status_code=200, html=True)
+        self.assertContains(response, u'<input type="submit" value="Spara utkast" class="btn btn-primary">', count=1, status_code=200, html=True)
         
     def test_should_create_variable_draft(self):
         response = self.client.post(self.url, 
@@ -240,7 +240,7 @@ class EditVariableViewTest(MongoTestCase):
         edit_draft_url = reverse("edit_variable", kwargs={"variable_id":str(self.v3.id)})
         
         response = self.client.get(edit_draft_url)
-        self.assertContains(response, u'<input type="submit" value="Spara ukast" class="btn btn-primary">', count=1, status_code=200, html=True)
+        self.assertContains(response, u'<input type="submit" value="Spara utkast" class="btn btn-primary">', count=1, status_code=200, html=True)
         self.assertContains(response, u'<input type="submit" id="save_and_activate" value="Spara och aktivera" class="btn btn-primary">', count=1, status_code=200, html=True)
         
         response = self.client.post(edit_draft_url, {u"type": self.v3.type, u"target_groups": self.v3.target_groups, u"description": self.v3.description, 

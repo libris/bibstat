@@ -162,10 +162,10 @@
         <input type="hidden" id="submit_action" name="submit_action" value="save"/> 
         <button type="button" class="btn btn-default" data-dismiss="modal" >{% trans "Avbryt" %}</button>
         {% if mode == 'create' %}
-          <input type="submit" class="btn btn-primary" value="{% trans 'Spara ukast' %}" />
+          <input type="submit" class="btn btn-primary" value="{% trans 'Spara utkast' %}" />
         {% elif form.instance.is_draft %}
           <input type="submit" id="delete" class="btn btn-danger" value="{% trans 'Ta bort' %}" />
-          <input type="submit" class="btn btn-primary" value="{% trans 'Spara ukast' %}" />
+          <input type="submit" class="btn btn-primary" value="{% trans 'Spara utkast' %}" />
           <input type="submit" id="save_and_activate" class="btn btn-primary" value="{% trans 'Spara och aktivera' %}" />
         {% else %}
           <input type="submit" class="btn btn-primary" value="{% trans 'Spara ändringar' %}" />

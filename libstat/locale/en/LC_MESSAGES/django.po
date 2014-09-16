@@ -518,7 +518,7 @@ msgstr ""
 
 #: templates/libstat/modals/edit_variable.html:165
 #: templates/libstat/modals/edit_variable.html:167
-msgid "Spara ukast"
+msgid "Spara utkast"
 msgstr ""
 
 #: templates/libstat/modals/edit_variable.html:168
