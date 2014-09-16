@@ -296,7 +296,41 @@ class EditVariableViewTest(MongoTestCase):
         self.assertEquals(replaced_sibling.replaced_by.id, replacing.id)
         self.assertEquals(replaced_sibling.active_to, switchover_date)
         
-        
+    def test_should_not_be_able_to_delete_variable_when_not_draft(self):
+        edit_draft_url = reverse("edit_variable", kwargs={"variable_id":str(self.v2.id)})
+
+        response = self.client.post(edit_draft_url, {u"type": self.v2.type, u"target_groups": self.v2.target_groups, u"description": self.v2.description,
+                                                     u"submit_action":u"delete"})
+        self.assertEquals(response.status_code,403)
+
+        try:
+            Variable.objects.get(pk=self.v2.id)
+        except Variable.DoesNotExist as dne:
+            self.fail(str(dne))
+
+    def test_should_not_be_able_to_delete_variable_when_it_does_not_exist(self):
+        edit_draft_url = reverse("edit_variable", kwargs={"variable_id":"invalidid"})
+
+        response = self.client.post(edit_draft_url, {u"type": self.v2.type, u"target_groups": self.v2.target_groups, u"description": self.v2.description,
+                                                     u"submit_action":u"delete"})
+        self.assertEquals(response.status_code,404)
+
+    def test_should_delete_variable(self):
+        edit_draft_url = reverse("edit_variable", kwargs={"variable_id":str(self.v3.id)})
+
+        response = self.client.get(edit_draft_url)
+
+        self.assertContains(response, u'<input type="submit" id="delete" class="btn btn-danger" value="Ta bort" />', count=1, status_code=200, html=True)
+
+        response = self.client.post(edit_draft_url, {u"type": self.v3.type, u"target_groups": self.v3.target_groups, u"description": self.v3.description,
+                                                     u"submit_action":u"delete"})
+        self.assertEquals(response.status_code,200)
+        data = json.loads(response.content)
+        self.assertFalse('errors' in data)
+
+        self.assertRaises(Variable.DoesNotExist, lambda: Variable.objects.get(pk=self.v3.id))
+
+
     # TODO: Borde man kunna ändra synlighet? Inte om det redan finns publik data eller inlämnade enkätsvar väl? Kommer kräva ompublicering av alla enkätsvar som har variabeln...
     
     # TODO: Borde man kunna ta bort en bibliotekstyp? Samma som ovan.

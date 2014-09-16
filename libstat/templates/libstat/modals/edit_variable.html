@@ -164,8 +164,9 @@
         {% if mode == 'create' %}
           <input type="submit" class="btn btn-primary" value="{% trans 'Spara ukast' %}" />
         {% elif form.instance.is_draft %}
+          <input type="submit" id="delete" class="btn btn-danger" value="{% trans 'Ta bort' %}" />
           <input type="submit" class="btn btn-primary" value="{% trans 'Spara ukast' %}" />
-          <input type="submit" id="save_and_activate" class="btn btn-primary" value="{% trans 'Spara och aktivera' %}" /> 
+          <input type="submit" id="save_and_activate" class="btn btn-primary" value="{% trans 'Spara och aktivera' %}" />
         {% else %}
           <input type="submit" class="btn btn-primary" value="{% trans 'Spara ändringar' %}" />
         {% endif %}
@@ -244,7 +245,11 @@ $(document).ready(function() {
 	$("#save_and_activate").click(function(event) {
 		$("#submit_action").val("save_and_activate");
 	});
-	
+
+    $("#delete").click(function(event) {
+        $("#submit_action").val("delete");
+    });
+
 	$('.edit-variable-form').submit(function(event) {
 		event.preventDefault();
 		

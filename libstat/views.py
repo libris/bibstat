@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 from django.shortcuts import render, redirect, resolve_url
 from django.core.urlresolvers import reverse
-from django.core.exceptions import ValidationError
-from django.http import HttpResponse, HttpResponseRedirect
+from django.core.exceptions import ValidationError, PermissionDenied
+from django.http import HttpResponse, HttpResponseRedirect, HttpResponseForbidden
 from django.http import Http404
 from django.conf import settings
 
@@ -162,12 +162,20 @@ def edit_variable(request, variable_id):
     }
     
     if request.method == "POST":
-        activate = "save_and_activate" == request.POST.get("submit_action", "save")
+        action = request.POST.get("submit_action", "save")
+
         errors = {}
         form = VariableForm(request.POST, instance=v)
         if form.is_valid():
             try:
-                v = form.save(user=request.user, activate=activate);
+                if action == "delete":
+                    if v.is_draft:
+                        v = form.delete()
+                    else:
+                        return HttpResponseForbidden()
+                else:
+                    v = form.save(user=request.user, activate=(action == "save_and_activate"));
+
                 # No redirect since this is displayed as a modal and we do a javascript redirect if no form errors
                 return HttpResponse(v.to_json(), content_type="application/json")
             

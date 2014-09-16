@@ -108,7 +108,14 @@ class VariableForm(forms.Form):
 
         return variable
     
-    
+    def delete(self):
+        if not self.instance:
+            raise forms.ValidationError(_(u"Term finns inte, kan inte ta bort"), code=u"missing_instance")
+
+        self.instance.delete()
+
+        return self.instance
+
 
 class SurveyResponseForm(forms.Form):
     """
