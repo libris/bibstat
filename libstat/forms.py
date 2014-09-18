@@ -112,8 +112,13 @@ class VariableForm(forms.Form):
         if not self.instance:
             raise forms.ValidationError(_(u"Term finns inte, kan inte ta bort"), code=u"missing_instance")
 
-        self.instance.delete()
+        if not self.instance.is_draft:
+            for replaced in self.instance.replaces:
+                replaced.replaced_by = None
+                replaced.active_to = None
+                replaced.save()
 
+        self.instance.delete()
         return self.instance
 
 

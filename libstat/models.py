@@ -263,7 +263,17 @@ class Variable(VariableBase):
     
     
     def as_simple_dict(self):
-       return { u'key': self.key, u'id': str(self.id), u'description': self.description } 
+       return { u'key': self.key, u'id': str(self.id), u'description': self.description }
+
+    def is_deletable(self):
+        if self.is_draft:
+            return True
+
+        # TODO: Check if Survey is referencing variable when Survey model has been updated.
+        referenced_in_survey_response = SurveyResponse.objects.filter(observations__variable=str(self.id)).count() > 0
+        referenced_in_open_data = OpenData.objects.filter(variable=str(self.id)).count() > 0
+
+        return not referenced_in_survey_response and not referenced_in_open_data
     
     def __unicode__(self):
         return self.key

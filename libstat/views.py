@@ -150,6 +150,7 @@ def edit_variable(request, variable_id):
     """
         Edit variable modal view
     """
+
     try: 
         v = Variable.objects.get(pk=variable_id)
     except Exception:
@@ -169,7 +170,7 @@ def edit_variable(request, variable_id):
         if form.is_valid():
             try:
                 if action == "delete":
-                    if v.is_draft:
+                    if v.is_deletable():
                         v = form.delete()
                     else:
                         return HttpResponseForbidden()

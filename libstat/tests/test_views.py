@@ -1,6 +1,6 @@
 # -*- coding: UTF-8 -*-
 from libstat.tests import MongoTestCase
-from libstat.models import Variable, SurveyResponse, SurveyObservation, Survey
+from libstat.models import Variable, SurveyResponse, SurveyObservation, Survey, OpenData
 from libstat.utils import targetGroups
 
 from django.core.urlresolvers import reverse
@@ -295,27 +295,15 @@ class EditVariableViewTest(MongoTestCase):
         
         self.assertEquals(replaced_sibling.replaced_by.id, replacing.id)
         self.assertEquals(replaced_sibling.active_to, switchover_date)
-        
-    def test_should_not_be_able_to_delete_variable_when_not_draft(self):
-        edit_draft_url = reverse("edit_variable", kwargs={"variable_id":str(self.v2.id)})
-
-        response = self.client.post(edit_draft_url, {u"type": self.v2.type, u"target_groups": self.v2.target_groups, u"description": self.v2.description,
-                                                     u"submit_action":u"delete"})
-        self.assertEquals(response.status_code,403)
-
-        try:
-            Variable.objects.get(pk=self.v2.id)
-        except Variable.DoesNotExist as dne:
-            self.fail(str(dne))
 
     def test_should_not_be_able_to_delete_variable_when_it_does_not_exist(self):
         edit_draft_url = reverse("edit_variable", kwargs={"variable_id":"invalidid"})
 
         response = self.client.post(edit_draft_url, {u"type": self.v2.type, u"target_groups": self.v2.target_groups, u"description": self.v2.description,
                                                      u"submit_action":u"delete"})
-        self.assertEquals(response.status_code,404)
+        self.assertEquals(response.status_code, 404)
 
-    def test_should_delete_variable(self):
+    def test_should_be_able_to_delete_draft_variable(self):
         edit_draft_url = reverse("edit_variable", kwargs={"variable_id":str(self.v3.id)})
 
         response = self.client.get(edit_draft_url)
@@ -324,20 +312,141 @@ class EditVariableViewTest(MongoTestCase):
 
         response = self.client.post(edit_draft_url, {u"type": self.v3.type, u"target_groups": self.v3.target_groups, u"description": self.v3.description,
                                                      u"submit_action":u"delete"})
-        self.assertEquals(response.status_code,200)
+        self.assertEquals(response.status_code, 200)
         data = json.loads(response.content)
         self.assertFalse('errors' in data)
 
         self.assertRaises(Variable.DoesNotExist, lambda: Variable.objects.get(pk=self.v3.id))
 
+    def test_should_not_be_able_to_delete_non_draft_variable_when_referenced_in_survey_response(self):
+        edit_draft_url = reverse("edit_variable", kwargs={"variable_id":str(self.v2.id)})
+
+        response = self.client.post(edit_draft_url, {u"type": self.v2.type, u"target_groups": self.v2.target_groups,
+                                                     u"description": self.v2.description, u"submit_action":u"save_and_activate"})
+
+        self.assertEquals(response.status_code, 200)
+        data = json.loads(response.content)
+        self.assertFalse('errors' in data)
+
+        v2object = Variable.objects.get(pk=self.v2.id)
+        self.assertFalse(v2object.is_draft)
+
+        survey_response = SurveyResponse(target_group='public', library_name='test', sample_year='1234')
+        survey_response.observations = [SurveyObservation(variable=str(self.v2.id))]
+        survey_response.save()
+        survey_response.publish()
+
+        response = self.client.get(edit_draft_url)
+
+        self.assertNotContains(response, u'<input type="submit" id="delete" class="btn btn-danger" value="Ta bort" />', status_code=200, html=True)
+
+
+        response = self.client.post(edit_draft_url, {u"type": self.v2.type, u"target_groups": self.v2.target_groups,
+                                                     u"description": self.v2.description,
+                                                     u"submit_action":u"delete"})
+
+        self.assertEquals(response.status_code, 403)
+
+        try:
+            Variable.objects.get(pk=self.v2.id)
+        except Variable.DoesNotExist as dne:
+            self.fail(str(dne))
+
+    def test_should_not_be_able_to_delete_non_draft_variable_when_referenced_in_open_data(self):
+        edit_draft_url = reverse("edit_variable", kwargs={"variable_id":str(self.v2.id)})
+
+        response = self.client.post(edit_draft_url, {u"type": self.v2.type, u"target_groups": self.v2.target_groups,
+                                                     u"description": self.v2.description, u"submit_action":u"save_and_activate"})
+
+        self.assertEquals(response.status_code, 200)
+        data = json.loads(response.content)
+        self.assertFalse('errors' in data)
+
+        v2object = Variable.objects.get(pk=self.v2.id)
+        self.assertEquals(v2object.is_draft, False)
+
+        open_data = OpenData(library_name='test', sample_year='1234', target_group='public', variable=self.v2.id)
+        open_data.save()
+
+        response = self.client.get(edit_draft_url)
+
+        self.assertNotContains(response, u'<input type="submit" id="delete" class="btn btn-danger" value="Ta bort" />', status_code=200, html=True)
+
+
+        response = self.client.post(edit_draft_url, {u"type": self.v2.type, u"target_groups": self.v2.target_groups,
+                                                     u"description": self.v2.description,
+                                                     u"submit_action":u"delete"})
+
+        self.assertEquals(response.status_code, 403)
+
+        try:
+            Variable.objects.get(pk=self.v2.id)
+        except Variable.DoesNotExist as dne:
+            self.fail(str(dne))
+
+    def test_should_be_able_to_delete_non_draft_variable_when_not_referenced(self):
+        edit_draft_url = reverse("edit_variable", kwargs={"variable_id":str(self.v2.id)})
+
+        response = self.client.get(edit_draft_url)
+
+        self.assertContains(response, u'<input type="submit" id="delete" class="btn btn-danger" value="Ta bort" />', count=1, status_code=200, html=True)
+
+        response = self.client.post(edit_draft_url, {u"type": self.v2.type, u"target_groups": self.v2.target_groups,
+                                                     u"description": self.v2.description, u"submit_action":u"save_and_activate"})
+
+        self.assertEquals(response.status_code, 200)
+        data = json.loads(response.content)
+        self.assertFalse('errors' in data)
+
+        v2object = Variable.objects.get(pk=self.v2.id)
+        self.assertEquals(v2object.is_draft, False)
+
+        response = self.client.post(edit_draft_url, {u"type": self.v2.type, u"target_groups": self.v2.target_groups,
+                                                     u"description": self.v2.description,
+                                                     u"submit_action":u"delete"})
+
+        self.assertEquals(response.status_code, 200)
+        data = json.loads(response.content)
+        self.assertFalse('errors' in data)
+
+        self.assertRaises(Variable.DoesNotExist, lambda: Variable.objects.get(pk=self.v2.id))
+
+    def test_should_reset_replaced_terms_when_deleting_non_draft_variable(self):
+        edit_draft_url = reverse("edit_variable", kwargs={"variable_id":str(self.v2.id)})
+
+        response = self.client.post(edit_draft_url, {u"type": self.v2.type, u"target_groups": self.v2.target_groups,
+                                                     u"description": self.v2.description, u"submit_action":u"save_and_activate"})
+
+        self.assertEquals(response.status_code, 200)
+        data = json.loads(response.content)
+        self.assertFalse('errors' in data)
+
+        v2object = Variable.objects.get(pk=self.v2.id)
+        self.assertEquals(v2object.is_draft, False)
+
+        v2object.replaces = [self.v1]
+        v2object.save()
+
+        self.v1.replaced_by = v2object
+        self.v1.active_to = datetime(2014, 8, 22, 10, 40, 33, 876)
+        self.v1.save()
+
+        response = self.client.post(edit_draft_url, {u"type": self.v2.type, u"target_groups": self.v2.target_groups,
+                                                     u"description": self.v2.description,
+                                                     u"submit_action":u"delete"})
+
+        self.assertEquals(response.status_code, 200)
+
+        v1object = Variable.objects.get(pk=self.v1.id)
+        self.assertEquals(v1object.replaced_by, None)
+        self.assertEquals(v1object.active_to, None)
 
     # TODO: Borde man kunna ändra synlighet? Inte om det redan finns publik data eller inlämnade enkätsvar väl? Kommer kräva ompublicering av alla enkätsvar som har variabeln...
     
     # TODO: Borde man kunna ta bort en bibliotekstyp? Samma som ovan.
     
     # TODO: Borde man kunna ändra enhet? Samma som ovan.
-        
-        
+
 class SurveyResponsesViewTest(MongoTestCase):
     def setUp(self):
         self.publishing_date = datetime(2014, 8, 22, 10, 40, 33, 876)
