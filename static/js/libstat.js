@@ -21,7 +21,8 @@ $(document).ready(function() {
 		sPageUrl.split("&").forEach(function(p) {
 			var key_value = p.split("=");
 			urlParams[key_value[0]] = key_value[1];
-		})
+		});
+
 		if("next" in urlParams) {
 			var url = $(".show-login-modal").data("form") + "?next=" + urlParams["next"];
 			$("#loginModal").load(url, function() {
@@ -41,6 +42,11 @@ $(document).ready(function() {
 		});
 		return false;
 	});
+
+    /* Focus username input field when login modal is shown. */
+    $("#loginModal").on("shown.bs.modal", function() {
+        $("#username").focus();
+    });
 	
 	/* Make Variables table sortable */
 	$(".table.variables").addClass("tablesorter").tablesorter({
