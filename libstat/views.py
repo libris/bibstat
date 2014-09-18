@@ -265,6 +265,10 @@ def publish_survey_responses(request):
     return HttpResponseRedirect(u"{}{}".format(reverse("survey_responses"), u"?action=list&target_group={}&sample_year={}".format(target_group, sample_year)))
 
 @permission_required('is_superuser', login_url='index')
+def export_survey_responses(request):
+    return None # TODO
+
+@permission_required('is_superuser', login_url='index')
 def publish_survey_response(request, survey_response_id):
     try:
         survey_response = SurveyResponse.objects.get(pk=survey_response_id)
@@ -445,4 +449,3 @@ def surveyable_variables_api(request):
         variables = Variable.objects.surveyable()
     data = [{ 'key': v.key, 'id': str(v.id) } for v in variables];
     return HttpResponse(json.dumps(data), content_type="application/json")
-
