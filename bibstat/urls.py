@@ -12,6 +12,6 @@ urlpatterns = patterns('',
     
     url(r'^statistics/', include('libstat.urls')),
     url(r'^$', 'libstat.views.index'),
-    url(r'^.well-known/void$',
-        RedirectView.as_view(url=reverse_lazy('open_data'), permanent=False))
+    url(r'^.well-known/void$', RedirectView.as_view(url=reverse_lazy('open_data'), permanent=False)),
+    url(r'^jsreverse/$', 'django_js_reverse.views.urls_js', name='js_reverse')
 )
