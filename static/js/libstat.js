@@ -77,6 +77,14 @@ $(document).ready(function() {
 	});
 
     /* Handle export and publish of survey responses. */
+    $(".table.survey_responses .select-one, .table.survey_responses .select-all").change(function() {
+        var checked = $(".select-one:checked, .select-all:checked").length > 0;
+        var buttons = $(".btn-publish-survey-responses, .btn-export-survey-responses");
+
+        if(checked) buttons.removeClass("disabled");
+        else buttons.addClass("disabled");
+    });
+
     $(".btn-publish-survey-responses").click(function() {
         var action = Urls.publish_survey_responses();
         $(".publish-survey-responses-form").get(0).
