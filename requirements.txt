@@ -5,3 +5,4 @@ xlrd==0.9.3
 pytz==2014.4
 requests==2.3.0
 django-excel-response==1.0
+django-js-reverse==0.3.3
