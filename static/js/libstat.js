@@ -76,6 +76,19 @@ $(document).ready(function() {
 
 	});
 
+    /* Handle export and publish of survey responses. */
+    $(".btn-publish-survey-responses").click(function() {
+        var action = Urls.publish_survey_responses();
+        $(".publish-survey-responses-form").get(0).
+            setAttribute('action', action);
+    });
+
+    $(".btn-export-survey-responses").click(function() {
+        var action = Urls.export_survey_responses();
+        $(".publish-survey-responses-form").get(0).
+            setAttribute('action', action);
+    });
+
 	/* Edit variable */
 	$(".edit-variable").click(function(ev) {
 		ev.preventDefault(); // prevent navigation

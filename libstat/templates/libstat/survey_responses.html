@@ -62,13 +62,14 @@
     
     <div class="panel panel-default">
       <div class="panel-body">
-        <form action="{% url 'publish_survey_responses' %}" method="POST" role="form" class="form-inline publish-survey-responses-form">
+        <form action="" method="POST" role="form" class="form-inline publish-survey-responses-form">
           {% if survey_responses %}
             {% csrf_token %}
             <input type="hidden" name="sample_year" value="{{sample_year}}"/>
             <input type="hidden" name="target_group" value="{{target_group}}"/>
             <div class="form-group pull-right submit-publish">
-              <button type="submit" name="action" value="publish" class="btn btn-primary">{% trans "Publicera urval" %}</button>
+              <button type="submit" name="action" value="publish" class="btn btn-primary btn-publish-survey-responses disabled">{% trans "Publicera urval" %}</button>
+              <button type="submit" name="action" value="export" class="btn btn-primary btn-export-survey-responses disabled">{% trans "Exportera urval" %}</button>
             </div>
           {% endif %}
           <table class="table survey_responses">
