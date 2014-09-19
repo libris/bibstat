@@ -21,6 +21,9 @@ from mongoengine.errors import NotUniqueError
 from mongoengine.queryset import Q
 from django.forms.util import ErrorList
 
+from excel_response import ExcelResponse
+from time import strftime
+
 from libstat.apis import *
 
 import logging
@@ -266,7 +269,16 @@ def publish_survey_responses(request):
 
 @permission_required('is_superuser', login_url='index')
 def export_survey_responses(request):
-    return None # TODO
+    if request.method == "POST":
+        survey_response_ids = request.POST.getlist("survey-response-ids", [])
+        responses = SurveyResponse.objects.filter(id__in=survey_response_ids).order_by('library_name')
+        filename = u"Exporterade enkätsvar ({})".format(strftime("%Y-%m-%d %H.%M.%S"))
+
+        rows = [[unicode(observation._source_key) for observation in responses[0].observations]]
+        for response in responses:
+            rows.append([unicode(observation.value) for observation in response.observations])
+
+        return ExcelResponse(rows, filename)
 
 @permission_required('is_superuser', login_url='index')
 def publish_survey_response(request, survey_response_id):
