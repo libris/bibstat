@@ -411,7 +411,7 @@ class EditVariableViewTest(MongoTestCase):
 
         self.assertRaises(Variable.DoesNotExist, lambda: Variable.objects.get(pk=self.v2.id))
 
-    def test_should_reset_replaced_terms_when_deleting_non_draft_variable(self):
+    def test_should_remove_reference_in_replaced_variables_when_deleting_non_draft_variable(self):
         edit_draft_url = reverse("edit_variable", kwargs={"variable_id":str(self.v2.id)})
 
         response = self.client.post(edit_draft_url, {u"type": self.v2.type, u"target_groups": self.v2.target_groups,
@@ -440,6 +440,36 @@ class EditVariableViewTest(MongoTestCase):
         v1object = Variable.objects.get(pk=self.v1.id)
         self.assertEquals(v1object.replaced_by, None)
         self.assertEquals(v1object.active_to, None)
+
+    def test_should_remove_reference_in_replacement_variable_when_deleting_non_draft_variable(self):
+        edit_draft_url = reverse("edit_variable", kwargs={"variable_id":str(self.v2.id)})
+
+        response = self.client.post(edit_draft_url, {u"type": self.v2.type, u"target_groups": self.v2.target_groups,
+                                                     u"description": self.v2.description, u"submit_action":u"save_and_activate"})
+
+        self.assertEquals(response.status_code, 200)
+        data = json.loads(response.content)
+        self.assertFalse('errors' in data)
+
+        v2object = Variable.objects.get(pk=self.v2.id)
+        self.assertEquals(v2object.is_draft, False)
+
+        v2object.replaces = [self.v1]
+        v2object.save()
+
+        self.v1.replaced_by = v2object
+        self.v1.active_to = datetime(2014, 8, 22, 10, 40, 33, 876)
+        self.v1.save()
+
+        edit_draft_url = reverse("edit_variable", kwargs={"variable_id":str(self.v1.id)})
+        response = self.client.post(edit_draft_url, {u"type": self.v1.type, u"target_groups": self.v1.target_groups,
+                                                     u"description": self.v1.description,
+                                                     u"submit_action":u"delete"})
+
+        self.assertEquals(response.status_code, 200)
+
+        v2object = Variable.objects.get(pk=v2object.id)
+        self.assertEqual(len(v2object.replaces), 0)
 
     # TODO: Borde man kunna ändra synlighet? Inte om det redan finns publik data eller inlämnade enkätsvar väl? Kommer kräva ompublicering av alla enkätsvar som har variabeln...
     
