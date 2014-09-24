@@ -1,5 +1,6 @@
 {% extends "libstat/base.html" %}
 {% load i18n %}
+{% load libstat_tags %}
 
 {% block content %}
   <div class="container">
@@ -43,10 +44,272 @@
       </div><!-- panel -->
       
       <div class="page-header">
-        <h2>{% trans "Undersökningens frågor" %}</h2>
+        <h2>{% trans "Om svarande organisation och person" %}</h2>
       </div>
+      
+      <!-- Om bibliotek, svarande person etc. Hämtas i så stor utsträckning som möjligt från bibdb -->
+      <div class="panel panel-default inverse">
+        <div class="panel-body">
+          <div class="row">
+            
+            <div class="col-md-6">
+              <h4>{% trans "Bibliotek/organisation" %}</h4>
+              <div class="form-group">
+                <label for="id_library_name">{% trans "Namn" %}</label>
+                <input type="text" name="library_name" maxlength="100" id="id_library_name" class="form-control">
+              </div>
+              <div class="form-group">
+                <label for="id_municipality_name">{% trans "Kommun/län" %}</label>
+                <input type="text" class="form-control" id="id_municipality_name" name="municipality_name">
+              </div>
+              <div class="form-group">
+                <label for="id_municipality_code">{% trans "Kommun/länskod" %}</label>
+                <input type="text" size="6" name="municipality_code" maxlength="6" id="id_municipality_code" class="form-control width-auto">
+              </div>
+              <div class="form-group">
+                <label for="id_library_url">{% trans "Webbplats" %}</label>
+                <input type="text" name="library_url" id="id_library_url" class="form-control">
+              </div>
+              <div class="form-group">
+                <label for="id_manned_service_points">{% trans "Svar avser följande bemannade serviceställen" %}</label>
+                <div class="example">
+                  <p class="text-muted">{% trans "Nedan visas ett exempel på hur listan med bemannade serviceställen kan se ut för ett bibliotek" %}</p>
+                  <div class="checkbox">
+                    <label>
+                      <input type="checkbox" value="" checked="checked"/>
+                      <a href="http://biblioteksdatabasen.libris.kb.se/library/323/">(Kld1) Karlstads stadsbibliotek</a>
+                    </label>
+                  </div>
+                   <div class="checkbox">
+                    <label>
+                      <input type="checkbox" value=""/>
+                      <a href="http://biblioteksdatabasen.libris.kb.se/library/513/">(Tg) Tingvallagymnasiet, Biblioteket</a>
+                    </label>
+                  </div>
+                  <div class="form_group table-responsive">
+                    <table class="table table-bordered">
+                      <tr>
+                        <td>{% trans "Antal bemannade serviceställen" %}</td>
+                        <td>1</td>
+                      </tr>
+                      <tr>
+                        <td>{% trans "Antal obemannade serviceställen" %}</td>
+                        <td>4</td>
+                      </tr>
+                      <tr>
+                        <td>{% trans "Antal bokbussar" %}</td>
+                        <td>2</td>
+                      </tr>
+                      <tr>
+                        <td>{% trans "Antal bokbusshållsplatser" %}</td>
+                        <td>13</td>
+                      </tr>
+                      <tr>
+                        <td>{% trans "Antal bokbilar" %}</td>
+                        <td>1</td>
+                      </tr>
+                    </table>                            
+                  </div>
+                </div>
+              </div>
+            </div>
+              
+            <div class="col-md-6">
+              <h4>{% trans "Svarande person" %}</h4>
+              <div class="form-group">
+                <label for="id_respondent_name">{% trans "Namn" %}</label>
+                <input type="text" name="respondent_name" maxlength="100" id="id_respondent_name" class="form-control">
+              </div>
+              <div class="form-group">
+                <label for="id_respondent_email">{% trans "E-post" %}</label>
+                <input type="email" name="respondent_email" maxlength="100" id="id_respondent_email" class="form-control">
+              </div>
+              <div class="form-group">
+                <label for="id_respondent_phone">{% trans "Telefonnr" %}</label>
+                <input type="text" size="20" name="respondent_phone" maxlength="20" id="id_respondent_phone" class="form-control width-auto">
+              </div>
+            </div>
+          </div><!-- row -->
 
-      {% for variable in form.instance.questions %}
+          <div class="form-group">
+            <input type="submit" class="btn btn-primary pull-right" value="{% trans 'Spara'%}"/>
+          </div>
+
+        </div><!-- panel-body -->
+      </div><!-- panel -->
+      
+      <div class="page-header">
+        <h2>{% trans "Undersökningens frågor" %}</h2>
+      </div>      
+      
+      <div class="category">
+        <div class="row">
+          <div class="col-md-8">
+            <h3>{% trans "Organisation" %}</h3>
+          </div>
+          <div class="col-md-4">
+            <div class="category-label-right">{% trans "Föregående års värden" %}</div>          
+          </div>
+        </div>
+      
+        <div class="panel panel-default inverse">
+          <div class="panel-body">
+            <div class="form-group">
+              <div class="row">
+                <div class="col-md-8">
+                  <label>{% trans "Hur många personer får hemsändning av medier via bokbilar eller postgång som administreras av biblioteksorganisationen?" %}</label>
+                  <div class="question description text-muted hidden">
+                    {% blocktrans %}
+                      Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget dolor. 
+                      Aenean massa. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. 
+                      Donec quam felis, ultricies nec, pellentesque eu, pretium quis, sem. Nulla consequat massa quis enim. 
+                      Donec pede justo, fringilla vel, aliquet nec, vulputate eget, arcu. In enim justo, rhoncus ut, 
+                      imperdiet a, venenatis vitae, justo. Nullam dictum felis eu pede mollis pretium. 
+                      Integer tincidunt. Cras dapibus. Vivamus elementum semper nisi. 
+                      Aenean vulputate eleifend tellus. Aenean leo ligula, porttitor eu, consequat vitae, eleifend ac, enim. 
+                      Aliquam lorem ante, dapibus in, viverra quis, feugiat a, tellus. 
+                      Phasellus viverra nulla ut metus varius laoreet. Quisque rutrum. Aenean imperdiet. 
+                      Etiam ultricies nisi vel augue. Curabitur ullamcorper ultricies nisi. Nam eget dui. 
+                      Etiam rhoncus. Maecenas tempus, tellus eget condimentum rhoncus, sem quam semper libero, sit amet adipiscing sem neque sed ipsum. 
+                      Nam quam nunc, blandit vel, luctus pulvinar, hendrerit id, lorem. 
+                    {% endblocktrans %}
+                  </div>
+                  <input type="number" size="6" class="form-control width-auto"/>
+                </div>
+                <div class="col-md-4">
+                  <table class="table table-bordered">
+                    <tr>
+                      <th>2013</th>
+                      <th>2012</th>
+                      <th>2011</th>
+                    </tr>
+                    <tr>
+                      <td>7</td>
+                      <td>7</td>
+                      <td>5</td>
+                    </tr>
+                  </table>
+                </div>
+              </div>
+            </div>
+              
+            <div class="form-group">
+              <div class="row">
+                <div class="col-md-8">
+                  <label>{% trans "Antal potentiella användare som biblioteket förväntas betjäna. Exempelvis antal elever, antal anställda, antal forskare och studenter. Uppgift behöver inte lämnas av folkbibliotek." %}</label>
+                  <div class="question description text-muted hidden">
+                    {% blocktrans %}
+                      Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget dolor. 
+                      Aenean massa. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. 
+                      Donec quam felis, ultricies nec, pellentesque eu, pretium quis, sem. Nulla consequat massa quis enim. 
+                      Donec pede justo, fringilla vel, aliquet nec, vulputate eget, arcu. In enim justo, rhoncus ut, 
+                      imperdiet a, venenatis vitae, justo. Nullam dictum felis eu pede mollis pretium. 
+                      Integer tincidunt. Cras dapibus. Vivamus elementum semper nisi. 
+                      Aenean vulputate eleifend tellus. Aenean leo ligula, porttitor eu, consequat vitae, eleifend ac, enim. 
+                      Aliquam lorem ante, dapibus in, viverra quis, feugiat a, tellus. 
+                      Phasellus viverra nulla ut metus varius laoreet. Quisque rutrum. Aenean imperdiet. 
+                      Etiam ultricies nisi vel augue. Curabitur ullamcorper ultricies nisi. Nam eget dui. 
+                      Etiam rhoncus. Maecenas tempus, tellus eget condimentum rhoncus, sem quam semper libero, sit amet adipiscing sem neque sed ipsum. 
+                      Nam quam nunc, blandit vel, luctus pulvinar, hendrerit id, lorem. 
+                    {% endblocktrans %}
+                  </div>
+                  <input type="number" size="6" class="form-control width-auto"/>
+                </div>
+                <div class="col-md-4">
+                  <table class="table table-bordered">
+                    <tr>
+                      <th>2013</th>
+                      <th>2012</th>
+                      <th>2011</th>
+                    </tr>
+                    <tr>
+                      <td>25876</td>
+                      <td>26301</td>
+                      <td>26342</td>
+                    </tr>
+                  </table>
+                </div>
+              </div>
+            </div>
+          </div><!-- panel-body -->
+        </div><!-- panel -->
+      </div><!-- category -->
+      
+      <div class="category">
+        <div class="row">
+          <div class="col-md-8">
+            <h3>{% trans "Bemanning och personal" %}</h3>
+          </div>
+          <div class="col-md-4">
+            <div class="category-label-right">{% trans "Föregående års värden" %}</div>          
+          </div>
+        </div>
+        
+        <div class="panel panel-default inverse">
+          <div class="panel-body">
+          
+            <div class="row">
+              <div class="col-md-8">
+                  <label>{% trans "Hur många årsverken utfördes av personal i biblioteksverksamheten under året?" %}</label>
+                  <div class="question description text-muted hidden">
+                    {% blocktrans %}
+                      Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget dolor. 
+                      Aenean massa. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. 
+                      Donec quam felis, ultricies nec, pellentesque eu, pretium quis, sem. Nulla consequat massa quis enim. 
+                    {% endblocktrans %}
+                  </div>
+                  <div class="form-horizontal">
+                    <div class="form-group">
+                      <label class="col-md-8">Bibliotekarier och dokumentalister</label>
+                      <div class="col-md-4">
+                        <input type="number" size="6" class="form-control width-auto"/>
+                      </div>
+                    </div>
+                    <div class="form-group">
+                      <label class="col-md-8">Biblioteksassistenter och lärarbibliotekarier</label>
+                      <div class="col-md-4">
+                        <input type="number" size="6" class="form-control width-auto"/>
+                      </div>
+                    </div>
+                    <div class="form-group">
+                      <label class="col-md-8">Specialister inom IT, information eller ämnessakkunniga</label>
+                      <div class="col-md-4">
+                        <input type="number" size="6" class="form-control width-auto"/>
+                      </div>
+                    </div>
+                  </div>
+              </div>
+              <div class="col-md-4">
+                <table class="table table-bordered">
+                  <tr>
+                    <th>2013</th>
+                    <th>2012</th>
+                    <th>2011</th>
+                  </tr>
+                  <tr>
+                    <td>7</td>
+                    <td>7</td>
+                    <td>5</td>
+                  </tr>
+                  <tr>
+                    <td>7</td>
+                    <td>7</td>
+                    <td>5</td>
+                  </tr>
+                  <tr>
+                    <td>7</td>
+                    <td>7</td>
+                    <td>5</td>
+                  </tr>
+                </table>
+              </div>
+            </div>
+          
+          </div><!-- panel-body -->
+        </div><!-- panel -->        
+      </div><!-- category -->
+
+      <!-- {% for variable in form.instance.questions %}
         <div class="form-group question">
           {% if variable.sub_question %}
             <div class='survey-question-order'>
@@ -61,9 +324,9 @@
             <div class='survey-question'>{{variable.label}}</div>
           {% endif %}
         </div>
-      {% endfor %}
+      {% endfor %} -->
 
-      <div class="panel panel-default inverse">
+<!--       <div class="panel panel-default inverse">
         <div class="panel-body">
           <div class="row">
             <div class="col-md-4">
@@ -79,7 +342,7 @@
             </div>
           </div>
         </div>
-      </div>
+      </div> -->
 
     </form>
   
@@ -88,4 +351,5 @@
       <p>&copy; {% trans "Kungliga Biblioteket" %} 2014</p>
     </footer>
   </div><!-- container -->
+  
 {% endblock %}
