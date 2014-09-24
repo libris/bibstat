@@ -187,7 +187,8 @@ class TermApiTest(MongoTestCase):
         self.assertEqual(data[u"@context"][u"range"], {u"@id": u"rdfs:range", u"@type": u"@id"})
         self.assertEqual(data[u"@context"][u"comment"], u"rdfs:comment")
         self.assertEqual(data[u"@context"][u"subClassOf"], {u"@id": u"rdfs:subClassOf", u"@type": u"@id"})  
-        self.assertEqual(data[u"@context"][u"replaces"], {u"@id": u"owl:equivalentProperty", u"@type": u"@id"})
+        self.assertEqual(data[u"@context"][u"replaces"], {u"@id": u"dcterms:replaces", u"@type": u"@id"})
+        self.assertEqual(data[u"@context"][u"replacedBy"], {u"@id": u"dcterms:isReplacedBy", u"@type": u"@id"})
 
     def test_should_return_one_term(self):
         response = self.client.get(reverse("term_api", kwargs={ "term_key": "folk5"}))

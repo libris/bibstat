@@ -355,7 +355,6 @@ class VariableTest(MongoTestCase):
         v4.save()
         self.v4 = Variable.objects.get(pk=v4.id)
 
-        self.v4.replace_siblings([self.v2.id], commit=True)
 
     def test_key_asc_should_be_default_sort_order(self):
         result = Variable.objects.all()
@@ -372,6 +371,7 @@ class VariableTest(MongoTestCase):
         self.assertEqual(folk10.to_dict(), expectedVariableDict)
 
     def test_should_transform_replacing_object_to_dict(self):
+        self.v4.replace_siblings([self.v2.id], commit=True)
         folk69 = Variable.objects.get(pk=self.v4.id)
         expectedVariableDict = {
             u"@id": u"Folk69",
@@ -381,6 +381,21 @@ class VariableTest(MongoTestCase):
             u"replaces": [u"Folk35"]
         }
         self.assertEqual(folk69.to_dict(), expectedVariableDict)
+
+    def test_should_transform_replaced_object_to_dict(self):
+        self.v4.is_draft = False
+        self.v4.replace_siblings([self.v2.id], commit=True)
+
+        folk35 = Variable.objects.get(pk=self.v2.id)
+
+        expectedVariableDict = {
+            u"@id": u"Folk35",
+            u"@type": [u"rdf:Property", u"qb:MeasureProperty"],
+            u"comment": u"Antal årsverken övrig personal",
+            u"range": u"xsd:decimal",
+            u"replacedBy": u"Folk69"
+        }
+        self.assertEqual(folk35.to_dict(), expectedVariableDict)
 
     def test_variable_should_have_question_and_question_part(self):
         folk35 = Variable.objects.get(pk=self.v2.id)

@@ -259,6 +259,9 @@ class Variable(VariableBase):
         if self.replaces:
             json_ld_dict[u"replaces"] = [replaced.key for replaced in self.replaces]
 
+        if self.replaced_by:
+            json_ld_dict[u"replacedBy"] = self.replaced_by.key
+
         return json_ld_dict
     
     def type_to_rdf_type(self, type):
