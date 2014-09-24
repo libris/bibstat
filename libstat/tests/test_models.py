@@ -361,6 +361,9 @@ class VariableTest(MongoTestCase):
         self.assertEquals([v.key for v in result], [u"Folk10", u"Folk31", u"Folk35", u"Folk69"])
     
     def test_should_transform_object_to_dict(self):
+        self.v.active_from = None
+        self.v.save()
+        
         folk10 = Variable.objects.get(pk=self.v.id)
         expectedVariableDict = {
             u"@id": u"Folk10",
@@ -393,9 +396,56 @@ class VariableTest(MongoTestCase):
             u"@type": [u"rdf:Property", u"qb:MeasureProperty"],
             u"comment": u"Antal årsverken övrig personal",
             u"range": u"xsd:decimal",
-            u"replacedBy": u"Folk69"
+            u"replacedBy": u"Folk69",
         }
         self.assertEqual(folk35.to_dict(), expectedVariableDict)
+        
+    def test_should_transform_discontinued_object_to_dict(self):
+        self.v.active_from = None
+        self.v.active_to = datetime(2014, 8, 31)
+        self.v.save()
+        
+        folk10 = Variable.objects.get(pk=self.v.id)
+        expectedVariableDict = {
+            u"@id": u"Folk10",
+            u"@type": [u"rdf:Property", u"qb:MeasureProperty"],
+            u"comment": u"Antal bemannade servicesställen",
+            u"range": u"xsd:integer",
+            u"valid": "name=Giltighetstid; end=2014-08-31;"
+        }
+        self.assertEqual(folk10.to_dict(), expectedVariableDict)
+        
+    def test_should_transform_pending_object_to_dict(self):
+        tomorrow = (datetime.utcnow() + timedelta(days=1)).date()
+        self.v.active_from = tomorrow
+        self.v.active_to = None
+        self.v.save()
+        
+        folk10 = Variable.objects.get(pk=self.v.id)
+        expectedVariableDict = {
+            u"@id": u"Folk10",
+            u"@type": [u"rdf:Property", u"qb:MeasureProperty"],
+            u"comment": u"Antal bemannade servicesställen",
+            u"range": u"xsd:integer",
+            u"valid": u"name=Giltighetstid; start={};".format(tomorrow)
+        }
+        self.assertEqual(folk10.to_dict(), expectedVariableDict)
+        
+    def test_should_transform_date_ranged_object_to_dict(self):
+        self.v.active_from = datetime(2010, 1, 1).date()
+        self.v.active_to = datetime(2014, 12, 31)
+        self.v.save()
+        
+        folk10 = Variable.objects.get(pk=self.v.id)
+        expectedVariableDict = {
+            u"@id": u"Folk10",
+            u"@type": [u"rdf:Property", u"qb:MeasureProperty"],
+            u"comment": u"Antal bemannade servicesställen",
+            u"range": u"xsd:integer",
+            u"valid": u"name=Giltighetstid; start=2010-01-01; end=2014-12-31;"
+        }
+        self.assertEqual(folk10.to_dict(), expectedVariableDict)
+        
 
     def test_variable_should_have_question_and_question_part(self):
         folk35 = Variable.objects.get(pk=self.v2.id)

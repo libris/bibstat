@@ -261,6 +261,15 @@ class Variable(VariableBase):
 
         if self.replaced_by:
             json_ld_dict[u"replacedBy"] = self.replaced_by.key
+            
+        if self.active_to or self.active_from:
+            range_str = u"name=Giltighetstid;"
+            if self.active_from:
+                range_str += u" start={};".format(self.active_from.date())
+            if self.active_to:
+                range_str += u" end={};".format(self.active_to.date())
+            
+            json_ld_dict[u"valid"] = range_str
 
         return json_ld_dict
     
