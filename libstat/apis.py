@@ -54,7 +54,8 @@ term_context = {
     u"subClassOf": {u"@id": u"rdfs:subClassOf", u"@type": u"@id"},
     u"subPropertyOf": {u"@id": u"rdfs:subPropertyOf", u"@type": u"@id"},
     u"isDefinedBy": {u"@id": u"rdfs:isDefinedBy", u"@type": u"@id"},
-    u"terms": {u"@reverse": u"rdfs:isDefinedBy"}
+    u"terms": {u"@reverse": u"rdfs:isDefinedBy"},
+    u"replaces": {u"@id": u"owl:equivalentProperty", u"@type": u"@id"}
 }
 
 terms_vocab = {

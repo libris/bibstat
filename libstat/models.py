@@ -251,12 +251,15 @@ class Variable(VariableBase):
         return display_names
   
     def to_dict(self, id_prefix=""):
-        return {
-            u"@id": u"{}{}".format(id_prefix, self.key),
-            u"@type": [u"rdf:Property", u"qb:MeasureProperty"],
-            u"comment": self.description,
-            u"range": self.type_to_rdf_type(self.type)
-        };
+        json_ld_dict = { u"@id": u"{}{}".format(id_prefix, self.key),
+                         u"@type": [u"rdf:Property", u"qb:MeasureProperty"],
+                         u"comment": self.description,
+                         u"range": self.type_to_rdf_type(self.type) }
+
+        if self.replaces:
+            json_ld_dict[u"replaces"] = [replaced.key for replaced in self.replaces]
+
+        return json_ld_dict
     
     def type_to_rdf_type(self, type):
         return rdfVariableTypes[type]

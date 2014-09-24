@@ -354,7 +354,9 @@ class VariableTest(MongoTestCase):
         v4.question = u"Hur många nyförvärv av AV-media gjordes under 2012?"
         v4.save()
         self.v4 = Variable.objects.get(pk=v4.id)
-        
+
+        self.v4.replace_siblings([self.v2.id], commit=True)
+
     def test_key_asc_should_be_default_sort_order(self):
         result = Variable.objects.all()
         self.assertEquals([v.key for v in result], [u"Folk10", u"Folk31", u"Folk35", u"Folk69"])
@@ -368,7 +370,18 @@ class VariableTest(MongoTestCase):
             u"range": u"xsd:integer"
         }
         self.assertEqual(folk10.to_dict(), expectedVariableDict)
-    
+
+    def test_should_transform_replacing_object_to_dict(self):
+        folk69 = Variable.objects.get(pk=self.v4.id)
+        expectedVariableDict = {
+            u"@id": u"Folk69",
+            u"@type": [u"rdf:Property", u"qb:MeasureProperty"],
+            u"comment": u"Totalt nyförvärv AV-medier",
+            u"range": u"xsd:integer",
+            u"replaces": [u"Folk35"]
+        }
+        self.assertEqual(folk69.to_dict(), expectedVariableDict)
+
     def test_variable_should_have_question_and_question_part(self):
         folk35 = Variable.objects.get(pk=self.v2.id)
         self.assertTrue(hasattr(folk35, "question") and folk35.question == u"Hur många årsverken utfördes av personal i folkbiblioteksverksamheten under 2012?")
