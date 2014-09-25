@@ -57,7 +57,7 @@ term_context = {
     u"terms": {u"@reverse": u"rdfs:isDefinedBy"},
     u"replaces": {u"@id": u"dcterms:replaces", u"@type": u"@id"},
     u"replacedBy": {u"@id": u"dcterms:isReplacedBy", u"@type": u"@id"},
-    u"valid": u"dcterms:valid",
+    u"valid": {u"@id": u"dcterms:valid", u"@type": u"dcterms:Period"},
 }
 
 terms_vocab = {
