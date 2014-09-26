@@ -107,26 +107,6 @@ class VariableForm(forms.Form):
 
         return variable
     
-    def delete(self):
-        if not self.instance:
-            raise forms.ValidationError(_(u"Term finns inte, kan inte ta bort"), code=u"missing_instance")
-
-        if not self.instance.is_draft:
-
-            # Remove reference in replacement variable
-            replaced_by = self.instance.replaced_by
-            if replaced_by:
-                replaced_by.replaces.remove(self.instance)
-                replaced_by.save()
-
-            # Remove reference in replaced variables
-            for replaced in self.instance.replaces:
-                replaced.replaced_by = None
-                replaced.active_to = None
-                replaced.save()
-
-        self.instance.delete()
-        return self.instance
 
 
 class SurveyResponseForm(forms.Form):

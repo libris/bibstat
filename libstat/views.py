@@ -174,7 +174,7 @@ def edit_variable(request, variable_id):
             try:
                 if action == "delete":
                     if v.is_deletable():
-                        v = form.delete()
+                        v.delete()
                     else:
                         return HttpResponseForbidden()
                 else:

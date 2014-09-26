@@ -310,7 +310,7 @@ class EditVariableViewTest(MongoTestCase):
         self.assertEquals(replaced.replaced_by.id, replaced_by.id)
         self.assertEquals(replaced.active_to, replaced_by.active_from)
         
-        # Since field active_to is disabled, an empty string is posted
+        # Since input active_to is disabled, an empty string is posted
         response = self.post(u"save", replaced)
         
         # Field active_to should not have been updated
@@ -365,13 +365,8 @@ class EditVariableViewTest(MongoTestCase):
     def test_should_remove_reference_in_replaced_variables_when_deleting_non_draft_variable(self):
         replaced = self.new_variable()
         replacement = self.new_variable(is_draft=False)
-
-        replacement.replaces = [replaced]
-        replacement.save()
-
-        replaced.replaced_by = replacement
-        replaced.active_to = datetime.now()
-        replaced.save()
+        replacement.active_from = datetime(2015, 1, 1)
+        replacement.replace_siblings([replaced.id], switchover_date=replacement.active_from, commit=True)
 
         self.delete(replacement)
         replaced.reload()
@@ -382,14 +377,32 @@ class EditVariableViewTest(MongoTestCase):
     def test_should_remove_reference_in_replacement_variable_when_deleting_non_draft_variable(self):
         replaced = self.new_variable(is_draft=False)
         replacement = self.new_variable()
+        replacement.active_from = datetime(2015, 1, 1)
+        replacement.replace_siblings([replaced.id], switchover_date=replacement.active_from, commit=True)
+        
+        self.delete(replaced)
+        replacement.reload()
 
-        replacement.replaces = [replaced]
-        replacement.save()
+        self.assertIs(len(replacement.replaces), 0)
+        
+    def test_should_remove_reference_in_replaced_variables_when_deleting_draft_variable(self):
+        replaced = self.new_variable()
+        replacement = self.new_variable()
+        replacement.active_from = datetime(2015, 1, 1)
+        replacement.replace_siblings([replaced.id], switchover_date=replacement.active_from, commit=True)
 
-        replaced.replaced_by = replacement
-        replaced.active_to = datetime.now()
-        replaced.save()
+        self.delete(replacement)
+        replaced.reload()
 
+        self.assertEquals(replaced.replaced_by, None)
+        self.assertEquals(replaced.active_to, None)
+
+    def test_should_remove_reference_in_replacement_variable_when_deleting_draft_variable(self):
+        replaced = self.new_variable()
+        replacement = self.new_variable()
+        replacement.active_from = datetime(2015, 1, 1)
+        replacement.replace_siblings([replaced.id], switchover_date=replacement.active_from, commit=True)
+        
         self.delete(replaced)
         replacement.reload()
 
@@ -402,7 +415,7 @@ class EditVariableViewTest(MongoTestCase):
             u"active_from": variable.active_from.date() if variable.active_from else "",
             # active_to input is disabled if variable is replaced
             u"active_to": variable.active_to.date() if variable.active_to and not variable.replaced_by else "",
-            #u"replaces": ", ".join([str(v.id) for v in variable.replaces]) if variable.replaces else "",
+            u"replaces": ", ".join([str(v.id) for v in variable.replaces]) if variable.replaces else "",
             u"type": variable.type,
             u"target_groups": variable.target_groups,
             u"description": variable.description,
