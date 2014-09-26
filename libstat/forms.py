@@ -72,11 +72,10 @@ class VariableForm(forms.Form):
             del cleaned_data['active_from']
         
         active_to = cleaned_data['active_to'] if 'active_to' in cleaned_data else None
-        if self.instance and self.instance.replaced_by and active_to and active_to != self.instance.active_to:
+        if self.instance and self.instance.replaced_by and active_to and self.instance.active_to and active_to != self.instance.active_to.date():
             self._errors['active_to'] = self.error_class([u"Styrs av ersättande term"])
         
             del cleaned_data['active_to']
-        
         return cleaned_data
         
         
@@ -84,7 +83,7 @@ class VariableForm(forms.Form):
         variable = self.instance if self.instance else Variable(is_draft=True)
         variable.key = self.instance.key if self.instance else self.cleaned_data['key']
         variable.active_from = self.cleaned_data['active_from'] # Need to convert to UTC? It's a date and not a datetime...
-        variable.active_to = self.cleaned_data['active_to'] # Need to convert to UTC? It's a date and not a datetime...
+        variable.active_to = self.instance.active_to if  self.instance and self.instance.replaced_by else self.cleaned_data['active_to']
         variable.question = self.cleaned_data['question']
         variable.question_part = self.cleaned_data['question_part']
         variable.category = self.cleaned_data['category']
