@@ -142,4 +142,13 @@ $(document).ready(function() {
 	  	limit: 1
 	  	//TODO: Disable typeahead autocomplete and cursor if a token already has been set.
 	});
+
+    /* Survey mockup */
+    $(".previous-year-popover").popover({
+        placement: 'top',
+        html: true,
+        content: function () {
+            return $("#popover-content").html();
+        }
+    });
 });

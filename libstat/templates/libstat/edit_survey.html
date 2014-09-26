@@ -32,10 +32,15 @@
             margin-top: 0.5em;
             margin-bottom: 0.5em;
         }
-    .comment-field {
-        width: 100%;
-        height: 100%;
-    }
+
+        .comment-field {
+            width: 100%;
+            height: 100%;
+        }
+
+        .previous-year-popover {
+            cursor: default;
+        }
     </style>
     <div class="container">
     <div class="page-header">
@@ -184,60 +189,46 @@
         <div class="panel panel-default inverse">
             <div class="panel-body">
                 <div class="row">
-                    <div class="col-md-9">
-                    </div>
-                    <div class="col-md-3">
-                        <table class="table table-bordered previous-years">
-                            <tr>
-                                <th>2013</th>
-                                <th>2012</th>
-                                <th>2011</th>
-                            </tr>
-                        </table>
+                    <div class="col-md-6"></div>
+                    <div class="col-sm-1"></div>
+                    <div class="col-md-2">
+                        <div class="input-type-title">Antal personer</div>
                     </div>
                 </div>
                 <div class="row">
-                    <div class="form-group">
-                        <label class="col-sm-6 control-label">
+                    <div class="col-sm-6">
+                        <label class="control-label">
                             Hur många personer får hemsändning av medier via bokbilar eller postgång som administreras
                             av biblioteksorganisationen?
                         </label>
+                    </div>
 
-                        <div class="col-sm-1"></div>
-                        <div class="col-sm-2">
-                            <input type="number" class="form-control">
-                        </div>
-                        <div class="col-sm-3">
-                            <table class="table table-bordered previous-years">
-                                <tr>
-                                    <td>7</td>
-                                    <td>7</td>
-                                    <td>5</td>
-                                </tr>
-                            </table>
+                    <div class="col-sm-1"></div>
+                    <div class="col-sm-2">
+                        <div class="input-group">
+                            <input type="text" class="form-control">
+                            <span class="input-group-addon previous-year-value">
+                                12842
+                            </span>
                         </div>
                     </div>
                 </div>
+                <hr class="question-separator">
                 <div class="row">
-                    <div class="form-group">
-                        <label class="col-sm-6 control-label">
+                    <div class="col-sm-6">
+                        <label class="control-label">
                             Antal potentiella användare som biblioteket förväntas betjäna.
                             Exempelvis antal elever, antal anställda, antal forskare och studenter.
                             Uppgift behöver inte lämnas av folkbibliotek.
                         </label>
-
-                        <div class="col-sm-1"></div>
-                        <div class="col-sm-2">
-                            <input type="number" class="form-control">
-                        </div>
-                        <div class="col-sm-3">
-                            <table class="table table-bordered previous-years">
-                                <tr>
-                                    <td>25876</td>
-                                    <td>26301</td>
-                                    <td>26342</td>
-                                </tr>
-                            </table>
+                    </div>
+                    <div class="col-sm-1"></div>
+                    <div class="col-sm-2">
+                        <div class="input-group">
+                            <input type="text" class="form-control">
+                            <span class="input-group-addon previous-year-value">
+                                34847
+                            </span>
                         </div>
                     </div>
                 </div>
@@ -857,13 +848,13 @@
                 <hr class="question-separator">
                 <div class="row">
                     <div class="col-md-3"></div>
-                    <div class="col-md-2">
+                    <div class="col-md-3">
                         <div class="input-type-title">Antal lån inom Sverige</div>
                     </div>
-                    <div class="col-md-2">
+                    <div class="col-md-3">
                         <div class="input-type-title">Antal lån utanför Sverige</div>
                     </div>
-                    <div class="col-md-2">
+                    <div class="col-md-3">
                         <div class="input-type-title">Totalt antal</div>
                     </div>
                 </div>
@@ -873,7 +864,7 @@
                             Fjärrutlån
                         </label>
                     </div>
-                    <div class="col-sm-2">
+                    <div class="col-sm-3">
                         <div class="input-group">
                             <input type="text" class="form-control">
                             <span class="input-group-addon previous-year-value">
@@ -881,7 +872,7 @@
                             </span>
                         </div>
                     </div>
-                    <div class="col-sm-2">
+                    <div class="col-sm-3">
                         <div class="input-group">
                             <input type="text" class="form-control">
                             <span class="input-group-addon previous-year-value">
@@ -889,7 +880,7 @@
                             </span>
                         </div>
                     </div>
-                    <div class="col-sm-2">
+                    <div class="col-sm-3">
                         <div class="input-group">
                             <input type="text" class="form-control">
                             <span class="input-group-addon previous-year-value">
@@ -905,7 +896,7 @@
                             Fjärrinlån
                         </label>
                     </div>
-                    <div class="col-sm-2">
+                    <div class="col-sm-3">
                         <div class="input-group">
                             <input type="text" class="form-control">
                             <span class="input-group-addon previous-year-value">
@@ -913,7 +904,7 @@
                             </span>
                         </div>
                     </div>
-                    <div class="col-sm-2">
+                    <div class="col-sm-3">
                         <div class="input-group">
                             <input type="text" class="form-control">
                             <span class="input-group-addon previous-year-value">
@@ -921,7 +912,7 @@
                             </span>
                         </div>
                     </div>
-                    <div class="col-sm-2">
+                    <div class="col-sm-3">
                         <div class="input-group">
                             <input type="text" class="form-control">
                             <span class="input-group-addon previous-year-value">
@@ -937,7 +928,7 @@
                             Totalt antal
                         </label>
                     </div>
-                    <div class="col-sm-2">
+                    <div class="col-sm-3">
                         <div class="input-group">
                             <input type="text" class="form-control">
                             <span class="input-group-addon previous-year-value">
@@ -945,7 +936,7 @@
                             </span>
                         </div>
                     </div>
-                    <div class="col-sm-2">
+                    <div class="col-sm-3">
                         <div class="input-group">
                             <input type="text" class="form-control">
                             <span class="input-group-addon previous-year-value">
@@ -953,12 +944,28 @@
                             </span>
                         </div>
                     </div>
-                    <div class="col-sm-2">
+                    <div class="col-sm-3">
                         <div class="input-group">
                             <input type="text" class="form-control">
                             <span class="input-group-addon previous-year-value">
-                                861700
+                                <a class="previous-year-popover" data-placement="above" data-trigger="hover" title="Föregående års värden">
+                                    861700
+                                </a>
                             </span>
+                            <div id="popover-content" style="display: none;">
+                                <table class="table table-bordered">
+                                    <tr>
+                                        <th>2013</th>
+                                        <th>2012</th>
+                                        <th>2011</th>
+                                    </tr>
+                                    <tr>
+                                        <td>861700</td>
+                                        <td>890983</td>
+                                        <td>912380</td>
+                                    </tr>
+                                </table>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -986,7 +993,7 @@
         </div>
     </div>
 
-                <!-- {% for variable in form.instance.questions %}
+    <!-- {% for variable in form.instance.questions %}
                     <div class="form-group question">
                       {% if variable.sub_question %}
                         <div class='survey-question-order'>
