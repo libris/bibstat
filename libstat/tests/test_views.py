@@ -416,9 +416,15 @@ class EditVariableViewTest(MongoTestCase):
             # active_to input is disabled if variable is replaced
             u"active_to": variable.active_to.date() if variable.active_to and not variable.replaced_by else "",
             u"replaces": ", ".join([str(v.id) for v in variable.replaces]) if variable.replaces else "",
+            u"question": variable.question,
+            u"question_part": variable.question_part,
+            u"category": variable.category,
+            u"sub_category": variable.sub_category,
             u"type": variable.type,
+            u"is_public": int(variable.is_public),
             u"target_groups": variable.target_groups,
             u"description": variable.description,
+            u"comment": variable.comment,
             u"submit_action": action
         })
 
