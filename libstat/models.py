@@ -5,7 +5,6 @@ from mongoengine.queryset import Q
 from mongoengine.django.auth import User
 from mongoengine.errors import DoesNotExist
 
-from pip._vendor.pkg_resources import require
 from mongoengine.queryset.queryset import QuerySet
 from datetime import datetime
 from django.conf import settings

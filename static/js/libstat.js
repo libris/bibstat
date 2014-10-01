@@ -148,7 +148,7 @@ $(document).ready(function() {
         placement: 'top',
         html: true,
         content: function () {
-            return $("#popover-content").html();
+            return $(this).children(".previous-year-popover-content").html();
         }
     });
 });
