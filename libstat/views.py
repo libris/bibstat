@@ -27,7 +27,9 @@ from time import strftime
 from libstat.apis import *
 
 import logging
+
 logger = logging.getLogger(__name__)
+
 
 def index(request):
     context = {
@@ -36,6 +38,7 @@ def index(request):
     }
     return render(request, 'libstat/index.html', context)
 
+
 def open_data(request):
     context = {
         "nav_start_css": "",
@@ -43,7 +46,8 @@ def open_data(request):
         "api_base_url": settings.API_BASE_URL
     }
     return render(request, 'libstat/open_data.html', context)
-    
+
+
 @sensitive_post_parameters()
 @csrf_protect
 @never_cache
@@ -52,7 +56,7 @@ def login(request):
         Login modal view
     """
     redirect_to = _get_listview_from_modalview(request.REQUEST.get("next", ""))
-    
+
     if request.method == "POST":
         form = AuthenticationForm(request, data=request.POST)
         if form.is_valid():
@@ -74,7 +78,7 @@ def login(request):
                 'next': redirect_to
             }
             return HttpResponse(json.dumps(context), content_type="application/json")
-            
+
     else:
         form = AuthenticationForm(request)
 
@@ -84,11 +88,12 @@ def login(request):
     }
     return render(request, 'libstat/modals/login.html', context)
 
+
 def _get_listview_from_modalview(relative_url=""):
     if reverse("variables") in relative_url:
         return reverse("variables")
     return relative_url
-    
+
 
 @permission_required('is_superuser', login_url='index')
 def variables(request):
@@ -96,18 +101,17 @@ def variables(request):
     if target_groups:
         if target_groups == [u"all"]:
             target_group_filter = [g[0] for g in SURVEY_TARGET_GROUPS]
-            variables = Variable.objects.filter(target_groups__all = target_group_filter)
+            variables = Variable.objects.filter(target_groups__all=target_group_filter)
         else:
             target_group_filter = target_groups
             variables = Variable.objects.filter(target_groups__in=target_group_filter)
     else:
         variables = Variable.objects.all()
-    context = { 
+    context = {
         'variables': variables,
         'target_group': target_groups
     }
     return render(request, 'libstat/variables.html', context)
-
 
 
 @permission_required('is_superuser', login_url='login')
@@ -139,32 +143,31 @@ def create_variable(request):
             errors = form.errors
             context['errors'] = errors
             return HttpResponse(json.dumps(context), content_type="application/json")
-            
+
     else:
         form = VariableForm()
 
     context['form'] = form
     return render(request, 'libstat/modals/edit_variable.html', context)
-    
-    
-    
+
+
 @permission_required('is_superuser', login_url='login')
 def edit_variable(request, variable_id):
     """
         Edit variable modal view
     """
 
-    try: 
+    try:
         v = Variable.objects.get(pk=variable_id)
     except Exception:
         raise Http404
-    
+
     context = {
         'mode': 'edit',
         'form_url': reverse("edit_variable", kwargs={"variable_id": variable_id}),
         'modal_title': u"{} ({})".format(v.key, v.state["label"]) if not v.state["state"] == u"current" else v.key
     }
-    
+
     if request.method == "POST":
         action = request.POST.get("submit_action", "save")
 
@@ -182,34 +185,35 @@ def edit_variable(request, variable_id):
 
                 # No redirect since this is displayed as a modal and we do a javascript redirect if no form errors
                 return HttpResponse(v.to_json(), content_type="application/json")
-            
+
             except NotUniqueError as nue:
                 logger.warning(u"A Variable with key {} already exists: {}".format(v.key, nue))
                 errors['key'] = [u"Det finns redan en term med nyckel {}".format(v.key)]
             except Exception as e:
                 logger.warning(u"Error updating Variable {}: {}".format(variable_id, e))
                 errors['__all__'] = [u"Kan inte uppdatera term {}".format(v.key)]
-                
+
         else:
             errors = form.errors
         context['errors'] = errors
         return HttpResponse(json.dumps(context), content_type="application/json")
-    else:    
+    else:
         form = VariableForm(instance=v)
-        
+
     context['form'] = form
     return render(request, 'libstat/modals/edit_variable.html', context)
+
 
 @permission_required('is_superuser', login_url='index')
 def survey_responses(request):
     s_responses = []
     message = ""
-    
+
     # TODO: Cache sample_years
     sample_years = SurveyResponse.objects.distinct("sample_year")
     sample_years.sort()
     sample_years.reverse()
-    
+
     action = request.GET.get("action", "")
     target_group = request.GET.get("target_group", "")
     sample_year = request.GET.get("sample_year", "")
@@ -218,43 +222,48 @@ def survey_responses(request):
         unpublished_only = True
     else:
         unpublished_only = False
-    
+
     if action == "list":
         # TODO: Pagination
         if unpublished_only:
-            s_responses = SurveyResponse.objects.unpublished_by_year_or_group(sample_year=sample_year, target_group=target_group).order_by("library")
+            s_responses = SurveyResponse.objects.unpublished_by_year_or_group(sample_year=sample_year,
+                                                                              target_group=target_group).order_by(
+                "library")
         elif sample_year or target_group:
-            s_responses = SurveyResponse.objects.by_year_or_group(sample_year=sample_year, target_group=target_group).order_by("library")
+            s_responses = SurveyResponse.objects.by_year_or_group(sample_year=sample_year,
+                                                                  target_group=target_group).order_by("library")
         else:
             message = u"Ange åtminstone ett urvalskriterium för att lista enkätsvar"
-  
-    context = { 
-         'sample_years': sample_years,
-         'survey_responses': s_responses,
-         'target_group': target_group,
-         'sample_year': sample_year,
-         'unpublished_only': unpublished_only,
-         'bibdb_library_base_url': u"{}/library".format(settings.BIBDB_BASE_URL), 
-         'message': message
+
+    context = {
+        'sample_years': sample_years,
+        'survey_responses': s_responses,
+        'target_group': target_group,
+        'sample_year': sample_year,
+        'unpublished_only': unpublished_only,
+        'bibdb_library_base_url': u"{}/library".format(settings.BIBDB_BASE_URL),
+        'message': message
     }
     return render(request, 'libstat/survey_responses.html', context)
+
 
 @permission_required('is_superuser', login_url='index')
 def publish_survey_responses(request):
     MAX_PUBLISH_LIMIT = 500
-        
+
     if request.method == "POST":
         target_group = request.POST.get("target_group", "")
         sample_year = request.POST.get("sample_year", "")
         survey_response_ids = request.POST.getlist("survey-response-ids", [])
-        
+
         logger.info(u"Publish requested for {} survey response ids".format(len(survey_response_ids)))
-        
+
         if len(survey_response_ids) > MAX_PUBLISH_LIMIT:
             survey_response_ids = survey_response_ids[:MAX_PUBLISH_LIMIT]
-            logger.warning(u"That seems like an awful lot of objects to handle in one transaction, limiting to first {}".format(MAX_PUBLISH_LIMIT))
-            
-        
+            logger.warning(
+                u"That seems like an awful lot of objects to handle in one transaction, limiting to first {}".format(
+                    MAX_PUBLISH_LIMIT))
+
         if len(survey_response_ids) > 0:
             s_responses = SurveyResponse.objects.filter(id__in=survey_response_ids)
             for sr in s_responses:
@@ -263,9 +272,12 @@ def publish_survey_responses(request):
                 except Exception as e:
                     logger.error(u"Error when publishing survey response {}:".format(sr.id))
                     print e
-        
+
     # TODO: There has to be a better way to do this...
-    return HttpResponseRedirect(u"{}{}".format(reverse("survey_responses"), u"?action=list&target_group={}&sample_year={}".format(target_group, sample_year)))
+    return HttpResponseRedirect(u"{}{}".format(reverse("survey_responses"),
+                                               u"?action=list&target_group={}&sample_year={}".format(target_group,
+                                                                                                     sample_year)))
+
 
 @permission_required('is_superuser', login_url='index')
 def export_survey_responses(request):
@@ -280,43 +292,45 @@ def export_survey_responses(request):
 
         return ExcelResponse(rows, filename)
 
+
 @permission_required('is_superuser', login_url='index')
 def publish_survey_response(request, survey_response_id):
     try:
         survey_response = SurveyResponse.objects.get(pk=survey_response_id)
     except:
         raise Http404
-    
+
     if request.method == "POST":
         try:
             survey_response.publish(user=request.user)
         except Exception as e:
             logger.error(u"Error when publishing survey response {}:".format(sr.id))
             print e
-            
+
     return redirect("edit_survey_response", survey_response_id)
-    
-    
+
+
 @permission_required('is_superuser', login_url='index')
 def edit_survey_response(request, survey_response_id):
     try:
         survey_response = SurveyResponse.objects.get(pk=survey_response_id)
     except:
         raise Http404
-    
+
     # Needed to render the other form in the view
     observations_form = SurveyObservationsForm(instance=survey_response)
-    
+
     if request.method == "POST":
         form = SurveyResponseForm(request.POST, instance=survey_response)
-        
+
         if form.is_valid():
             try:
                 survey_response = form.save(user=request.user);
                 return redirect("edit_survey_response", survey_response_id)
-            
+
             except NotUniqueError as nue:
-                logger.warning(u"A SurveyResponse with library_name {} already exists for year {}: {}".format(survey_response.library_name, survey_response.sample_year, nue))
+                logger.warning(u"A SurveyResponse with library_name {} already exists for year {}: {}".format(
+                    survey_response.library_name, survey_response.sample_year, nue))
                 form._errors['library_name'] = ErrorList([u"Det finns redan ett enkätsvar för detta bibliotek"])
             except Exception as e:
                 logger.warning(u"Error updating SurveyResponse {}: {}".format(survey_response_id, e))
@@ -325,15 +339,17 @@ def edit_survey_response(request, survey_response_id):
             logger.debug(u"Form has validation errors: {}".format(form.errors))
     else:
         form = SurveyResponseForm(instance=survey_response)
-         
+
     return _render_survey_response_view(request, form, observations_form)
+
 
 def _render_survey_response_view(request, survey_response_form, survey_observations_form):
     context = {
-        'form': survey_response_form, 
+        'form': survey_response_form,
         'observations_form': survey_observations_form,
     }
     return render(request, 'libstat/edit_survey_response.html', context)
+
 
 @permission_required('is_superuser', login_url='index')
 def edit_survey_observations(request, survey_response_id):
@@ -345,19 +361,19 @@ def edit_survey_observations(request, survey_response_id):
         survey_response = SurveyResponse.objects.get(pk=survey_response_id)
     except:
         raise Http404
-    
+
     if request.method == "POST":
         form = SurveyObservationsForm(request.POST, instance=survey_response)
         if form.is_valid():
             try:
                 survey_response = form.save(user=request.user)
             except Exception as e:
-                 logger.warning(u"Error updating SurveyResponse observations {}: {}".format(survey_response_id, e))
-                 form._errors['__all__'] = ErrorList([u"Kan inte uppdatera enkätsvar"])
+                logger.warning(u"Error updating SurveyResponse observations {}: {}".format(survey_response_id, e))
+                form._errors['__all__'] = ErrorList([u"Kan inte uppdatera enkätsvar"])
         else:
             logger.debug(u"Form has validation errors: {}".format(form.errors))
             return _render_survey_response_view(request, SurveyResponseForm(instance=survey_response), form)
-    
+
     return redirect("edit_survey_response", survey_response_id)
 
 
@@ -373,9 +389,8 @@ def replaceable_variables_api(request):
         variables = Variable.objects.replaceable().filter(key_query | description_query)
     else:
         variables = Variable.objects.replaceable()
-    data = [ v.as_simple_dict() for v in variables];
+    data = [v.as_simple_dict() for v in variables];
     return HttpResponse(json.dumps(data), content_type="application/json")
-
 
 
 @permission_required('is_superuser', login_url='index')
@@ -390,15 +405,13 @@ def surveys(request):
     return render(request, 'libstat/surveys.html', context)
 
 
-
 @permission_required('is_superuser', login_url='index')
 def create_survey(request):
-    
     context = {
         'mode': 'create',
         'form_url': reverse("create_survey"),
     }
-    
+
     if request.method == "POST":
         form = SurveyForm(request.POST)
         if form.is_valid():
@@ -409,17 +422,269 @@ def create_survey(request):
                 logger.warning(u"Error creating survey: {}".format(e))
                 form._errors['__all__'] = ErrorList([u"Kan inte skapa enkät"])
 
-    else:         
+    else:
         form = SurveyForm()
-    
+
     context['form'] = form
     return render(request, 'libstat/edit_survey.html', context)
 
 
+###############################
+### Begin survey experiment ###
+###############################
+
+class Survey:
+    def __init__(self, target_year, sections, organization_name, municipality, municipality_code,
+                 respondent_name, respondent_email, respondent_phone, website, head_authority):
+        self.target_year = target_year
+        self.head_authority = head_authority
+        self.website = website
+        self.respondent_phone = respondent_phone
+        self.respondent_email = respondent_email
+        self.respondent_name = respondent_name
+        self.municipality_code = municipality_code
+        self.municipality = municipality
+        self.organization_name = organization_name
+        self.sections = sections
+
+
+class Section:
+    def __init__(self, title, groups, comment=None):
+        self.comment = comment
+        self.title = title
+        self.groups = groups
+
+
+class Group:
+    def __init__(self, rows, headers=None, description=None):
+        self.description = description
+        self.rows = rows
+        self.headers = headers
+
+
+class Row:
+    def __init__(self, description, cells):
+        self.description = description
+        self.cells = cells
+
+
+class EmptyCell:
+    def __init__(self):
+        pass
+
+
+class NumberCell:
+    def __init__(self, previous_value=None):
+        self.previous_value = previous_value
+
+
+class SumNumberCell:
+    def __init__(self):
+        pass
+
+
+class CommentsCell:
+    def __init__(self):
+        pass
+
+
+class DescriptionCell:
+    def __init__(self, description):
+        self.description = description
+
+
+class CommentCell:
+    def __init__(self, description):
+        self.description = description
+
+
+@permission_required('is_superuser', login_url='index')
+def survey_template(request):
+    survey = Survey(
+        target_year="2014",
+        organization_name=u"Karlstads stadsbibliotek",
+        municipality=u"Karlstad",
+        municipality_code=u"1780",
+        head_authority=u"Kulturrådet i Karlstad",
+        respondent_name=u"Helena Fernström",
+        respondent_email=u"helena.fernström@bibliotek.karlstad.se",
+        respondent_phone=u"054 - 64 82 09",
+        website=u"www.bibliotek.karlstad.se",
+        sections=[
+            Section(
+                title=u"Bemanning och personal",
+                groups=[
+                    Group(
+                        headers=[
+                            u"Antal personer"
+                        ],
+                        rows=[
+                            Row(
+                                description=u"Antal anställda kvinnor",
+                                cells=[
+                                    NumberCell(14)
+                                ]
+                            ),
+                            Row(
+                                description=u"Antal anställda män",
+                                cells=[
+                                    NumberCell(8)
+                                ]
+                            ),
+                            Row(
+                                description=u"Totalt antal anställda",
+                                cells=[
+                                    SumNumberCell()
+                                ]
+                            )
+                        ]
+                    )
+                ],
+                comment=CommentCell(
+                    description=u"""Här kan du lämna eventuella kommentarer till frågeområdet personal.
+                                Skriv inga siffror här.""",
+                )
+            ),
+            Section(
+                title=u"Utlån av fysiska medier",
+                groups=[
+                    Group(
+                        description=u"""Hur många utlån av olika typer av fysiska medier (eller papperskopior)
+                        gjordes under kalenderåret. Ange uppgift dels för antal initiala lån och dels hur många
+                        lån som var omlån. Uppgift om utlån rapporteras exkluderat antalet fjärrlån.""",
+                        headers=[
+                            u"Antal initiala lokala lån",
+                            u"Antal lokala omlån",
+                            u"Totalt antal lån"],
+                        rows=[
+                            Row(
+                                description=u"Tryckta böcker och seriella publikationer, periodika, tidskrifter, tidningar",
+                                cells=[
+                                    NumberCell(),
+                                    NumberCell(),
+                                    SumNumberCell()
+                                ]
+                            ),
+                            Row(
+                                description=u"--- Varav kursböcker, studielitteratur, läromedel, skolböcker",
+                                cells=[
+                                    NumberCell(),
+                                    NumberCell(),
+                                    SumNumberCell()
+                                ]
+                            ),
+                            Row(
+                                description=u"Ljudböcker, talböcker DAISY",
+                                cells=[
+                                    NumberCell(),
+                                    NumberCell(),
+                                    SumNumberCell()
+                                ]
+                            ),
+                            Row(
+                                description=u"Musik (på fysiskt medium)",
+                                cells=[
+                                    NumberCell(),
+                                    NumberCell(),
+                                    SumNumberCell()
+                                ]
+                            ),
+                            Row(
+                                description=u"Film, TV, radio",
+                                cells=[
+                                    NumberCell(),
+                                    NumberCell(),
+                                    SumNumberCell()
+                                ]
+                            ),
+                            Row(
+                                description=u"Mikrografiska dokument, mikrofilm, mikrofiche",
+                                cells=[
+                                    NumberCell(),
+                                    NumberCell(),
+                                    SumNumberCell()
+                                ]
+                            ),
+                            Row(
+                                description=u"Bild, grafiska och kartografiska dokument, OH, presentationer, fotografier",
+                                cells=[
+                                    NumberCell(),
+                                    NumberCell(),
+                                    SumNumberCell()
+                                ]
+                            ),
+                            Row(
+                                description=u"Manuskript, artiklar, patent, konferenshandlingar, festskrifter, rapporter, musiktryck noter",
+                                cells=[
+                                    NumberCell(),
+                                    NumberCell(),
+                                    SumNumberCell()
+                                ]
+                            ),
+                            Row(
+                                description=u"Interaktiva medier, CD-ROM, Tv-spel, interaktiva läromedel, konsolspel, dataspel",
+                                cells=[
+                                    NumberCell(),
+                                    NumberCell(),
+                                    SumNumberCell()
+                                ]
+                            ),
+                            Row(
+                                description=u"Övriga fysiska medietyper som inte ingår i ovanstående kategorier",
+                                cells=[
+                                    NumberCell(),
+                                    NumberCell(),
+                                    SumNumberCell()
+                                ]
+                            ),
+                            Row(
+                                description=u"Totalt antal",
+                                cells=[
+                                    NumberCell(),
+                                    NumberCell(),
+                                    SumNumberCell()
+                                ]
+                            ),
+                        ]
+                    ),
+                    Group(
+                        description=u"""Uppge hur många läsesalslån som gjordes, enligt stickprov?
+                                    Uppgiften behöver inte besvaras under kalenderår 2015 av de bibliotek
+                                    som inte haft tillgång till stickprovsinstruktioner.""",
+                        rows=[
+                            Row(
+                                description=u"Stickprov vår",
+                                cells=[
+                                    NumberCell()
+                                ]
+                            ),
+                            Row(
+                                description=u"Stickprov höst",
+                                cells=[
+                                    NumberCell()
+                                ]
+                            ),
+                        ]
+
+                    )
+                ],
+                comment=CommentCell(
+                    description=u"""Här kan du lämna eventuella kommentarer till frågeområdet utlån och användning.
+                                Skriv inga sifferuppgifter i detta fält."""
+                )
+            )
+        ])
+    context = {"survey": survey}
+    return render(request, 'libstat/survey_template.html', context)
+
+
+#############################
+### End survey experiment ###
+#############################
+
 
 @permission_required('is_superuser', login_url='index')
 def edit_survey(request, survey_id):
-    
     try:
         survey = Survey.objects.get(pk=survey_id)
     except:
@@ -429,7 +694,7 @@ def edit_survey(request, survey_id):
         'mode': 'edit',
         'form_url': reverse("edit_survey", kwargs={"survey_id": survey_id}),
     }
-    
+
     if request.method == "POST":
         form = SurveyForm(request.POST, instance=survey)
         if form.is_valid():
@@ -441,11 +706,11 @@ def edit_survey(request, survey_id):
                 form._errors['__all__'] = ErrorList([u"Kan inte skapa enkät"])
         else:
             print "Form has errors", form._errors
-    
-    else:         
+
+    else:
         form = SurveyForm(instance=survey)
-    
-    context ['form'] = form
+
+    context['form'] = form
     return render(request, 'libstat/edit_survey.html', context)
 
 
@@ -459,5 +724,5 @@ def surveyable_variables_api(request):
         variables = Variable.objects.surveyable().filter(key__icontains=query)
     else:
         variables = Variable.objects.surveyable()
-    data = [{ 'key': v.key, 'id': str(v.id) } for v in variables];
+    data = [{'key': v.key, 'id': str(v.id)} for v in variables];
     return HttpResponse(json.dumps(data), content_type="application/json")
