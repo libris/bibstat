@@ -15,10 +15,12 @@ define(['jquery', 'sum', 'jquery.tablesorter', 'bootstrap', 'bootstrap.datepicke
         if($(".show-login-modal").length == 1) {
             var sPageUrl = window.location.search.substring(1);
             var urlParams = {};
-            sPageUrl.split("&").forEach(function(p) {
-                var key_value = p.split("=");
-                urlParams[key_value[0]] = key_value[1];
-            });
+            if(sPageUrl.length > 0) {
+            	$.each(sPageUrl.split("&"), function(index, p) {
+            		var key_value = p.split("=");
+            		urlParams[key_value[0]] = key_value[1];
+            	});
+            }
 
             if("next" in urlParams) {
                 var url = $(".show-login-modal").data("form") + "?next=" + urlParams["next"];
