@@ -456,16 +456,14 @@ class Section:
 
 
 class Group:
-    def __init__(self, rows, headers=None, description=None):
+    def __init__(self, rows, description=None):
         self.description = description
         self.rows = rows
-        self.headers = headers
 
 
 class Row:
-    def __init__(self, description, cells):
-        self.description = description
-        self.cells = cells
+    def __init__(self, variables):
+        self.variables = variables
 
 
 class EmptyCell:
@@ -476,6 +474,14 @@ class EmptyCell:
 class NumberCell:
     def __init__(self, previous_value=None):
         self.previous_value = previous_value
+
+
+class Variable:
+    def __init__(self, main_label, sub_label, previous_value=None, description=None):
+        self.description = description
+        self.previous_value = previous_value
+        self.sub_label = sub_label
+        self.main_label = main_label
 
 
 class SumNumberCell:
@@ -514,173 +520,264 @@ def survey_template(request):
             Section(
                 title=u"Bemanning och personal",
                 groups=[
-                    Group(
-                        headers=[
-                            u"Antal personer"
-                        ],
-                        rows=[
-                            Row(
-                                description=u"Antal anställda kvinnor",
-                                cells=[
-                                    NumberCell(14)
-                                ]
-                            ),
-                            Row(
-                                description=u"Antal anställda män",
-                                cells=[
-                                    NumberCell(8)
-                                ]
-                            ),
-                            Row(
-                                description=u"Totalt antal anställda",
-                                cells=[
-                                    SumNumberCell()
-                                ]
+                    Group(rows=[
+                        Row(variables=[
+                            Variable(
+                                previous_value=14,
+                                main_label=u"Antal anställda kvinnor",
+                                sub_label=u"Antal personer"
                             )
-                        ]
-                    )
+                        ]),
+                        Row(variables=[
+                            Variable(
+                                previous_value=8,
+                                main_label=u"Antal anställda män",
+                                sub_label=u"Antal personer"
+                            )
+                        ]),
+                        Row(variables=[
+                            Variable(
+                                main_label=u"Totalt antal anställda",
+                                sub_label=u"Antal personer"
+                            )
+                        ])
+                    ])
                 ],
                 comment=CommentCell(
                     description=u"""Här kan du lämna eventuella kommentarer till frågeområdet personal.
-                                Skriv inga siffror här.""",
+                                Skriv inga siffror här."""
                 )
             ),
             Section(
                 title=u"Utlån av fysiska medier",
                 groups=[
                     Group(
-                        description=u"""Hur många utlån av olika typer av fysiska medier (eller papperskopior)
-                        gjordes under kalenderåret. Ange uppgift dels för antal initiala lån och dels hur många
-                        lån som var omlån. Uppgift om utlån rapporteras exkluderat antalet fjärrlån.""",
-                        headers=[
-                            u"Antal initiala lokala lån",
-                            u"Antal lokala omlån",
-                            u"Totalt antal lån"],
+                        description=u"",
                         rows=[
                             Row(
-                                description=u"Tryckta böcker och seriella publikationer, periodika, tidskrifter, tidningar",
-                                cells=[
-                                    NumberCell(),
-                                    NumberCell(),
-                                    SumNumberCell()
+                                variables=[
+                                    Variable(
+                                        main_label=u"Tryckta böcker och seriella publikationer, periodika, tidskrifter, tidningar",
+                                        sub_label=u"Antal initiala lokala lån",
+                                        description=u"""En ganska lång och utförlig beskrivning får plats här.
+                                                    En ganska lång och utförlig beskrivning får plats här.
+                                                    En ganska lång och utförlig beskrivning får plats här.
+                                                    En ganska lång och utförlig beskrivning får plats här.
+                                                    En ganska lång och utförlig beskrivning får plats här.
+                                                    En ganska lång och utförlig beskrivning får plats här."""
+                                    ),
+                                    Variable(
+                                        main_label=u"Tryckta böcker och seriella publikationer, periodika, tidskrifter, tidningar",
+                                        sub_label=u"Antal lokala omlån"
+                                    ),
+                                    Variable(
+                                        main_label=u"Tryckta böcker och seriella publikationer, periodika, tidskrifter, tidningar",
+                                        sub_label=u"Totalt antal lån"
+                                    ),
                                 ]
                             ),
                             Row(
-                                description=u"--- Varav kursböcker, studielitteratur, läromedel, skolböcker",
-                                cells=[
-                                    NumberCell(),
-                                    NumberCell(),
-                                    SumNumberCell()
+                                variables=[
+                                    Variable(
+                                        main_label=u"--- Varav kursböcker, studielitteratur, läromedel, skolböcker",
+                                        sub_label=u"Antal initiala lokala lån"
+                                    ),
+                                    Variable(
+                                        main_label=u"--- Varav kursböcker, studielitteratur, läromedel, skolböcker",
+                                        sub_label=u"Antal lokala omlån"
+                                    ),
+                                    Variable(
+                                        main_label=u"--- Varav kursböcker, studielitteratur, läromedel, skolböcker",
+                                        sub_label=u"Totalt antal lån"
+                                    ),
                                 ]
                             ),
                             Row(
-                                description=u"Ljudböcker, talböcker DAISY",
-                                cells=[
-                                    NumberCell(),
-                                    NumberCell(),
-                                    SumNumberCell()
+                                variables=[
+                                    Variable(
+                                        main_label=u"Ljudböcker, talböcker DAISY",
+                                        sub_label=u"Antal initiala lokala lån"
+                                    ),
+                                    Variable(
+                                        main_label=u"Ljudböcker, talböcker DAISY",
+                                        sub_label=u"Antal lokala omlån"
+                                    ),
+                                    Variable(
+                                        main_label=u"Ljudböcker, talböcker DAISY",
+                                        sub_label=u"Totalt antal lån"
+                                    ),
                                 ]
                             ),
                             Row(
-                                description=u"Musik (på fysiskt medium)",
-                                cells=[
-                                    NumberCell(),
-                                    NumberCell(),
-                                    SumNumberCell()
+                                variables=[
+                                    Variable(
+                                        main_label=u"Musik (på fysiskt medium)",
+                                        sub_label=u"Antal initiala lokala lån"
+                                    ),
+                                    Variable(
+                                        main_label=u"Musik (på fysiskt medium)",
+                                        sub_label=u"Antal lokala omlån"
+                                    ),
+                                    Variable(
+                                        main_label=u"Musik (på fysiskt medium)",
+                                        sub_label=u"Totalt antal lån"
+                                    ),
                                 ]
                             ),
                             Row(
-                                description=u"Film, TV, radio",
-                                cells=[
-                                    NumberCell(),
-                                    NumberCell(),
-                                    SumNumberCell()
+                                variables=[
+                                    Variable(
+                                        main_label=u"Film, TV, radio",
+                                        sub_label=u"Antal initiala lokala lån"
+                                    ),
+                                    Variable(
+                                        main_label=u"Film, TV, radio",
+                                        sub_label=u"Antal lokala omlån"
+                                    ),
+                                    Variable(
+                                        main_label=u"Film, TV, radio",
+                                        sub_label=u"Totalt antal lån"
+                                    ),
                                 ]
                             ),
                             Row(
-                                description=u"Mikrografiska dokument, mikrofilm, mikrofiche",
-                                cells=[
-                                    NumberCell(),
-                                    NumberCell(),
-                                    SumNumberCell()
+                                variables=[
+                                    Variable(
+                                        main_label=u"Mikrografiska dokument, mikrofilm, mikrofiche",
+                                        sub_label=u"Antal initiala lokala lån"
+                                    ),
+                                    Variable(
+                                        main_label=u"Mikrografiska dokument, mikrofilm, mikrofiche",
+                                        sub_label=u"Antal lokala omlån"
+                                    ),
+                                    Variable(
+                                        main_label=u"Mikrografiska dokument, mikrofilm, mikrofiche",
+                                        sub_label=u"Totalt antal lån"
+                                    ),
                                 ]
                             ),
                             Row(
-                                description=u"Bild, grafiska och kartografiska dokument, OH, presentationer, fotografier",
-                                cells=[
-                                    NumberCell(),
-                                    NumberCell(),
-                                    SumNumberCell()
+                                variables=[
+                                    Variable(
+                                        main_label=u"Bild, grafiska och kartografiska dokument, OH, presentationer, fotografier",
+                                        sub_label=u"Antal initiala lokala lån"
+                                    ),
+                                    Variable(
+                                        main_label=u"Bild, grafiska och kartografiska dokument, OH, presentationer, fotografier",
+                                        sub_label=u"Antal lokala omlån"
+                                    ),
+                                    Variable(
+                                        main_label=u"Bild, grafiska och kartografiska dokument, OH, presentationer, fotografier",
+                                        sub_label=u"Totalt antal lån"
+                                    ),
                                 ]
                             ),
                             Row(
-                                description=u"Manuskript, artiklar, patent, konferenshandlingar, festskrifter, rapporter, musiktryck noter",
-                                cells=[
-                                    NumberCell(),
-                                    NumberCell(),
-                                    SumNumberCell()
+                                variables=[
+                                    Variable(
+                                        main_label=u"Manuskript, artiklar, patent, konferenshandlingar, festskrifter, rapporter, musiktryck noter",
+                                        sub_label=u"Antal initiala lokala lån"
+                                    ),
+                                    Variable(
+                                        main_label=u"Manuskript, artiklar, patent, konferenshandlingar, festskrifter, rapporter, musiktryck noter",
+                                        sub_label=u"Antal lokala omlån"
+                                    ),
+                                    Variable(
+                                        main_label=u"Manuskript, artiklar, patent, konferenshandlingar, festskrifter, rapporter, musiktryck noter",
+                                        sub_label=u"Totalt antal lån"
+                                    ),
                                 ]
                             ),
                             Row(
-                                description=u"Interaktiva medier, CD-ROM, Tv-spel, interaktiva läromedel, konsolspel, dataspel",
-                                cells=[
-                                    NumberCell(),
-                                    NumberCell(),
-                                    SumNumberCell()
+                                variables=[
+                                    Variable(
+                                        main_label=u"Interaktiva medier, CD-ROM, Tv-spel, interaktiva läromedel, konsolspel, dataspel",
+                                        sub_label=u"Antal initiala lokala lån"
+                                    ),
+                                    Variable(
+                                        main_label=u"Interaktiva medier, CD-ROM, Tv-spel, interaktiva läromedel, konsolspel, dataspel",
+                                        sub_label=u"Antal lokala omlån"
+                                    ),
+                                    Variable(
+                                        main_label=u"Interaktiva medier, CD-ROM, Tv-spel, interaktiva läromedel, konsolspel, dataspel",
+                                        sub_label=u"Totalt antal lån"
+                                    ),
                                 ]
                             ),
                             Row(
-                                description=u"Övriga fysiska medietyper som inte ingår i ovanstående kategorier",
-                                cells=[
-                                    NumberCell(),
-                                    NumberCell(),
-                                    SumNumberCell()
+                                variables=[
+                                    Variable(
+                                        main_label=u"Övriga fysiska medietyper som inte ingår i ovanstående kategorier",
+                                        sub_label=u"Antal initiala lokala lån"
+                                    ),
+                                    Variable(
+                                        main_label=u"Övriga fysiska medietyper som inte ingår i ovanstående kategorier",
+                                        sub_label=u"Antal lokala omlån"
+                                    ),
+                                    Variable(
+                                        main_label=u"Övriga fysiska medietyper som inte ingår i ovanstående kategorier",
+                                        sub_label=u"Totalt antal lån"
+                                    ),
                                 ]
                             ),
                             Row(
-                                description=u"Totalt antal",
-                                cells=[
-                                    NumberCell(),
-                                    NumberCell(),
-                                    SumNumberCell()
+                                variables=[
+                                    Variable(
+                                        main_label=u"Totalt antal",
+                                        sub_label=u"Antal initiala lokala lån"
+                                    ),
+                                    Variable(
+                                        main_label=u"Totalt antal",
+                                        sub_label=u"Antal lokala omlån"
+                                    ),
+                                    Variable(
+                                        main_label=u"Totalt antal",
+                                        sub_label=u"Totalt antal lån"
+                                    ),
                                 ]
                             ),
                         ]
-                    ),
-                    Group(
-                        description=u"""Uppge hur många läsesalslån som gjordes, enligt stickprov?
-                                    Uppgiften behöver inte besvaras under kalenderår 2015 av de bibliotek
-                                    som inte haft tillgång till stickprovsinstruktioner.""",
-                        rows=[
-                            Row(
-                                description=u"Stickprov vår",
-                                cells=[
-                                    NumberCell()
-                                ]
-                            ),
-                            Row(
-                                description=u"Stickprov höst",
-                                cells=[
-                                    NumberCell()
-                                ]
-                            ),
-                        ]
-
                     )
-                ],
-                comment=CommentCell(
-                    description=u"""Här kan du lämna eventuella kommentarer till frågeområdet utlån och användning.
-                                Skriv inga sifferuppgifter i detta fält."""
-                )
+                ]
             )
-        ])
+        ]
+    )
     context = {"survey": survey}
     return render(request, 'libstat/survey_template.html', context)
 
 
-#############################
-### End survey experiment ###
-#############################
+    # Group(
+    # description=u"""Uppge hur många läsesalslån som gjordes, enligt stickprov?
+    #                                 Uppgiften behöver inte besvaras under kalenderår 2015 av de bibliotek
+    #                                 som inte haft tillgång till stickprovsinstruktioner.""",
+    #     rows=[
+    #         Row(
+    #             description=u"Stickprov vår",
+    #             cells=[
+    #                 NumberCell()
+    #             ]
+    #         ),
+    #         Row(
+    #             description=u"Stickprov höst",
+    #             cells=[
+    #                 NumberCell()
+    #             ]
+    #         ),
+    #     ]
+    #
+    # )
+    # ],
+    # comment = CommentCell(
+    # description = u"""Här kan du lämna eventuella kommentarer till frågeområdet utlån och användning.
+    #                             Skriv inga sifferuppgifter i detta fält."""
+    # )
+    # )
+    #
+    # ])
+
+    #############################
+    ### End survey experiment ###
+    #############################
 
 
 @permission_required('is_superuser', login_url='index')
