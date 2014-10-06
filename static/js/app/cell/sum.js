@@ -127,10 +127,10 @@ define(['jquery', 'cell', 'cell.num'], function($, cell, num) {
     return {
         'init': function() {
             $.each($('[data-sum-of]'), function(parent) {
-                parent = $(parent);
+                parent = $(this);
                 var setup = { };
 
-                var children = parent.data('sum-of').split(' ');
+                var children = parent.attr('data-sum-of').split(' ');
                 var childrenIds = $.map(children, function(child) {
                     return '#' + child.toLowerCase();
                 });
@@ -138,7 +138,9 @@ define(['jquery', 'cell', 'cell.num'], function($, cell, num) {
                 var parentId = '#' + parent.attr('id');
                 setup[parentId] = childrenIds;
 
-                var options = { integers: parent.data('is-integer') };
+                var options = {
+                    integers: cell.integersOnly(parent)
+                };
 
                 initSum(setup, options);
             });

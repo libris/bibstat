@@ -33,6 +33,11 @@ define(['jquery'], function($) {
 
             if(valid) parent.removeClass('has-feedback has-error');
             else parent.addClass('has-feedback has-error');
+        },
+
+        integersOnly: function(element) {
+            var integers = element.attr('data-is-integer');
+            return (typeof integers !== typeof undefined && integers !== false);
         }
     };
 
