@@ -112,6 +112,9 @@
 .form-group.question {
   border-bottom: 1px solid #f7f7f7;
 }
+.category-label-right {
+  margin-top: 30px;
+}
 
 /* Tooltip */
 .css3-tooltip {

@@ -1,69 +1,1021 @@
 {% extends "libstat/base.html" %}
 {% load i18n %}
+{% load libstat_tags %}
+
+
 
 {% block content %}
-  <div class="container">
+    <style>
+        .previous-years > tbody > tr > th, .previous-years > tbody > tr > td {
+            padding: 4px;
+        }
+
+        .group-title {
+            color: orange;
+        }
+
+        .input-type-title {
+            font-weight: bold;
+            font-size: 20;
+            margin-bottom: 8px;
+        }
+
+        .previous-year-value {
+            color: grey;
+        }
+
+        .question-row {
+            margin-top: 5px;
+        }
+
+        .question-separator {
+            margin-top: 0.5em;
+            margin-bottom: 0.5em;
+        }
+
+        .comment-field {
+            width: 100%;
+            height: 100%;
+        }
+
+        .previous-year-popover {
+            cursor: default;
+        }
+
+        .previous-year-popover-content {
+            display:none;
+        }
+    </style>
+    <div class="container">
     <div class="page-header">
-      <h1>{% trans "Statistikenkät" %}</small></h1>
+        <h1>{% trans "Statistikenkät" %}</h1>
     </div>
 
-    <form action="{{form_url}}" method="POST" role="form" class="form edit-survey-form">
-      {% csrf_token %}
-      
-      <div class="panel panel-default inverse">
+    <form action="{{ form_url }}" method="POST" role="form" class="form edit-survey-form">
+    {% csrf_token %}
+
+    <div class="panel panel-default inverse">
         <div class="panel-body">
-          <div class="row">
-            <div class="col-md-3">
-              <div class="form-group sample_year{% if form.sample_year.errors %} has-feedback has-error{% endif %}">
-                <label for="id_sample_year">{% trans "Mätår" %}</label>
-                <span class="text-danger form-validation after">{{form.sample_year.errors}}</span>
-                {{form.sample_year}}
-                <span class="glyphicon glyphicon-remove form-control-feedback"></span>
-              </div>
-            </div>
-            <div class="col-md-9">
-              <div class="form-group target_groups {% if form.target_groups.errors %} has-feedback has-error{% endif %}">
-                <label>{% trans "Bibliotekstyper" %}</label>
-                <span class="text-danger form-validation after">{{form.target_groups.errors}}</span>
-                <div>
-                  {% for target_group in form.target_groups %}
-                    <label class="checkbox-inline">
-                      {{target_group.tag}}
-                      {{target_group.choice_label}}
-                    </label>
-                  {% endfor %}
+            <div class="row">
+                <div class="col-md-3">
+                    <div class="form-group sample_year{% if form.sample_year.errors %} has-feedback has-error{% endif %}">
+                        <label for="id_sample_year">{% trans "Mätår" %}</label>
+                        <span class="text-danger form-validation after">{{ form.sample_year.errors }}</span>
+                        {{ form.sample_year }}
+                        <span class="glyphicon glyphicon-remove form-control-feedback"></span>
+                    </div>
                 </div>
-              </div>
-            </div>
-          </div>
-          <div class="form-group">
-            <input type="submit" class="btn btn-primary pull-right" value="{% trans 'Spara'%}"/>
-          </div>
-        </div><!-- panel-body -->
-      </div><!-- panel -->
-      
-      <div class="page-header">
-        <h2>{% trans "Undersökningens frågor" %}</h2>
-      </div>
+                <div class="col-md-9">
+                    <div class="form-group target_groups {% if form.target_groups.errors %} has-feedback has-error{% endif %}">
+                        <label>{% trans "Bibliotekstyper" %}</label>
+                        <span class="text-danger form-validation after">{{ form.target_groups.errors }}</span>
 
-      {% for variable in form.instance.questions %}
-        <div class="form-group question">
-          {% if variable.sub_question %}
-            <div class='survey-question-order'>
-              <span class='survey-index'>{{forloop.counter}}.</span> <span class='term-key'>{{variable.key}}</span>
+                        <div>
+                            {% for target_group in form.target_groups %}
+                                <label class="checkbox-inline">
+                                    {{ target_group.tag }}
+                                    {{ target_group.choice_label }}
+                                </label>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
             </div>
-            <div class='survey-question'>{{variable.label.0}}</div>
-            <div class='survey-question-part'>{{variable.label.1}}</div>
-          {% else %}
-            <div class='survey-question-order'>
-              <span class='survey-index'>{{forloop.counter}}.</span> <span class='term-key'>{{variable.key}}</span>
+            <div class="form-group">
+                <input type="submit" class="btn btn-primary pull-right" value="{% trans 'Spara' %}"/>
             </div>
-            <div class='survey-question'>{{variable.label}}</div>
-          {% endif %}
         </div>
-      {% endfor %}
+    </div>
 
-      <div class="panel panel-default inverse">
+    <div class="page-header">
+        <h2>{% trans "Om svarande organisation och person" %}</h2>
+    </div>
+
+    <div class="panel panel-default inverse">
+        <div class="panel-body">
+            <div class="row">
+                <div class="col-md-6">
+                    <h4>{% trans "Bibliotek/organisation" %}</h4>
+
+                    <div class="form-group">
+                        <label for="id_library_name">{% trans "Namn" %}</label>
+                        <input type="text" name="library_name" maxlength="100" id="id_library_name"
+                               class="form-control">
+                    </div>
+                    <div class="form-group">
+                        <label for="id_municipality_name">{% trans "Kommun/län" %}</label>
+                        <input type="text" class="form-control" id="id_municipality_name" name="municipality_name">
+                    </div>
+                    <div class="form-group">
+                        <label for="id_municipality_code">{% trans "Kommun/länskod" %}</label>
+                        <input type="text" size="6" name="municipality_code" maxlength="6" id="id_municipality_code"
+                               class="form-control width-auto">
+                    </div>
+                    <div class="form-group">
+                        <label for="id_library_url">{% trans "Webbplats" %}</label>
+                        <input type="text" name="library_url" id="id_library_url" class="form-control">
+                    </div>
+                    <div class="form-group">
+                        <label for="id_manned_service_points">{% trans "Svar avser följande bemannade serviceställen" %}</label>
+
+                        <div class="example">
+                            <p class="text-muted">{% trans "Nedan visas ett exempel på hur listan med bemannade serviceställen kan se ut för ett bibliotek" %}</p>
+
+                            <div class="checkbox">
+                                <label>
+                                    <input type="checkbox" value="" checked="checked"/>
+                                    <a href="http://biblioteksdatabasen.libris.kb.se/library/323/">(Kld1) Karlstads
+                                        stadsbibliotek</a>
+                                </label>
+                            </div>
+                            <div class="checkbox">
+                                <label>
+                                    <input type="checkbox" value=""/>
+                                    <a href="http://biblioteksdatabasen.libris.kb.se/library/513/">(Tg)
+                                        Tingvallagymnasiet, Biblioteket</a>
+                                </label>
+                            </div>
+                            <div class="form_group table-responsive">
+                                <table class="table table-bordered">
+                                    <tr>
+                                        <td>{% trans "Antal bemannade serviceställen" %}</td>
+                                        <td>1</td>
+                                    </tr>
+                                    <tr>
+                                        <td>{% trans "Antal obemannade serviceställen" %}</td>
+                                        <td>4</td>
+                                    </tr>
+                                    <tr>
+                                        <td>{% trans "Antal bokbussar" %}</td>
+                                        <td>2</td>
+                                    </tr>
+                                    <tr>
+                                        <td>{% trans "Antal bokbusshållsplatser" %}</td>
+                                        <td>13</td>
+                                    </tr>
+                                    <tr>
+                                        <td>{% trans "Antal bokbilar" %}</td>
+                                        <td>1</td>
+                                    </tr>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <h4>{% trans "Svarande person" %}</h4>
+
+                    <div class="form-group">
+                        <label for="id_respondent_name">{% trans "Namn" %}</label>
+                        <input type="text" name="respondent_name" maxlength="100" id="id_respondent_name"
+                               class="form-control">
+                    </div>
+                    <div class="form-group">
+                        <label for="id_respondent_email">{% trans "E-post" %}</label>
+                        <input type="email" name="respondent_email" maxlength="100" id="id_respondent_email"
+                               class="form-control">
+                    </div>
+                    <div class="form-group">
+                        <label for="id_respondent_phone">{% trans "Telefonnr" %}</label>
+                        <input type="text" size="20" name="respondent_phone" maxlength="20" id="id_respondent_phone"
+                               class="form-control width-auto">
+                    </div>
+                </div>
+            </div>
+            <div class="form-group">
+                <input type="submit" class="btn btn-primary pull-right" value="{% trans 'Spara' %}"/>
+            </div>
+        </div>
+    </div>
+    <h2 class="group-title">Organisation</h2>
+
+    <div class="category">
+        <div class="panel panel-default inverse">
+            <div class="panel-body">
+                <div class="row">
+                    <div class="col-md-6"></div>
+                    <div class="col-sm-1"></div>
+                    <div class="col-md-2">
+                        <div class="input-type-title">Antal personer</div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-sm-6">
+                        <label class="control-label">
+                            Hur många personer får hemsändning av medier via bokbilar eller postgång som administreras
+                            av biblioteksorganisationen?
+                        </label>
+                    </div>
+
+                    <div class="col-sm-1"></div>
+                    <div class="col-sm-2">
+                        <div class="input-group">
+                            <input type="text" class="form-control">
+                            <span class="input-group-addon previous-year-value">
+                                12842
+                            </span>
+                        </div>
+                    </div>
+                </div>
+                <hr class="question-separator">
+                <div class="row">
+                    <div class="col-sm-6">
+                        <label class="control-label">
+                            Antal potentiella användare som biblioteket förväntas betjäna.
+                            Exempelvis antal elever, antal anställda, antal forskare och studenter.
+                            Uppgift behöver inte lämnas av folkbibliotek.
+                        </label>
+                    </div>
+                    <div class="col-sm-1"></div>
+                    <div class="col-sm-2">
+                        <div class="input-group">
+                            <input type="text" class="form-control">
+                            <span class="input-group-addon previous-year-value">
+                                34847
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <h2 class="group-title">Bemanning och personal</h2>
+
+    <div class="category">
+        <div class="panel panel-default inverse">
+            <div class="panel-body">
+                <div class="row">
+                    <div class="col-md-7"></div>
+                    <div class="col-md-2">
+                        <div class="input-type-title">{% trans "Antal årsverken" %}</div>
+                    </div>
+                    <div class="col-md-3">
+                        <table class="table table-bordered previous-years">
+                            <tr>
+                                <th>2013</th>
+                                <th>2012</th>
+                                <th>2011</th>
+                            </tr>
+                        </table>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="form-group">
+                        <label class="col-sm-6 control-label">
+                            Bibliotekarier och dokumentalister
+                        </label>
+
+                        <div class="col-sm-1"></div>
+                        <div class="col-sm-2">
+                            <input type="number" class="form-control">
+                        </div>
+                        <div class="col-sm-3">
+                            <table class="table table-bordered previous-years">
+                                <tr>
+                                    <td>7</td>
+                                    <td>7</td>
+                                    <td>5</td>
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="form-group">
+                        <label class="col-sm-6 control-label">
+                            Biblioteksassistenter och lärarbibliotekarier
+                        </label>
+
+                        <div class="col-sm-1"></div>
+                        <div class="col-sm-2">
+                            <input type="number" class="form-control">
+                        </div>
+                        <div class="col-sm-3">
+                            <table class="table table-bordered previous-years">
+                                <tr>
+                                    <td>7</td>
+                                    <td>7</td>
+                                    <td>5</td>
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="form-group">
+                        <label class="col-sm-6 control-label">
+                            Specialister inom IT, information eller ämnessakkunniga
+                        </label>
+
+                        <div class="col-sm-1"></div>
+                        <div class="col-sm-2">
+                            <input type="number" class="form-control">
+                        </div>
+                        <div class="col-sm-3">
+                            <table class="table table-bordered previous-years">
+                                <tr>
+                                    <td>7</td>
+                                    <td>7</td>
+                                    <td>5</td>
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="form-group">
+                        <label class="col-sm-6 control-label">
+                            Övrig personal inkl. kvällspersonal, studentvakter, chaufförer
+                        </label>
+
+                        <div class="col-sm-1"></div>
+                        <div class="col-sm-2">
+                            <input type="number" class="form-control">
+                        </div>
+                        <div class="col-sm-3">
+                            <table class="table table-bordered previous-years">
+                                <tr>
+                                    <td>7</td>
+                                    <td>7</td>
+                                    <td>5</td>
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="form-group">
+                        <label class="col-sm-6 control-label">
+                            Totalt antal årsverken
+                        </label>
+
+                        <div class="col-sm-1"></div>
+                        <div class="col-sm-2">
+                            <input type="number" class="form-control">
+                        </div>
+                        <div class="col-sm-3">
+                            <table class="table table-bordered previous-years">
+                                <tr>
+                                    <td>7</td>
+                                    <td>7</td>
+                                    <td>5</td>
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="form-group">
+                        <label class="col-sm-6 control-label">
+                            - Varav antal årsverken som är särskilt avsatta för barn och unga
+                        </label>
+
+                        <div class="col-sm-1"></div>
+                        <div class="col-sm-2">
+                            <input type="number" class="form-control">
+                        </div>
+                        <div class="col-sm-3">
+                            <table class="table table-bordered previous-years">
+                                <tr>
+                                    <td>7</td>
+                                    <td>7</td>
+                                    <td>5</td>
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <h2 class="group-title">Utlån av fysiska medier</h2>
+
+    <div class="category">
+    <div class="panel panel-default inverse">
+    <div class="panel-body">
+    <div class="row">
+        <div class="col-sm-12">
+            <div class="question-group-description">
+                Hur många utlån av olika typer av fysiska medier (eller papperskopior) gjordes under kalenderåret.
+                Ange uppgift dels för antal initiala lån och dels hur många lån som var omlån.
+                Uppgift om utlån rapporteras exkluderat antalet fjärrlån.
+            </div>
+        </div>
+    </div>
+    <hr class="question-separator">
+    <div class="row">
+        <div class="col-md-6"></div>
+        <div class="col-md-2">
+            <div class="input-type-title">Antal initiala lokala lån</div>
+        </div>
+        <div class="col-md-2">
+            <div class="input-type-title">Antal lokala omlån</div>
+        </div>
+        <div class="col-md-2">
+            <div class="input-type-title">Totalt antal lån lån</div>
+        </div>
+    </div>
+    <div class="row question-row">
+        <div class="form-group">
+            <div class="col-sm-6">
+                <label class="control-label">
+                    Tryckta böcker och seriella publikationer, periodika, tidskrifter, tidningar
+                </label>
+            </div>
+            <div class="col-sm-2">
+                <div class="input-group">
+                    <input type="text" class="form-control">
+                            <span class="input-group-addon previous-year-value">
+                                70351
+                            </span>
+                </div>
+            </div>
+            <div class="col-sm-2">
+                <div class="input-group">
+                    <input type="text" class="form-control">
+                            <span class="input-group-addon previous-year-value">
+                                4889
+                            </span>
+                </div>
+            </div>
+            <div class="col-sm-2">
+                <div class="input-group">
+                    <input type="text" class="form-control">
+                            <span class="input-group-addon previous-year-value">
+                                75240
+                            </span>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row question-row">
+        <div class="form-group">
+            <div class="col-sm-6">
+                <label class="control-label">
+                    --- Varav kursböcker, studielitteratur, läromedel, skolböcker
+                </label>
+            </div>
+            <div class="col-sm-2">
+                <div class="input-group">
+                    <input type="text" class="form-control">
+                            <span class="input-group-addon previous-year-value">
+                                70351
+                            </span>
+                </div>
+            </div>
+            <div class="col-sm-2">
+                <div class="input-group">
+                    <input type="text" class="form-control">
+                            <span class="input-group-addon previous-year-value">
+                                4889
+                            </span>
+                </div>
+            </div>
+            <div class="col-sm-2">
+                <div class="input-group">
+                    <input type="text" class="form-control">
+                            <span class="input-group-addon previous-year-value">
+                                75240
+                            </span>
+                </div>
+            </div>
+        </div>
+    </div>
+    <hr class="question-separator">
+    <div class="row question-row">
+        <div class="form-group">
+            <div class="col-sm-6">
+                <label class="control-label">
+                    Ljudböcker, talböcker DAISY
+                </label>
+            </div>
+            <div class="col-sm-2">
+                <div class="input-group">
+                    <input type="text" class="form-control">
+                            <span class="input-group-addon previous-year-value">
+                                70351
+                            </span>
+                </div>
+            </div>
+            <div class="col-sm-2">
+                <div class="input-group">
+                    <input type="text" class="form-control">
+                            <span class="input-group-addon previous-year-value">
+                                4889
+                            </span>
+                </div>
+            </div>
+            <div class="col-sm-2">
+                <div class="input-group">
+                    <input type="text" class="form-control">
+                            <span class="input-group-addon previous-year-value">
+                                75240
+                            </span>
+                </div>
+            </div>
+        </div>
+    </div>
+    <hr class="question-separator">
+    <div class="row question-row">
+        <div class="form-group">
+            <div class="col-sm-6">
+                <label class="control-label">
+                    Musik (på fysiskt medium)
+                </label>
+            </div>
+            <div class="col-sm-2">
+                <div class="input-group">
+                    <input type="text" class="form-control">
+                            <span class="input-group-addon previous-year-value">
+                                70351
+                            </span>
+                </div>
+            </div>
+            <div class="col-sm-2">
+                <div class="input-group">
+                    <input type="text" class="form-control">
+                            <span class="input-group-addon previous-year-value">
+                                4889
+                            </span>
+                </div>
+            </div>
+            <div class="col-sm-2">
+                <div class="input-group">
+                    <input type="text" class="form-control">
+                            <span class="input-group-addon previous-year-value">
+                                75240
+                            </span>
+                </div>
+            </div>
+        </div>
+    </div>
+    <hr class="question-separator">
+    <div class="row question-row">
+        <div class="form-group">
+            <div class="col-sm-6">
+                <label class="control-label">
+                    Film, TV, radio
+                </label>
+            </div>
+            <div class="col-sm-2">
+                <div class="input-group">
+                    <input type="text" class="form-control">
+                            <span class="input-group-addon previous-year-value">
+                                70351
+                            </span>
+                </div>
+            </div>
+            <div class="col-sm-2">
+                <div class="input-group">
+                    <input type="text" class="form-control">
+                            <span class="input-group-addon previous-year-value">
+                                4889
+                            </span>
+                </div>
+            </div>
+            <div class="col-sm-2">
+                <div class="input-group">
+                    <input type="text" class="form-control">
+                            <span class="input-group-addon previous-year-value">
+                                75240
+                            </span>
+                </div>
+            </div>
+        </div>
+    </div>
+    <hr class="question-separator">
+    <div class="row question-row">
+        <div class="form-group">
+            <div class="col-sm-6">
+                <label class="control-label">
+                    Mikrografiska dokument, mikrofilm, mikrofiche
+                </label>
+            </div>
+            <div class="col-sm-2">
+                <div class="input-group">
+                    <input type="text" class="form-control">
+                            <span class="input-group-addon previous-year-value">
+                                70351
+                            </span>
+                </div>
+            </div>
+            <div class="col-sm-2">
+                <div class="input-group">
+                    <input type="text" class="form-control">
+                            <span class="input-group-addon previous-year-value">
+                                4889
+                            </span>
+                </div>
+            </div>
+            <div class="col-sm-2">
+                <div class="input-group">
+                    <input type="text" class="form-control">
+                            <span class="input-group-addon previous-year-value">
+                                75240
+                            </span>
+                </div>
+            </div>
+        </div>
+    </div>
+    <hr class="question-separator">
+    <div class="row question-row">
+        <div class="form-group">
+            <div class="col-sm-6">
+                <label class="control-label">
+                    Bild, grafiska och kartografiska dokument, OH, presentationer, fotografier
+                </label>
+            </div>
+            <div class="col-sm-2">
+                <div class="input-group">
+                    <input type="text" class="form-control">
+                            <span class="input-group-addon previous-year-value">
+                                70351
+                            </span>
+                </div>
+            </div>
+            <div class="col-sm-2">
+                <div class="input-group">
+                    <input type="text" class="form-control">
+                            <span class="input-group-addon previous-year-value">
+                                4889
+                            </span>
+                </div>
+            </div>
+            <div class="col-sm-2">
+                <div class="input-group">
+                    <input type="text" class="form-control">
+                            <span class="input-group-addon previous-year-value">
+                                75240
+                            </span>
+                </div>
+            </div>
+        </div>
+    </div>
+    <hr class="question-separator">
+    <div class="row question-row">
+        <div class="form-group">
+            <div class="col-sm-6">
+                <label class="control-label">
+                    Manuskript, artiklar, patent, konferenshandlingar, festskrifter, rapporter, musiktryck noter
+                </label>
+            </div>
+            <div class="col-sm-2">
+                <div class="input-group">
+                    <input type="text" class="form-control">
+                            <span class="input-group-addon previous-year-value">
+                                70351
+                            </span>
+                </div>
+            </div>
+            <div class="col-sm-2">
+                <div class="input-group">
+                    <input type="text" class="form-control">
+                            <span class="input-group-addon previous-year-value">
+                                4889
+                            </span>
+                </div>
+            </div>
+            <div class="col-sm-2">
+                <div class="input-group">
+                    <input type="text" class="form-control">
+                            <span class="input-group-addon previous-year-value">
+                                75240
+                            </span>
+                </div>
+            </div>
+        </div>
+    </div>
+    <hr class="question-separator">
+    <div class="row question-row">
+        <div class="form-group">
+            <div class="col-sm-6">
+                <label class="control-label">
+                    Interaktiva medier, CD-ROM, Tv-spel, interaktiva läromedel, konsolspel, dataspel
+                </label>
+            </div>
+            <div class="col-sm-2">
+                <div class="input-group">
+                    <input type="text" class="form-control">
+                            <span class="input-group-addon previous-year-value">
+                                70351
+                            </span>
+                </div>
+            </div>
+            <div class="col-sm-2">
+                <div class="input-group">
+                    <input type="text" class="form-control">
+                            <span class="input-group-addon previous-year-value">
+                                4889
+                            </span>
+                </div>
+            </div>
+            <div class="col-sm-2">
+                <div class="input-group">
+                    <input type="text" class="form-control">
+                            <span class="input-group-addon previous-year-value">
+                                75240
+                            </span>
+                </div>
+            </div>
+        </div>
+    </div>
+    <hr class="question-separator">
+    <div class="row question-row">
+        <div class="form-group">
+            <div class="col-sm-6">
+                <label class="control-label">
+                    Övriga fysiska medietyper som inte ingår i ovanstående kategorier
+                </label>
+            </div>
+            <div class="col-sm-2">
+                <div class="input-group">
+                    <input type="text" class="form-control">
+                            <span class="input-group-addon previous-year-value">
+                                70351
+                            </span>
+                </div>
+            </div>
+            <div class="col-sm-2">
+                <div class="input-group">
+                    <input type="text" class="form-control">
+                            <span class="input-group-addon previous-year-value">
+                                4889
+                            </span>
+                </div>
+            </div>
+            <div class="col-sm-2">
+                <div class="input-group">
+                    <input type="text" class="form-control">
+                            <span class="input-group-addon previous-year-value">
+                                75240
+                            </span>
+                </div>
+            </div>
+        </div>
+    </div>
+    <hr class="question-separator">
+    <div class="row question-row">
+        <div class="form-group">
+            <div class="col-sm-6">
+                <label class="control-label">
+                    Totalt antal
+                </label>
+            </div>
+            <div class="col-sm-2">
+                <div class="input-group">
+                    <input type="text" class="form-control">
+                            <span class="input-group-addon previous-year-value">
+                                70351
+                            </span>
+                </div>
+            </div>
+            <div class="col-sm-2">
+                <div class="input-group">
+                    <input type="text" class="form-control">
+                            <span class="input-group-addon previous-year-value">
+                                4889
+                            </span>
+                </div>
+            </div>
+            <div class="col-sm-2">
+                <div class="input-group">
+                    <input type="text" class="form-control">
+                            <span class="input-group-addon previous-year-value">
+                                75240
+                            </span>
+                </div>
+            </div>
+        </div>
+    </div>
+    </div>
+    </div>
+    </div>
+    <div class="category">
+        <div class="panel panel-default inverse">
+            <div class="panel-body">
+                <div class="row">
+                    <div class="col-sm-12">
+                        <div class="question-group-description">
+                            Uppge hur många läsesalslån som gjordes, enligt stickprov?
+                            Uppgiften behöver inte besvaras under kalenderår 2015 av de bibliotek
+                            som inte haft tillgång till stickprovsinstruktioner.
+                        </div>
+                    </div>
+                </div>
+                <hr class="question-separator">
+                <div class="row">
+                    <div class="col-sm-3">
+                        <label class="control-label">
+                            Stickprov vår
+                        </label>
+                    </div>
+                    <div class="col-sm-2">
+                        <div class="input-group">
+                            <input type="text" class="form-control">
+                            <span class="input-group-addon previous-year-value">
+                                75
+                            </span>
+                        </div>
+                    </div>
+                </div>
+                <hr class="question-separator">
+                <div class="row">
+                    <div class="col-sm-3">
+                        <label class="control-label">
+                            Stickprov höst
+                        </label>
+                    </div>
+                    <div class="col-sm-2">
+                        <div class="input-group">
+                            <input type="text" class="form-control">
+                            <span class="input-group-addon previous-year-value">
+                                14
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="category">
+        <div class="panel panel-default inverse">
+            <div class="panel-body">
+                <div class="row">
+                    <div class="col-sm-12">
+                        <div class="question-group-description">
+                            Hur många fjärrlån gjordes under kalenderåret? Räkna inte de fjärrlån som är omlån.
+                            Fjärrlån inkluderar fysiska medier, fotokopior, mikroform, skannade dokument och
+                            utskrifter samt elektroniskt överförda dokument.
+                        </div>
+                    </div>
+                </div>
+                <hr class="question-separator">
+                <div class="row">
+                    <div class="col-md-3"></div>
+                    <div class="col-md-3">
+                        <div class="input-type-title">Antal lån inom Sverige</div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="input-type-title">Antal lån utanför Sverige</div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="input-type-title">Totalt antal</div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-sm-3">
+                        <label class="control-label">
+                            Fjärrutlån
+                        </label>
+                    </div>
+                    <div class="col-sm-3">
+                        <div class="input-group">
+                            <input type="text" class="form-control">
+                            <span class="input-group-addon previous-year-value">
+                                855099
+                            </span>
+                        </div>
+                    </div>
+                    <div class="col-sm-3">
+                        <div class="input-group">
+                            <input type="text" class="form-control">
+                            <span class="input-group-addon previous-year-value">
+                                6601
+                            </span>
+                        </div>
+                    </div>
+                    <div class="col-sm-3">
+                        <div class="input-group">
+                            <input type="text" class="form-control">
+                            <span class="input-group-addon previous-year-value">
+                                861700
+                            </span>
+                        </div>
+                    </div>
+                </div>
+                <hr class="question-separator">
+                <div class="row">
+                    <div class="col-sm-3">
+                        <label class="control-label">
+                            Fjärrinlån
+                        </label>
+                    </div>
+                    <div class="col-sm-3">
+                        <div class="input-group">
+                            <input type="text" class="form-control">
+                            <span class="input-group-addon previous-year-value">
+                                855099
+                            </span>
+                        </div>
+                    </div>
+                    <div class="col-sm-3">
+                        <div class="input-group">
+                            <input type="text" class="form-control">
+                            <span class="input-group-addon previous-year-value">
+                                6601
+                            </span>
+                        </div>
+                    </div>
+                    <div class="col-sm-3">
+                        <div class="input-group">
+                            <input type="text" class="form-control">
+                            <span class="input-group-addon previous-year-value">
+                                861700
+                            </span>
+                        </div>
+                    </div>
+                </div>
+                <hr class="question-separator">
+                <div class="row">
+                    <div class="col-sm-3">
+                        <label class="control-label">
+                            Totalt antal
+                        </label>
+                    </div>
+                    <div class="col-sm-3">
+                        <div class="input-group">
+                            <input type="text" class="form-control">
+                            <span class="input-group-addon previous-year-value">
+                                855099
+                            </span>
+                        </div>
+                    </div>
+                    <div class="col-sm-3">
+                        <div class="input-group">
+                            <input type="text" class="form-control">
+                            <span class="input-group-addon previous-year-value">
+                                6601
+                            </span>
+                        </div>
+                    </div>
+                    <div class="col-sm-3">
+                        <div class="input-group">
+                            <input type="text" class="form-control">
+                            <span class="input-group-addon previous-year-value">
+                                <a class="previous-year-popover" data-placement="above" data-trigger="hover" title="Föregående års värden">
+                                    861700
+                                    <div class="previous-year-popover-content">
+                                        <table class="table table-bordered">
+                                            <tr>
+                                                <th>2013</th>
+                                                <th>2012</th>
+                                                <th>2011</th>
+                                            </tr>
+                                            <tr>
+                                                <td>861700</td>
+                                                <td>890983</td>
+                                                <td>912380</td>
+                                            </tr>
+                                        </table>
+                                    </div>
+                                </a>
+                            </span>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="category">
+        <div class="panel panel-default inverse">
+            <div class="panel-body">
+                <div class="row">
+                    <div class="col-sm-12">
+                        <div class="question-group-description">
+                            Här kan du lämna eventuella kommentarer till frågeområdet utlån och användning.
+                            Skriv inga sifferuppgifter i detta fält.
+                        </div>
+                    </div>
+                </div>
+                <hr class="question-separator">
+                <div class="row">
+                    <div class="col-sm-12">
+                        <textarea class="comment-field" rows="6"></textarea>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- {% for variable in form.instance.questions %}
+                    <div class="form-group question">
+                      {% if variable.sub_question %}
+                        <div class='survey-question-order'>
+                          <span class='survey-index'>{{forloop.counter}}.</span> <span class='term-key'>{{variable.key}}</span>
+                        </div>
+                        <div class='survey-question'>{{variable.label.0}}</div>
+                        <div class='survey-question-part'>{{variable.label.1}}</div>
+                      {% else %}
+                        <div class='survey-question-order'>
+                          <span class='survey-index'>{{forloop.counter}}.</span> <span class='term-key'>{{variable.key}}</span>
+                        </div>
+                        <div class='survey-question'>{{variable.label}}</div>
+                      {% endif %}
+                    </div>
+                  {% endfor %} -->
+
+    <!--       <div class="panel panel-default inverse">
         <div class="panel-body">
           <div class="row">
             <div class="col-md-4">
@@ -79,13 +1031,14 @@
             </div>
           </div>
         </div>
-      </div>
+      </div> -->
 
     </form>
-  
+
     <hr>
     <footer>
-      <p>&copy; {% trans "Kungliga Biblioteket" %} 2014</p>
+        <p>&copy; {% trans "Kungliga Biblioteket" %} 2014</p>
     </footer>
-  </div><!-- container -->
+    </div><!-- container -->
+
 {% endblock %}

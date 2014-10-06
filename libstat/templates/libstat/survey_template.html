@@ -1,0 +1,239 @@
+{% extends "libstat/base.html" %}
+{% load i18n %}
+{% load libstat_tags %}
+
+{% block content %}
+    <style>
+        .section-title {
+            color: orange;
+        }
+
+        .input-header {
+            font-weight: bold;
+            font-size: 20;
+            margin-bottom: 8px;
+        }
+
+        .previous-year-value {
+            color: grey;
+        }
+
+        .layout-unknown {
+            font-size: 60px;
+            font-weight: bold;
+
+        }
+
+        .section-comment {
+            width: 100%;
+            height: 100%;
+        }
+
+        .popover-content {
+            font-size: 12px;
+        }
+
+        .popover {
+            width: 300px;
+        }
+
+        .term-description {
+            margin-right: -2px !important;
+        }
+    </style>
+    <div class="container">
+        <div class="page-header">
+            <h1>Statistikenkät för verksamhetsåret {{ survey.target_year }}</h1>
+        </div>
+        <div class="row">
+            <div class="col-sm-6">
+                <div class="intro-text">
+                    Hej och välkommen!
+                    <br>
+                    <br>
+                    Här kommer vi snart skriva en varm och välkomnande text som beskriver enkäten.
+                    <br>
+                    <br>
+                    Om du känner att du inte kan/vill fylla i hela enkäten på en och samma gång så har du möjlighet att
+                    spara dina svar. Detta kan du göra genom att trycka på spara-knappen längst ner på
+                    sidan, som då kommer att behålla dina svar tills enkäten är redo att skickas in.
+                    <br>
+                    <br>
+                    När du klickar på skicka-knappen så kommer vi ta emot dina svar och du kan då inte längre
+                    ändra på något av svaren.
+                    <br>
+                    <br>
+                    Frågor kan ställas till <a href="mailto:abc@kb.se">abc@kb.se</a> eller
+                    <a href="tel:08 - 12 34 56">08 - 12 34 56</a>.
+                    <br>
+                    <br>
+                    Stort tack på förhand för ditt svar!
+                </div>
+            </div>
+        </div>
+        <hr>
+        <div class="survey-content">
+            <h2 class="section-title">Om svarande organisation och person</h2>
+
+            <div class="panel panel-default inverse">
+                <div class="panel-body">
+                    <div class="row">
+                        <div class="col-sm-4">
+                            <h3>Bibliotek/organisation</h3>
+
+                            <div class="form-group">
+                                <label class="control-label">Namn</label>
+                                <input type="text" class="form-control" readonly value="{{ survey.organization_name }}">
+                            </div>
+                            <div class="form-group">
+                                <label class="control-label">Kommun/län</label>
+                                <input type="text" class="form-control" readonly value="{{ survey.municipality }}">
+                            </div>
+                            <div class="form-group">
+                                <label class="control-label">Kommun-/länskod</label>
+                                <input type="text" class="form-control" readonly value="{{ survey.municipality_code }}">
+                            </div>
+                            <div class="form-group">
+                                <label class="control-label">Huvudman</label>
+                                <input type="text" class="form-control" readonly value="{{ survey.head_authority }}">
+                            </div>
+                            <div class="form-group">
+                                <label class="control-label">Webbplats</label>
+                                <input type="text" class="form-control" value="{{ survey.website }}">
+                            </div>
+                        </div>
+                        <div class="col-sm-4">
+                            <h3>Svarande person</h3>
+
+                            <div class="form-group">
+                                <label class="control-label">Namn</label>
+                                <input type="text" class="form-control" value="{{ survey.respondent_name }}">
+                            </div>
+                            <div class="form-group">
+                                <label class="control-label">E-post</label>
+                                <input type="text" class="form-control" value="{{ survey.respondent_email }}">
+                            </div>
+                            <div class="form-group">
+                                <label class="control-label">Telefonnummer</label>
+                                <input type="text" class="form-control" value="{{ survey.respondent_phone }}">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="panel panel-default inverse">
+                <div class="panel-body">
+                    <div class="row">
+                        <div class="col-sm-12 question-group-description">
+                            För vilka olika bemannade biblioteksenheter gäller de här svaren?
+                        </div>
+                    </div>
+                    <hr>
+                    <div class="row">
+                        <div class="col-sm-12 layout-unknown">
+                            ? ? ? ? ? ? ?
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% for section in survey.sections %}
+                <h2 class="section-title">{{ section.title }}</h2>
+                {% for group in section.groups %}
+                    <div class="panel panel-default inverse">
+                        <div class="panel-body">
+                            {% if group.description %}
+                                <div class="row">
+                                    <div class="col-sm-12 question-group-description">{{ group.description }}</div>
+                                </div>
+                                <hr>
+                            {% endif %}
+                            <div class="row">
+                                <div class="col-sm-3"></div>
+                                {% for variable in group.rows.0 %}
+                                    <div class="col-sm-3">
+                                        <div class="input-header">{{ variable.sub_label }}</div>
+                                    </div>
+                                {% endfor %}
+                            </div>
+                            {% for row in group.rows %}
+                                <div class="row">
+                                    <div class="question-row">
+                                        <div class="form-group">
+                                            <div class="col-sm-3">
+                                                <label class="control-label">{{ row.0.main_label }}</label>
+                                            </div>
+                                            {% for variable in row %}
+                                                <div class="col-sm-3">
+                                                    <div class="input-group">
+                                                        <span class="input-group-btn">
+                                                            <button type="button"
+                                                                    class="btn btn-default term-description"
+                                                                    data-toggle="popover" data-placement="top"
+                                                                    title="Beskrivning"
+                                                                    data-content="{{ variable.description }}">
+                                                                <b>i</b>
+                                                            </button>
+                                                        </span>
+                                                        <input id="{{ variable.id }}"
+                                                               type="text"
+                                                               class="form-control"
+                                                                {% if variable.is_integer %}
+                                                               data-is-integer
+                                                                {% endif %}
+                                                                {% if variable.type == "sum_number" %}
+                                                               data-sum-of="{{ variable.sum_of }}"
+                                                                {% endif %}
+                                                                />
+                                                        <span class="input-group-addon">
+                                                                {% if variable.previous_value %}
+                                                                    ({{ variable.previous_value }})
+                                                                {% else %}
+                                                                    -
+                                                                {% endif %}
+                                                        </span>
+                                                    </div>
+                                                </div>
+                                            {% endfor %}
+                                        </div>
+                                    </div>
+                                </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                {% endfor %}
+                {% if section.comment %}
+                    <div class="panel panel-default inverse">
+                        <div class="panel-body">
+                            {% if section.comment.description %}
+                                <div class="row">
+                                    <div class="col-sm-12">
+                                        <div class="question-group-description">{{ section.comment.description }}</div>
+                                    </div>
+                                </div>
+                                <hr>
+                            {% endif %}
+                            <div class="row">
+                                <div class="col-sm-12">
+                                    <textarea class="section-comment form-control" rows="6"></textarea>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                {% endif %}
+            {% endfor %}
+        </div>
+        <div class="panel panel-default inverse">
+            <div class="panel-body">
+                <div class="pull-right">
+                    <button type="button" class="btn btn-primary">Spara svar</button>
+                    <button type="button" class="btn btn-success">Skicka in enkät</button>
+                </div>
+            </div>
+        </div>
+        <hr>
+        <footer>
+            <p>&copy; Kungliga Biblioteket 2014</p>
+        </footer>
+    </div>
+
+{% endblock %}
