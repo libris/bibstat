@@ -630,22 +630,68 @@ class VariableTest(MongoTestCase):
         
         
     def test_should_clear_all_replacements(self):
-        self.v2.replace_siblings([self.v.id, self.v3.id], commit=True)
-        after_setup = Variable.objects.get(pk=self.v2.id)
+        # Setup
+        replacement = self.v2
+        replaced_1 = self.v
+        replaced_2 = self.v3
+        replacement.replace_siblings([replaced_1.id, replaced_2.id], commit=True)
+        replacement.reload()
+        replaced_1.reload()
+        replaced_2.reload()
         
-        after_setup.replace_siblings([], commit=True)
-        self.assertEquals(Variable.objects.get(pk=self.v2.id).replaces, [])
-        self.assertEquals(Variable.objects.get(pk=self.v.id).replaced_by, None)
-        self.assertEquals(Variable.objects.get(pk=self.v3.id).replaced_by, None)
+        # Clear replacements 
+        replacement.replace_siblings([], commit=True)
+        
+        self.assertEquals(replacement.reload().replaces, [])
+        self.assertEquals(replaced_1.reload().replaced_by, None)
+        self.assertEquals(replaced_2.reload().replaced_by, None)
         
     def test_should_clear_all_replacements_for_draft(self):
-        self.v4.replace_siblings([self.v2.id], commit=True)
-        after_setup = Variable.objects.get(pk=self.v4.id)
+        # Setup
+        replacement = self.v4
+        replaced = self.v2
+        replacement.replace_siblings([replaced.id], commit=True)
+        replacement.reload()
+        replaced.reload()
         
-        after_setup.replace_siblings([], commit=True)
-        self.assertEquals(Variable.objects.get(pk=self.v4.id).replaces, [])
-        self.assertEquals(Variable.objects.get(pk=self.v2.id).replaced_by, None)
-        self.assertEquals(len(VariableVersion.objects.filter(key=self.v2.key)), 0)
+        # Clear replacements 
+        replacement.replace_siblings([], commit=True)
+        
+        self.assertEquals(replacement.reload().replaces, [])
+        self.assertEquals(replaced.reload().replaced_by, None)
+        self.assertEquals(len(VariableVersion.objects.filter(key=replaced.key)), 0)
+        
+    def test_should_nullify_active_to_and_references_to_replaced_by_when_deleting_replacement_instance(self):
+         # Setup
+        replacement = self.v2
+        replaced_1 = self.v
+        replaced_2 = self.v3
+        replacement.replace_siblings([replaced_1.id, replaced_2.id], switchover_date=datetime(2015, 1, 1), commit=True)
+        replacement.reload()
+        
+        replacement.delete()
+        
+        replaced_1.reload()
+        self.assertEquals(replaced_1.replaced_by, None)
+        self.assertEquals(replaced_1.active_to, None)
+        replaced_2.reload()
+        self.assertEquals(replaced_2.replaced_by, None)
+        self.assertEquals(replaced_2.active_to, None)
+        
+    def test_should_nullify_reference_in_replaces_when_deleting_replaced_instance(self):
+         # Setup
+        replacement = self.v2
+        replaced_1 = self.v
+        replaced_2 = self.v3
+        replacement.active_from = datetime(2015, 1, 1)
+        replacement.replace_siblings([replaced_1.id, replaced_2.id], switchover_date=replacement.active_from, commit=True)
+        
+        replaced_2.reload().delete()
+
+        self.assertEquals([v.id for v in replacement.reload().replaces], [replaced_1.id])
+        replaced_1.reload()
+        self.assertEquals(replaced_1.replaced_by.id, replacement.id)
+        self.assertEquals(replaced_1.active_to, replacement.active_from)
         
         
 class SurveyTest(MongoTestCase):

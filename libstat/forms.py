@@ -72,11 +72,10 @@ class VariableForm(forms.Form):
             del cleaned_data['active_from']
         
         active_to = cleaned_data['active_to'] if 'active_to' in cleaned_data else None
-        if self.instance and self.instance.replaced_by and active_to and active_to != self.instance.active_to:
+        if self.instance and self.instance.replaced_by and active_to and self.instance.active_to and active_to != self.instance.active_to.date():
             self._errors['active_to'] = self.error_class([u"Styrs av ersättande term"])
         
             del cleaned_data['active_to']
-        
         return cleaned_data
         
         
@@ -84,7 +83,7 @@ class VariableForm(forms.Form):
         variable = self.instance if self.instance else Variable(is_draft=True)
         variable.key = self.instance.key if self.instance else self.cleaned_data['key']
         variable.active_from = self.cleaned_data['active_from'] # Need to convert to UTC? It's a date and not a datetime...
-        variable.active_to = self.cleaned_data['active_to'] # Need to convert to UTC? It's a date and not a datetime...
+        variable.active_to = self.instance.active_to if  self.instance and self.instance.replaced_by else self.cleaned_data['active_to']
         variable.question = self.cleaned_data['question']
         variable.question_part = self.cleaned_data['question_part']
         variable.category = self.cleaned_data['category']
@@ -108,26 +107,6 @@ class VariableForm(forms.Form):
 
         return variable
     
-    def delete(self):
-        if not self.instance:
-            raise forms.ValidationError(_(u"Term finns inte, kan inte ta bort"), code=u"missing_instance")
-
-        if not self.instance.is_draft:
-
-            # Remove reference in replacement variable
-            replaced_by = self.instance.replaced_by
-            if replaced_by:
-                replaced_by.replaces.remove(self.instance)
-                replaced_by.save()
-
-            # Remove reference in replaced variables
-            for replaced in self.instance.replaces:
-                replaced.replaced_by = None
-                replaced.active_to = None
-                replaced.save()
-
-        self.instance.delete()
-        return self.instance
 
 
 class SurveyResponseForm(forms.Form):

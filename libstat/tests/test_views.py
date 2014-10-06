@@ -297,6 +297,26 @@ class EditVariableViewTest(MongoTestCase):
 
         self.assertEquals(replaced_sibling.replaced_by.id, replacing.id)
         self.assertEquals(replaced_sibling.active_to, switchover_date)
+        
+    def test_should_keep_active_to_date_when_updating_replaced_variable(self):
+        # Setup
+        replaced = self.new_variable(key="Folk28", is_draft=False)
+        replaced_by = self.new_variable(key="antalManligaBibliotekarier", is_draft=False)
+        replaced_by.active_from = datetime(2015, 1, 1)
+        replaced_by.replace_siblings([replaced.id], switchover_date=replaced_by.active_from, commit=True)
+        
+        # Verify preconditions
+        replaced = Variable.objects.get(pk=replaced.id)
+        self.assertEquals(replaced.replaced_by.id, replaced_by.id)
+        self.assertEquals(replaced.active_to, replaced_by.active_from)
+        
+        # Since input active_to is disabled, an empty string is posted
+        response = self.post(u"save", replaced)
+        
+        # Field active_to should not have been updated
+        replaced.reload()
+        self.assertEquals(replaced.active_to, replaced_by.active_from)
+        
 
     def test_should_not_be_able_to_delete_variable_when_it_does_not_exist(self):
         variable = self.new_variable(save=False)
@@ -345,13 +365,8 @@ class EditVariableViewTest(MongoTestCase):
     def test_should_remove_reference_in_replaced_variables_when_deleting_non_draft_variable(self):
         replaced = self.new_variable()
         replacement = self.new_variable(is_draft=False)
-
-        replacement.replaces = [replaced]
-        replacement.save()
-
-        replaced.replaced_by = replacement
-        replaced.active_to = datetime.now()
-        replaced.save()
+        replacement.active_from = datetime(2015, 1, 1)
+        replacement.replace_siblings([replaced.id], switchover_date=replacement.active_from, commit=True)
 
         self.delete(replacement)
         replaced.reload()
@@ -362,25 +377,54 @@ class EditVariableViewTest(MongoTestCase):
     def test_should_remove_reference_in_replacement_variable_when_deleting_non_draft_variable(self):
         replaced = self.new_variable(is_draft=False)
         replacement = self.new_variable()
+        replacement.active_from = datetime(2015, 1, 1)
+        replacement.replace_siblings([replaced.id], switchover_date=replacement.active_from, commit=True)
+        
+        self.delete(replaced)
+        replacement.reload()
 
-        replacement.replaces = [replaced]
-        replacement.save()
+        self.assertIs(len(replacement.replaces), 0)
+        
+    def test_should_remove_reference_in_replaced_variables_when_deleting_draft_variable(self):
+        replaced = self.new_variable()
+        replacement = self.new_variable()
+        replacement.active_from = datetime(2015, 1, 1)
+        replacement.replace_siblings([replaced.id], switchover_date=replacement.active_from, commit=True)
 
-        replaced.replaced_by = replacement
-        replaced.active_to = datetime.now()
-        replaced.save()
+        self.delete(replacement)
+        replaced.reload()
 
+        self.assertEquals(replaced.replaced_by, None)
+        self.assertEquals(replaced.active_to, None)
+
+    def test_should_remove_reference_in_replacement_variable_when_deleting_draft_variable(self):
+        replaced = self.new_variable()
+        replacement = self.new_variable()
+        replacement.active_from = datetime(2015, 1, 1)
+        replacement.replace_siblings([replaced.id], switchover_date=replacement.active_from, commit=True)
+        
         self.delete(replaced)
         replacement.reload()
 
         self.assertIs(len(replacement.replaces), 0)
 
     def post(self, action, variable):
+        print "POSTING: ", variable.active_to
         url = reverse("edit_variable", kwargs={"variable_id": str(variable.id)})
         return self.client.post(url, {
+            u"active_from": variable.active_from.date() if variable.active_from else "",
+            # active_to input is disabled if variable is replaced
+            u"active_to": variable.active_to.date() if variable.active_to and not variable.replaced_by else "",
+            u"replaces": ", ".join([str(v.id) for v in variable.replaces]) if variable.replaces else "",
+            u"question": variable.question,
+            u"question_part": variable.question_part,
+            u"category": variable.category,
+            u"sub_category": variable.sub_category,
             u"type": variable.type,
+            u"is_public": int(variable.is_public),
             u"target_groups": variable.target_groups,
             u"description": variable.description,
+            u"comment": variable.comment,
             u"submit_action": action
         })
 

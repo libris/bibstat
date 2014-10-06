@@ -141,7 +141,7 @@ class Variable(VariableBase):
     def store_version_and_update_date_modified(cls, sender, document, **kwargs):
         if document.id and not document.is_draft: 
             changed_fields = document.__dict__["_changed_fields"] if "_changed_fields" in document.__dict__ else []
-            logger.info(u"PRE SAVE: Fields {} have changed, creating variable version from current version".format(changed_fields))
+            logger.debug(u"PRE_SAVE: Fields {} have changed, creating variable version from current version".format(changed_fields))
             query_set = Variable.objects.filter(pk=document.id)
             assert len(query_set) > 0 # Need to do something with query_set since it is lazy loaded. Otherwise nothing will be cloned.
             versions = query_set.clone_into(VariableVersion.objects)
@@ -152,6 +152,22 @@ class Variable(VariableBase):
         
         document.date_modified = datetime.utcnow()
         # field modified_by is set in form
+    
+    @classmethod
+    def post_delete_actions(cls, sender, document, **kwargs):
+        """
+            If you delete a non-draft Variable that replaces other Variables, 
+            we need to clear the 'valid_to' date on the replaced Variables.
+            The reference to the deleted Variable will be cleared by standard
+            on-cascade-delete rules.
+        """
+        if document.replaces:
+            for replaced in document.replaces:
+                if replaced.replaced_by and replaced.replaced_by.id == document.id:
+                    replaced.active_to = None
+                    replaced.save()
+                    logger.debug(u"POST_DELETE: Setting 'active_to' to None on replaced {} when deleting replacement".format(replaced.id))
+        
     
     @property
     def is_summary_auto_field(self):
@@ -599,3 +615,6 @@ class OpenData(Document):
 """
 signals.pre_save.connect(SurveyResponse.store_version_and_update_date_modified, sender=SurveyResponse)
 signals.pre_save.connect(Variable.store_version_and_update_date_modified, sender=Variable)
+Variable.register_delete_rule(Variable, "replaced_by", NULLIFY)
+Variable.register_delete_rule(Variable, "replaces", PULL)
+signals.post_delete.connect(Variable.post_delete_actions, sender=Variable)
