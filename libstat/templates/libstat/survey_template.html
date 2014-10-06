@@ -149,7 +149,7 @@
                             {% endif %}
                             <div class="row">
                                 <div class="col-sm-3"></div>
-                                {% for variable in group.rows.0.variables %}
+                                {% for variable in group.rows.0 %}
                                     <div class="col-sm-3">
                                         <div class="input-header">{{ variable.sub_label }}</div>
                                     </div>
@@ -160,9 +160,9 @@
                                     <div class="question-row">
                                         <div class="form-group">
                                             <div class="col-sm-3">
-                                                <label class="control-label">{{ row.variables.0.main_label }}</label>
+                                                <label class="control-label">{{ row.0.main_label }}</label>
                                             </div>
-                                            {% for variable in row.variables %}
+                                            {% for variable in row %}
                                                 <div class="col-sm-3">
                                                     <div class="input-group">
                                                         <span class="input-group-btn">
@@ -174,8 +174,16 @@
                                                                 <b>i</b>
                                                             </button>
                                                         </span>
-                                                        <input type="text" class="form-control">
-
+                                                        <input id="{{ variable.id }}"
+                                                               type="text"
+                                                               class="form-control"
+                                                                {% if variable.is_integer %}
+                                                               data-is-integer
+                                                                {% endif %}
+                                                                {% if variable.type == "sum_number" %}
+                                                               data-sum-of="{{ variable.sum_of }}"
+                                                                {% endif %}
+                                                                />
                                                         <span class="input-group-addon">
                                                                 {% if variable.previous_value %}
                                                                     ({{ variable.previous_value }})
@@ -185,7 +193,6 @@
                                                         </span>
                                                     </div>
                                                 </div>
-
                                             {% endfor %}
                                         </div>
                                     </div>
