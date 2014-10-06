@@ -147,10 +147,6 @@ define(['jquery', 'jquery.tablesorter', 'bootstrap', 'bootstrap.datepicker', 'bo
             //TODO: Disable typeahead autocomplete and cursor if a token already has been set.
         });
 
-<<<<<<< HEAD
-        $(".term-description").popover({});
-=======
         $(".term-description").popover();
->>>>>>> Experimenting with popovers of variable descriptions and putting label texts into variables
     });
 });
