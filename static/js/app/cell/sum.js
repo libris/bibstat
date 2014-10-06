@@ -1,10 +1,9 @@
 define(['jquery'], function($) {
-    var value = function(element) {
-        return $.trim($(element).val());
-    };
-<<<<<<< HEAD
+    var value = function(element) { return $.trim($(element).val()); };
+
     var sum_cells = function(cells, integers) {
         var sum = 0;
+
         $.each(cells, function(index, cell) {
             var cell_value = Number(value(cell));
             if(integers && cell_value != Math.floor(cell_value))
@@ -12,18 +11,11 @@ define(['jquery'], function($) {
 
             if(!isNaN(cell_value))
                 sum += cell_value
-=======
-    var sum_cells = function(cells) {
-        var sum = 0;
-        $.each(cells, function(index, cell) {
-            var cell_value = Number(value(cell));
-            if(!isNaN(cell_value)) sum += cell_value
->>>>>>> Add requirejs; update jquery.tablesorter to latest version.
         });
 
         return sum ? sum : '';
     };
-<<<<<<< HEAD
+
     var validate_cell = function(cell, integers) {
         var parent = $(cell).parent('.form-group');
         var cell_value = value(cell);
@@ -31,42 +23,23 @@ define(['jquery'], function($) {
         if(integers && cell_value != Math.floor(cell_value))
             cell_value = Number.NaN;
 
-=======
-    var validate_cell = function(cell) {
-        var parent = $(cell).parent('.form-group');
-        var cell_value = value(cell);
-
->>>>>>> Add requirejs; update jquery.tablesorter to latest version.
         if(!isNaN(cell_value)) {
             parent.removeClass('has-feedback has-error');
-        } else {
-            parent.addClass('has-feedback has-error');
-        }
+        } else parent.addClass('has-feedback has-error');
 
         return cell_value;
     };
-<<<<<<< HEAD
+
     var sum_setup = function(setup, options) {
         var parent_callback = function(parent) {
             $(parent).on("change paste keyup", function() {
                 validate_cell(this, options.integers);
-=======
-    var sum_setup = function(setup) {
-        var parent_callback = function(parent) {
-            $(parent).on("change paste keyup", function() {
-                validate_cell(this);
->>>>>>> Add requirejs; update jquery.tablesorter to latest version.
             });
         };
         var child_callback = function(parent, child, children) {
             $(child).on("change paste keyup", function() {
-<<<<<<< HEAD
                 $(parent).val(sum_cells(children, options.integers));
                 validate_cell(this, options.integers);
-=======
-                $(parent).val(sum_cells(children));
-                validate_cell(this);
->>>>>>> Add requirejs; update jquery.tablesorter to latest version.
             });
         };
 
@@ -77,7 +50,7 @@ define(['jquery'], function($) {
             });
         }
     };
-<<<<<<< HEAD
+
     var with_defaults = function(options) {
         var defaults = {
             integers: false
@@ -93,10 +66,8 @@ define(['jquery'], function($) {
 
         return options;
     };
+
     var sum = function(setup, options) {
-=======
-    var sum = function(setup) {
->>>>>>> Add requirejs; update jquery.tablesorter to latest version.
         var cells = function(setup) {
             var cells = { };
             for(var parent in setup) {
@@ -111,6 +82,7 @@ define(['jquery'], function($) {
 
             return cells_array;
         };
+
         var reverse = function(setup) {
             var reversed = { };
             for(var parent in setup) {
@@ -124,6 +96,7 @@ define(['jquery'], function($) {
 
             return reversed;
         };
+
         var validate = function(setup) {
             var enable = function(element) { $(element).prop('disabled', false); };
             var disable = function(element) { $(element).prop('disabled', true); };
@@ -158,11 +131,7 @@ define(['jquery'], function($) {
             }
         };
 
-<<<<<<< HEAD
         sum_setup(setup, with_defaults(options));
-=======
-        sum_setup(setup);
->>>>>>> Add requirejs; update jquery.tablesorter to latest version.
         $.each(cells(setup), function(index, cell) {
             $(cell).on('change paste keyup', function() {
                 validate(setup);
