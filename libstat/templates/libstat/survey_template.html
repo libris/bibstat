@@ -177,11 +177,11 @@
                                                         <input id="{{ variable.id }}"
                                                                type="text"
                                                                class="form-control"
-                                                                {% if variable.is_integer %}
-                                                               data-is-integer
-                                                                {% endif %}
                                                                 {% if variable.type == "sum_number" %}
                                                                data-sum-of="{{ variable.sum_of }}"
+                                                                    {% if variable.is_integer %}
+                                                               data-is-integer
+                                                                    {% endif %}
                                                                 {% endif %}
                                                                 />
                                                         <span class="input-group-addon">
