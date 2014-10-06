@@ -1,9 +1,9 @@
 define(['jquery'], function($) {
-    var value = function(element) {
-        return $.trim($(element).val());
-    };
+    var value = function(element) { return $.trim($(element).val()); };
+
     var sum_cells = function(cells, integers) {
         var sum = 0;
+
         $.each(cells, function(index, cell) {
             var cell_value = Number(value(cell));
             if(integers && cell_value != Math.floor(cell_value))
@@ -15,6 +15,7 @@ define(['jquery'], function($) {
 
         return sum ? sum : '';
     };
+
     var validate_cell = function(cell, integers) {
         var parent = $(cell).parent('.form-group');
         var cell_value = value(cell);
@@ -24,12 +25,11 @@ define(['jquery'], function($) {
 
         if(!isNaN(cell_value)) {
             parent.removeClass('has-feedback has-error');
-        } else {
-            parent.addClass('has-feedback has-error');
-        }
+        } else parent.addClass('has-feedback has-error');
 
         return cell_value;
     };
+
     var sum_setup = function(setup, options) {
         var parent_callback = function(parent) {
             $(parent).on("change paste keyup", function() {
@@ -50,6 +50,7 @@ define(['jquery'], function($) {
             });
         }
     };
+
     var with_defaults = function(options) {
         var defaults = {
             integers: false
@@ -65,6 +66,7 @@ define(['jquery'], function($) {
 
         return options;
     };
+
     var sum = function(setup, options) {
         var cells = function(setup) {
             var cells = { };
@@ -80,6 +82,7 @@ define(['jquery'], function($) {
 
             return cells_array;
         };
+
         var reverse = function(setup) {
             var reversed = { };
             for(var parent in setup) {
@@ -93,6 +96,7 @@ define(['jquery'], function($) {
 
             return reversed;
         };
+
         var validate = function(setup) {
             var enable = function(element) { $(element).prop('disabled', false); };
             var disable = function(element) { $(element).prop('disabled', true); };

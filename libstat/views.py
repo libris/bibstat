@@ -85,7 +85,7 @@ def login(request):
     context = {
         'form': form,
         'next': redirect_to,
-    }
+        }
     return render(request, 'libstat/modals/login.html', context)
 
 
@@ -347,7 +347,7 @@ def _render_survey_response_view(request, survey_response_form, survey_observati
     context = {
         'form': survey_response_form,
         'observations_form': survey_observations_form,
-    }
+        }
     return render(request, 'libstat/edit_survey_response.html', context)
 
 
@@ -401,7 +401,7 @@ def surveys(request):
     surveys = Survey.objects.all()
     context = {
         'surveys': surveys,
-    }
+        }
     return render(request, 'libstat/surveys.html', context)
 
 
@@ -410,7 +410,7 @@ def create_survey(request):
     context = {
         'mode': 'create',
         'form_url': reverse("create_survey"),
-    }
+        }
 
     if request.method == "POST":
         form = SurveyForm(request.POST)
@@ -548,7 +548,7 @@ def edit_survey(request, survey_id):
     context = {
         'mode': 'edit',
         'form_url': reverse("edit_survey", kwargs={"survey_id": survey_id}),
-    }
+        }
 
     if request.method == "POST":
         form = SurveyForm(request.POST, instance=survey)

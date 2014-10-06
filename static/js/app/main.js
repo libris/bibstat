@@ -1,5 +1,5 @@
-define(['jquery', 'sum', 'jquery.tablesorter', 'bootstrap', 'bootstrap.datepicker', 'bootstrap.tokenfield',
-    'typeahead', 'underscore'], function($, sum) {
+define(['jquery', 'jquery.tablesorter', 'bootstrap', 'bootstrap.datepicker', 'bootstrap.tokenfield',
+    'typeahead', 'underscore'], function($) {
 
     function ellipsis(text, max_chars) {
         max_chars = max_chars || 50;
@@ -15,17 +15,20 @@ define(['jquery', 'sum', 'jquery.tablesorter', 'bootstrap', 'bootstrap.datepicke
         if($(".show-login-modal").length == 1) {
             var sPageUrl = window.location.search.substring(1);
             var urlParams = {};
-            sPageUrl.split("&").forEach(function(p) {
-                var key_value = p.split("=");
-                urlParams[key_value[0]] = key_value[1];
-            });
+
+            if(sPageUrl.length > 0) {
+                $.each(sPageUrl.split("&"), function(index, p) {
+                    var key_value = p.split("=");
+                    urlParams[key_value[0]] = key_value[1];
+                });
+            }
 
             if("next" in urlParams) {
                 var url = $(".show-login-modal").data("form") + "?next=" + urlParams["next"];
                 $("#loginModal").load(url, function() {
                     $(this).modal("show");
                     var nextInput = $(this).find("input[name=next]");
-//				nextInput.attr("value", urlParams["next"]);
+                    //nextInput.attr("value", urlParams["next"]);
                 });
             }
         }
@@ -144,6 +147,6 @@ define(['jquery', 'sum', 'jquery.tablesorter', 'bootstrap', 'bootstrap.datepicke
             //TODO: Disable typeahead autocomplete and cursor if a token already has been set.
         });
 
-        $(".term-description").popover({});
+        $(".term-description").popover();
     });
 });
