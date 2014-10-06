@@ -1,4 +1,4 @@
-define(['jquery', 'sum', 'jquery.tablesorter', 'bootstrap', 'bootstrap.datepicker', 'bootstrap.tokenfield',
+define(['jquery', 'cell.sum', 'jquery.tablesorter', 'bootstrap', 'bootstrap.datepicker', 'bootstrap.tokenfield',
     'typeahead', 'underscore'], function($, sum) {
 
     function ellipsis(text, max_chars) {
