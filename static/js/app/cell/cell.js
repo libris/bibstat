@@ -29,7 +29,7 @@ define(['jquery'], function($) {
         },
 
         state: function(element, valid) {
-            var parent = $(element).parent('.form-group');
+            var parent = $(element).closest('.form-group');
 
             if(valid) parent.removeClass('has-feedback has-error');
             else parent.addClass('has-feedback has-error');
