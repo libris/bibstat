@@ -476,8 +476,9 @@ class NumberCell:
         self.previous_value = previous_value
 
 
-class Variable:
-    def __init__(self, main_label, sub_label, previous_value=None, description=None):
+class VariableCell:
+    def __init__(self, main_label, sub_label, previous_value=None,
+                 description="Det finns ingen beskrivning tillgänglig."):
         self.description = description
         self.previous_value = previous_value
         self.sub_label = sub_label
@@ -522,21 +523,21 @@ def survey_template(request):
                 groups=[
                     Group(rows=[
                         Row(variables=[
-                            Variable(
+                            VariableCell(
                                 previous_value=14,
                                 main_label=u"Antal anställda kvinnor",
                                 sub_label=u"Antal personer"
                             )
                         ]),
                         Row(variables=[
-                            Variable(
+                            VariableCell(
                                 previous_value=8,
                                 main_label=u"Antal anställda män",
                                 sub_label=u"Antal personer"
                             )
                         ]),
                         Row(variables=[
-                            Variable(
+                            VariableCell(
                                 main_label=u"Totalt antal anställda",
                                 sub_label=u"Antal personer"
                             )
@@ -556,7 +557,7 @@ def survey_template(request):
                         rows=[
                             Row(
                                 variables=[
-                                    Variable(
+                                    VariableCell(
                                         main_label=u"Tryckta böcker och seriella publikationer, periodika, tidskrifter, tidningar",
                                         sub_label=u"Antal initiala lokala lån",
                                         description=u"""En ganska lång och utförlig beskrivning får plats här.
@@ -566,11 +567,11 @@ def survey_template(request):
                                                     En ganska lång och utförlig beskrivning får plats här.
                                                     En ganska lång och utförlig beskrivning får plats här."""
                                     ),
-                                    Variable(
+                                    VariableCell(
                                         main_label=u"Tryckta böcker och seriella publikationer, periodika, tidskrifter, tidningar",
                                         sub_label=u"Antal lokala omlån"
                                     ),
-                                    Variable(
+                                    VariableCell(
                                         main_label=u"Tryckta böcker och seriella publikationer, periodika, tidskrifter, tidningar",
                                         sub_label=u"Totalt antal lån"
                                     ),
@@ -578,15 +579,15 @@ def survey_template(request):
                             ),
                             Row(
                                 variables=[
-                                    Variable(
+                                    VariableCell(
                                         main_label=u"--- Varav kursböcker, studielitteratur, läromedel, skolböcker",
                                         sub_label=u"Antal initiala lokala lån"
                                     ),
-                                    Variable(
+                                    VariableCell(
                                         main_label=u"--- Varav kursböcker, studielitteratur, läromedel, skolböcker",
                                         sub_label=u"Antal lokala omlån"
                                     ),
-                                    Variable(
+                                    VariableCell(
                                         main_label=u"--- Varav kursböcker, studielitteratur, läromedel, skolböcker",
                                         sub_label=u"Totalt antal lån"
                                     ),
@@ -594,15 +595,15 @@ def survey_template(request):
                             ),
                             Row(
                                 variables=[
-                                    Variable(
+                                    VariableCell(
                                         main_label=u"Ljudböcker, talböcker DAISY",
                                         sub_label=u"Antal initiala lokala lån"
                                     ),
-                                    Variable(
+                                    VariableCell(
                                         main_label=u"Ljudböcker, talböcker DAISY",
                                         sub_label=u"Antal lokala omlån"
                                     ),
-                                    Variable(
+                                    VariableCell(
                                         main_label=u"Ljudböcker, talböcker DAISY",
                                         sub_label=u"Totalt antal lån"
                                     ),
@@ -610,15 +611,15 @@ def survey_template(request):
                             ),
                             Row(
                                 variables=[
-                                    Variable(
+                                    VariableCell(
                                         main_label=u"Musik (på fysiskt medium)",
                                         sub_label=u"Antal initiala lokala lån"
                                     ),
-                                    Variable(
+                                    VariableCell(
                                         main_label=u"Musik (på fysiskt medium)",
                                         sub_label=u"Antal lokala omlån"
                                     ),
-                                    Variable(
+                                    VariableCell(
                                         main_label=u"Musik (på fysiskt medium)",
                                         sub_label=u"Totalt antal lån"
                                     ),
@@ -626,15 +627,15 @@ def survey_template(request):
                             ),
                             Row(
                                 variables=[
-                                    Variable(
+                                    VariableCell(
                                         main_label=u"Film, TV, radio",
                                         sub_label=u"Antal initiala lokala lån"
                                     ),
-                                    Variable(
+                                    VariableCell(
                                         main_label=u"Film, TV, radio",
                                         sub_label=u"Antal lokala omlån"
                                     ),
-                                    Variable(
+                                    VariableCell(
                                         main_label=u"Film, TV, radio",
                                         sub_label=u"Totalt antal lån"
                                     ),
@@ -642,15 +643,15 @@ def survey_template(request):
                             ),
                             Row(
                                 variables=[
-                                    Variable(
+                                    VariableCell(
                                         main_label=u"Mikrografiska dokument, mikrofilm, mikrofiche",
                                         sub_label=u"Antal initiala lokala lån"
                                     ),
-                                    Variable(
+                                    VariableCell(
                                         main_label=u"Mikrografiska dokument, mikrofilm, mikrofiche",
                                         sub_label=u"Antal lokala omlån"
                                     ),
-                                    Variable(
+                                    VariableCell(
                                         main_label=u"Mikrografiska dokument, mikrofilm, mikrofiche",
                                         sub_label=u"Totalt antal lån"
                                     ),
@@ -658,15 +659,15 @@ def survey_template(request):
                             ),
                             Row(
                                 variables=[
-                                    Variable(
+                                    VariableCell(
                                         main_label=u"Bild, grafiska och kartografiska dokument, OH, presentationer, fotografier",
                                         sub_label=u"Antal initiala lokala lån"
                                     ),
-                                    Variable(
+                                    VariableCell(
                                         main_label=u"Bild, grafiska och kartografiska dokument, OH, presentationer, fotografier",
                                         sub_label=u"Antal lokala omlån"
                                     ),
-                                    Variable(
+                                    VariableCell(
                                         main_label=u"Bild, grafiska och kartografiska dokument, OH, presentationer, fotografier",
                                         sub_label=u"Totalt antal lån"
                                     ),
@@ -674,15 +675,15 @@ def survey_template(request):
                             ),
                             Row(
                                 variables=[
-                                    Variable(
+                                    VariableCell(
                                         main_label=u"Manuskript, artiklar, patent, konferenshandlingar, festskrifter, rapporter, musiktryck noter",
                                         sub_label=u"Antal initiala lokala lån"
                                     ),
-                                    Variable(
+                                    VariableCell(
                                         main_label=u"Manuskript, artiklar, patent, konferenshandlingar, festskrifter, rapporter, musiktryck noter",
                                         sub_label=u"Antal lokala omlån"
                                     ),
-                                    Variable(
+                                    VariableCell(
                                         main_label=u"Manuskript, artiklar, patent, konferenshandlingar, festskrifter, rapporter, musiktryck noter",
                                         sub_label=u"Totalt antal lån"
                                     ),
@@ -690,15 +691,15 @@ def survey_template(request):
                             ),
                             Row(
                                 variables=[
-                                    Variable(
+                                    VariableCell(
                                         main_label=u"Interaktiva medier, CD-ROM, Tv-spel, interaktiva läromedel, konsolspel, dataspel",
                                         sub_label=u"Antal initiala lokala lån"
                                     ),
-                                    Variable(
+                                    VariableCell(
                                         main_label=u"Interaktiva medier, CD-ROM, Tv-spel, interaktiva läromedel, konsolspel, dataspel",
                                         sub_label=u"Antal lokala omlån"
                                     ),
-                                    Variable(
+                                    VariableCell(
                                         main_label=u"Interaktiva medier, CD-ROM, Tv-spel, interaktiva läromedel, konsolspel, dataspel",
                                         sub_label=u"Totalt antal lån"
                                     ),
@@ -706,15 +707,15 @@ def survey_template(request):
                             ),
                             Row(
                                 variables=[
-                                    Variable(
+                                    VariableCell(
                                         main_label=u"Övriga fysiska medietyper som inte ingår i ovanstående kategorier",
                                         sub_label=u"Antal initiala lokala lån"
                                     ),
-                                    Variable(
+                                    VariableCell(
                                         main_label=u"Övriga fysiska medietyper som inte ingår i ovanstående kategorier",
                                         sub_label=u"Antal lokala omlån"
                                     ),
-                                    Variable(
+                                    VariableCell(
                                         main_label=u"Övriga fysiska medietyper som inte ingår i ovanstående kategorier",
                                         sub_label=u"Totalt antal lån"
                                     ),
@@ -722,15 +723,15 @@ def survey_template(request):
                             ),
                             Row(
                                 variables=[
-                                    Variable(
+                                    VariableCell(
                                         main_label=u"Totalt antal",
                                         sub_label=u"Antal initiala lokala lån"
                                     ),
-                                    Variable(
+                                    VariableCell(
                                         main_label=u"Totalt antal",
                                         sub_label=u"Antal lokala omlån"
                                     ),
-                                    Variable(
+                                    VariableCell(
                                         main_label=u"Totalt antal",
                                         sub_label=u"Totalt antal lån"
                                     ),
@@ -748,7 +749,7 @@ def survey_template(request):
 
     # Group(
     # description=u"""Uppge hur många läsesalslån som gjordes, enligt stickprov?
-    #                                 Uppgiften behöver inte besvaras under kalenderår 2015 av de bibliotek
+    # Uppgiften behöver inte besvaras under kalenderår 2015 av de bibliotek
     #                                 som inte haft tillgång till stickprovsinstruktioner.""",
     #     rows=[
     #         Row(
