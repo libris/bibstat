@@ -473,16 +473,14 @@ class CellBase:
 
 
 class NumberCell(CellBase):
-    def __init__(self, variable_key, integers_only=True, required=False):
+    def __init__(self, variable_key, required=False):
         CellBase.__init__(self, variable_key, required, u"number")
-        self.integers_only = integers_only
 
 
 class SumNumberCell(CellBase):
-    def __init__(self, variable_key, sum_of, integers_only=True, required=False):
+    def __init__(self, variable_key, sum_of, required=False):
         CellBase.__init__(self, variable_key, required, u"sum")
         self.sum_of = " ".join(sum_of).lower()
-        self.integers_only = integers_only
 
 @permission_required('is_superuser', login_url='index')
 def survey_template(request):
@@ -508,12 +506,12 @@ def survey_template(request):
                             [
                                 NumberCell(u"Folk12"),
                                 NumberCell(u"Folk23", required=True),
-                                SumNumberCell(u"Folk110", [u"Folk12", u"Folk23"], integers_only=False)
+                                SumNumberCell(u"Folk110", [u"Folk12", u"Folk23"])
                             ],
                             [
                                 NumberCell(u"Folk56"),
                                 NumberCell(u"Folk65"),
-                                SumNumberCell(u"Folk111", [u"Folk56", u"Folk65"], integers_only=True)
+                                SumNumberCell(u"Folk111", [u"Folk56", u"Folk65"])
                             ]
                         ]
                     )

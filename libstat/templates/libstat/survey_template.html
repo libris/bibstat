@@ -72,7 +72,7 @@
             </div>
         </div>
         <hr>
-        <div class="survey-content">
+        <form id="survey-form" class="survey-content">
             <h2 class="section-title">Om svarande organisation och person</h2>
 
             <div class="panel panel-default inverse">
@@ -179,12 +179,9 @@
                                                            data-type="{{ variable.type }}"
                                                             {% if variable.type == "sum" %}
                                                            data-sum-of="{{ variable.sum_of }}"
-                                                                {% if variable.integers_only %}
-                                                           data-integers-only
-                                                                {% endif %}
                                                             {% endif %}
                                                             {% if variable.required %}
-                                                            required
+                                                           required
                                                             {% endif %}
                                                             />
 
@@ -224,7 +221,7 @@
                     </div>
                 {% endif %}
             {% endfor %}
-        </div>
+        </form>
         <div class="panel panel-default inverse">
             <div class="panel-body">
                 <div class="pull-right">
