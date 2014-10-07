@@ -1,7 +1,15 @@
 define(['jquery'], function($) {
+    var hasAttribute = function(element, name) {
+        var attribute = $(element).attr(name);
+        return typeof attribute !== typeof undefined
+            && attribute !== false;
+    };
+
     var cell = {
+
         disable: function(element) {
             $(element).prop('disabled', true);
+            cell.state(element, 'none');
         },
 
         disabled: function(element) {
@@ -24,20 +32,39 @@ define(['jquery'], function($) {
             return $.trim($(element).val());
         },
 
-        number: function(element) {
-            return Number(cell.value(element));
+        number: function(element, integers) {
+            var number = Number(cell.value(element));
+            if(integers && number != Math.floor(number))
+                number = Number.NaN;
+
+            return number;
         },
 
-        state: function(element, valid) {
+        state: function(element, state) {
             var parent = $(element).closest('.form-group');
 
-            if(valid) parent.removeClass('has-feedback has-error');
-            else parent.addClass('has-feedback has-error');
+            switch(state) {
+                case 'success':
+                    parent.addClass('has-success');
+                    parent.removeClass('has-error');
+                    break;
+                case 'error':
+                    parent.addClass('has-error');
+                    parent.removeClass('has-success');
+                    break;
+                case 'none':
+                    parent.removeClass('has-error');
+                    parent.removeClass('has-success');
+                    break;
+            }
         },
 
         integersOnly: function(element) {
-            var integers = element.attr('data-is-integer');
-            return (typeof integers !== typeof undefined && integers !== false);
+            return hasAttribute(element, 'data-integers-only');
+        },
+
+        required: function(element) {
+            return hasAttribute(element, 'required');
         }
     };
 

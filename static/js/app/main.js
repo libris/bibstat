@@ -1,5 +1,5 @@
-define(['jquery', 'cell.sum', 'jquery.tablesorter', 'bootstrap', 'bootstrap.datepicker', 'bootstrap.tokenfield',
-    'typeahead', 'underscore'], function($, sum) {
+define(['jquery', 'cell.sum', 'cell.num', 'jquery.tablesorter', 'bootstrap', 'bootstrap.datepicker', 'bootstrap.tokenfield',
+    'typeahead', 'underscore'], function($, sum, num) {
 
     function ellipsis(text, max_chars) {
         max_chars = max_chars || 50;
@@ -149,6 +149,7 @@ define(['jquery', 'cell.sum', 'jquery.tablesorter', 'bootstrap', 'bootstrap.date
 
         $(".term-description").popover();
 
+        num.init();
         sum.init();
     });
 });
