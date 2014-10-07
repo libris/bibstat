@@ -462,22 +462,23 @@ class Group:
 
 
 class CellBase:
-    def __init__(self, variable_key):
+    def __init__(self, variable_key, required):
         variable = Variable.objects.get(key=variable_key)
         self.id = variable_key.lower()
+        self.required = required
         self.main_label = variable.question
         self.sub_label = variable.question_part
         self.description = variable.description
 
 
 class NumberCell(CellBase):
-    def __init__(self, variable_key):
-        CellBase.__init__(self, variable_key)
+    def __init__(self, variable_key, required=False):
+        CellBase.__init__(self, variable_key, required)
 
 
 class SumNumberCell(CellBase):
-    def __init__(self, variable_key, sum_of, is_integer=True):
-        CellBase.__init__(self, variable_key)
+    def __init__(self, variable_key, sum_of, is_integer=True, required=False):
+        CellBase.__init__(self, variable_key, required)
         self.type = u"sum_number"
         self.sum_of = " ".join(sum_of).lower()
         self.is_integer = is_integer
@@ -515,13 +516,13 @@ def survey_template(request):
                         [
                             [
                                 NumberCell(u"Folk12"),
-                                NumberCell(u"Folk23"),
+                                NumberCell(u"Folk23", required=True),
                                 SumNumberCell(u"Folk110", [u"Folk12", u"Folk23"], is_integer=False)
                             ],
                             [
-                                NumberCell(u"Folk12"),
-                                NumberCell(u"Folk23"),
-                                SumNumberCell(u"Folk110", [u"Folk12", u"Folk23"])
+                                NumberCell(u"Folk56"),
+                                NumberCell(u"Folk65"),
+                                SumNumberCell(u"Folk111", [u"Folk56", u"Folk65"])
                             ]
                         ]
                     )

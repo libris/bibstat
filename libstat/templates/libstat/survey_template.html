@@ -182,7 +182,11 @@
                                                            data-is-integer
                                                                 {% endif %}
                                                             {% endif %}
+                                                            {% if variable.required %}
+                                                            required
+                                                            {% endif %}
                                                             />
+
                                                     <div class="input-group-addon">
                                                         {% if variable.previous_value %}
                                                             ({{ variable.previous_value }})
