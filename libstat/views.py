@@ -462,36 +462,27 @@ class Group:
 
 
 class CellBase:
-    def __init__(self, variable_key, required):
+    def __init__(self, variable_key, required, type):
         variable = Variable.objects.get(key=variable_key)
         self.id = variable_key.lower()
         self.required = required
+        self.type = type
         self.main_label = variable.question
         self.sub_label = variable.question_part
         self.description = variable.description
 
 
 class NumberCell(CellBase):
-    def __init__(self, variable_key, required=False):
-        CellBase.__init__(self, variable_key, required)
+    def __init__(self, variable_key, integers_only=True, required=False):
+        CellBase.__init__(self, variable_key, required, u"number")
+        self.integers_only = integers_only
 
 
 class SumNumberCell(CellBase):
-    def __init__(self, variable_key, sum_of, is_integer=True, required=False):
-        CellBase.__init__(self, variable_key, required)
-        self.type = u"sum_number"
+    def __init__(self, variable_key, sum_of, integers_only=True, required=False):
+        CellBase.__init__(self, variable_key, required, u"sum")
         self.sum_of = " ".join(sum_of).lower()
-        self.is_integer = is_integer
-
-
-class VariableCell:
-    def __init__(self, main_label, sub_label, previous_value=None,
-                 description=u"Det finns ingen beskrivning tillgänglig."):
-        self.description = description
-        self.previous_value = previous_value
-        self.sub_label = sub_label
-        self.main_label = main_label
-
+        self.integers_only = integers_only
 
 @permission_required('is_superuser', login_url='index')
 def survey_template(request):
@@ -517,12 +508,12 @@ def survey_template(request):
                             [
                                 NumberCell(u"Folk12"),
                                 NumberCell(u"Folk23", required=True),
-                                SumNumberCell(u"Folk110", [u"Folk12", u"Folk23"], is_integer=False)
+                                SumNumberCell(u"Folk110", [u"Folk12", u"Folk23"], integers_only=False)
                             ],
                             [
                                 NumberCell(u"Folk56"),
                                 NumberCell(u"Folk65"),
-                                SumNumberCell(u"Folk111", [u"Folk56", u"Folk65"])
+                                SumNumberCell(u"Folk111", [u"Folk56", u"Folk65"], integers_only=True)
                             ]
                         ]
                     )

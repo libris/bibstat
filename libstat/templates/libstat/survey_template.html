@@ -176,10 +176,11 @@
                                                     <input id="{{ variable.id }}"
                                                            type="text"
                                                            class="form-control"
-                                                            {% if variable.type == "sum_number" %}
+                                                           data-type="{{ variable.type }}"
+                                                            {% if variable.type == "sum" %}
                                                            data-sum-of="{{ variable.sum_of }}"
-                                                                {% if variable.is_integer %}
-                                                           data-is-integer
+                                                                {% if variable.integers_only %}
+                                                           data-integers-only
                                                                 {% endif %}
                                                             {% endif %}
                                                             {% if variable.required %}
