@@ -155,9 +155,9 @@ define(['jquery', 'cell.sum', 'cell.num', 'bootstrap.validator.sv', 'jquery.tabl
 
         $(".term-description").popover();
 
-        num.init();
-        sum.init();
+        //num.init();
+        //sum.init();
 
-        //$('#survey-form').bootstrapValidator();
+        $('#survey-form').bootstrapValidator();
     });
 });

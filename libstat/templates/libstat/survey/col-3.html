@@ -1,0 +1,84 @@
+<div class="row">
+    <div class="col-sm-3"></div>
+    {% for variable in group.rows.0 %}
+        <div class="col-sm-3">
+            <div>{{ variable.sub_label }}</div>
+        </div>
+    {% endfor %}
+</div>
+
+{% for row in group.rows %}
+    <div class="row">
+        <div class="question-row">
+            <div class="col-sm-3">
+                <div class="row">
+                    <div class="col-sm-10">
+                        <label class="control-label">{{ row.0.main_label }}</label>
+                    </div>
+                    <div class="col-sm-2">
+                        <button type="button"
+                                class="btn btn-default term-description"
+                                data-toggle="popover"
+                                data-placement="top"
+                                title="Beskrivning"
+                                data-content="{{ row.0.description }}">
+                            <i class="fa fa-question"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+            {% for variable in row %}
+                <div class="col-sm-3 form-group">
+                    <div class="row">
+                        <div class="col-sm-8">
+                            <div class="input-group">
+                                <input id="{{ variable.id }}"
+                                       name="{{ variable.id }}"
+                                       type="text"
+                                       class="form-control"
+                                       data-type="{{ variable.type }}"
+
+                                        {% if variable.type == "sum" %}
+                                       data-sum-of="{{ variable.sum_of }}"
+                                        {% endif %}
+
+                                        {% if variable.type == "number" %}
+                                        {% endif %}
+
+                                        {% if variable.required %}
+                                       data-bv-notempty="true"
+                                        {% endif %}
+
+                                        />
+
+                                <div class="input-group-btn">
+                                    <button type="button"
+                                            class="btn btn-default dropdown-toggle"
+                                            data-toggle="dropdown"><span class="caret"></span>
+                                    </button>
+                                    <ul class="dropdown-menu dropdown-menu-right" role="menu">
+                                        <li><a href="#">Värdet är otillgängligt</a></li>
+                                        <li><a href="#">Värdet är irrelevant</a></li>
+                                        <li><a href="#">Värdet kan anges</a></li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-sm-2 col-sm-pull-1">
+                            <div class="previous-value">
+                                {% if variable.previous_value %}
+                                    ({{ variable.previous_value }})
+                                {% else %}
+                                    (&mdash;)
+                                {% endif %}
+                            </div>
+                        </div>
+
+
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+{% endfor %}
