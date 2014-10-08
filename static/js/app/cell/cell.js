@@ -2,9 +2,9 @@ define(['jquery'], function($) {
     var cell = {
 
         disable: function(element) {
-            $(element).prop('disabled', true);
-            $(element).next(".input-group-btn").children(".btn-dropdown").prop("disabled", true);
+                $(element).next(".input-group-btn").children(".btn-dropdown").prop("disabled", true);
             $('#survey-form').bootstrapValidator('enableFieldValidators', $(element).attr('name'), false);
+            $(element).prop('disabled', true);
         },
 
         disabled: function(element) {
@@ -12,9 +12,9 @@ define(['jquery'], function($) {
         },
 
         enable: function(element) {
-            $(element).prop('disabled', false);
             $(element).next(".input-group-btn").children(".btn-dropdown").prop("disabled", false);
             $('#survey-form').bootstrapValidator('enableFieldValidators', $(element).attr('name'), true);
+            $(element).prop('disabled', false);
         },
 
         enabled: function(element) {
