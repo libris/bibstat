@@ -71,7 +71,7 @@
         <form class="survey-content" id="survey-form" method="post">
             {% csrf_token %}
             {{ form.key }}
-            {{ errors }}
+
             <h2 class="section-title">Om svarande organisation och person</h2>
 
             <div class="panel panel-default inverse">
@@ -175,7 +175,7 @@
             <div class="panel panel-default inverse">
                 <div class="panel-body">
                     <div class="pull-right">
-                        <button type="button" id="save-btn" class="btn btn-primary">Spara svar</button>
+                        <button type="submit" id="save-btn" class="btn btn-primary">Spara svar</button>
                         <button type="button" class="btn btn-success">Skicka in enkät</button>
                     </div>
                 </div>

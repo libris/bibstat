@@ -366,6 +366,25 @@ class SurveyObs(Document):
     respondent_email = StringField()
     respondent_phone = StringField()
     website = StringField()
+    observations = DictField()
+
+
+class Observation(EmbeddedDocument):
+    variable_key = StringField()
+    value = StringField()
+
+
+class SurveyTemplate(Document):
+    key = StringField()
+    target_year = StringField()
+    organization_name = StringField()
+    municipality = StringField()
+    municipality_code = StringField()
+    head_authority = StringField()
+    respondent_name = StringField()
+    respondent_email = StringField()
+    respondent_phone = StringField()
+    website = StringField()
     sections = ListField(ReferenceField(Section))
 
 
