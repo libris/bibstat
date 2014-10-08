@@ -1,5 +1,5 @@
-define(['jquery', 'cell.sum', 'cell.num', 'bootstrap.validator.sv', 'jquery.tablesorter', 'bootstrap', 'bootstrap.datepicker', 'bootstrap.tokenfield',
-    'typeahead', 'underscore'], function($, sum, num) {
+define(['jquery', 'survey', 'jquery.tablesorter', 'bootstrap', 'bootstrap.datepicker', 'bootstrap.tokenfield',
+    'typeahead', 'underscore'], function($, survey) {
 
     window.ellipsis = function(text, max_chars) {
         max_chars = max_chars || 50;
@@ -153,11 +153,10 @@ define(['jquery', 'cell.sum', 'cell.num', 'bootstrap.validator.sv', 'jquery.tabl
             $("#survey-form").attr("action", action).submit();
         });
 
-        $(".term-description").popover();
 
-        //num.init();
-        //sum.init();
 
-        $('#survey-form').bootstrapValidator();
+        survey.init();
+
+        console.log("ok");
     });
 });

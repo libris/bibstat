@@ -1,14 +1,8 @@
 # -*- coding: utf-8 -*-
-from django.shortcuts import render, redirect, resolve_url
-from django.core.urlresolvers import reverse
-from django.core.exceptions import ValidationError, PermissionDenied
-from django.http import HttpResponse, HttpResponseRedirect, HttpResponseForbidden
-from django.http import Http404
-from django.conf import settings
+from time import strftime
 
-from libstat.utils import SURVEY_TARGET_GROUPS
-from libstat.models import Variable, SurveyResponse, Survey, Section, Group, Cell, SurveyObs
-from libstat.forms import *
+from django.shortcuts import render, redirect, resolve_url
+from django.http import HttpResponseRedirect, HttpResponseForbidden
 from django.contrib.auth.decorators import permission_required
 from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth import login as auth_login
@@ -16,17 +10,14 @@ from django.utils.http import is_safe_url
 from django.views.decorators.debug import sensitive_post_parameters
 from django.views.decorators.csrf import csrf_protect
 from django.views.decorators.cache import never_cache
-
 from mongoengine.errors import NotUniqueError
-from mongoengine.queryset import Q
 from django.forms.util import ErrorList
-
 from excel_response import ExcelResponse
-from time import strftime
 
+from libstat.models import Section, Group, Cell, SurveyObs, Row
+from libstat.forms import *
 from libstat.apis import *
 
-import logging
 
 logger = logging.getLogger(__name__)
 
@@ -85,7 +76,7 @@ def login(request):
     context = {
         'form': form,
         'next': redirect_to,
-        }
+    }
     return render(request, 'libstat/modals/login.html', context)
 
 
@@ -347,7 +338,7 @@ def _render_survey_response_view(request, survey_response_form, survey_observati
     context = {
         'form': survey_response_form,
         'observations_form': survey_observations_form,
-        }
+    }
     return render(request, 'libstat/edit_survey_response.html', context)
 
 
@@ -401,7 +392,7 @@ def surveys(request):
     surveys = Survey.objects.all()
     context = {
         'surveys': surveys,
-        }
+    }
     return render(request, 'libstat/surveys.html', context)
 
 
@@ -410,7 +401,7 @@ def create_survey(request):
     context = {
         'mode': 'create',
         'form_url': reverse("create_survey"),
-        }
+    }
 
     if request.method == "POST":
         form = SurveyForm(request.POST)
@@ -433,15 +424,20 @@ def create_survey(request):
 ### Begin survey experiment ###
 ###############################
 
-def make_cell(variable_key, sum_of=[], required=False, is_integer=True):
+def cell(variable_key, sum_of=[], required=False, is_integer=True):
     variable = Variable.objects.get(key=variable_key)
     return Cell(variable_key=variable_key.lower(),
                 sum_of=" ".join(map(lambda s: s.lower(), sum_of)),
-                requires=required,
+                previous_value="",
+                required=required,
                 is_integer=is_integer,
                 main_label=variable.question,
                 sub_label=variable.question_part,
                 description=variable.description)
+
+
+def row(description="", explanation="", cells=[]):
+    return Row(description, explanation, cells)
 
 
 survey_example = SurveyObs(
@@ -458,17 +454,35 @@ survey_example = SurveyObs(
     sections=
     [
         Section(
-            title=u"Exempeltitel",
+            title=u"Beskrivning för avsnittet",
             groups=
             [
                 Group(
+                    description="Beskrivning för gruppen",
+                    columns=3,
+                    headers=["Första kolumnen", "Andra kolumnen", "Tredje kolumnen"],
                     rows=
                     [
-                        [
-                            make_cell(u"Folk12"),
-                            make_cell(u"Folk23", required=True),
-                            make_cell(u"Folk110", sum_of=[u"Folk12", u"Folk23"], is_integer=False)
-                        ]
+                        row(
+                            description="Lorem ipsum dolor sit amet, elit.",
+                            explanation="Extra förklaring för rad ett.",
+                            cells=
+                            [
+                                cell(u"Folk1"),
+                                cell(u"Folk2", required=True),
+                                cell(u"Folk3", sum_of=[u"Folk1", u"Folk2"], is_integer=False)
+                            ]
+                        ),
+                        row(
+                            description="Lorem ipsum dolor sit amet, adipiscing elit.",
+                            explanation="Extra förklaring för rad två.",
+                            cells=
+                            [
+                                cell(u"Folk4"),
+                                cell(u"Folk5", required=True),
+                                cell(u"Folk6", sum_of=[u"Folk4", u"Folk5"], is_integer=False)
+                            ]
+                        )
                     ]
                 )
             ]
