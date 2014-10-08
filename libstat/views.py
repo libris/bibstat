@@ -433,22 +433,6 @@ def create_survey(request):
 ### Begin survey experiment ###
 ###############################
 
-class Survey:
-    def __init__(self, id, target_year, sections, organization_name, municipality, municipality_code,
-                 respondent_name, respondent_email, respondent_phone, website, head_authority):
-        self.id = id
-        self.target_year = target_year
-        self.head_authority = head_authority
-        self.website = website
-        self.respondent_phone = respondent_phone
-        self.respondent_email = respondent_email
-        self.respondent_name = respondent_name
-        self.municipality_code = municipality_code
-        self.municipality = municipality
-        self.organization_name = organization_name
-        self.sections = sections
-
-
 def make_cell(variable_key, sum_of=[], required=False, is_integer=True):
     variable = Variable.objects.get(key=variable_key)
     return Cell(variable_key=variable_key.lower(),
@@ -461,7 +445,7 @@ def make_cell(variable_key, sum_of=[], required=False, is_integer=True):
 
 
 survey_example = SurveyObs(
-    survey_id=u"abcd",
+    key=u"abcd",
     target_year=u"2014",
     organization_name=u"Karlstads stadsbibliotek",
     municipality=u"Karlstad",

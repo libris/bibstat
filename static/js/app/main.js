@@ -1,13 +1,13 @@
-define(['jquery', 'cell.sum', 'jquery.tablesorter', 'bootstrap', 'bootstrap.datepicker', 'bootstrap.tokenfield',
-    'typeahead', 'underscore'], function($, sum) {
+define(['jquery', 'cell.sum', 'cell.num', 'bootstrap.validator.sv', 'jquery.tablesorter', 'bootstrap', 'bootstrap.datepicker', 'bootstrap.tokenfield',
+    'typeahead', 'underscore'], function($, sum, num) {
 
-    function ellipsis(text, max_chars) {
+    window.ellipsis = function(text, max_chars) {
         max_chars = max_chars || 50;
         if(text && text.length > max_chars) {
             return text.substr(0, max_chars) + " ...";
         }
         return text;
-    }
+    };
 
     $(document).ready(function() {
 
@@ -155,6 +155,9 @@ define(['jquery', 'cell.sum', 'jquery.tablesorter', 'bootstrap', 'bootstrap.date
 
         $(".term-description").popover();
 
+        num.init();
         sum.init();
+
+        //$('#survey-form').bootstrapValidator();
     });
 });

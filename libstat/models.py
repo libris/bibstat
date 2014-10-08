@@ -346,7 +346,7 @@ class Section(Document):
 
 
 class SurveyObs(Document):
-    survey_id = StringField()
+    key = StringField()
     target_year = StringField()
     organization_name = StringField()
     municipality = StringField()

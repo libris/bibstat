@@ -126,7 +126,7 @@ define(['jquery', 'cell', 'cell.num'], function($, cell, num) {
 
     return {
         'init': function() {
-            $.each($('[data-sum-of]'), function(parent) {
+            $.each($('input[data-type="sum"]'), function(parent) {
                 parent = $(this);
                 var setup = { };
 

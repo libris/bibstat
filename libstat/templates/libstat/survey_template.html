@@ -74,7 +74,8 @@
         <hr>
         <form class="survey-content" id="survey-form" method="post">
             {% csrf_token %}
-            <input id="survey_id" type="hidden" value="{{ survey.id }}">
+            <input id="survey_id" type="hidden" value="{{ survey.key }}">
+
             <h2 class="section-title">Om svarande organisation och person</h2>
 
             <div class="panel panel-default inverse">
@@ -185,7 +186,7 @@
                                                            data-is-integer
                                                             {% endif %}
                                                             {% if cell.required %}
-                                                            required
+                                                           required
                                                             {% endif %}
                                                             />
 
