@@ -1,14 +1,8 @@
 # -*- coding: utf-8 -*-
-from django.shortcuts import render, redirect, resolve_url
-from django.core.urlresolvers import reverse
-from django.core.exceptions import ValidationError, PermissionDenied
-from django.http import HttpResponse, HttpResponseRedirect, HttpResponseForbidden
-from django.http import Http404
-from django.conf import settings
+from time import strftime
 
-from libstat.utils import SURVEY_TARGET_GROUPS
-from libstat.models import Variable, SurveyResponse, Survey, Section, Group, Cell, SurveyObs
-from libstat.forms import *
+from django.shortcuts import render, redirect, resolve_url
+from django.http import HttpResponseRedirect, HttpResponseForbidden
 from django.contrib.auth.decorators import permission_required
 from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth import login as auth_login
@@ -16,17 +10,14 @@ from django.utils.http import is_safe_url
 from django.views.decorators.debug import sensitive_post_parameters
 from django.views.decorators.csrf import csrf_protect
 from django.views.decorators.cache import never_cache
-
 from mongoengine.errors import NotUniqueError
-from mongoengine.queryset import Q
 from django.forms.util import ErrorList
-
 from excel_response import ExcelResponse
-from time import strftime
 
+from libstat.models import Section, Group, Cell, SurveyObs, Row
+from libstat.forms import *
 from libstat.apis import *
 
-import logging
 
 logger = logging.getLogger(__name__)
 
@@ -446,6 +437,23 @@ def cell(variable_key, sum_of=[], required=False, is_integer=True):
     }
 
 
+def row(description="", explanation="", cells=[]):
+    return {
+        u"description": description,
+        u"explanation": explanation,
+        u"cells": cells
+    }
+
+
+def group(rows, description="", columns=1, headers=[]):
+    return {
+        u"description": description,
+        u"columns": columns,
+        u"headers": headers,
+        u"rows": rows
+    }
+
+
 survey_template = {
     u"key": "",
     u"target_year": "",
@@ -461,16 +469,32 @@ survey_template = {
         {
             u"title": u"Exempeltitel",
             u"groups": [
-                {
-                    u"description": "",
-                    u"rows": [
-                        [
-                            cell(u"Folk12"),
-                            cell(u"Folk23", required=True),
-                            cell(u"Folk110", sum_of=[u"Folk12", u"Folk23"], is_integer=False)
-                        ]
+                group(
+                    description="Beskrivning för gruppen",
+                    columns=3,
+                    headers=["Första kolumnen", "Andra kolumnen", "Tredje kolumnen"],
+                    rows=[
+                        row(
+                            description="Lorem ipsum dolor sit amet, elit.",
+                            explanation="Extra förklaring för rad ett.",
+                            cells=[
+                                cell(u"Folk1"),
+                                cell(u"Folk2", required=True),
+                                cell(u"Folk3", sum_of=[u"Folk1", u"Folk2"], is_integer=False)
+                            ]
+
+                        ),
+                        row(
+                            description="Lorem ipsum dolor sit amet, elit.",
+                            explanation="Extra förklaring för rad två.",
+                            cells=[
+                                cell(u"Folk4"),
+                                cell(u"Folk5", required=True),
+                                cell(u"Folk6", sum_of=[u"Folk4", u"Folk5"], is_integer=False)
+                            ]
+                        )
                     ]
-                }
+                )
             ]
         }
     ]
@@ -488,25 +512,12 @@ survey_dict = {
     u"respondent_email": u"helena.fernström@bibliotek.karlstad.se",
     u"respondent_phone": u"054 - 64 82 09",
     u"website": u"www.bibliotek.karlstad.se",
-    u"Folk12": 110,
-    u"Folk23": 88,
-    u"Folk110": 105
-}
-
-survey_dict_ = {
-    u"key": u"abcdefgh",
-    u"target_year": u"",
-    u"organization_name": u"",
-    u"municipality": u"",
-    u"municipality_code": u"",
-    u"head_authority": u"",
-    u"respondent_name": u"",
-    u"respondent_email": u"",
-    u"respondent_phone": u"",
-    u"website": u"",
-    u"Folk12": u"",
-    u"Folk23": u"",
-    u"Folk110": u""
+    u"Folk1": 145,
+    u"Folk2": 123,
+    u"Folk3": 834,
+    u"Folk4": 20,
+    u"Folk5": 489,
+    u"Folk6": u""
 }
 
 
@@ -536,15 +547,21 @@ class SurveyForm(forms.Form):
                     for template_group in template_section[u"groups"]:
                         group = {
                             u"description": template_group[u"description"],
+                            u"headers": template_group[u"headers"],
+                            u"columns": template_group[u"columns"],
                             u"rows": []
                         }
                         for template_row in template_group[u"rows"]:
-                            row = []
-                            for template_cell in template_row:
+                            row = {
+                                u"cells": [],
+                                u"description": template_row[u"description"],
+                                u"explanation": template_row[u"explanation"]
+                            }
+                            for template_cell in template_row[u"cells"]:
                                 key = template_cell[u"variable_key"]
                                 self.fields[key] = cell_to_input_field(template_cell)
                                 self.fields[key].initial = observation[key]
-                                row.append(template_cell)
+                                row[u"cells"].append(template_cell)
                             group[u"rows"].append(row)
                         section[u"groups"].append(group)
                     self.sections.append(section)
@@ -554,7 +571,8 @@ class SurveyForm(forms.Form):
                 self.fields[field] = forms.CharField(required=False, widget=forms.HiddenInput())
                 self.fields[field].initial = observation[field]
             else:
-                self.fields[field] = forms.CharField(required=False, widget=forms.TextInput(attrs={"class": "form-control"}))
+                self.fields[field] = forms.CharField(required=False,
+                                                     widget=forms.TextInput(attrs={"class": "form-control"}))
                 self.fields[field].initial = observation[field]
 
 

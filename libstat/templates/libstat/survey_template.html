@@ -8,38 +8,34 @@
             color: orange;
         }
 
-        .input-header {
-            font-weight: bold;
-            font-size: 20;
-            margin-bottom: 8px;
-        }
-
-        .previous-year-value {
-            color: grey;
-        }
-
-        .layout-unknown {
-            font-size: 60px;
-            font-weight: bold;
-
-        }
-
         .section-comment {
             width: 100%;
             height: 100%;
         }
 
-        .popover-content {
-            font-size: 12px;
+        .cell .input-group input {
+            padding-right: 34px;
         }
 
-        .popover {
-            width: 300px;
+        .cell .input-group-btn .btn-dropdown {
+            z-index: 1;
+            border-radius: 0;
         }
 
-        .term-description {
-            margin-right: -2px !important;
+        .cell .input-group-btn .btn-value {
+            z-index: 0;
+            left: -2px;
         }
+
+        .cell .input-group input[disabled] {
+            font-style: italic;
+        }
+
+        .row-description {
+            display: flex;
+            align-items: center;
+        }
+
     </style>
     <div class="container">
         <div class="page-header">
@@ -146,53 +142,13 @@
                         <div class="panel-body">
                             {% if group.description %}
                                 <div class="row">
-                                    <div class="col-sm-12 question-group-description">{{ group.description }}</div>
+                                    <div class="col-sm-12">
+                                        {{ group.description }}
+                                    </div>
                                 </div>
                                 <hr>
                             {% endif %}
-                            <div class="row">
-                                <div class="col-sm-3"></div>
-                                {% for variable in group.rows.0 %}
-                                    <div class="col-sm-3">
-                                        <div class="input-header">{{ variable.sub_label }}</div>
-                                    </div>
-                                {% endfor %}
-                            </div>
-                            {% for row in group.rows %}
-                                <div class="row">
-                                    <div class="question-row">
-                                        <div class="col-sm-3">
-                                            <label class="control-label">{{ row.0.main_label }}</label>
-                                        </div>
-                                        {% for cell in row %}
-                                            <div class="col-sm-3 form-group">
-                                                <div class="input-group">
-
-                                                    <div class="input-group-btn">
-                                                        <button type="button"
-                                                                class="btn btn-default term-description"
-                                                                data-toggle="popover" data-placement="top"
-                                                                title="Beskrivning"
-                                                                data-content="{{ cell.description }}">
-                                                            <b>i</b>
-                                                        </button>
-                                                    </div>
-                                                    {% with variable_key=cell.variable_key %}
-                                                        {{ form|access:variable_key }}
-                                                    {% endwith %}
-                                                    <div class="input-group-addon">
-                                                        {% if cell.previous_value %}
-                                                            ({{ cell.previous_value }})
-                                                        {% else %}
-                                                            -
-                                                        {% endif %}
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        {% endfor %}
-                                    </div>
-                                </div>
-                            {% endfor %}
+                            {% if group.columns == 3 %}{% include "libstat/survey/col-3.html" %}{% endif %}
                         </div>
                     </div>
                 {% endfor %}

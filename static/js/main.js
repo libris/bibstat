@@ -3,7 +3,7 @@
 
     requirejs.config({
         baseUrl: '/static/js/',
-        urlArgs: "bust=" +  (new Date()).getTime(),
+        urlArgs: "bust=" + (new Date()).getTime(),
         shim: {
             'bootstrap': ['jquery'],
             'bootstrap.datepicker': ['bootstrap'],
@@ -25,9 +25,7 @@
             'underscore': ['plugins/underscorejs/1.7.0/underscore-min'],
 
             /* App */
-            'cell': 'app/cell/cell',
-            'cell.num': 'app/cell/num',
-            'cell.sum': 'app/cell/sum'
+            'survey': ['app/survey']
         },
 
         deps: ['app/main']
