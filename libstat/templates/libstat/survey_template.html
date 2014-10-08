@@ -72,7 +72,9 @@
             </div>
         </div>
         <hr>
-        <div class="survey-content">
+        <form class="survey-content" id="survey-form" method="post">
+            {% csrf_token %}
+            <input id="survey_id" type="hidden" value="{{ survey.id }}">
             <h2 class="section-title">Om svarande organisation och person</h2>
 
             <div class="panel panel-default inverse">
@@ -161,7 +163,7 @@
                                         <div class="col-sm-3">
                                             <label class="control-label">{{ row.0.main_label }}</label>
                                         </div>
-                                        {% for variable in row %}
+                                        {% for cell in row %}
                                             <div class="col-sm-3 form-group">
                                                 <div class="input-group">
                                                     <div class="input-group-btn">
@@ -169,27 +171,27 @@
                                                                 class="btn btn-default term-description"
                                                                 data-toggle="popover" data-placement="top"
                                                                 title="Beskrivning"
-                                                                data-content="{{ variable.description }}">
+                                                                data-content="{{ cell.description }}">
                                                             <b>i</b>
                                                         </button>
                                                     </div>
-                                                    <input id="{{ variable.id }}"
+                                                    <input id="{{ cell.variable_key }}"
                                                            type="text"
                                                            class="form-control"
-                                                            {% if variable.type == "sum_number" %}
-                                                           data-sum-of="{{ variable.sum_of }}"
-                                                                {% if variable.is_integer %}
-                                                           data-is-integer
-                                                                {% endif %}
+                                                            {% if cell.sum_of %}
+                                                           data-sum-of="{{ cell.sum_of }}"
                                                             {% endif %}
-                                                            {% if variable.required %}
+                                                            {% if cell.is_integer %}
+                                                           data-is-integer
+                                                            {% endif %}
+                                                            {% if cell.required %}
                                                             required
                                                             {% endif %}
                                                             />
 
                                                     <div class="input-group-addon">
-                                                        {% if variable.previous_value %}
-                                                            ({{ variable.previous_value }})
+                                                        {% if cell.previous_value %}
+                                                            ({{ cell.previous_value }})
                                                         {% else %}
                                                             -
                                                         {% endif %}
@@ -223,15 +225,15 @@
                     </div>
                 {% endif %}
             {% endfor %}
-        </div>
-        <div class="panel panel-default inverse">
-            <div class="panel-body">
-                <div class="pull-right">
-                    <button type="button" class="btn btn-primary">Spara svar</button>
-                    <button type="button" class="btn btn-success">Skicka in enkät</button>
+            <div class="panel panel-default inverse">
+                <div class="panel-body">
+                    <div class="pull-right">
+                        <button type="button" id="save-btn" class="btn btn-primary">Spara svar</button>
+                        <button type="button" class="btn btn-success">Skicka in enkät</button>
+                    </div>
                 </div>
             </div>
-        </div>
+        </form>
         <hr>
         <footer>
             <p>&copy; Kungliga Biblioteket 2014</p>

@@ -322,8 +322,43 @@ class VariableVersion(VariableBase):
         'collection': 'libstat_variable_versions',
         #'ordering': ['-date_modified']
     }
-     
- 
+
+
+class Cell(Document):
+    variable_key = StringField()
+    required = BooleanField()
+    main_label = StringField()
+    sub_label = StringField()
+    description = StringField()
+    sum_of = StringField()
+    is_integer = BooleanField()
+
+
+class Group(Document):
+    description = StringField()
+    rows = ListField(ListField(ReferenceField(Cell)))
+
+
+class Section(Document):
+    comment = StringField()
+    title = StringField()
+    groups = ListField(ReferenceField(Group))
+
+
+class SurveyObs(Document):
+    survey_id = StringField()
+    target_year = StringField()
+    organization_name = StringField()
+    municipality = StringField()
+    municipality_code = StringField()
+    head_authority = StringField()
+    respondent_name = StringField()
+    respondent_email = StringField()
+    respondent_phone = StringField()
+    website = StringField()
+    sections = ListField(ReferenceField(Section))
+
+
 class Survey(Document):
     """
         Representation of a Survey for a sample year and target groups

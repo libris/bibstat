@@ -3,6 +3,7 @@
 
     requirejs.config({
         baseUrl: '/static/js/',
+        urlArgs: "bust=" +  (new Date()).getTime(),
         shim: {
             'bootstrap': ['jquery'],
             'bootstrap.datepicker': ['bootstrap'],

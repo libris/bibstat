@@ -7,7 +7,7 @@ from django.http import Http404
 from django.conf import settings
 
 from libstat.utils import SURVEY_TARGET_GROUPS
-from libstat.models import Variable, SurveyResponse, Survey
+from libstat.models import Variable, SurveyResponse, Survey, Section, Group, Cell, SurveyObs
 from libstat.forms import *
 from django.contrib.auth.decorators import permission_required
 from django.contrib.auth.forms import AuthenticationForm
@@ -434,8 +434,9 @@ def create_survey(request):
 ###############################
 
 class Survey:
-    def __init__(self, target_year, sections, organization_name, municipality, municipality_code,
+    def __init__(self, id, target_year, sections, organization_name, municipality, municipality_code,
                  respondent_name, respondent_email, respondent_phone, website, head_authority):
+        self.id = id
         self.target_year = target_year
         self.head_authority = head_authority
         self.website = website
@@ -448,126 +449,62 @@ class Survey:
         self.sections = sections
 
 
-class Section:
-    def __init__(self, title, groups, comment=None):
-        self.comment = comment
-        self.title = title
-        self.groups = groups
+def make_cell(variable_key, sum_of=[], required=False, is_integer=True):
+    variable = Variable.objects.get(key=variable_key)
+    return Cell(variable_key=variable_key.lower(),
+                sum_of=" ".join(map(lambda s: s.lower(), sum_of)),
+                requires=required,
+                is_integer=is_integer,
+                main_label=variable.question,
+                sub_label=variable.question_part,
+                description=variable.description)
 
 
-class Group:
-    def __init__(self, rows, description=None):
-        self.description = description
-        self.rows = rows
-
-
-class CellBase:
-    def __init__(self, variable_key, required):
-        variable = Variable.objects.get(key=variable_key)
-        self.id = variable_key.lower()
-        self.required = required
-        self.main_label = variable.question
-        self.sub_label = variable.question_part
-        self.description = variable.description
-
-
-class NumberCell(CellBase):
-    def __init__(self, variable_key, required=False):
-        CellBase.__init__(self, variable_key, required)
-
-
-class SumNumberCell(CellBase):
-    def __init__(self, variable_key, sum_of, is_integer=True, required=False):
-        CellBase.__init__(self, variable_key, required)
-        self.type = u"sum_number"
-        self.sum_of = " ".join(sum_of).lower()
-        self.is_integer = is_integer
-
-
-class VariableCell:
-    def __init__(self, main_label, sub_label, previous_value=None,
-                 description=u"Det finns ingen beskrivning tillgänglig."):
-        self.description = description
-        self.previous_value = previous_value
-        self.sub_label = sub_label
-        self.main_label = main_label
+survey_example = SurveyObs(
+    survey_id=u"abcd",
+    target_year=u"2014",
+    organization_name=u"Karlstads stadsbibliotek",
+    municipality=u"Karlstad",
+    municipality_code=u"1780",
+    head_authority=u"Kulturrådet i Karlstad",
+    respondent_name=u"Helena Fernström",
+    respondent_email=u"helena.fernström@bibliotek.karlstad.se",
+    respondent_phone=u"054 - 64 82 09",
+    website=u"www.bibliotek.karlstad.se",
+    sections=
+    [
+        Section(
+            title=u"Exempeltitel",
+            groups=
+            [
+                Group(
+                    rows=
+                    [
+                        [
+                            make_cell(u"Folk12"),
+                            make_cell(u"Folk23", required=True),
+                            make_cell(u"Folk110", sum_of=[u"Folk12", u"Folk23"], is_integer=False)
+                        ]
+                    ]
+                )
+            ]
+        )
+    ]
+)
 
 
 @permission_required('is_superuser', login_url='index')
-def survey_template(request):
-    survey = Survey(
-        target_year=u"2014",
-        organization_name=u"Karlstads stadsbibliotek",
-        municipality=u"Karlstad",
-        municipality_code=u"1780",
-        head_authority=u"Kulturrådet i Karlstad",
-        respondent_name=u"Helena Fernström",
-        respondent_email=u"helena.fernström@bibliotek.karlstad.se",
-        respondent_phone=u"054 - 64 82 09",
-        website=u"www.bibliotek.karlstad.se",
-        sections=
-        [
-            Section(
-                title=u"Exempeltitel",
-                groups=
-                [
-                    Group(
-                        rows=
-                        [
-                            [
-                                NumberCell(u"Folk12"),
-                                NumberCell(u"Folk23", required=True),
-                                SumNumberCell(u"Folk110", [u"Folk12", u"Folk23"], is_integer=False)
-                            ],
-                            [
-                                NumberCell(u"Folk56"),
-                                NumberCell(u"Folk65"),
-                                SumNumberCell(u"Folk111", [u"Folk56", u"Folk65"])
-                            ]
-                        ]
-                    )
-                ]
-            )
-        ]
-    )
-    context = {"survey": survey}
+def edit_survey(request, survey_id):
+    if request.method == "POST":
+        form = request.POST
+
+    context = {"survey": survey_example}
     return render(request, 'libstat/survey_template.html', context)
 
 
 #############################
 ### End survey experiment ###
 #############################
-
-
-@permission_required('is_superuser', login_url='index')
-def edit_survey(request, survey_id):
-    try:
-        survey = Survey.objects.get(pk=survey_id)
-    except:
-        raise Http404
-
-    context = {
-        'mode': 'edit',
-        'form_url': reverse("edit_survey", kwargs={"survey_id": survey_id}),
-        }
-
-    if request.method == "POST":
-        form = SurveyForm(request.POST, instance=survey)
-        if form.is_valid():
-            try:
-                survey = form.save(user=request.user)
-                return redirect("edit_survey", survey.id)
-            except Exception as e:
-                logger.warning(u"Error creating survey: {}".format(e))
-                form._errors['__all__'] = ErrorList([u"Kan inte skapa enkät"])
-        else:
-            print "Form has errors", form._errors
-
-    else:
-        form = SurveyForm(instance=survey)
-
-    context['form'] = form
-    return render(request, 'libstat/edit_survey.html', context)
 
 
 @permission_required('is_superuser', login_url='index')

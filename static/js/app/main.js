@@ -147,6 +147,12 @@ define(['jquery', 'cell.sum', 'jquery.tablesorter', 'bootstrap', 'bootstrap.date
             //TODO: Disable typeahead autocomplete and cursor if a token already has been set.
         });
 
+        $("#save-btn").click(function () {
+            var survey_id = $("#survey_id").val();
+            var action = Urls.edit_survey(survey_id);
+            $("#survey-form").attr("action", action).submit();
+        });
+
         $(".term-description").popover();
 
         sum.init();
