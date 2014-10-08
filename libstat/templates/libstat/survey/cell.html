@@ -1,38 +1,55 @@
-<div class="form-group">
-    <div class="input-group">
-        <input id="{{ cell.variable_key }}" name="{{ cell.variable_key }}"
-               type="text" class="form-control"
+<div class="cell">
+    <div class="form-group">
+        <div class="input-group">
+            <input id="{{ cell.variable_key }}" name="{{ cell.variable_key }}"
+                   type="text" class="form-control"
 
-                {% if cell.sum_of %}
-               data-sum-of="{{ cell.sum_of }}"
-                {% endif %}
+                    {% if 'sum' in cell.types %}
+                        data-bv-integer
+                        data-bv-greaterthan
+                        data-bv-greaterthan-value="0"
+                        data-bv-greaterthan-inclusive
 
-                {% if cell.is_integer %}
-               data-is-integer
-                {% endif %}
+                        {% if cell.sum_of %}
+                            data-bv-notempty
+                            data-sum-of="{{ cell.sum_of }}"
+                        {% endif %}
+                    {% endif %}
 
-                {% if cell.required %}
-               data-bv-notempty
-                {% endif %}/>
+                    {% if 'required' in cell.types %}
+                        data-bv-notempty
+                    {% endif %}
 
-        <div class="input-group-btn">
-            <button type="button" class="btn btn-default btn-dropdown dropdown-toggle" data-toggle="dropdown">
-                <span class="caret"></span>
-            </button>
+                    {% if 'integer' in cell.types %}
+                        data-bv-integer
+                        data-bv-greaterthan
+                        data-bv-greaterthan-value="0"
+                        data-bv-greaterthan-inclusive
+                    {% endif %}
 
-            <ul class="dropdown-menu dropdown-menu-right" role="menu"> <!-- TODO Handle -->
-                <li><a href="#">Värdet är otillgängligt</a></li>
-                <li><a href="#">Värdet är irrelevant</a></li>
-                <li class="active"><a href="#" class="menu-enable">Värdet kan anges</a></li>
-            </ul>
+                    {% if 'email' in cell.types %}
+                        data-bv-emailaddress
+                    {% endif %}/>
 
-            <button class="btn btn-default btn-value disabled">
-                {% if cell.previous_value %}
-                    ({{ cell.previous_value }})
-                {% else %}
-                    (&mdash;)
-                {% endif %}
-            </button>
+            <div class="input-group-btn">
+                <button type="button" class="btn btn-default btn-dropdown dropdown-toggle" data-toggle="dropdown">
+                    <span class="caret"></span>
+                </button>
+
+                <ul class="dropdown-menu dropdown-menu-right" role="menu">
+                    <li><a href="#">Värdet är otillgängligt</a></li>
+                    <li><a href="#">Värdet är irrelevant</a></li>
+                    <li class="active"><a href="#" class="menu-enable">Värdet kan anges</a></li>
+                </ul>
+
+                <button class="btn btn-default btn-value disabled">
+                    {% if cell.previous_value %}
+                        ({{ cell.previous_value }})
+                    {% else %}
+                        (&mdash;)
+                    {% endif %}
+                </button>
+            </div>
         </div>
     </div>
 </div>

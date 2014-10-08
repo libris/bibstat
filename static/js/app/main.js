@@ -153,10 +153,8 @@ define(['jquery', 'survey', 'jquery.tablesorter', 'bootstrap', 'bootstrap.datepi
             $("#survey-form").attr("action", action).submit();
         });
 
-
-
         survey.init();
 
-        console.log("ok");
+        console.log('Scripts initialized.')
     });
 });

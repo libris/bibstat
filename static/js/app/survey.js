@@ -1,4 +1,4 @@
-define(['jquery', 'bootstrap.validator.sv'], function($) {
+define(['jquery', 'cell.sum', 'bootstrap.validator.sv'], function($, sum) {
     return {
         init: function() {
 
@@ -9,6 +9,11 @@ define(['jquery', 'bootstrap.validator.sv'], function($) {
                     invalid: 'fa fa-times',
                     validating: 'fa fa-refresh'
                 }
+            }).on('error.validator.bv', function(e, data) { // http://bootstrapvalidator.com/examples/changing-default-behaviour/#showing-one-message-each-time
+                data.element
+                    .data('bv.messages')
+                    .find('.help-block[data-bv-for="' + data.field + '"]').hide()
+                    .filter('[data-bv-validator="' + data.validator + '"]').show();
             });
 
             /* Move feedback icons to the right of the input field. */
@@ -48,6 +53,8 @@ define(['jquery', 'bootstrap.validator.sv'], function($) {
 
             /* Enable help button popover. */
             $(".btn-help").popover();
+
+            sum.init();
         }
     };
 });

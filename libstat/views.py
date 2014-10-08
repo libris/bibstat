@@ -424,13 +424,13 @@ def create_survey(request):
 ### Begin survey experiment ###
 ###############################
 
-def cell(variable_key, sum_of=[], required=False, is_integer=True):
+def cell(variable_key, types=[], sum_of=[], required=False):
     variable = Variable.objects.get(key=variable_key)
     return Cell(variable_key=variable_key.lower(),
                 sum_of=" ".join(map(lambda s: s.lower(), sum_of)),
                 previous_value="",
                 required=required,
-                is_integer=is_integer,
+                types=types,
                 main_label=variable.question,
                 sub_label=variable.question_part,
                 description=variable.description)
@@ -468,9 +468,9 @@ survey_example = SurveyObs(
                             explanation="Extra förklaring för rad ett.",
                             cells=
                             [
-                                cell(u"Folk1"),
-                                cell(u"Folk2", required=True),
-                                cell(u"Folk3", sum_of=[u"Folk1", u"Folk2"], is_integer=False)
+                                cell(u"Folk1", types=['sum']),
+                                cell(u"Folk2", types=['sum']),
+                                cell(u"Folk3", sum_of=[u"Folk1", u"Folk2"], types=['sum'])
                             ]
                         ),
                         row(
@@ -478,9 +478,9 @@ survey_example = SurveyObs(
                             explanation="Extra förklaring för rad två.",
                             cells=
                             [
-                                cell(u"Folk4"),
-                                cell(u"Folk5", required=True),
-                                cell(u"Folk6", sum_of=[u"Folk4", u"Folk5"], is_integer=False)
+                                cell(u"Folk4", types=['sum']),
+                                cell(u"Folk5", types=['sum']),
+                                cell(u"Folk6", sum_of=[u"Folk4", u"Folk5"], types=['sum'])
                             ]
                         )
                     ]

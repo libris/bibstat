@@ -1,13 +1,10 @@
-define(['jquery', 'cell', 'cell.num'], function($, cell, num) {
+define(['jquery', 'cell'], function($, cell) {
 
-    var sumOf = function(elements, options) {
+    var sumOf = function(elements) {
         var sum = 0;
 
         $.each(elements, function(index, element) {
             var number = cell.number(element);
-            if(options.integers && number != Math.floor(number))
-                number = Number.NaN;
-
             if(!isNaN(number))
                 sum += number
         });
@@ -48,22 +45,14 @@ define(['jquery', 'cell', 'cell.num'], function($, cell, num) {
         }
     };
 
-    var setupSum = function(setup, options) {
-        var parentCallback = function(parent) {
-            cell.onChange(parent, function() {
-                num.validate(this, options);
-            });
-        };
-
+    var setupSum = function(setup) {
         var childCallback = function(parent, child, children) {
             cell.onChange(child, function() {
-                $(parent).val(sumOf(children, options));
-                num.validate(this, options);
+                $(parent).val(sumOf(children));
             });
         };
 
         for(var parent in setup) {
-            parentCallback(parent);
             $.each(setup[parent], function(i, child) {
                 childCallback(parent, child, setup[parent]);
             });
@@ -84,22 +73,6 @@ define(['jquery', 'cell', 'cell.num'], function($, cell, num) {
         return reversed;
     };
 
-    var withDefaults = function(options) {
-        var defaults = {
-            integers: false
-        };
-
-        if(!options)
-            return defaults;
-
-        for(var option in defaults) {
-            if(!options.hasOwnProperty(option))
-                options[option] = defaults[option];
-        }
-
-        return options;
-    };
-
     var cells = function(setup) {
         var elements = { };
         for(var parent in setup) {
@@ -115,8 +88,8 @@ define(['jquery', 'cell', 'cell.num'], function($, cell, num) {
         return array;
     };
 
-    var initSum = function(setup, options) {
-        setupSum(setup, withDefaults(options));
+    var initSum = function(setup) {
+        setupSum(setup);
         $.each(cells(setup), function(index, element) {
             cell.onChange(element, function() {
                 validateSetup(setup);
@@ -126,8 +99,8 @@ define(['jquery', 'cell', 'cell.num'], function($, cell, num) {
 
     return {
         'init': function() {
-            $.each($('input[data-type="sum"]'), function(parent) {
-                parent = $(this);
+            $.each($('input[data-sum-of]'), function() {
+                var parent = $(this);
                 var setup = { };
 
                 var children = parent.attr('data-sum-of').split(' ');
@@ -138,11 +111,7 @@ define(['jquery', 'cell', 'cell.num'], function($, cell, num) {
                 var parentId = '#' + parent.attr('id');
                 setup[parentId] = childrenIds;
 
-                var options = {
-                    integers: cell.integersOnly(parent)
-                };
-
-                initSum(setup, options);
+                initSum(setup);
             });
         }
     }

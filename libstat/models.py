@@ -327,12 +327,8 @@ class VariableVersion(VariableBase):
 class Cell(Document):
     variable_key = StringField()
     previous_value = StringField()
-    required = BooleanField()
-    main_label = StringField()
-    sub_label = StringField()
-    description = StringField()
     sum_of = StringField()
-    is_integer = BooleanField()
+    types = ListField(StringField())
 
 
 class Row(Document):
