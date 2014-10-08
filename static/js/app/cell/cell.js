@@ -2,7 +2,7 @@ define(['jquery'], function($) {
     var cell = {
 
         disable: function(element) {
-                $(element).next(".input-group-btn").children(".btn-dropdown").prop("disabled", true);
+            $(element).next(".input-group-btn").children(".btn-dropdown").prop("disabled", true);
             $('#survey-form').bootstrapValidator('enableFieldValidators', $(element).attr('name'), false);
             $(element).prop('disabled', true);
         },
