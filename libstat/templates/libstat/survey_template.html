@@ -43,7 +43,7 @@
     </style>
     <div class="container">
         <div class="page-header">
-            <h1>Statistikenkät för verksamhetsåret {{ survey.target_year }}</h1>
+            <h1>Statistikenkät för verksamhetsåret {{ form.target_year }}</h1>
         </div>
         <div class="row">
             <div class="col-sm-6">
@@ -74,8 +74,8 @@
         <hr>
         <form class="survey-content" id="survey-form" method="post">
             {% csrf_token %}
-            <input id="survey_id" type="hidden" value="{{ survey.key }}">
-
+            {{ form.key }}
+            {{ errors }}
             <h2 class="section-title">Om svarande organisation och person</h2>
 
             <div class="panel panel-default inverse">
@@ -86,23 +86,23 @@
 
                             <div class="form-group">
                                 <label class="control-label">Namn</label>
-                                <input type="text" class="form-control" readonly value="{{ survey.organization_name }}">
+                                {{ form.organization_name }}
                             </div>
                             <div class="form-group">
                                 <label class="control-label">Kommun/län</label>
-                                <input type="text" class="form-control" readonly value="{{ survey.municipality }}">
+                                {{ form.municipality }}
                             </div>
                             <div class="form-group">
                                 <label class="control-label">Kommun-/länskod</label>
-                                <input type="text" class="form-control" readonly value="{{ survey.municipality_code }}">
+                                {{ form.municipality_code }}
                             </div>
                             <div class="form-group">
                                 <label class="control-label">Huvudman</label>
-                                <input type="text" class="form-control" readonly value="{{ survey.head_authority }}">
+                                {{ form.head_authority }}
                             </div>
                             <div class="form-group">
                                 <label class="control-label">Webbplats</label>
-                                <input type="text" class="form-control" value="{{ survey.website }}">
+                                {{ form.website }}
                             </div>
                         </div>
                         <div class="col-sm-4">
@@ -110,15 +110,15 @@
 
                             <div class="form-group">
                                 <label class="control-label">Namn</label>
-                                <input type="text" class="form-control" value="{{ survey.respondent_name }}">
+                                {{ form.respondent_name }}
                             </div>
                             <div class="form-group">
                                 <label class="control-label">E-post</label>
-                                <input type="text" class="form-control" value="{{ survey.respondent_email }}">
+                                {{ form.respondent_email }}
                             </div>
                             <div class="form-group">
                                 <label class="control-label">Telefonnummer</label>
-                                <input type="text" class="form-control" value="{{ survey.respondent_phone }}">
+                                {{ form.respondent_phone }}
                             </div>
                         </div>
                     </div>
@@ -139,7 +139,7 @@
                     </div>
                 </div>
             </div>
-            {% for section in survey.sections %}
+            {% for section in form.sections %}
                 <h2 class="section-title">{{ section.title }}</h2>
                 {% for group in section.groups %}
                     <div class="panel panel-default inverse">
@@ -167,6 +167,7 @@
                                         {% for cell in row %}
                                             <div class="col-sm-3 form-group">
                                                 <div class="input-group">
+
                                                     <div class="input-group-btn">
                                                         <button type="button"
                                                                 class="btn btn-default term-description"
@@ -176,20 +177,9 @@
                                                             <b>i</b>
                                                         </button>
                                                     </div>
-                                                    <input id="{{ cell.variable_key }}"
-                                                           type="text"
-                                                           class="form-control"
-                                                            {% if cell.sum_of %}
-                                                           data-sum-of="{{ cell.sum_of }}"
-                                                            {% endif %}
-                                                            {% if cell.is_integer %}
-                                                           data-is-integer
-                                                            {% endif %}
-                                                            {% if cell.required %}
-                                                           required
-                                                            {% endif %}
-                                                            />
-
+                                                    {% with variable_key=cell.variable_key %}
+                                                        {{ form|access:variable_key }}
+                                                    {% endwith %}
                                                     <div class="input-group-addon">
                                                         {% if cell.previous_value %}
                                                             ({{ cell.previous_value }})

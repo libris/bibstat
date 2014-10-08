@@ -15,7 +15,11 @@ def utc_tz(value):
 
 def tg_label(value):
     return target_groups_label(value)
-            
+
+@register.filter(name='access')
+def access(value, arg):
+    return value[arg]
 
 register.filter('utc_tz', utc_tz)
 register.filter('tg_label', tg_label)
+register.filter('access', access)

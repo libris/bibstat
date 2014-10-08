@@ -326,6 +326,7 @@ class VariableVersion(VariableBase):
 
 class Cell(Document):
     variable_key = StringField()
+    value = StringField()
     required = BooleanField()
     main_label = StringField()
     sub_label = StringField()

@@ -85,7 +85,7 @@ def login(request):
     context = {
         'form': form,
         'next': redirect_to,
-        }
+    }
     return render(request, 'libstat/modals/login.html', context)
 
 
@@ -347,7 +347,7 @@ def _render_survey_response_view(request, survey_response_form, survey_observati
     context = {
         'form': survey_response_form,
         'observations_form': survey_observations_form,
-        }
+    }
     return render(request, 'libstat/edit_survey_response.html', context)
 
 
@@ -401,7 +401,7 @@ def surveys(request):
     surveys = Survey.objects.all()
     context = {
         'surveys': surveys,
-        }
+    }
     return render(request, 'libstat/surveys.html', context)
 
 
@@ -410,7 +410,7 @@ def create_survey(request):
     context = {
         'mode': 'create',
         'form_url': reverse("create_survey"),
-        }
+    }
 
     if request.method == "POST":
         form = SurveyForm(request.POST)
@@ -433,56 +433,140 @@ def create_survey(request):
 ### Begin survey experiment ###
 ###############################
 
-def make_cell(variable_key, sum_of=[], required=False, is_integer=True):
+def cell(variable_key, sum_of=[], required=False, is_integer=True):
     variable = Variable.objects.get(key=variable_key)
-    return Cell(variable_key=variable_key.lower(),
-                sum_of=" ".join(map(lambda s: s.lower(), sum_of)),
-                requires=required,
-                is_integer=is_integer,
-                main_label=variable.question,
-                sub_label=variable.question_part,
-                description=variable.description)
+    return {
+        u"variable_key": variable_key,
+        u"sum_of": " ".join(sum_of),
+        u"required": required,
+        u"is_integer": is_integer,
+        u"main_label": variable.question,
+        u"sub_label": variable.question_part,
+        u"description": variable.description
+    }
 
 
-survey_example = SurveyObs(
-    key=u"abcd",
-    target_year=u"2014",
-    organization_name=u"Karlstads stadsbibliotek",
-    municipality=u"Karlstad",
-    municipality_code=u"1780",
-    head_authority=u"Kulturrådet i Karlstad",
-    respondent_name=u"Helena Fernström",
-    respondent_email=u"helena.fernström@bibliotek.karlstad.se",
-    respondent_phone=u"054 - 64 82 09",
-    website=u"www.bibliotek.karlstad.se",
-    sections=
-    [
-        Section(
-            title=u"Exempeltitel",
-            groups=
-            [
-                Group(
-                    rows=
-                    [
+survey_template = {
+    u"key": "",
+    u"target_year": "",
+    u"organization_name": "",
+    u"municipality": "",
+    u"municipality_code": "",
+    u"head_authority": "",
+    u"respondent_name": "",
+    u"respondent_email": "",
+    u"respondent_phone": "",
+    u"website": "",
+    u"sections": [
+        {
+            u"title": u"Exempeltitel",
+            u"groups": [
+                {
+                    u"description": "",
+                    u"rows": [
                         [
-                            make_cell(u"Folk12"),
-                            make_cell(u"Folk23", required=True),
-                            make_cell(u"Folk110", sum_of=[u"Folk12", u"Folk23"], is_integer=False)
+                            cell(u"Folk12"),
+                            cell(u"Folk23", required=True),
+                            cell(u"Folk110", sum_of=[u"Folk12", u"Folk23"], is_integer=False)
                         ]
                     ]
-                )
+                }
             ]
-        )
+        }
     ]
-)
+}
+
+
+survey_dict = {
+    u"key": u"abcdefgh",
+    u"target_year": u"2014",
+    u"organization_name": u"Karlstads stadsbibliotek",
+    u"municipality": u"Karlstad",
+    u"municipality_code": u"1780",
+    u"head_authority": u"Kulturrådet i Karlstad",
+    u"respondent_name": u"Helena Fernström",
+    u"respondent_email": u"helena.fernström@bibliotek.karlstad.se",
+    u"respondent_phone": u"054 - 64 82 09",
+    u"website": u"www.bibliotek.karlstad.se",
+    u"Folk12": 110,
+    u"Folk23": 88,
+    u"Folk110": 105
+}
+
+survey_dict_ = {
+    u"key": u"abcdefgh",
+    u"target_year": u"",
+    u"organization_name": u"",
+    u"municipality": u"",
+    u"municipality_code": u"",
+    u"head_authority": u"",
+    u"respondent_name": u"",
+    u"respondent_email": u"",
+    u"respondent_phone": u"",
+    u"website": u"",
+    u"Folk12": u"",
+    u"Folk23": u"",
+    u"Folk110": u""
+}
+
+
+def cell_to_input_field(cell):
+    attrs = {"class": "form-control"}
+    if cell[u"sum_of"]:
+        attrs["data-sum-of"] = cell[u"sum_of"]
+    if cell[u"required"]:
+        attrs["required"] = ""
+    if cell[u"is_integer"]:
+        attrs["data-is-integer"] = ""
+    return forms.CharField(required=False, widget=forms.TextInput(attrs=attrs))
+
+
+class SurveyForm(forms.Form):
+    def __init__(self, *args, **kwargs):
+        super(SurveyForm, self).__init__(*args, **kwargs)
+        observation = survey_dict
+        for field in survey_template:
+            if field == u"sections":
+                self.sections = []
+                for template_section in survey_template[u"sections"]:
+                    section = {
+                        u"title": template_section[u"title"],
+                        u"groups": []
+                    }
+                    for template_group in template_section[u"groups"]:
+                        group = {
+                            u"description": template_group[u"description"],
+                            u"rows": []
+                        }
+                        for template_row in template_group[u"rows"]:
+                            row = []
+                            for template_cell in template_row:
+                                key = template_cell[u"variable_key"]
+                                self.fields[key] = cell_to_input_field(template_cell)
+                                self.fields[key].initial = observation[key]
+                                row.append(template_cell)
+                            group[u"rows"].append(row)
+                        section[u"groups"].append(group)
+                    self.sections.append(section)
+            elif field == u"target_year":
+                self.target_year = observation[u"target_year"]
+            elif field == u"key":
+                self.fields[field] = forms.CharField(required=False, widget=forms.HiddenInput())
+                self.fields[field].initial = observation[field]
+            else:
+                self.fields[field] = forms.CharField(required=False, widget=forms.TextInput(attrs={"class": "form-control"}))
+                self.fields[field].initial = observation[field]
 
 
 @permission_required('is_superuser', login_url='index')
 def edit_survey(request, survey_id):
     if request.method == "POST":
-        form = request.POST
+        form = SurveyForm(request.POST)
+        if form.is_valid():
+            for field in form.cleaned_data:
+                survey_dict[field] = form.cleaned_data[field]
 
-    context = {"survey": survey_example}
+    context = {"form": SurveyForm()}
     return render(request, 'libstat/survey_template.html', context)
 
 

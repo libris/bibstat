@@ -148,7 +148,7 @@ define(['jquery', 'cell.sum', 'cell.num', 'bootstrap.validator.sv', 'jquery.tabl
         });
 
         $("#save-btn").click(function () {
-            var survey_id = $("#survey_id").val();
+            var survey_id = $("#id_key").val();
             var action = Urls.edit_survey(survey_id);
             $("#survey-form").attr("action", action).submit();
         });
