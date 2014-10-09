@@ -295,7 +295,7 @@ def publish_survey_response(request, survey_response_id):
         try:
             survey_response.publish(user=request.user)
         except Exception as e:
-            logger.error(u"Error when publishing survey response {}:".format(sr.id))
+            logger.error(u"Error when publishing survey response {}:".format(survey_response_id.id))
             print e
 
     return redirect("edit_survey_response", survey_response_id)
