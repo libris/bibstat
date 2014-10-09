@@ -14,7 +14,7 @@ from mongoengine.errors import NotUniqueError
 from django.forms.util import ErrorList
 from excel_response import ExcelResponse
 
-from libstat.models import Section, Group, Cell, SurveyObs, Row, SurveyTemplate, Observation
+from libstat.models import Section, Group, Cell, SurveyResponse, Row, SurveyTemplate, Observation, SurveyResponse_
 from libstat.forms import *
 from libstat.apis import *
 
@@ -435,55 +435,58 @@ def cell(variable_key, types=[], sum_of=[], required=False):
                 sub_label=variable.question_part,
                 description=variable.description)
 
+try:
+    survey_template = SurveyTemplate(
+        key="",
+        target_year="",
+        organization_name="",
+        municipality="",
+        municipality_code="",
+        head_authority="",
+        respondent_name="",
+        respondent_email="",
+        respondent_phone="",
+        website="",
+        sections=[
+            Section(
+                title=u"Exempeltitel",
+                groups=[
+                    Group(
+                        description="Beskrivning för gruppen",
+                        columns=3,
+                        headers=["Första kolumnen", "Andra kolumnen", "Tredje kolumnen"],
+                        rows=[
+                            Row(
+                                description="Lorem ipsum dolor sit amet, elit.",
+                                explanation="Extra förklaring för rad ett.",
+                                cells=
+                                [
+                                    cell(u"Folk1", types=['sum']),
+                                    cell(u"Folk2", types=['sum']),
+                                    cell(u"Folk3", sum_of=[u"Folk1", u"Folk2"], types=['sum'])
+                                ]
+                            ),
+                            Row(
+                                description="Lorem ipsum dolor sit amet, elit.",
+                                explanation="Extra förklaring för rad två.",
+                                cells=
+                                [
+                                    cell(u"Folk4", types=['sum']),
+                                    cell(u"Folk5", types=['sum']),
+                                    cell(u"Folk6", sum_of=[u"Folk4", u"Folk5"], types=['sum'])
+                                ]
+                            )
+                        ]
+                    )
+                ]
+            )
+        ]
+    )
+except Exception as e:
+    pass
 
-survey_template = SurveyTemplate(
-    key="",
-    target_year="",
-    organization_name="",
-    municipality="",
-    municipality_code="",
-    head_authority="",
-    respondent_name="",
-    respondent_email="",
-    respondent_phone="",
-    website="",
-    sections=[
-        Section(
-            title=u"Exempeltitel",
-            groups=[
-                Group(
-                    description="Beskrivning för gruppen",
-                    columns=3,
-                    headers=["Första kolumnen", "Andra kolumnen", "Tredje kolumnen"],
-                    rows=[
-                        Row(
-                            description="Lorem ipsum dolor sit amet, elit.",
-                            explanation="Extra förklaring för rad ett.",
-                            cells=
-                            [
-                                cell(u"Folk1", types=['sum']),
-                                cell(u"Folk2", types=['sum']),
-                                cell(u"Folk3", sum_of=[u"Folk1", u"Folk2"], types=['sum'])
-                            ]
-                        ),
-                        Row(
-                            description="Lorem ipsum dolor sit amet, elit.",
-                            explanation="Extra förklaring för rad två.",
-                            cells=
-                            [
-                                cell(u"Folk4", types=['sum']),
-                                cell(u"Folk5", types=['sum']),
-                                cell(u"Folk6", sum_of=[u"Folk4", u"Folk5"], types=['sum'])
-                            ]
-                        )
-                    ]
-                )
-            ]
-        )
-    ]
-)
 
-survey_observation = SurveyObs(
+survey_response = SurveyResponse_(
     key=u"abcdefgh",
     target_year=u"2014",
     organization_name=u"Karlstads stadsbibliotek",
@@ -494,18 +497,18 @@ survey_observation = SurveyObs(
     respondent_email=u"helena.fernström@bibliotek.karlstad.se",
     respondent_phone=u"054 - 64 82 09",
     website=u"www.bibliotek.karlstad.se",
-    observations={
-        u"Folk1": 1,
-        u"Folk2": 2,
-        u"Folk3": 3,
-        u"Folk4": 4,
-        u"Folk5": 5,
-        u"Folk6": 6,
-    }
+    observations=[
+        Observation(variable_key=u"Folk1", value=1, disabled=False),
+        Observation(variable_key=u"Folk2", value=2, disabled=False),
+        Observation(variable_key=u"Folk3", value=3, disabled=False),
+        Observation(variable_key=u"Folk4", value=4, disabled=False),
+        Observation(variable_key=u"Folk5", value=5, disabled=False),
+        Observation(variable_key=u"Folk6", value=6, disabled=False)
+    ]
 )
 
 
-def cell_to_input_field(cell):
+def cell_to_input_field(cell, observation):
     attrs = {"class": "form-control",
              "id": cell.variable_key,
              "name": cell.variable_key}
@@ -531,13 +534,18 @@ def cell_to_input_field(cell):
     if "email" in cell.types:
         attrs["data-bv-emailaddress"] = ""
 
-    return forms.CharField(required=False, widget=forms.TextInput(attrs=attrs))
+    if observation.disabled:
+        attrs["disabled"] = ""
+
+    field = forms.CharField(required=False, widget=forms.TextInput(attrs=attrs))
+    field.initial = observation.value
+    return field
 
 
 class SurveyForm(forms.Form):
     def __init__(self, *args, **kwargs):
         super(SurveyForm, self).__init__(*args, **kwargs)
-        observation = survey_observation
+        response = survey_response
 
         self.fields["key"] = forms.CharField(required=False, widget=forms.HiddenInput())
         self.fields["organization_name"] = forms.CharField(required=False,
@@ -556,34 +564,44 @@ class SurveyForm(forms.Form):
                                                          widget=forms.TextInput(attrs={"class": "form-control"}))
         self.fields["website"] = forms.CharField(required=False, widget=forms.TextInput(attrs={"class": "form-control"}))
 
-        self.fields["key"].initial = observation.key
-        self.fields["organization_name"].initial = observation.organization_name
-        self.fields["municipality"].initial = observation.municipality
-        self.fields["municipality_code"].initial = observation.municipality_code
-        self.fields["head_authority"].initial = observation.head_authority
-        self.fields["respondent_name"].initial = observation.respondent_name
-        self.fields["respondent_email"].initial = observation.respondent_email
-        self.fields["respondent_phone"].initial = observation.respondent_phone
-        self.fields["website"].initial = observation.website
+        self.fields["key"].initial = response.key
+        self.fields["organization_name"].initial = response.organization_name
+        self.fields["municipality"].initial = response.municipality
+        self.fields["municipality_code"].initial = response.municipality_code
+        self.fields["head_authority"].initial = response.head_authority
+        self.fields["respondent_name"].initial = response.respondent_name
+        self.fields["respondent_email"].initial = response.respondent_email
+        self.fields["respondent_phone"].initial = response.respondent_phone
+        self.fields["website"].initial = response.website
 
-        self.target_year = observation.target_year
+        self.target_year = response.target_year
         self.sections = survey_template.sections
         for section in survey_template.sections:
             for group in section.groups:
                 for row in group.rows:
                     for cell in row.cells:
                         key = cell.variable_key
-                        self.fields[key] = cell_to_input_field(cell)
-                        self.fields[key].initial = observation.observations[key]
+                        observation = filter(lambda o: o.variable_key == key, response.observations)[0]
+                        self.fields[key] = cell_to_input_field(cell, observation)
+
 
 
 @permission_required('is_superuser', login_url='index')
 def edit_survey(request, survey_id):
     if request.method == "POST":
         form = SurveyForm(request.POST)
+        response = survey_response
         if form.is_valid():
             for field in form.cleaned_data:
-                survey_observation.observations[field] = form.cleaned_data[field]
+                if field in response.__dict__["_data"]:
+                    response.__dict__["_data"][field] = form.cleaned_data[field]
+                else:
+                    observation = filter(lambda o: o.variable_key.lower() == field.lower(), survey_response.observations)[0]
+                    observation.value = form.cleaned_data[field]
+                    if form.cleaned_data[field] in ("Värdet är irrelevant", "Värdet är otillgängligt"):
+                        observation.disabled = True
+                    else:
+                        observation.disabled = False
 
     context = {"form": SurveyForm()}
     return render(request, 'libstat/survey_template.html', context)

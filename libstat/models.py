@@ -351,7 +351,13 @@ class Section(Document):
     groups = ListField(ReferenceField(Group))
 
 
-class SurveyObs(Document):
+class Observation(EmbeddedDocument):
+    variable_key = StringField()
+    value = StringField()
+    disabled = BooleanField()
+
+
+class SurveyResponse_(Document):
     key = StringField()
     target_year = StringField()
     organization_name = StringField()
@@ -362,12 +368,7 @@ class SurveyObs(Document):
     respondent_email = StringField()
     respondent_phone = StringField()
     website = StringField()
-    observations = DictField()
-
-
-class Observation(EmbeddedDocument):
-    variable_key = StringField()
-    value = StringField()
+    observations = ListField(EmbeddedDocumentField(Observation))
 
 
 class SurveyTemplate(Document):

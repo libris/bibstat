@@ -14,6 +14,8 @@ define(['jquery', 'cell.sum', 'bootstrap.validator.sv'], function($, sum) {
                     .data('bv.messages')
                     .find('.help-block[data-bv-for="' + data.field + '"]').hide()
                     .filter('[data-bv-validator="' + data.validator + '"]').show();
+            }).on('success.form.bv', function(e) {
+                $("input[disabled]").prop("disabled", false);
             });
 
             /* Move feedback icons to the right of the input field. */
@@ -46,8 +48,8 @@ define(['jquery', 'cell.sum', 'bootstrap.validator.sv'], function($, sum) {
                 } else {
                     $('#survey-form').bootstrapValidator('enableFieldValidators', input.attr('name'), false);
                     input.css("padding-right", "0px");
-                    input.prop('disabled', true);
                     input.val(element.text());
+                    input.prop('disabled', true);
                 }
             });
 
