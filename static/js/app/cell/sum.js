@@ -105,7 +105,7 @@ define(['jquery', 'cell'], function($, cell) {
 
                 var children = parent.attr('data-sum-of').split(' ');
                 var childrenIds = $.map(children, function(child) {
-                    return '#' + child.toLowerCase();
+                    return '#' + child
                 });
 
                 var parentId = '#' + parent.attr('id');
