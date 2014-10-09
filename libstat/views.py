@@ -424,6 +424,17 @@ def create_survey(request):
 ### Begin survey experiment ###
 ###############################
 
+def cell(variable_key, types=[], sum_of=[], required=False):
+    variable = Variable.objects.get(key=variable_key)
+    return Cell(variable_key=variable_key,
+                sum_of=sum_of,
+                previous_value="",
+                required=required,
+                types=types,
+                main_label=variable.question,
+                sub_label=variable.question_part,
+                description=variable.description)
+
 
 survey_template = SurveyTemplate(
     key="",
@@ -448,19 +459,21 @@ survey_template = SurveyTemplate(
                         Row(
                             description="Lorem ipsum dolor sit amet, elit.",
                             explanation="Extra förklaring för rad ett.",
-                            cells=[
-                                Cell(u"Folk1"),
-                                Cell(u"Folk2", required=True),
-                                Cell(u"Folk3", sum_of=[u"Folk1", u"Folk2"], is_integer=False)
+                            cells=
+                            [
+                                cell(u"Folk1", types=['sum']),
+                                cell(u"Folk2", types=['sum']),
+                                cell(u"Folk3", sum_of=[u"Folk1", u"Folk2"], types=['sum'])
                             ]
                         ),
                         Row(
                             description="Lorem ipsum dolor sit amet, elit.",
                             explanation="Extra förklaring för rad två.",
-                            cells=[
-                                Cell(u"Folk4"),
-                                Cell(u"Folk5", required=True),
-                                Cell(u"Folk6", sum_of=[u"Folk4", u"Folk5"], is_integer=False)
+                            cells=
+                            [
+                                cell(u"Folk4", types=['sum']),
+                                cell(u"Folk5", types=['sum']),
+                                cell(u"Folk6", sum_of=[u"Folk4", u"Folk5"], types=['sum'])
                             ]
                         )
                     ]
@@ -494,13 +507,30 @@ survey_observation = SurveyObs(
 
 def cell_to_input_field(cell):
     attrs = {"class": "form-control",
-             "id": cell.variable_key}
-    if cell.sum_of:
-        attrs["data-sum-of"] = " ".join(cell.sum_of)
-    if cell.required:
-        attrs["required"] = ""
-    if cell.is_integer:
-        attrs["data-is-integer"] = ""
+             "id": cell.variable_key,
+             "name": cell.variable_key}
+
+    if "sum" in cell.types:
+        attrs["data-bv-integer"] = ""
+        attrs["data-bv-greaterthan"] = ""
+        attrs["data-bv-greaterthan-value"] = "0"
+        attrs["data-bv-greaterthan-inclusive"] = ""
+        attrs["data-bv-notempty"] = ""
+        if cell.sum_of:
+            attrs["data-sum-of"] = " ".join(map(lambda s: s.lower(), cell.sum_of))
+
+    if "required" in cell.types:
+        attrs["data-bv-notempty"] = ""
+
+    if "integer" in cell.types:
+        attrs["data-bv-integer"] = ""
+        attrs["data-bv-greaterthan"] = ""
+        attrs["data-bv-greaterthan-value"] = "0"
+        attrs["data-bv-greaterthan-inclusive"] = ""
+
+    if "email" in cell.types:
+        attrs["data-bv-emailaddress"] = ""
+
     return forms.CharField(required=False, widget=forms.TextInput(attrs=attrs))
 
 

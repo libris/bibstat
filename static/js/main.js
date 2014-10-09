@@ -25,6 +25,8 @@
             'underscore': ['plugins/underscorejs/1.7.0/underscore-min'],
 
             /* App */
+            'cell': ['app/cell/cell'],
+            'cell.sum': ['app/cell/sum'],
             'survey': ['app/survey']
         },
 

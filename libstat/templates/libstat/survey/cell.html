@@ -1,28 +1,28 @@
 {% load libstat_tags %}
 
-<div class="form-group">
-    <div class="input-group">
-        {% with variable_key=cell.variable_key %}
-            {{ form|access:variable_key }}
-        {% endwith %}
-        <div class="input-group-btn">
-            <button type="button" class="btn btn-default btn-dropdown dropdown-toggle" data-toggle="dropdown">
-                <span class="caret"></span>
-            </button>
-
-            <ul class="dropdown-menu dropdown-menu-right" role="menu"> <!-- TODO Handle -->
-                <li><a href="#">Värdet är otillgängligt</a></li>
-                <li><a href="#">Värdet är irrelevant</a></li>
-                <li class="active"><a href="#" class="menu-enable">Värdet kan anges</a></li>
-            </ul>
-
-            <button class="btn btn-default btn-value disabled">
-                {% if cell.previous_value %}
-                    ({{ cell.previous_value }})
-                {% else %}
-                    (&mdash;)
-                {% endif %}
-            </button>
+<div class="cell">
+    <div class="form-group">
+        <div class="input-group">
+            {% with variable_key=cell.variable_key %}
+                {{ form|access:variable_key }}
+            {% endwith %}
+            <div class="input-group-btn">
+                <button type="button" class="btn btn-default btn-dropdown dropdown-toggle" data-toggle="dropdown">
+                    <span class="caret"></span>
+                </button>
+                <ul class="dropdown-menu dropdown-menu-right" role="menu">
+                    <li><a href="#">Värdet är otillgängligt</a></li>
+                    <li><a href="#">Värdet är irrelevant</a></li>
+                    <li class="active"><a href="#" class="menu-enable">Värdet kan anges</a></li>
+                </ul>
+                <button class="btn btn-default btn-value disabled">
+                    {% if cell.previous_value %}
+                        ({{ cell.previous_value }})
+                    {% else %}
+                        (&mdash;)
+                    {% endif %}
+                </button>
+            </div>
         </div>
     </div>
 </div>
