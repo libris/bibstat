@@ -36,6 +36,10 @@
             align-items: center;
         }
 
+        .popover {
+            width: 300px;
+        }
+
     </style>
     <div class="container">
         <div class="page-header">
@@ -44,26 +48,13 @@
         <div class="row">
             <div class="col-sm-6">
                 <div class="intro-text">
-                    Hej och välkommen!
-                    <br>
-                    <br>
-                    Här kommer vi snart skriva en varm och välkomnande text som beskriver enkäten.
-                    <br>
-                    <br>
-                    Om du känner att du inte kan/vill fylla i hela enkäten på en och samma gång så har du möjlighet att
-                    spara dina svar. Detta kan du göra genom att trycka på spara-knappen längst ner på
-                    sidan, som då kommer att behålla dina svar tills enkäten är redo att skickas in.
-                    <br>
-                    <br>
-                    När du klickar på skicka-knappen så kommer vi ta emot dina svar och du kan då inte längre
-                    ändra på något av svaren.
-                    <br>
-                    <br>
-                    Frågor kan ställas till <a href="mailto:abc@kb.se">abc@kb.se</a> eller
-                    <a href="tel:08 - 12 34 56">08 - 12 34 56</a>.
-                    <br>
-                    <br>
-                    Stort tack på förhand för ditt svar!
+                    <p>Hej och välkommen!</p>
+
+                    <p>Du har nu kommit till enkäten för Sveriges officiella biblioteksstatistik som gäller för alla
+                        offentligt finansierade bibliotekstyper. Tanken med att använda samma formulär till alla
+                        bibliotekstyper är att kunna presentera en samlad nationell biblioteksstatistik för offentligt
+                        finansierade bibliotek.</p>
+
                 </div>
             </div>
         </div>
@@ -120,6 +111,7 @@
                     </div>
                 </div>
             </div>
+
             <div class="panel panel-default inverse">
                 <div class="panel-body">
                     <div class="row">
@@ -135,6 +127,7 @@
                     </div>
                 </div>
             </div>
+
             {% for section in form.sections %}
                 <h2 class="section-title">{{ section.title }}</h2>
                 {% for group in section.groups %}
@@ -148,21 +141,22 @@
                                 </div>
                                 <hr>
                             {% endif %}
+                            {% if group.columns == 1 %}{% include "libstat/survey/col-1.html" %}{% endif %}
+                            {% if group.columns == 2 %}{% include "libstat/survey/col-2.html" %}{% endif %}
                             {% if group.columns == 3 %}{% include "libstat/survey/col-3.html" %}{% endif %}
                         </div>
                     </div>
                 {% endfor %}
+
                 {% if section.comment %}
                     <div class="panel panel-default inverse">
                         <div class="panel-body">
-                            {% if section.comment.description %}
-                                <div class="row">
-                                    <div class="col-sm-12">
-                                        <div class="question-group-description">{{ section.comment.description }}</div>
-                                    </div>
+                            <div class="row">
+                                <div class="col-sm-12">
+                                    <div class="question-group-description">{{ section.comment }}</div>
                                 </div>
-                                <hr>
-                            {% endif %}
+                            </div>
+                            <hr>
                             <div class="row">
                                 <div class="col-sm-12">
                                     <textarea class="section-comment form-control" rows="6"></textarea>
@@ -172,19 +166,17 @@
                     </div>
                 {% endif %}
             {% endfor %}
+
             <div class="panel panel-default inverse">
                 <div class="panel-body">
                     <div class="pull-right">
-                        <button type="submit" id="save-btn" class="btn btn-primary">Spara svar</button>
+                        <button type="submit" class="btn btn-primary" id="save-btn">Spara svar</button>
                         <button type="submit" class="btn btn-success">Skicka in enkät</button>
                     </div>
                 </div>
             </div>
         </form>
-        <hr>
-        <footer>
-            <p>&copy; Kungliga Biblioteket 2014</p>
-        </footer>
+
     </div>
 
 {% endblock %}
