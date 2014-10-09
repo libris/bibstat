@@ -520,7 +520,7 @@ def cell_to_input_field(cell, observation):
         attrs["data-bv-greaterthan-inclusive"] = ""
         attrs["data-bv-notempty"] = ""
         if cell.sum_of:
-            attrs["data-sum-of"] = " ".join(map(lambda s: s.lower(), cell.sum_of))
+            attrs["data-sum-of"] = " ".join(map(lambda s: s, cell.sum_of))
 
     if "required" in cell.types:
         attrs["data-bv-notempty"] = ""
