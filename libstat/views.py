@@ -826,9 +826,9 @@ class SurveyForm(forms.Form):
             for group in section.groups:
                 for row in group.rows:
                     for cell in row.cells:
-                        key = cell.variable_key
-                        observation = filter(lambda o: o.variable_key == key, response.observations)[0]
-                        self.fields[key] = cell_to_input_field(cell, observation)
+                        variable_key = cell.variable_key
+                        observation = response.get_observation(variable_key)
+                        self.fields[variable_key] = cell_to_input_field(cell, observation)
 
 
 @permission_required('is_superuser', login_url='index')
@@ -838,16 +838,15 @@ def edit_survey(request, survey_id):
         response = survey_response
         if form.is_valid():
             for field in form.cleaned_data:
-                if field in response.__dict__["_data"]:
-                    response.__dict__["_data"][field] = form.cleaned_data[field]
-                else:
-                    observation = \
-                    filter(lambda o: o.variable_key.lower() == field.lower(), survey_response.observations)[0]
+                observation = response.get_observation(field)
+                if observation:
                     observation.value = form.cleaned_data[field]
-                    if form.cleaned_data[field] in ("Värdet är irrelevant", "Värdet är otillgängligt"):
+                    if form.cleaned_data[field] == "Värdet är okänt":
                         observation.disabled = True
                     else:
                         observation.disabled = False
+                else:
+                    response.__dict__["_data"][field] = form.cleaned_data[field]
 
     context = {"form": SurveyForm()}
     return render(request, 'libstat/survey_template.html', context)

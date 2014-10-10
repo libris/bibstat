@@ -370,6 +370,10 @@ class SurveyResponse_(Document):
     website = StringField()
     observations = ListField(EmbeddedDocumentField(Observation))
 
+    def get_observation(self, variable_key):
+        observations = filter(lambda o: o.variable_key == variable_key, self.observations)
+        return observations[0] if len(observations) == 1 else None
+
 
 class SurveyTemplate(Document):
     key = StringField()
@@ -383,6 +387,15 @@ class SurveyTemplate(Document):
     respondent_phone = StringField()
     website = StringField()
     sections = ListField(ReferenceField(Section))
+
+    def get_cell(self, variable_key):
+        for section in self.sections:
+            for group in section.groups:
+                for row in group.rows:
+                    for cell in row.cells:
+                        if cell.variable_key == variable_key:
+                            return cell
+        return None
 
 
 class Survey(Document):
