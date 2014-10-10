@@ -530,20 +530,6 @@ class SurveyResponseBase(Document):
         return hits[0] if len(hits) > 0 else None
 
 
-class SurveyResponseDraft(SurveyResponseBase):
-    """
-        TODO: A draft for a survey response, where the library has not yet completed the survey.
-        When the survey is completed, the draft should be copied to a SurveyResponse object. 
-    """
-    # Both unique fields need to be in subclasses to enable proper indexing.
-    library_name = StringField(max_length=100, required=True, unique_with='sample_year')
-    sample_year = IntField(required=True)
-
-    meta = {
-        'collection': 'libstat_survey_response_drafts'
-    }
-
-
 class SurveyResponse(SurveyResponseBase):
     """
         A single survey response for a library, sample year (and target group).
