@@ -9,17 +9,23 @@ define(['jquery', 'cell.sum', 'bootstrap.validator.sv'], function($, sum) {
                     invalid: 'fa fa-times',
                     validating: 'fa fa-refresh'
                 }
-            }).on('error.validator.bv', function(e, data) { // http://bootstrapvalidator.com/examples/changing-default-behaviour/#showing-one-message-each-time
+            }).on('error.validator.bv', function (e, data) { // http://bootstrapvalidator.com/examples/changing-default-behaviour/#showing-one-message-each-time
                 data.element
                     .data('bv.messages')
                     .find('.help-block[data-bv-for="' + data.field + '"]').hide()
                     .filter('[data-bv-validator="' + data.validator + '"]').show();
-            }).on('success.form.bv', function(e) {
+            }).on('success.form.bv', function (e) {
+                var disabled_input_ids = $("input[disabled]").map(function () {
+                    return $(this).attr("id");
+                }).get().join(" ");
+                if (disabled_input_ids) {
+                    $("#disabled_inputs").val(disabled_input_ids);
+                }
                 $("input[disabled]").prop("disabled", false);
             });
 
             /* Move feedback icons to the right of the input field. */
-            $.each($(".cell .form-control-feedback"), function() {
+            $.each($(".cell .form-control-feedback"), function () {
                 var element = $(this), input = element.prev(".input-group").children("input");
                 var left = input.outerWidth() - element.width();
 

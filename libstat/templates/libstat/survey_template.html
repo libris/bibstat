@@ -62,6 +62,7 @@
         <form class="survey-content" id="survey-form" method="post">
             {% csrf_token %}
             {{ form.key }}
+            {{ form.disabled_inputs }}
 
             <h2 class="section-title">Om svarande organisation och person</h2>
 

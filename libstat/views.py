@@ -796,26 +796,36 @@ class SurveyForm(forms.Form):
         response = survey_response
 
         self.fields["key"] = forms.CharField(required=False, widget=forms.HiddenInput())
+        self.fields["disabled_inputs"] = forms.CharField(required=False,
+                                                         widget=forms.HiddenInput(attrs={"id": "disabled_inputs"}))
         self.fields["organization_name"] = forms.CharField(required=False,
                                                            widget=forms.TextInput(attrs={"class": "form-control",
-                                                                                         "disabled": ""}))
+                                                                                         "disabled": "",
+                                                                                         "id": "organization_name"}))
         self.fields["municipality"] = forms.CharField(required=False,
                                                       widget=forms.TextInput(attrs={"class": "form-control",
-                                                                                    "disabled": ""}))
+                                                                                    "disabled": "",
+                                                                                    "id": "municipality"}))
         self.fields["municipality_code"] = forms.CharField(required=False,
                                                            widget=forms.TextInput(attrs={"class": "form-control",
-                                                                                         "disabled": ""}))
+                                                                                         "disabled": "",
+                                                                                         "id": "municipality_code"}))
         self.fields["head_authority"] = forms.CharField(required=False,
                                                         widget=forms.TextInput(attrs={"class": "form-control",
-                                                                                      "disabled": ""}))
+                                                                                      "disabled": "",
+                                                                                      "id": "head_authority"}))
         self.fields["respondent_name"] = forms.CharField(required=False,
-                                                         widget=forms.TextInput(attrs={"class": "form-control"}))
+                                                         widget=forms.TextInput(attrs={"class": "form-control",
+                                                                                       "id": "respondent_name"}))
         self.fields["respondent_email"] = forms.CharField(required=False,
-                                                          widget=forms.TextInput(attrs={"class": "form-control"}))
+                                                          widget=forms.TextInput(attrs={"class": "form-control",
+                                                                                        "id": "respondent_name"}))
         self.fields["respondent_phone"] = forms.CharField(required=False,
-                                                          widget=forms.TextInput(attrs={"class": "form-control"}))
+                                                          widget=forms.TextInput(attrs={"class": "form-control",
+                                                                                        "id": "respondent_phone"}))
         self.fields["website"] = forms.CharField(required=False,
-                                                 widget=forms.TextInput(attrs={"class": "form-control"}))
+                                                 widget=forms.TextInput(attrs={"class": "form-control",
+                                                                               "id": "website"}))
 
         self.fields["key"].initial = response.key
         self.fields["organization_name"].initial = response.organization_name
@@ -844,14 +854,13 @@ def edit_survey(request, survey_id):
         form = SurveyForm(request.POST)
         response = survey_response
         if form.is_valid():
+            disabled_inputs = form.cleaned_data["disabled_inputs"].split(" ")
             for field in form.cleaned_data:
                 observation = response.get_observation(field)
                 if observation:
                     observation.value = form.cleaned_data[field]
-                    if form.cleaned_data[field] == "Värdet är okänt":
+                    if field in disabled_inputs:
                         observation.disabled = True
-                    else:
-                        observation.disabled = False
                 else:
                     response.__dict__["_data"][field] = form.cleaned_data[field]
 
