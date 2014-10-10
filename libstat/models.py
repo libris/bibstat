@@ -328,7 +328,8 @@ class Cell(Document):
     variable_key = StringField()
     value = StringField()
     previous_value = StringField()
-    sum_of = StringField()
+    sum_of = ListField(StringField())
+    sum_siblings = ListField(StringField())
     types = ListField(StringField())
 
 
