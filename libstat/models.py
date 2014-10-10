@@ -333,7 +333,7 @@ class VariableVersion(VariableBase):
     }
 
 
-class Cell(Document):
+class Cell(EmbeddedDocument):
     variable_key = StringField()
     value = StringField()
     required = BooleanField()
@@ -343,23 +343,23 @@ class Cell(Document):
     types = ListField(StringField())
 
 
-class Row(Document):
+class Row(EmbeddedDocument):
     description = StringField()
     explanation = StringField()
-    cells = ListField(ReferenceField(Cell))
+    cells = ListField(EmbeddedDocumentField(Cell))
 
 
-class Group(Document):
+class Group(EmbeddedDocument):
     description = StringField()
-    rows = ListField(ReferenceField(Row))
+    rows = ListField(EmbeddedDocumentField(Row))
     headers = ListField(StringField())
     columns = IntField()
 
 
-class Section(Document):
+class Section(EmbeddedDocument):
     comment = StringField()
     title = StringField()
-    groups = ListField(ReferenceField(Group))
+    groups = ListField(EmbeddedDocumentField(Group))
 
 
 class Observation(EmbeddedDocument):
@@ -397,7 +397,7 @@ class SurveyTemplate(Document):
     respondent_email = StringField()
     respondent_phone = StringField()
     website = StringField()
-    sections = ListField(ReferenceField(Section))
+    sections = ListField(EmbeddedDocumentField(Section))
 
     def get_cell(self, variable_key):
         for section in self.sections:
