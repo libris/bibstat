@@ -14,6 +14,7 @@ from libstat.utils import ISO8601_utc_format
 import logging
 from django.db.models.fields import DateField
 from cookielib import logger
+
 logger = logging.getLogger(__name__)
 
 from libstat.utils import SURVEY_TARGET_GROUPS, targetGroups, VARIABLE_TYPES, rdfVariableTypes
@@ -106,23 +107,22 @@ class VariableBase(Document):
     @property
     def state(self):
         if self.is_draft:
-            return { u"state": u"draft", u"label": u"utkast" }
+            return {u"state": u"draft", u"label": u"utkast"}
         elif self.replaced_by:
-            return { u"state": u"replaced", u"label": u"ersatt" }
+            return {u"state": u"replaced", u"label": u"ersatt"}
         elif self._is_no_longer_active():
-            return { u"state": u"discontinued", u"label": u"avslutad" }
+            return {u"state": u"discontinued", u"label": u"avslutad"}
         elif self._is_not_yet_active():
-            return { u"state": u"pending", u"label": u"vilande" }
+            return {u"state": u"pending", u"label": u"vilande"}
         else:
             # Cannot use 'active' as state/css class, it's already a class in Bootsrap...
-            return { u"state": u"current", u"label": u"aktiv"}
+            return {u"state": u"current", u"label": u"aktiv"}
 
     def _is_no_longer_active(self):
         return self.active_to and datetime.utcnow().date() > self.active_to.date()
 
     def _is_not_yet_active(self):
         return self.active_from and datetime.utcnow().date() < self.active_from.date()
-
 
 
 class Variable(VariableBase):
@@ -141,9 +141,11 @@ class Variable(VariableBase):
     def store_version_and_update_date_modified(cls, sender, document, **kwargs):
         if document.id and not document.is_draft:
             changed_fields = document.__dict__["_changed_fields"] if "_changed_fields" in document.__dict__ else []
-            logger.debug(u"PRE_SAVE: Fields {} have changed, creating variable version from current version".format(changed_fields))
+            logger.debug(u"PRE_SAVE: Fields {} have changed, creating variable version from current version".format(
+                changed_fields))
             query_set = Variable.objects.filter(pk=document.id)
-            assert len(query_set) > 0 # Need to do something with query_set since it is lazy loaded. Otherwise nothing will be cloned.
+            assert len(
+                query_set) > 0  # Need to do something with query_set since it is lazy loaded. Otherwise nothing will be cloned.
             versions = query_set.clone_into(VariableVersion.objects)
             for v in versions:
                 v.id = None
@@ -166,7 +168,9 @@ class Variable(VariableBase):
                 if replaced.replaced_by and replaced.replaced_by.id == document.id:
                     replaced.active_to = None
                     replaced.save()
-                    logger.debug(u"POST_DELETE: Setting 'active_to' to None on replaced {} when deleting replacement".format(replaced.id))
+                    logger.debug(
+                        u"POST_DELETE: Setting 'active_to' to None on replaced {} when deleting replacement".format(
+                            replaced.id))
 
 
     @property
@@ -177,6 +181,7 @@ class Variable(VariableBase):
         Return a label for this Variable.
         If the Variable has both question and question_part, an array will be returned. Otherwise a unicode string.
     """
+
     @property
     def label(self):
         if self.question and self.question_part:
@@ -206,10 +211,14 @@ class Variable(VariableBase):
                 try:
                     variable = Variable.objects.get(pk=object_id)
                     if variable.replaced_by != None and variable.replaced_by.id != self.id:
-                        raise AttributeError(u"Variable {} is already replaced by {}".format(object_id, variable.replaced_by.id))
+                        raise AttributeError(
+                            u"Variable {} is already replaced by {}".format(object_id, variable.replaced_by.id))
                     siblings_to_replace.add(variable)
                 except Exception as e:
-                    logger.error(u"Error while fetching Variable with id {} to be replaced by Variable {}: {}".format(object_id, self.id, e))
+                    logger.error(
+                        u"Error while fetching Variable with id {} to be replaced by Variable {}: {}".format(object_id,
+                                                                                                             self.id,
+                                                                                                             e))
                     raise e
 
         siblings_to_release = current_replacements - siblings_to_replace
@@ -266,10 +275,10 @@ class Variable(VariableBase):
         return display_names
 
     def to_dict(self, id_prefix=""):
-        json_ld_dict = { u"@id": u"{}{}".format(id_prefix, self.key),
-                         u"@type": [u"rdf:Property", u"qb:MeasureProperty"],
-                         u"comment": self.description,
-                         u"range": self.type_to_rdf_type(self.type) }
+        json_ld_dict = {u"@id": u"{}{}".format(id_prefix, self.key),
+                        u"@type": [u"rdf:Property", u"qb:MeasureProperty"],
+                        u"comment": self.description,
+                        u"range": self.type_to_rdf_type(self.type)}
 
         if self.replaces:
             json_ld_dict[u"replaces"] = [replaced.key for replaced in self.replaces]
@@ -293,7 +302,7 @@ class Variable(VariableBase):
 
 
     def as_simple_dict(self):
-       return { u'key': self.key, u'id': str(self.id), u'description': self.description }
+        return {u'key': self.key, u'id': str(self.id), u'description': self.description}
 
     def is_deletable(self):
         if self.is_draft:
@@ -320,7 +329,7 @@ class VariableVersion(VariableBase):
 
     meta = {
         'collection': 'libstat_variable_versions',
-        #'ordering': ['-date_modified']
+        # 'ordering': ['-date_modified']
     }
 
 
@@ -459,6 +468,7 @@ class SurveyObservation(EmbeddedDocument):
     def instance_id(self):
         return self._instance.id
 
+
 class Library(EmbeddedDocument):
     bibdb_name = StringField()
     bibdb_id = StringField(max_length=100)
@@ -467,6 +477,7 @@ class Library(EmbeddedDocument):
     def __unicode__(self):
         return u"libdb [{}, {}, {}]".format(self.bibdb_id, self.bibdb_sigel, self.bibdb_name)
 
+
 class SurveyResponseMetadata(EmbeddedDocument):
     # TODO: Migrera data från observations till denna modell!
 
@@ -474,7 +485,7 @@ class SurveyResponseMetadata(EmbeddedDocument):
     municipality_name = StringField(max_length=100)
     municipality_code = StringField(max_length=6)
 
-    #Private
+    # Private
     respondent_name = StringField(max_length=100)
     respondent_email = StringField(max_length=100)
     respondent_phone = StringField(max_length=20)
@@ -524,7 +535,7 @@ class SurveyResponseDraft(SurveyResponseBase):
         TODO: A draft for a survey response, where the library has not yet completed the survey.
         When the survey is completed, the draft should be copied to a SurveyResponse object. 
     """
-     # Both unique fields need to be in subclasses to enable proper indexing.
+    # Both unique fields need to be in subclasses to enable proper indexing.
     library_name = StringField(max_length=100, required=True, unique_with='sample_year')
     sample_year = IntField(required=True)
 
@@ -553,9 +564,12 @@ class SurveyResponse(SurveyResponseBase):
                 document._is_published = True
             else:
                 changed_fields = document.__dict__["_changed_fields"] if "_changed_fields" in document.__dict__ else []
-                logger.info(u"PRE SAVE: Fields {} have changed, creating survey response version from current version".format(changed_fields))
+                logger.info(
+                    u"PRE SAVE: Fields {} have changed, creating survey response version from current version".format(
+                        changed_fields))
                 query_set = SurveyResponse.objects.filter(pk=document.id)
-                assert len(query_set) > 0 # Need to do something with query_set since it is lazy loaded. Otherwise nothing will be cloned.
+                assert len(
+                    query_set) > 0  # Need to do something with query_set since it is lazy loaded. Otherwise nothing will be cloned.
                 versions = query_set.clone_into(SurveyResponseVersion.objects)
                 for v in versions:
                     v.id = None
@@ -565,7 +579,7 @@ class SurveyResponse(SurveyResponseBase):
                 document._is_published = False
                 # field modified_by is set in form
         else:
-            #logger.debug("PRE SAVE: Creation of new object, setting modified date to value of creation date")
+            # logger.debug("PRE SAVE: Creation of new object, setting modified date to value of creation date")
             document.date_modified = document.date_created
             document.modified_by = document.created_by
             if not hasattr(document, "_is_published"):
@@ -573,7 +587,8 @@ class SurveyResponse(SurveyResponseBase):
 
     @property
     def latest_version_published(self):
-        return self._is_published if self._is_published else (self.published_at != None and self.published_at >= self.date_modified)
+        return self._is_published if self._is_published else (
+        self.published_at != None and self.published_at >= self.date_modified)
 
     @property
     def is_published(self):
@@ -593,16 +608,18 @@ class SurveyResponse(SurveyResponseBase):
             if obs._is_public and obs.value != None:
                 # TODO: Warn if already is_published?
                 data_item = None
-                existing = OpenData.objects.filter(library_name=self.library_name, sample_year=self.sample_year, variable=obs.variable)
-                if(len(existing) == 0):
-                    data_item = OpenData(library_name=self.library_name, sample_year=self.sample_year, variable=obs.variable,
+                existing = OpenData.objects.filter(library_name=self.library_name, sample_year=self.sample_year,
+                                                   variable=obs.variable)
+                if (len(existing) == 0):
+                    data_item = OpenData(library_name=self.library_name, sample_year=self.sample_year,
+                                         variable=obs.variable,
                                          target_group=self.target_group, date_created=publishing_date)
                     if self.library and self.library.bibdb_id:
                         data_item.library_id = self.library.bibdb_id
                 else:
                     data_item = existing.get(0)
 
-                data_item.value= obs.value
+                data_item.value = obs.value
                 data_item.date_modified = publishing_date
                 data_item.save()
 
@@ -636,7 +653,6 @@ class SurveyResponseVersion(SurveyResponseBase):
     }
 
 
-
 class OpenData(Document):
     """
         Open, published data based on survey observations.
@@ -645,7 +661,7 @@ class OpenData(Document):
     """
 
     library_name = StringField(max_length=100, required=True, unique_with=['sample_year', 'variable'])
-    library_id = StringField(max_length=100) #TODO
+    library_id = StringField(max_length=100)  # TODO
     sample_year = IntField(required=True)
     target_group = StringField(required=True, choices=SURVEY_TARGET_GROUPS)
     variable = ReferenceField(Variable, required=True)
@@ -668,14 +684,14 @@ class OpenData(Document):
 
     def to_dict(self):
         _dict = {
-                u"@id": str(self.id),
-                u"@type": u"Observation",
-                u"library": {u"@id": u"{}/library/{}".format(settings.BIBDB_BASE_URL, self.library_name)},
-                u"sampleYear": self.sample_year,
-                u"targetGroup": targetGroups[self.target_group],
-                self.variable.key: self.value,
-                u"published": self.date_created_str(),
-                u"modified": self.date_modified_str()
+            u"@id": str(self.id),
+            u"@type": u"Observation",
+            u"library": {u"@id": u"{}/library/{}".format(settings.BIBDB_BASE_URL, self.library_name)},
+            u"sampleYear": self.sample_year,
+            u"targetGroup": targetGroups[self.target_group],
+            self.variable.key: self.value,
+            u"published": self.date_created_str(),
+            u"modified": self.date_modified_str()
         };
         if self.library_id:
             _dict[u"library"] = {u"@id": u"{}/library/{}".format(settings.BIBDB_BASE_URL, self.library_id)}
@@ -684,7 +700,9 @@ class OpenData(Document):
         return _dict
 
     def __unicode__(self):
-      return u"{} {} {} {} {}".format(self.library_name, self.sample_year, self.target_group, self.variable.key, self.value)
+        return u"{} {} {} {} {}".format(self.library_name, self.sample_year, self.target_group, self.variable.key,
+                                        self.value)
+
 
 """
     Post/pre save actions and other signals
