@@ -100,7 +100,7 @@ def variables(request):
         variables = Variable.objects.all()
     context = {
         'variables': variables,
-        'target_group': target_groups
+        'target_groups': target_groups
     }
     return render(request, 'libstat/variables.html', context)
 
