@@ -839,21 +839,25 @@ class SurveyForm(forms.Form):
                         self.fields[variable_key] = cell_to_input_field(cell, observation)
 
 
+def save_survey_from_form(survey_id, form):
+    response = survey_response
+    if form.is_valid():
+        disabled_inputs = form.cleaned_data["disabled_inputs"].split(" ")
+        for field in form.cleaned_data:
+            observation = response.get_observation(field)
+            if observation:
+                observation.value = form.cleaned_data[field]
+                if field in disabled_inputs:
+                    observation.disabled = True
+            else:
+                response.__dict__["_data"][field] = form.cleaned_data[field]
+
+
 @permission_required('is_superuser', login_url='index')
 def edit_survey(request, survey_id):
     if request.method == "POST":
         form = SurveyForm(request.POST)
-        response = survey_response
-        if form.is_valid():
-            disabled_inputs = form.cleaned_data["disabled_inputs"].split(" ")
-            for field in form.cleaned_data:
-                observation = response.get_observation(field)
-                if observation:
-                    observation.value = form.cleaned_data[field]
-                    if field in disabled_inputs:
-                        observation.disabled = True
-                else:
-                    response.__dict__["_data"][field] = form.cleaned_data[field]
+        save_survey_from_form(survey_id, form)
 
     context = {"form": SurveyForm()}
     return render(request, 'libstat/survey_template.html', context)
