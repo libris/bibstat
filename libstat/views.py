@@ -424,9 +424,10 @@ def create_survey(request):
 ### Begin survey experiment ###
 ###############################
 
-def cell(variable_key, types=[], sum_of=[], required=False):
+def cell(variable_key, types=[], sum_of=[], sum_siblings=[], required=False):
     return Cell(variable_key=variable_key,
                 sum_of=sum_of,
+                sum_siblings=sum_siblings,
                 previous_value="",
                 required=required,
                 types=types)
@@ -594,12 +595,12 @@ survey_template = SurveyTemplate(
                         Row(
                             description="Antal anställda kvinnor",
                             explanation="",
-                            cells=[cell(u"Personer01", types=['sum'])]
+                            cells=[cell(u"Personer01", types=['sum'], sum_siblings=['Personer02'])]
                         ),
                         Row(
                             description="Antal anställda män",
                             explanation="",
-                            cells=[cell(u"Personer02", types=['sum'])]
+                            cells=[cell(u"Personer02", types=['sum'], sum_siblings=['Personer01'])]
                         ),
                         Row(
                             description="Totalt antal anställda personer",
@@ -622,32 +623,32 @@ survey_template = SurveyTemplate(
                         Row(
                             description="Inköp av tryckta medier och audiovisuella medier",
                             explanation="",
-                            cells=[cell(u"Utgift01", types=['sum'])]
+                            cells=[cell(u"Utgift01", types=['sum'], sum_siblings=[u"Utgift02",u"Utgift03",u"Utgift04",u"Utgift05",u"Utgift06"])]
                         ),
                         Row(
                             description="Inköp av virtuella e-baserade media och databaslicenser (exklusive kostnader för biblioteksdatasystemet)",
                             explanation="",
-                            cells=[cell(u"Utgift02", types=['sum'])]
+                            cells=[cell(u"Utgift02", types=['sum'], sum_siblings=[u"Utgift01",u"Utgift03",u"Utgift04",u"Utgift05",u"Utgift06"])]
                         ),
                         Row(
                             description="Lönekostnader personal",
                             explanation="",
-                            cells=[cell(u"Utgift03", types=['sum'])]
+                            cells=[cell(u"Utgift03", types=['sum'], sum_siblings=[u"Utgift01",u"Utgift02",u"Utgift04",u"Utgift05",u"Utgift06"])]
                         ),
                         Row(
                             description="Kostnader för personalens kompetensutveckling",
                             explanation="",
-                            cells=[cell(u"Utgift04", types=['sum'])]
+                            cells=[cell(u"Utgift04", types=['sum'], sum_siblings=[u"Utgift01",u"Utgift02",u"Utgift03",u"Utgift05",u"Utgift06"])]
                         ),
                         Row(
                             description="Lokalkostnader",
                             explanation="",
-                            cells=[cell(u"Utgift05", types=['sum'])]
+                            cells=[cell(u"Utgift05", types=['sum'], sum_siblings=[u"Utgift01",u"Utgift02",u"Utgift03",u"Utgift04",u"Utgift06"])]
                         ),
                         Row(
                             description="Övriga driftskostnader som inte ingår i punkterna ovan (inklusive kostnader för bibliotekssystemet)",
                             explanation="",
-                            cells=[cell(u"Utgift06", types=['sum'])]
+                            cells=[cell(u"Utgift06", types=['sum'], sum_siblings=[u"Utgift01",u"Utgift02",u"Utgift03",u"Utgift04",u"Utgift05"])]
                         ),
                         Row(
                             description="Totala driftskostnader för biblioteksverksamheten (summan av ovanstående)",
@@ -669,17 +670,17 @@ survey_template = SurveyTemplate(
                         Row(
                             description="Projektmedel som inte kommer från huvudmannen eller moderorganisationen samt sponsring och gåvor",
                             explanation="",
-                            cells=[cell(u"Intakt01", types=['sum'])]
+                            cells=[cell(u"Intakt01", types=['sum'], sum_siblings=[u"Intakt02",u"Intakt03"])]
                         ),
                         Row(
                             description="Försäljning av bibliotekstjänster och personalresurser till andra huvudmän, organisationer och företag",
                             explanation="",
-                            cells=[cell(u"Intakt02", types=['sum'])]
+                            cells=[cell(u"Intakt02", types=['sum'], sum_siblings=[u"Intakt01",u"Intakt03"])]
                         ),
                         Row(
                             description="Försenings- och reservationsutgifter eller intäkter av uthyrningsverksamhet samt försäljning av böcker och profilprodukter",
                             explanation="",
-                            cells=[cell(u"Intakt03", types=['sum'])]
+                            cells=[cell(u"Intakt03", types=['sum'], sum_siblings=[u"Intakt01",u"Intakt02"])]
                         ),
                         Row(
                             description="Totalt antal kronor egengenererade inkomster",
@@ -766,6 +767,8 @@ def cell_to_input_field(cell, observation):
         attrs["data-bv-notempty"] = ""
         if cell.sum_of:
             attrs["data-sum-of"] = " ".join(map(lambda s: s, cell.sum_of))
+        if cell.sum_siblings:
+            attrs["data-sum-siblings"] = " ".join(map(lambda s: s, cell.sum_siblings))
 
     if "required" in cell.types:
         attrs["data-bv-notempty"] = ""
