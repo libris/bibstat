@@ -121,31 +121,7 @@ define(['jquery', 'survey', 'jquery.tablesorter', 'bootstrap', 'bootstrap.datepi
             return false; // prevent the click propagation
         });
 
-        /* Create survey, add questions */
-        var active_variables = new Bloodhound({
-            datumTokenizer: function(item) {
-                return Bloodhound.tokenizers.whitespace(item.value);
-            },
-            queryTokenizer: Bloodhound.tokenizers.whitespace,
-            limit: 20,
-            remote: {
-                url: '/statistics/variables/surveyable?q=%QUERY',
-                filter: function(list) {
-                    return $.map(list, function(item) {
-                        return { label: item.key, value: item.id };
-                    });
-                }
-            }
-        });
-        active_variables.initialize();
-        $('#add_survey_question').tokenfield({
-            typeahead: [null, {
-                displayKey: 'label',
-                source: active_variables.ttAdapter()
-            }],
-            limit: 1
-            //TODO: Disable typeahead autocomplete and cursor if a token already has been set.
-        });
+
 
         $("#save-btn").click(function () {
             var survey_id = $("#id_key").val();
