@@ -19,8 +19,10 @@ define(['jquery', 'cell'], function($, cell) {
             cell.enable(parent);
         }
 
+        var anyChildWithValue = false;
         for(var child in reversed) {
-            if(cell.value(child)) {
+            if(cell.enabled(child) && cell.value(child)) {
+                anyChildWithValue = true;
                 for(var parent in reversed[child])
                     cell.disable(reversed[child][parent]);
             }
@@ -31,7 +33,7 @@ define(['jquery', 'cell'], function($, cell) {
                 continue;
 
             $.each(setup[parent], function(index, child) {
-                var shouldEnable = true;
+                var shouldEnable = !(cell.disabled(child) && cell.value(child));
                 $.each(reversed[child], function(index, parent) {
                     if(cell.enabled(parent) && cell.value(parent)) {
                         shouldEnable = false;
@@ -39,9 +41,19 @@ define(['jquery', 'cell'], function($, cell) {
                     }
                 });
 
-                if(shouldEnable)
+                if(shouldEnable) {
                     cell.enable(child);
+                    $(child).val('');
+                }
             });
+        }
+
+        if(anyChildWithValue) {
+            for(child in reversed) {
+                var dropdown = $(child).next(".input-group-btn").children(".btn-dropdown");
+                dropdown.prop('disabled', true);
+
+            }
         }
     };
 

@@ -29,12 +29,8 @@ define(['jquery'], function($) {
             return $.trim($(element).val());
         },
 
-        number: function(element, integers) {
-            var number = Number(cell.value(element));
-            if(integers && number != Math.floor(number))
-                number = Number.NaN;
-
-            return number;
+        number: function(element) {
+            return Number(cell.value(element));
         }
     };
 
