@@ -61,15 +61,15 @@ class VariableBase(Document):
     description = StringField(required=True)
 
     # Comment is a private field and should never be returned as open data
-    comment = StringField(max_length=200)
+    comment = StringField()
 
     is_public = BooleanField(required=True, default=True)
-    type = StringField(max_length=100, required=True, choices=VARIABLE_TYPES)
+    type = StringField(required=True, choices=VARIABLE_TYPES)
 
-    target_groups = ListField(StringField(max_length=20, choices=SURVEY_TARGET_GROUPS), required=True)
+    target_groups = ListField(StringField(choices=SURVEY_TARGET_GROUPS), required=True)
 
-    category = StringField(max_length=100)
-    sub_category = StringField(max_length=100)
+    category = StringField()
+    sub_category = StringField()
 
     # TODO: Inför frågor/delfrågor i termdokument och kör om importen
     question = StringField()
@@ -128,7 +128,7 @@ class Variable(VariableBase):
     """
         Representation of a statistical term with corresponding survey question
     """
-    key = StringField(max_length=100, required=True, unique=True)
+    key = StringField(required=True, unique=True)
 
     meta = {
         'collection': 'libstat_variables',
@@ -323,7 +323,7 @@ class VariableVersion(VariableBase):
         
         Prior to any changes in a Variable, a new copy should be stored as a VariableVersion.
     """
-    key = StringField(max_length=100, required=True)
+    key = StringField(required=True)
     variable_id = ObjectIdField(required=True)
 
     meta = {
