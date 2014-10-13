@@ -279,7 +279,8 @@ def export_survey_responses(request):
 
         rows = [[unicode(observation._source_key) for observation in responses[0].observations]]
         for response in responses:
-            rows.append([unicode(observation.value) for observation in response.observations])
+            rows.append(
+                [observation.value if observation.value else "" for observation in response.observations])
 
         return ExcelResponse(rows, filename)
 
