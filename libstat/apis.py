@@ -1,17 +1,17 @@
 # -*- coding: utf-8 -*-
+import json
+import datetime
+import logging
+
 from django.http import HttpResponse, Http404
 from django.conf import settings
 from django.core.urlresolvers import reverse
-
 from mongoengine.queryset import Q
-
-import json
-import datetime
 
 from libstat.models import Variable, OpenData
 from libstat.utils import parse_datetime_from_isodate_str
 
-import logging
+
 logger = logging.getLogger(__name__)
 
 data_context = {
@@ -106,60 +106,72 @@ core_terms = [
     },
     {
         u"@id": u"Observation",
-        u"@type": u"rdfs:Class", 
+        u"@type": u"rdfs:Class",
         u"subClassOf": u"qb:Observation",
         u"label": u"Observation",
         u"comment": u"En observation för ett bibiliotek, mätår och variabel"
     }
 ]
 
-core_term_ids = {term [u"@id"] for term in core_terms}
+core_term_ids = {term[u"@id"] for term in core_terms}
 
 """
     OpenDataApi
 """
+
+
 def data_api(request):
     from_date = parse_datetime_from_isodate_str(request.GET.get("from_date", None))
     to_date = parse_datetime_from_isodate_str(request.GET.get("to_date", None))
     limit = int(request.GET.get("limit", 100))
     offset = int(request.GET.get("offset", 0))
     term = request.GET.get("term", None)
-    
-    if not from_date:    
+
+    if not from_date:
         from_date = datetime.datetime.fromtimestamp(0)
     if not to_date:
         to_date = datetime.datetime.today() + datetime.timedelta(days=1)
-    
+
     modified_from_query = Q(date_modified__gte=from_date)
     modified_to_query = Q(date_modified__lt=to_date)
-    
+
     objects = []
     if term:
         try:
             variable = Variable.objects.get(key=term)
-            logger.debug(u"Fetching statistics data for term {} published between {} and {}, items {} to {}".format(variable.key, from_date, to_date, offset, offset + limit))
-            objects = OpenData.objects.filter(Q(variable=variable) & modified_from_query & modified_to_query).skip(offset).limit(limit)
+            logger.debug(
+                u"Fetching statistics data for term {} published between {} and {}, items {} to {}".format(variable.key,
+                                                                                                           from_date,
+                                                                                                           to_date,
+                                                                                                           offset,
+                                                                                                           offset + limit))
+            objects = OpenData.objects.filter(Q(variable=variable) & modified_from_query & modified_to_query).skip(
+                offset).limit(limit)
         except Exception:
             logger.warn(u"Unknown variable {}, skipping..".format(term))
-            
+
     else:
-        logger.debug(u"Fetching statistics data published between {} and {}, items {} to {}".format(from_date, to_date, offset, offset + limit))
+        logger.debug(
+            u"Fetching statistics data published between {} and {}, items {} to {}".format(from_date, to_date, offset,
+                                                                                           offset + limit))
         objects = OpenData.objects.filter(modified_from_query & modified_to_query).skip(offset).limit(limit)
 
     observations = []
     for item in objects:
         observations.append(item.to_dict())
-    
+
     data = dict(data_set, observations=observations)
     if len(observations) >= limit:
         data[u"next"] = u"?limit={}&offset={}".format(limit, offset + limit)
-    
+
     return HttpResponse(json.dumps(data), content_type="application/ld+json")
 
 
 """
     Observation Api
 """
+
+
 def observation_api(request, observation_id):
     try:
         open_data = OpenData.objects.get(pk=observation_id)
@@ -170,17 +182,21 @@ def observation_api(request, observation_id):
     observation["dataSet"] = data_set["@id"]
     return HttpResponse(json.dumps(observation), content_type="application/ld+json")
 
+
 """
     TermsApi
 """
+
+
 def terms_api(request):
     terms = core_terms[:]
-    
+
     variables = Variable.objects.public_terms()
     for v in variables:
         terms.append(v.to_dict())
     data = dict(terms_vocab, terms=terms)
     return HttpResponse(json.dumps(data), content_type="application/ld+json")
+
 
 def term_api(request, term_key):
     try:

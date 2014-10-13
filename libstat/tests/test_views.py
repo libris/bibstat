@@ -1,24 +1,31 @@
 # -*- coding: UTF-8 -*-
 import uuid
+import json
+from datetime import datetime, timedelta
+
+from django.core.urlresolvers import reverse
+from mongoengine.django.auth import User
+
 from libstat.tests import MongoTestCase
 from libstat.models import Variable, SurveyResponse, SurveyObservation, Survey, OpenData
 from libstat.utils import targetGroups
 
-from django.core.urlresolvers import reverse
-import json
-from mongoengine.django.auth import User
-from datetime import datetime, timedelta
 
 """
 View test cases
 """
+
+
 class VariablesViewTest(MongoTestCase):
     def setUp(self):
-        v1 = Variable(key=u"Folk10", description=u"Antal bemannade serviceställen", type="integer", is_public=True, target_groups=["public"])
+        v1 = Variable(key=u"Folk10", description=u"Antal bemannade serviceställen", type="integer", is_public=True,
+                      target_groups=["public"])
         self.folk10 = v1.save()
-        v2  = Variable(key=u"Sjukhus102", description=u"Bestånd av tillgängliga medier för personer med läsnedsättning", type="integer", is_public=True, target_groups=["hospital"])
+        v2 = Variable(key=u"Sjukhus102", description=u"Bestånd av tillgängliga medier för personer med läsnedsättning",
+                      type="integer", is_public=True, target_groups=["hospital"])
         self.sjukhus102 = v2.save()
-        v3  = Variable(key=u"intäkterTotalt", description=u"Bibliotekets totala intäkter under mätåret", type="long", is_public=True, target_groups=["public", "research", "hospital", "school"])
+        v3 = Variable(key=u"intäkterTotalt", description=u"Bibliotekets totala intäkter under mätåret", type="long",
+                      is_public=True, target_groups=["public", "research", "hospital", "school"])
         self.totalRevenue = v3.save()
 
         self.url = reverse("variables")
@@ -66,7 +73,8 @@ class VariablesViewTest(MongoTestCase):
     def test_each_variable_should_have_edit_link(self):
         response = self.client.get(self.url)
         self.assertContains(response,
-                            u'<a title="Visa/Ändra" data-form="/statistics/variables/{}/" href="#" class="edit-variable">Folk10</a>'.format(self.folk10.id),
+                            u'<a title="Visa/Ändra" data-form="/statistics/variables/{}/" href="#" class="edit-variable">Folk10</a>'.format(
+                                self.folk10.id),
                             count=1,
                             status_code=200,
                             html=True)
@@ -74,11 +82,11 @@ class VariablesViewTest(MongoTestCase):
     def test_should_have_button_for_adding_variable(self):
         response = self.client.get(self.url)
         self.assertContains(response,
-                            u'<a class="create-variable btn btn-primary" role="button" href="#" data-form="{}">Skapa term</a>'.format(reverse("create_variable")),
+                            u'<a class="create-variable btn btn-primary" role="button" href="#" data-form="{}">Skapa term</a>'.format(
+                                reverse("create_variable")),
                             count=1,
                             status_code=200,
                             html=True)
-
 
 
 class CreateVariableViewTest(MongoTestCase):
@@ -88,12 +96,14 @@ class CreateVariableViewTest(MongoTestCase):
 
     def test_should_get_empty_form(self):
         response = self.client.get(self.url)
-        self.assertContains(response, u'<h4 class="modal-title">Ny term (utkast)</h4>', count=1, status_code=200, html=True)
-        self.assertContains(response, u'<input type="submit" value="Spara utkast" class="btn btn-primary">', count=1, status_code=200, html=True)
+        self.assertContains(response, u'<h4 class="modal-title">Ny term (utkast)</h4>', count=1, status_code=200,
+                            html=True)
+        self.assertContains(response, u'<input type="submit" value="Spara utkast" class="btn btn-primary">', count=1,
+                            status_code=200, html=True)
 
     def test_should_create_variable_draft(self):
         response = self.client.post(self.url,
-                                    { u"key": u"antalManligaBibliotekarier",
+                                    {u"key": u"antalManligaBibliotekarier",
                                      u"question": u"Hur många anställda personer fanns i biblioteksverksamheten den 1 mars aktuellt mätår?",
                                      u"question_part": u"Antal anställda bibliotekarier som är män",
                                      u"category": u"Organisation",
@@ -102,14 +112,15 @@ class CreateVariableViewTest(MongoTestCase):
                                      u"is_public": u"True",
                                      u"target_groups": [u"public", u"research", u"school", u"hospital"],
                                      u"description": u"Antal anställda manliga bibliotekarier den 1 mars aktuellt mätår",
-                                     u"comment": u"Det här är ett utkast" }
-                                    )
-        self.assertEquals(response.status_code,200)
+                                     u"comment": u"Det här är ett utkast"}
+        )
+        self.assertEquals(response.status_code, 200)
         data = json.loads(response.content)
         self.assertFalse('errors' in data)
         result = Variable.objects.filter(key=u"antalManligaBibliotekarier")[0]
         self.assertEquals(result.is_draft, True)
-        self.assertEquals(result.question, u"Hur många anställda personer fanns i biblioteksverksamheten den 1 mars aktuellt mätår?")
+        self.assertEquals(result.question,
+                          u"Hur många anställda personer fanns i biblioteksverksamheten den 1 mars aktuellt mätår?")
         self.assertEquals(result.question_part, u"Antal anställda bibliotekarier som är män")
         self.assertEquals(result.category, u"Organisation")
         self.assertEquals(result.sub_category, u"Personal")
@@ -121,7 +132,7 @@ class CreateVariableViewTest(MongoTestCase):
 
     def test_should_return_validation_errors_when_omitting_mandatory_fields(self):
         response = self.client.post(self.url, {})
-        self.assertEquals(response.status_code,200)
+        self.assertEquals(response.status_code, 200)
 
         data = json.loads(response.content)
         self.assertEquals(len(data['errors']), 4)
@@ -130,14 +141,19 @@ class CreateVariableViewTest(MongoTestCase):
         self.assertEquals(data['errors'][u'target_groups'], [u'Detta fält måste fyllas i.'])
         self.assertEquals(data['errors'][u'description'], [u'Detta fält måste fyllas i.'])
 
+
 # Create custom base test class with helper methods.
 class EditVariableViewTest(MongoTestCase):
     def setUp(self):
-        self.v1 = Variable(key=u"Folk10", description=u"Antal bemannade serviceställen", type="integer", is_public=True, target_groups=["public"])
+        self.v1 = Variable(key=u"Folk10", description=u"Antal bemannade serviceställen", type="integer", is_public=True,
+                           target_groups=["public"])
         self.v1.save()
-        self.v2  = Variable(key=u"Sjukhus102", description=u"Bestånd av tillgängliga medier för personer med läsnedsättning", type="integer", is_public=True, target_groups=["hospital"])
+        self.v2 = Variable(key=u"Sjukhus102",
+                           description=u"Bestånd av tillgängliga medier för personer med läsnedsättning",
+                           type="integer", is_public=True, target_groups=["hospital"])
         self.v2.save()
-        self.v3  = Variable(key=u"Forsk23", description=u"Antal anställda personer manliga biblioteksassistenter.", type="integer", is_public=True, is_draft=True, target_groups=["research"])
+        self.v3 = Variable(key=u"Forsk23", description=u"Antal anställda personer manliga biblioteksassistenter.",
+                           type="integer", is_public=True, is_draft=True, target_groups=["research"])
         self.v3.save()
 
         self.new_category = u"Organisation"
@@ -147,15 +163,16 @@ class EditVariableViewTest(MongoTestCase):
         self.new_description = u"Summering"
         self.new_comment = u"Inga kommentarer"
 
-        self.url = reverse("edit_variable", kwargs={"variable_id":str(self.v1.id)})
+        self.url = reverse("edit_variable", kwargs={"variable_id": str(self.v1.id)})
         self.client.login(username="admin", password="admin")
         self.current_user = User.objects.filter(username="admin")[0]
 
     def test_should_update_variable(self):
         response = self.client.post(self.url, {u"category": self.new_category, u"sub_category": self.new_sub_category,
-                               u"type": self.new_type, u"target_groups": self.new_target_groups, u"description": self.new_description,
-                               u"comment": self.new_comment})
-        self.assertEquals(response.status_code,200)
+                                               u"type": self.new_type, u"target_groups": self.new_target_groups,
+                                               u"description": self.new_description,
+                                               u"comment": self.new_comment})
+        self.assertEquals(response.status_code, 200)
         data = json.loads(response.content)
         self.assertFalse('errors' in data)
 
@@ -172,7 +189,7 @@ class EditVariableViewTest(MongoTestCase):
 
     def test_should_return_validation_errors_when_omitting_mandatory_fields(self):
         response = self.client.post(self.url, {})
-        self.assertEquals(response.status_code,200)
+        self.assertEquals(response.status_code, 200)
 
         data = json.loads(response.content)
         self.assertTrue(len(data['errors']) == 3)
@@ -181,15 +198,19 @@ class EditVariableViewTest(MongoTestCase):
         self.assertEquals(data['errors'][u'description'], [u'Detta fält måste fyllas i.'])
 
     def test_variable_key_should_not_be_editable(self):
-        response = self.client.post(self.url, {u"key": u"TheNewKey", u"type": self.new_type, u"target_groups": self.new_target_groups, u"description": self.new_description})
-        self.assertEquals(response.status_code,200)
+        response = self.client.post(self.url, {u"key": u"TheNewKey", u"type": self.new_type,
+                                               u"target_groups": self.new_target_groups,
+                                               u"description": self.new_description})
+        self.assertEquals(response.status_code, 200)
         result = Variable.objects.get(pk=self.v1.id)
         self.assertEquals(result.key, u"Folk10")
 
     def test_should_replace_variable(self):
-        response = self.client.post(self.url, {u"active_from": u"2015-01-01", u"type": self.new_type, u"target_groups": self.new_target_groups, u"description": self.new_description,
+        response = self.client.post(self.url, {u"active_from": u"2015-01-01", u"type": self.new_type,
+                                               u"target_groups": self.new_target_groups,
+                                               u"description": self.new_description,
                                                u"replaces": str(self.v2.id)})
-        self.assertEquals(response.status_code,200)
+        self.assertEquals(response.status_code, 200)
         data = json.loads(response.content)
         self.assertFalse('errors' in data)
 
@@ -199,10 +220,11 @@ class EditVariableViewTest(MongoTestCase):
         self.assertEquals(replaced.replaced_by.id, self.v1.id)
 
     def test_draft_should_replace_variable(self):
-        response = self.client.post(reverse("edit_variable", kwargs={"variable_id":str(self.v3.id)}),
-                                    {u"active_from": u"2015-01-01", u"type": self.new_type, u"target_groups": self.new_target_groups, u"description": self.new_description,
-                                    u"replaces": str(self.v2.id)})
-        self.assertEquals(response.status_code,200)
+        response = self.client.post(reverse("edit_variable", kwargs={"variable_id": str(self.v3.id)}),
+                                    {u"active_from": u"2015-01-01", u"type": self.new_type,
+                                     u"target_groups": self.new_target_groups, u"description": self.new_description,
+                                     u"replaces": str(self.v2.id)})
+        self.assertEquals(response.status_code, 200)
         data = json.loads(response.content)
         self.assertFalse('errors' in data)
 
@@ -212,26 +234,30 @@ class EditVariableViewTest(MongoTestCase):
         self.assertEquals(replaced.replaced_by, None)
 
     def test_replace_requires_active_from(self):
-        response = self.client.post(self.url, {u"type": self.new_type, u"target_groups": self.new_target_groups, u"description": self.new_description,
+        response = self.client.post(self.url, {u"type": self.new_type, u"target_groups": self.new_target_groups,
+                                               u"description": self.new_description,
                                                u"replaces": str(self.v2.id)})
-        self.assertEquals(response.status_code,200)
+        self.assertEquals(response.status_code, 200)
         data = json.loads(response.content)
         self.assertTrue('errors' in data)
         self.assertEquals(data['errors'][u'active_from'], [u'Måste anges'])
-        self.assertEquals(data['errors'][u'replaces'], [u"Ange när ersättning börjar gälla genom att sätta 'Giltig fr o m'"])
+        self.assertEquals(data['errors'][u'replaces'],
+                          [u"Ange när ersättning börjar gälla genom att sätta 'Giltig fr o m'"])
 
     def test_should_not_be_able_to_edit_active_to_for_replaced(self):
-         # Set up: Replace variable
+        # Set up: Replace variable
         self.v2.replace_siblings([self.v1.id], switchover_date=datetime(2015, 1, 1).date(), commit=True)
 
         # active_to input should be disabled
         response = self.client.get(self.url)
-        self.assertContains(response, u'<input type="text" disabled="disabled" value="2015-01-01" name="active_to" class="form-control" id="id_active_to">',
+        self.assertContains(response,
+                            u'<input type="text" disabled="disabled" value="2015-01-01" name="active_to" class="form-control" id="id_active_to">',
                             count=1, status_code=200, html=True)
 
         # Posting a new active_to should give validation error
-        response = self.client.post(self.url, {u"type": self.v1.type, u"target_groups": self.v1.target_groups, u"description": self.v1.description,
-                               u"active_to": u"2014-12-31"})
+        response = self.client.post(self.url, {u"type": self.v1.type, u"target_groups": self.v1.target_groups,
+                                               u"description": self.v1.description,
+                                               u"active_to": u"2014-12-31"})
         self.assertEquals(response.status_code, 200)
         data = json.loads(response.content)
         self.assertTrue('errors' in data)
@@ -239,15 +265,19 @@ class EditVariableViewTest(MongoTestCase):
 
 
     def test_should_be_able_to_activate_draft(self):
-        edit_draft_url = reverse("edit_variable", kwargs={"variable_id":str(self.v3.id)})
+        edit_draft_url = reverse("edit_variable", kwargs={"variable_id": str(self.v3.id)})
 
         response = self.client.get(edit_draft_url)
-        self.assertContains(response, u'<input type="submit" value="Spara utkast" class="btn btn-primary">', count=1, status_code=200, html=True)
-        self.assertContains(response, u'<input type="submit" id="save_and_activate" value="Spara och aktivera" class="btn btn-primary">', count=1, status_code=200, html=True)
+        self.assertContains(response, u'<input type="submit" value="Spara utkast" class="btn btn-primary">', count=1,
+                            status_code=200, html=True)
+        self.assertContains(response,
+                            u'<input type="submit" id="save_and_activate" value="Spara och aktivera" class="btn btn-primary">',
+                            count=1, status_code=200, html=True)
 
-        response = self.client.post(edit_draft_url, {u"type": self.v3.type, u"target_groups": self.v3.target_groups, u"description": self.v3.description,
-                                                     u"submit_action":u"save_and_activate"})
-        self.assertEquals(response.status_code,200)
+        response = self.client.post(edit_draft_url, {u"type": self.v3.type, u"target_groups": self.v3.target_groups,
+                                                     u"description": self.v3.description,
+                                                     u"submit_action": u"save_and_activate"})
+        self.assertEquals(response.status_code, 200)
         data = json.loads(response.content)
         self.assertFalse('errors' in data)
 
@@ -257,10 +287,12 @@ class EditVariableViewTest(MongoTestCase):
 
 
     def test_add_replacements_and_activate_draft_should_replace_siblings(self):
-        edit_draft_url = reverse("edit_variable", kwargs={"variable_id":str(self.v3.id)})
-        response = self.client.post(edit_draft_url, {u"active_from": u"2015-01-01", u"type": self.v3.type, u"target_groups": self.v3.target_groups,
-                                                     u"description": self.v3.description, u"replaces": str(self.v2.id), u"submit_action":u"save_and_activate"})
-        self.assertEquals(response.status_code,200)
+        edit_draft_url = reverse("edit_variable", kwargs={"variable_id": str(self.v3.id)})
+        response = self.client.post(edit_draft_url, {u"active_from": u"2015-01-01", u"type": self.v3.type,
+                                                     u"target_groups": self.v3.target_groups,
+                                                     u"description": self.v3.description, u"replaces": str(self.v2.id),
+                                                     u"submit_action": u"save_and_activate"})
+        self.assertEquals(response.status_code, 200)
         data = json.loads(response.content)
         self.assertFalse('errors' in data)
 
@@ -280,10 +312,12 @@ class EditVariableViewTest(MongoTestCase):
         # Set up: Add replacements 
         self.v3.replace_siblings([self.v2.id], switchover_date=datetime(2015, 1, 1).date(), commit=True)
 
-        edit_draft_url = reverse("edit_variable", kwargs={"variable_id":str(self.v3.id)})
-        response = self.client.post(edit_draft_url, {u"active_from": u"2015-01-01", u"type": self.v3.type, u"target_groups": self.v3.target_groups,
-                                                     u"description": self.v3.description, u"replaces": str(self.v2.id), u"submit_action":u"save_and_activate"})
-        self.assertEquals(response.status_code,200)
+        edit_draft_url = reverse("edit_variable", kwargs={"variable_id": str(self.v3.id)})
+        response = self.client.post(edit_draft_url, {u"active_from": u"2015-01-01", u"type": self.v3.type,
+                                                     u"target_groups": self.v3.target_groups,
+                                                     u"description": self.v3.description, u"replaces": str(self.v2.id),
+                                                     u"submit_action": u"save_and_activate"})
+        self.assertEquals(response.status_code, 200)
         data = json.loads(response.content)
         self.assertFalse('errors' in data)
 
@@ -297,26 +331,26 @@ class EditVariableViewTest(MongoTestCase):
 
         self.assertEquals(replaced_sibling.replaced_by.id, replacing.id)
         self.assertEquals(replaced_sibling.active_to, switchover_date)
-        
+
     def test_should_keep_active_to_date_when_updating_replaced_variable(self):
         # Setup
         replaced = self.new_variable(key="Folk28", is_draft=False)
         replaced_by = self.new_variable(key="antalManligaBibliotekarier", is_draft=False)
         replaced_by.active_from = datetime(2015, 1, 1)
         replaced_by.replace_siblings([replaced.id], switchover_date=replaced_by.active_from, commit=True)
-        
+
         # Verify preconditions
         replaced = Variable.objects.get(pk=replaced.id)
         self.assertEquals(replaced.replaced_by.id, replaced_by.id)
         self.assertEquals(replaced.active_to, replaced_by.active_from)
-        
+
         # Since input active_to is disabled, an empty string is posted
         response = self.post(u"save", replaced)
-        
+
         # Field active_to should not have been updated
         replaced.reload()
         self.assertEquals(replaced.active_to, replaced_by.active_from)
-        
+
 
     def test_should_not_be_able_to_delete_variable_when_it_does_not_exist(self):
         variable = self.new_variable(save=False)
@@ -379,12 +413,12 @@ class EditVariableViewTest(MongoTestCase):
         replacement = self.new_variable()
         replacement.active_from = datetime(2015, 1, 1)
         replacement.replace_siblings([replaced.id], switchover_date=replacement.active_from, commit=True)
-        
+
         self.delete(replaced)
         replacement.reload()
 
         self.assertIs(len(replacement.replaces), 0)
-        
+
     def test_should_remove_reference_in_replaced_variables_when_deleting_draft_variable(self):
         replaced = self.new_variable()
         replacement = self.new_variable()
@@ -402,7 +436,7 @@ class EditVariableViewTest(MongoTestCase):
         replacement = self.new_variable()
         replacement.active_from = datetime(2015, 1, 1)
         replacement.replace_siblings([replaced.id], switchover_date=replacement.active_from, commit=True)
-        
+
         self.delete(replaced)
         replacement.reload()
 
@@ -480,20 +514,24 @@ class EditVariableViewTest(MongoTestCase):
         except Variable.DoesNotExist as dne:
             self.fail(str(dne))
 
-    # TODO: Borde man kunna ändra synlighet? Inte om det redan finns publik data eller inlämnade enkätsvar väl? Kommer kräva ompublicering av alla enkätsvar som har variabeln...
+            # TODO: Borde man kunna ändra synlighet? Inte om det redan finns publik data eller inlämnade enkätsvar väl? Kommer kräva ompublicering av alla enkätsvar som har variabeln...
 
-    # TODO: Borde man kunna ta bort en bibliotekstyp? Samma som ovan.
+            # TODO: Borde man kunna ta bort en bibliotekstyp? Samma som ovan.
 
-    # TODO: Borde man kunna ändra enhet? Samma som ovan.
+            # TODO: Borde man kunna ändra enhet? Samma som ovan.
+
 
 class SurveyResponsesViewTest(MongoTestCase):
     def setUp(self):
         self.publishing_date = datetime(2014, 8, 22, 10, 40, 33, 876)
-        self.survey_response = SurveyResponse(library_name=u"KARLSTAD STADSBIBLIOTEK", sample_year=2013, target_group="public", observations=[], published_at=self.publishing_date)
+        self.survey_response = SurveyResponse(library_name=u"KARLSTAD STADSBIBLIOTEK", sample_year=2013,
+                                              target_group="public", observations=[], published_at=self.publishing_date)
         self.survey_response.save()
-        sr2 = SurveyResponse(library_name=u"NORRBOTTENS LÄNSBIBLIOTEK", sample_year=2012, target_group="public", observations=[], published_at=self.publishing_date);
+        sr2 = SurveyResponse(library_name=u"NORRBOTTENS LÄNSBIBLIOTEK", sample_year=2012, target_group="public",
+                             observations=[], published_at=self.publishing_date);
         sr2.save()
-        sr3 = SurveyResponse(library_name=u"Sjukhusbiblioteken i Dalarnas län", sample_year=2013, target_group="hospital", observations=[]);
+        sr3 = SurveyResponse(library_name=u"Sjukhusbiblioteken i Dalarnas län", sample_year=2013,
+                             target_group="hospital", observations=[]);
         self.hospital_sr = sr3.save()
 
         self.client.login(username="admin", password="admin")
@@ -511,7 +549,8 @@ class SurveyResponsesViewTest(MongoTestCase):
         self.assertEquals(len(response.context["survey_responses"]), 2)
 
     def test_should_list_survey_responses_by_year_and_target_group(self):
-        response = self.client.get("{}?action=list&target_group=public&sample_year=2013".format(reverse("survey_responses")))
+        response = self.client.get(
+            "{}?action=list&target_group=public&sample_year=2013".format(reverse("survey_responses")))
         self.assertEquals(len(response.context["survey_responses"]), 1)
         self.assertEquals(response.context["survey_responses"][0].library_name, u"KARLSTAD STADSBIBLIOTEK")
 
@@ -522,24 +561,32 @@ class SurveyResponsesViewTest(MongoTestCase):
         self.assertEquals(response.context["survey_responses"][0].library_name, u"Sjukhusbiblioteken i Dalarnas län")
 
     def test_each_survey_response_should_have_checkbox_for_actions(self):
-        response = self.client.get("{}?action=list&target_group=public&sample_year=2013".format(reverse("survey_responses")))
-        self.assertContains(response, u'<input title="Välj" class="select-one" name="survey-response-ids" type="checkbox" value="{}"/>'.format(self.survey_response.id),
+        response = self.client.get(
+            "{}?action=list&target_group=public&sample_year=2013".format(reverse("survey_responses")))
+        self.assertContains(response,
+                            u'<input title="Välj" class="select-one" name="survey-response-ids" type="checkbox" value="{}"/>'.format(
+                                self.survey_response.id),
                             count=1, status_code=200, html=True)
 
     def test_each_survey_response_should_have_a_link_to_details_view(self):
-        response = self.client.get("{}?action=list&target_group=public&sample_year=2013".format(reverse("survey_responses")))
+        response = self.client.get(
+            "{}?action=list&target_group=public&sample_year=2013".format(reverse("survey_responses")))
         self.assertContains(response, u'<a href="{}" title="Visa/redigera enkätsvar">Visa/redigera</a>'
-                            .format(reverse("edit_survey_response", kwargs={"survey_response_id":str(self.survey_response.id)})),
+                            .format(
+            reverse("edit_survey_response", kwargs={"survey_response_id": str(self.survey_response.id)})),
                             count=1, status_code=200, html=True)
 
 
 class PublishSurveyResponsesViewTest(MongoTestCase):
     def setUp(self):
-        self.survey_response = SurveyResponse(library_name="KARLSTAD STADSBIBLIOTEK", sample_year=2013, target_group="public", observations=[])
+        self.survey_response = SurveyResponse(library_name="KARLSTAD STADSBIBLIOTEK", sample_year=2013,
+                                              target_group="public", observations=[])
         self.survey_response.save()
-        sr2 = SurveyResponse(library_name="NORRBOTTENS LÄNSBIBLIOTEK", sample_year=2012, target_group="public", observations=[]);
+        sr2 = SurveyResponse(library_name="NORRBOTTENS LÄNSBIBLIOTEK", sample_year=2012, target_group="public",
+                             observations=[]);
         sr2.save()
-        sr3 = SurveyResponse(library_name=u"Sjukhusbiblioteken i Dalarnas län", sample_year=2013, target_group="hospital", observations=[]);
+        sr3 = SurveyResponse(library_name=u"Sjukhusbiblioteken i Dalarnas län", sample_year=2013,
+                             target_group="hospital", observations=[]);
         sr3.save()
 
         self.url = reverse("publish_survey_responses")
@@ -569,13 +616,14 @@ class PublishSurveyResponsesViewTest(MongoTestCase):
 
 class EditSurveyResponseViewTest(MongoTestCase):
     def setUp(self):
-        self.survey_response = SurveyResponse(library_name=u"KARLSTAD STADSBIBLIOTEK", sample_year=2013, target_group=u"public", observations=[])
+        self.survey_response = SurveyResponse(library_name=u"KARLSTAD STADSBIBLIOTEK", sample_year=2013,
+                                              target_group=u"public", observations=[])
         self.survey_response.save()
 
         sr2 = SurveyResponse(library_name=u"ALE BIBLIOTEK", sample_year=2013, target_group=u"public", observations=[])
         sr2.save()
 
-        self.url = reverse("edit_survey_response", kwargs={"survey_response_id":str(self.survey_response.id)})
+        self.url = reverse("edit_survey_response", kwargs={"survey_response_id": str(self.survey_response.id)})
         self.client.login(username="admin", password="admin")
         self.current_user = User.objects.filter(username="admin")[0]
 
@@ -584,18 +632,22 @@ class EditSurveyResponseViewTest(MongoTestCase):
         pass
 
     def test_should_have_hidden_inputs_for_mandatory_fields_that_are_not_editable(self):
-        response = self.client.get(reverse("edit_survey_response", kwargs={"survey_response_id":str(self.survey_response.id)}))
+        response = self.client.get(
+            reverse("edit_survey_response", kwargs={"survey_response_id": str(self.survey_response.id)}))
         self.assertContains(response, u'<input type="hidden" value="2013" name="sample_year" id="id_sample_year">'
                             .format(self.url), count=1, status_code=200, html=True)
         self.assertContains(response, u'<input type="hidden" value="public" name="target_group" id="id_target_group">'
                             .format(self.url), count=1, status_code=200, html=True)
 
     def test_should_update_survey_response(self):
-        response = self.client.post(self.url, {u"sample_year": u"2013", u"target_group": u"public", u"library_name": u"Karlstad Stadsbibliotek",
+        response = self.client.post(self.url, {u"sample_year": u"2013", u"target_group": u"public",
+                                               u"library_name": u"Karlstad Stadsbibliotek",
                                                u"municipality_name": u"Karlstads kommun", u"municipality_code": u"1780",
-                                               u"respondent_name": u"Åsa Hansen", u"respondent_email": u"asa.hansen@karlstad.se", u"respondent_phone": u"054-540 23 72"},
+                                               u"respondent_name": u"Åsa Hansen",
+                                               u"respondent_email": u"asa.hansen@karlstad.se",
+                                               u"respondent_phone": u"054-540 23 72"},
                                     follow=True)
-        self.assertEquals(response.status_code,200)
+        self.assertEquals(response.status_code, 200)
         result = SurveyResponse.objects.get(pk=self.survey_response.id)
         self.assertEquals(result.sample_year, 2013)
         self.assertEquals(result.target_group, u"public")
@@ -608,9 +660,12 @@ class EditSurveyResponseViewTest(MongoTestCase):
         self.assertEquals(result.modified_by, self.current_user)
 
     def test_should_not_update_sample_year_or_target_group_for_existing_SurveyResponse(self):
-        response = self.client.post(self.url, {u"sample_year": u"2014", u"target_group": u"research", u"library_name": u"Karlstad Stadsbibliotek",
+        response = self.client.post(self.url, {u"sample_year": u"2014", u"target_group": u"research",
+                                               u"library_name": u"Karlstad Stadsbibliotek",
                                                u"municipality_name": u"Karlstads kommun", u"municipality_code": u"1780",
-                                               u"respondent_name": u"Åsa Hansen", u"respondent_email": u"asa.hansen@karlstad.se", u"respondent_phone": u"054-540 23 72"},
+                                               u"respondent_name": u"Åsa Hansen",
+                                               u"respondent_email": u"asa.hansen@karlstad.se",
+                                               u"respondent_phone": u"054-540 23 72"},
                                     follow=True)
         self.assertEquals(response.status_code, 200)
         result = SurveyResponse.objects.get(pk=self.survey_response.id)
@@ -620,29 +675,37 @@ class EditSurveyResponseViewTest(MongoTestCase):
     def test_should_handle_non_unique_library_name(self):
         self.assertEquals(len(SurveyResponse.objects.filter(library_name=u"ALE BIBLIOTEK")), 1, "before post")
 
-        response = self.client.post(self.url, {u"sample_year": u"2013", u"target_group": u"public", u"library_name": u"ALE BIBLIOTEK",
+        response = self.client.post(self.url, {u"sample_year": u"2013", u"target_group": u"public",
+                                               u"library_name": u"ALE BIBLIOTEK",
                                                u"municipality_name": u"Karlstads kommun", u"municipality_code": u"1780",
-                                               u"respondent_name": u"Åsa Hansen", u"respondent_email": u"asa.hansen@karlstad.se", u"respondent_phone": u"054-540 23 72"},
+                                               u"respondent_name": u"Åsa Hansen",
+                                               u"respondent_email": u"asa.hansen@karlstad.se",
+                                               u"respondent_phone": u"054-540 23 72"},
                                     follow=True)
         self.assertEquals(response.status_code, 200)
         # FIXME: Somehow this test stopped working when I added EditSurveyObservationsViewTest and I cannot figure out why.
         # Assert below failes because there are 2 survey responses for ALE BIBLIOTEK
-#         self.assertEquals(len(SurveyResponse.objects.filter(library_name=u"ALE BIBLIOTEK")), 1)
-#         self.assertEquals(response.context['form']._errors['library_name'], [u"Det finns redan ett enkätsvar för detta bibliotek"])
+
+        # self.assertEquals(len(SurveyResponse.objects.filter(library_name=u"ALE BIBLIOTEK")), 1)
+
+    #         self.assertEquals(response.context['form']._errors['library_name'], [u"Det finns redan ett enkätsvar för detta bibliotek"])
 
     def test_should_show_publish_button(self):
-        response = self.client.get(reverse("edit_survey_response", kwargs={"survey_response_id":str(self.survey_response.id)}))
+        response = self.client.get(
+            reverse("edit_survey_response", kwargs={"survey_response_id": str(self.survey_response.id)}))
         self.assertContains(response, u'<input type="submit" value="Publicera" class="btn btn-primary pull-right"/>'
                             .format(self.url), count=1, status_code=200, html=True)
 
 
 class PublishSurveyResponseViewTest(MongoTestCase):
     def setUp(self):
-        self.survey_response = SurveyResponse(library_name=u"KARLSTAD STADSBIBLIOTEK", sample_year=2013, target_group=u"public", observations=[])
+        self.survey_response = SurveyResponse(library_name=u"KARLSTAD STADSBIBLIOTEK", sample_year=2013,
+                                              target_group=u"public", observations=[])
         self.survey_response.save()
 
-        self.url = reverse("publish_survey_response", kwargs={"survey_response_id":str(self.survey_response.id)})
-        self.edit_survey_response_url = reverse("edit_survey_response", kwargs={"survey_response_id":str(self.survey_response.id)})
+        self.url = reverse("publish_survey_response", kwargs={"survey_response_id": str(self.survey_response.id)})
+        self.edit_survey_response_url = reverse("edit_survey_response",
+                                                kwargs={"survey_response_id": str(self.survey_response.id)})
         self.client.login(username="admin", password="admin")
         self.current_user = User.objects.filter(username="admin")[0]
 
@@ -655,28 +718,42 @@ class PublishSurveyResponseViewTest(MongoTestCase):
         result = SurveyResponse.objects.get(pk=self.survey_response.id)
         self.assertTrue(result.is_published)
 
+
 class EditSurveyObservationsViewTest(MongoTestCase):
     def setUp(self):
-        v1 = Variable(key=u"folk5", description=u"Antal bemannade serviceställen, sammanräknat", type=u"integer", is_public=True, target_groups=[u"public"])
+        v1 = Variable(key=u"folk5", description=u"Antal bemannade serviceställen, sammanräknat", type=u"integer",
+                      is_public=True, target_groups=[u"public"])
         v1.save()
-        v2 = Variable(key=u"folk6", description=u"Är huvudbiblioteket i er kommun integrerat med ett skolbibliotek? 1=ja", type=u"boolean", is_public=True, target_groups=[u"public"])
+        v2 = Variable(key=u"folk6",
+                      description=u"Är huvudbiblioteket i er kommun integrerat med ett skolbibliotek? 1=ja",
+                      type=u"boolean", is_public=True, target_groups=[u"public"])
         v2.save()
-        v3 = Variable(key=u"folk8", description=u"Textkommentar", type=u"string", is_public=False, target_groups=[u"public"])
+        v3 = Variable(key=u"folk8", description=u"Textkommentar", type=u"string", is_public=False,
+                      target_groups=[u"public"])
         v3.save()
-        v4 = Variable(key=u"folk35", description=u"Antal årsverken övrig personal", type=u"decimal", is_public=True, target_groups=[u"public"])
+        v4 = Variable(key=u"folk35", description=u"Antal årsverken övrig personal", type=u"decimal", is_public=True,
+                      target_groups=[u"public"])
         v4.save()
-        v5 = Variable(key=u"folk52", description=u"Andel tryckt skönlitteratur", type=u"percent", is_public=True, target_groups=[u"public"])
+        v5 = Variable(key=u"folk52", description=u"Andel tryckt skönlitteratur", type=u"percent", is_public=True,
+                      target_groups=[u"public"])
         v5.save()
-        v6 = Variable(key=u"folk38", description=u"Total driftskostnad", type=u"long", is_public=True, target_groups=[u"public"])
+        v6 = Variable(key=u"folk38", description=u"Total driftskostnad", type=u"long", is_public=True,
+                      target_groups=[u"public"])
         v6.save()
 
-        sr = SurveyResponse(library_name=u"BIBLIOTEKEN I RAGUNDA", sample_year=2013, target_group="public", observations=[])
-        sr.observations.append(SurveyObservation(variable=v1, value=7.013, _source_key="folk5", _is_public=v1.is_public))
+        sr = SurveyResponse(library_name=u"BIBLIOTEKEN I RAGUNDA", sample_year=2013, target_group="public",
+                            observations=[])
+        sr.observations.append(
+            SurveyObservation(variable=v1, value=7.013, _source_key="folk5", _is_public=v1.is_public))
         sr.observations.append(SurveyObservation(variable=v2, value=None, _source_key="folk6", _is_public=v2.is_public))
-        sr.observations.append(SurveyObservation(variable=v3, value=u"Här är en kommentar", _source_key="folk8", _is_public=v3.is_public))
-        sr.observations.append(SurveyObservation(variable=v4, value=4.76593020050, _source_key=u"folk35", _is_public=v4.is_public))
-        sr.observations.append(SurveyObservation(variable=v5, value=0.57306940, _source_key=u"folk52", _is_public=v5.is_public))
-        sr.observations.append(SurveyObservation(variable=v6, value=49130498.0, _source_key=u"folk38", _is_public=v6.is_public))
+        sr.observations.append(
+            SurveyObservation(variable=v3, value=u"Här är en kommentar", _source_key="folk8", _is_public=v3.is_public))
+        sr.observations.append(
+            SurveyObservation(variable=v4, value=4.76593020050, _source_key=u"folk35", _is_public=v4.is_public))
+        sr.observations.append(
+            SurveyObservation(variable=v5, value=0.57306940, _source_key=u"folk52", _is_public=v5.is_public))
+        sr.observations.append(
+            SurveyObservation(variable=v6, value=49130498.0, _source_key=u"folk38", _is_public=v6.is_public))
 
         self.survey_response = sr.save()
         self.obs_folk5 = self.survey_response.observations[0]
@@ -685,7 +762,7 @@ class EditSurveyObservationsViewTest(MongoTestCase):
         self.obs_folk35 = self.survey_response.observations[3]
         self.obs_folk52 = self.survey_response.observations[4]
         self.obs_folk38 = self.survey_response.observations[5]
-        self.url = reverse("edit_survey_observations", kwargs={"survey_response_id":str(self.survey_response.id)})
+        self.url = reverse("edit_survey_observations", kwargs={"survey_response_id": str(self.survey_response.id)})
         self.client.login(username="admin", password="admin")
         self.current_user = User.objects.filter(username="admin")[0]
 
@@ -717,18 +794,24 @@ class EditSurveyObservationsViewTest(MongoTestCase):
                                     follow=True)
         self.assertEquals(response.status_code, 200)
         self.assertEquals(response.context['observations_form']._errors['folk5'], [u"Fyll i ett heltal."])
-        self.assertEquals(response.context['observations_form']._errors['folk6'], [u"Välj ett giltigt alternativ. foo finns inte bland tillg\xe4ngliga alternativ."])
+        self.assertEquals(response.context['observations_form']._errors['folk6'],
+                          [u"Välj ett giltigt alternativ. foo finns inte bland tillg\xe4ngliga alternativ."])
         self.assertEquals(response.context['observations_form']._errors['folk52'], [u"Fyll i ett heltal."])
         self.assertEquals(response.context['observations_form']._errors['folk38'], [u"Fyll i ett heltal."])
 
 
 class ReplaceableVariablesApiTest(MongoTestCase):
     def setUp(self):
-        v = Variable(key=u"Folk28", description=u"Totalt antal anställda personer som är bibliotekarier och som är män 1 mars.", type="integer", is_public=True, target_groups=["public"])
+        v = Variable(key=u"Folk28",
+                     description=u"Totalt antal anställda personer som är bibliotekarier och som är män 1 mars.",
+                     type="integer", is_public=True, target_groups=["public"])
         self.active_public = v.save()
-        v2 = Variable(key=u"Forsk21", description=u"Antal anställda manliga bibliotekarier och dokumentalister.", type="integer", is_public=True, is_draft=True, target_groups=["research"])
+        v2 = Variable(key=u"Forsk21", description=u"Antal anställda manliga bibliotekarier och dokumentalister.",
+                      type="integer", is_public=True, is_draft=True, target_groups=["research"])
         self.draft = v2.save()
-        v3 = Variable(key=u"Sjukhus104", description=u"Totalt antal fjärrutlån under kalenderåret - summering av de angivna delsummorna", type="integer", is_public=True, replaced_by=v, target_groups=["hospital"])
+        v3 = Variable(key=u"Sjukhus104",
+                      description=u"Totalt antal fjärrutlån under kalenderåret - summering av de angivna delsummorna",
+                      type="integer", is_public=True, replaced_by=v, target_groups=["hospital"])
         self.already_replaced = v3.save()
         v4 = Variable(key=u"Skol10", description=u"Postort", type="string", is_public=False, target_groups=["school"])
         self.active_private = v4.save()
@@ -754,27 +837,32 @@ class ReplaceableVariablesApiTest(MongoTestCase):
         response = self.client.get(self.url)
         self.assertEquals(response.status_code, 200)
         data = json.loads(response.content)
-        self.assertEquals(data, [{"key":"Folk28", "id":str(self.active_public.id), "description": self.active_public.description},
-                                 {"key":"Skol10", "id":str(self.active_private.id), "description": self.active_private.description}])
+        self.assertEquals(data, [
+            {"key": "Folk28", "id": str(self.active_public.id), "description": self.active_public.description},
+            {"key": "Skol10", "id": str(self.active_private.id), "description": self.active_private.description}])
 
     def test_should_filter_replaceables_by_key(self):
         response = self.client.get("{}?q=fo".format(self.url))
         self.assertEquals(response.status_code, 200)
         data = json.loads(response.content)
-        self.assertEquals(data, [{"key":"Folk28", "id":str(self.active_public.id), "description": self.active_public.description}])
+        self.assertEquals(data, [
+            {"key": "Folk28", "id": str(self.active_public.id), "description": self.active_public.description}])
 
     def test_should_filter_replaceables_by_description(self):
         response = self.client.get("{}?q=post".format(self.url))
         self.assertEquals(response.status_code, 200)
         data = json.loads(response.content)
-        self.assertEquals(data, [{"key":"Skol10", "id":str(self.active_private.id), "description": self.active_private.description}])
+        self.assertEquals(data, [
+            {"key": "Skol10", "id": str(self.active_private.id), "description": self.active_private.description}])
+
 
 class SurveysViewTest(MongoTestCase):
     def setUp(self):
         survey = Survey(sample_year=2014, target_groups=[u"public"], is_draft=False, questions=[])
         self.survey = survey.save()
 
-        survey_draft = Survey(sample_year=2015, target_groups=[u"public", u"research", u"hospital", u"school"], is_draft=True, questions=[])
+        survey_draft = Survey(sample_year=2015, target_groups=[u"public", u"research", u"hospital", u"school"],
+                              is_draft=True, questions=[])
         self.survey_draft = survey_draft.save()
 
         self.url = reverse("surveys")
@@ -801,41 +889,52 @@ class SurveysViewTest(MongoTestCase):
 
     def test_should_have_button_to_create_survey(self):
         response = self.client.get(self.url)
-        self.assertContains(response, u'<a href="{}" class="btn btn-primary" role="button">Skapa enkät</a>'.format(reverse('create_survey')), count=1, status_code=200, html=True)
+        self.assertContains(response, u'<a href="{}" class="btn btn-primary" role="button">Skapa enkät</a>'.format(
+            reverse('create_survey')), count=1, status_code=200, html=True)
 
     def test_each_survey_should_have_link_to_edit_view(self):
         response = self.client.get(self.url)
-        self.assertContains(response, u'<a href="{}">2014 - Folkbibliotek</a>'.format(reverse('edit_survey', kwargs={"survey_id":str(self.survey.id)})), count=1, status_code=200, html=True)
-        self.assertContains(response, u'<a href="{}">2015 - Samtliga bibliotekstyper</a>'.format(reverse('edit_survey', kwargs={"survey_id":str(self.survey_draft.id)})), count=1, status_code=200, html=True)
+        self.assertContains(response, u'<a href="{}">2014 - Folkbibliotek</a>'.format(
+            reverse('edit_survey', kwargs={"survey_id": str(self.survey.id)})), count=1, status_code=200, html=True)
+        self.assertContains(response, u'<a href="{}">2015 - Samtliga bibliotekstyper</a>'.format(
+            reverse('edit_survey', kwargs={"survey_id": str(self.survey_draft.id)})), count=1, status_code=200,
+                            html=True)
 
 
 class SurveyableVariablesApiTest(MongoTestCase):
     def setUp(self):
-        v = Variable(key=u"Folk12", description=u"Antal bemannade filialer", type="integer", is_public=True, target_groups=["public"])
+        v = Variable(key=u"Folk12", description=u"Antal bemannade filialer", type="integer", is_public=True,
+                     target_groups=["public"])
         self.active_without_dates = v.save()
 
-        v1 = Variable(key=u"Folk10", description=u"Antal bemannade servicesställen", type="integer", is_public=True, target_groups=["public"],
-                     active_from=datetime(2010, 1, 1).date())
+        v1 = Variable(key=u"Folk10", description=u"Antal bemannade servicesställen", type="integer", is_public=True,
+                      target_groups=["public"],
+                      active_from=datetime(2010, 1, 1).date())
         self.active_with_from_date = v1.save()
 
-        v3 = Variable(key=u"Folk31", description=u"Antal årsverken totalt", type="decimal", is_public=True, target_groups=["public"],
+        v3 = Variable(key=u"Folk31", description=u"Antal årsverken totalt", type="decimal", is_public=True,
+                      target_groups=["public"],
                       active_from=datetime.utcnow().date(), active_to=(datetime.utcnow() + timedelta(days=1)).date())
         self.active_with_date_range = v3.save()
 
-        v2 = Variable(key=u"Folk35", description=u"Antal årsverken övrig personal", type="decimal", is_public=True, target_groups=["public"],
+        v2 = Variable(key=u"Folk35", description=u"Antal årsverken övrig personal", type="decimal", is_public=True,
+                      target_groups=["public"],
                       active_to=datetime(2014, 6, 1).date())
         self.discontinued = v2.save()
 
-        v5 = Variable(key=u"Folk20", description=u"Text övriga utlåningsställen", type="string", is_public=False, target_groups=["public"],
-                     active_from=(datetime.utcnow() + timedelta(days=90)).date())
+        v5 = Variable(key=u"Folk20", description=u"Text övriga utlåningsställen", type="string", is_public=False,
+                      target_groups=["public"],
+                      active_from=(datetime.utcnow() + timedelta(days=90)).date())
         self.pending = v5.save()
 
-        v4 = Variable(key=u"Folk69", description=u"Totalt nyförvärv AV-medier", type="integer", is_public=True, target_groups=["public"],
+        v4 = Variable(key=u"Folk69", description=u"Totalt nyförvärv AV-medier", type="integer", is_public=True,
+                      target_groups=["public"],
                       is_draft=True)
         self.draft = v4.save()
 
-        v6 = Variable(key=u"Folk80", description=u"Nyförvärv musik under kalanderåret.", type="integer", is_public=True, target_groups=["public"],
-                     replaced_by=self.draft)
+        v6 = Variable(key=u"Folk80", description=u"Nyförvärv musik under kalanderåret.", type="integer", is_public=True,
+                      target_groups=["public"],
+                      replaced_by=self.draft)
         self.replaced = v6.save()
 
         self.url = reverse("surveyable_variables_api")
@@ -859,16 +958,16 @@ class SurveyableVariablesApiTest(MongoTestCase):
         response = self.client.get(self.url)
         self.assertEquals(response.status_code, 200)
         data = json.loads(response.content)
-        self.assertEquals(data, [{"key":"Folk10", "id":str(self.active_with_from_date.id)},
-                                 {"key":"Folk12", "id":str(self.active_without_dates.id)},
-                                 {"key":"Folk20", "id":str(self.pending.id)},
-                                 {"key":"Folk31", "id":str(self.active_with_date_range.id)},
-                                 {"key":"Folk69", "id":str(self.draft.id)}])
+        self.assertEquals(data, [{"key": "Folk10", "id": str(self.active_with_from_date.id)},
+                                 {"key": "Folk12", "id": str(self.active_without_dates.id)},
+                                 {"key": "Folk20", "id": str(self.pending.id)},
+                                 {"key": "Folk31", "id": str(self.active_with_date_range.id)},
+                                 {"key": "Folk69", "id": str(self.draft.id)}])
 
     def test_should_filter_surveyable_by_key(self):
         response = self.client.get("{}?q=Folk1".format(self.url))
         self.assertEquals(response.status_code, 200)
         data = json.loads(response.content)
-        self.assertEquals(data, [{"key":"Folk10", "id":str(self.active_with_from_date.id)},
-                                 {"key":"Folk12", "id":str(self.active_without_dates.id)}])
+        self.assertEquals(data, [{"key": "Folk10", "id": str(self.active_with_from_date.id)},
+                                 {"key": "Folk12", "id": str(self.active_without_dates.id)}])
         

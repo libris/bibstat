@@ -2,65 +2,80 @@
 {% load i18n %}
 
 {% block content %}
-<!-- Main jumbotron for a primary marketing message or call to action -->
+    <!-- Main jumbotron for a primary marketing message or call to action -->
     <div class="container">
-      <div class="jumbotron">
-        <h1>{% trans "Biblioteksstatistiken" %}</h1>
-        <p>
-          {% blocktrans %}
-          Kungl. biblioteket är sedan 2011 utsett av regeringen att vara ansvarigt för 
-          Sveriges officiella biblioteksstatistik. Tidigare låg ansvaret hos Statens kulturråd. 
-          Under åren har statistiken genomförts och publicerats på olika sätt. 
-          Här finns samtliga publiceringar som gjorts under de senaste elva åren.
-          {% endblocktrans %}
-        </p>
-        <p><a class="btn btn-primary btn-lg" role="button" href="http://www.kb.se/bibliotek/Statistik-kvalitet/biblioteksstatistik/">{% trans "Läs mer" %} &raquo;</a></p>
-      </div>
-    </div>
-	
-    <div class="container">
-      <!-- Example row of columns -->
-      <div class="row">
-        <div class="col-md-4">
-          <h2>Ditt biblioteks egen treårsrapport. Snart är den här!</h2>
-          <p>
-            I år publiceras Sveriges officiella biblioteksstatistik 27 maj. 
-            Nytt för i år är att du kan välja och skriva ut din alldeles egna treårsrapport 
-            och på ett enkelt sätt se just de siffror som du är intresserad av. Folkbibliotek på riksnivå, 
-            på länsnivå eller på kommunnivå. Eller per forskningsbibliotek. 
-            Det enda du behöver tillgång till är några av de senaste årens 
-            version av excel och att kunna välja i en listruta.
-          </p>
-          <p><a class="btn btn-default" href="http://biblioteksstatistik.blogg.kb.se/2014/05/12/din-kommuns-egen-trearsrapport-snart-ar-den-har/" role="button">{% trans "Läs mer" %} &raquo;</a></p>
-        </div>
-        <div class="col-md-4">
-          <h2>I Regeringens tjänst på biblioteksdagarna i Umeå</h2>
-          <p>
-            På årets upplaga av biblioteksdagarna hade Kvalitetsdialoggruppen ett framförande 
-            som presenterades av Birgitta Markusson (Norrbottens Länsbibliotek), Susanne Hägglund 
-            (Länsbiblioteket i Västernorrland) och Elisabet Ahlqvist (KB).  Under rubriken 
-            ”I Regeringens tIMG_0626jänst – med uppdrag att samverka och påverka” beskrev vi det 
-            arbete som hittills gjorts inom gruppen Kvalitetsdialog, och hur arbetet går vidare under 2014.
-          </p>
-          <p><a class="btn btn-default" href="http://biblioteksstatistik.blogg.kb.se/2014/05/12/i-regeringens-tjanst-pa-biblioteksdagarna-i-umea/" role="button">{% trans "Läs mer" %} &raquo;</a></p>
-       </div>
-        <div class="col-md-4">
-          <h2>Snart händer det!</h2>
-          <p>
-            Nu stängs årets enkäter för insamlingen av den officiella biblioteksstatistiken. 
-            Stort tack till alla 412 personer på biblioteken runt om i landet som besvarade årets 
-            enkät och ett stort tack till alla andra som bidragit för att möjliggöra statistikinsamlingen! 
-            Sammanlagt lade alla bibliotek tillsammans ned tre årsverken på att sammanställa statistiken.
-          </p>
-          <p><a class="btn btn-default" href="http://biblioteksstatistik.blogg.kb.se/2014/04/30/snart-hander-det/" role="button">{% trans "Läs mer" %} &raquo;</a></p>
-        </div>
-      </div>
-      
-      <hr>
+        <div class="jumbotron">
+            <h1>{% trans "Biblioteksstatistiken" %}</h1>
 
-      <footer>
-        <p>&copy; {% trans "Kungliga Biblioteket" %} 2014</p>
-      </footer>
+            <p>
+                {% blocktrans %}
+                    Kungl. biblioteket är sedan 2011 utsett av regeringen att vara ansvarigt för
+                    Sveriges officiella biblioteksstatistik. Tidigare låg ansvaret hos Statens kulturråd.
+                    Under åren har statistiken genomförts och publicerats på olika sätt.
+                    Här finns samtliga publiceringar som gjorts under de senaste elva åren.
+                {% endblocktrans %}
+            </p>
+
+            <p><a class="btn btn-primary btn-lg" role="button"
+                  href="http://www.kb.se/bibliotek/Statistik-kvalitet/biblioteksstatistik/">{% trans "Läs mer" %} &raquo;</a>
+            </p>
+        </div>
+    </div>
+
+    <div class="container">
+        <!-- Example row of columns -->
+        <div class="row">
+            <div class="col-md-4">
+                <h2>Ditt biblioteks egen treårsrapport. Snart är den här!</h2>
+
+                <p>
+                    I år publiceras Sveriges officiella biblioteksstatistik 27 maj.
+                    Nytt för i år är att du kan välja och skriva ut din alldeles egna treårsrapport
+                    och på ett enkelt sätt se just de siffror som du är intresserad av. Folkbibliotek på riksnivå,
+                    på länsnivå eller på kommunnivå. Eller per forskningsbibliotek.
+                    Det enda du behöver tillgång till är några av de senaste årens
+                    version av excel och att kunna välja i en listruta.
+                </p>
+
+                <p><a class="btn btn-default"
+                      href="http://biblioteksstatistik.blogg.kb.se/2014/05/12/din-kommuns-egen-trearsrapport-snart-ar-den-har/"
+                      role="button">{% trans "Läs mer" %} &raquo;</a></p>
+            </div>
+            <div class="col-md-4">
+                <h2>I Regeringens tjänst på biblioteksdagarna i Umeå</h2>
+
+                <p>
+                    På årets upplaga av biblioteksdagarna hade Kvalitetsdialoggruppen ett framförande
+                    som presenterades av Birgitta Markusson (Norrbottens Länsbibliotek), Susanne Hägglund
+                    (Länsbiblioteket i Västernorrland) och Elisabet Ahlqvist (KB). Under rubriken
+                    ”I Regeringens tIMG_0626jänst – med uppdrag att samverka och påverka” beskrev vi det
+                    arbete som hittills gjorts inom gruppen Kvalitetsdialog, och hur arbetet går vidare under 2014.
+                </p>
+
+                <p><a class="btn btn-default"
+                      href="http://biblioteksstatistik.blogg.kb.se/2014/05/12/i-regeringens-tjanst-pa-biblioteksdagarna-i-umea/"
+                      role="button">{% trans "Läs mer" %} &raquo;</a></p>
+            </div>
+            <div class="col-md-4">
+                <h2>Snart händer det!</h2>
+
+                <p>
+                    Nu stängs årets enkäter för insamlingen av den officiella biblioteksstatistiken.
+                    Stort tack till alla 412 personer på biblioteken runt om i landet som besvarade årets
+                    enkät och ett stort tack till alla andra som bidragit för att möjliggöra statistikinsamlingen!
+                    Sammanlagt lade alla bibliotek tillsammans ned tre årsverken på att sammanställa statistiken.
+                </p>
+
+                <p><a class="btn btn-default" href="http://biblioteksstatistik.blogg.kb.se/2014/04/30/snart-hander-det/"
+                      role="button">{% trans "Läs mer" %} &raquo;</a></p>
+            </div>
+        </div>
+
+        <hr>
+
+        <footer>
+            <p>&copy; {% trans "Kungliga Biblioteket" %} 2014</p>
+        </footer>
     </div> <!-- /container -->
 {% endblock %}
 

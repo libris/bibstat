@@ -1,19 +1,18 @@
 # -*- coding: UTF-8 -*-
+from datetime import datetime
+import logging
+from cookielib import logger
+
 from mongoengine import *
 from mongoengine import signals
 from mongoengine.queryset import Q
 from mongoengine.django.auth import User
 from mongoengine.errors import DoesNotExist
-
 from mongoengine.queryset.queryset import QuerySet
-from datetime import datetime
 from django.conf import settings
 
 from libstat.utils import ISO8601_utc_format
 
-import logging
-from django.db.models.fields import DateField
-from cookielib import logger
 
 logger = logging.getLogger(__name__)
 
@@ -574,7 +573,7 @@ class SurveyResponse(SurveyResponseBase):
     @property
     def latest_version_published(self):
         return self._is_published if self._is_published else (
-        self.published_at != None and self.published_at >= self.date_modified)
+            self.published_at != None and self.published_at >= self.date_modified)
 
     @property
     def is_published(self):

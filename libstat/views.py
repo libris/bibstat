@@ -538,7 +538,7 @@ survey_template = SurveyTemplate(
             ]
         ),
         Section(
-            title=u"Frågor om biblioteksorganisationen", # Personkomm variabel för comment
+            title=u"Frågor om biblioteksorganisationen",  # Personkomm variabel för comment
             comment=u"Här kan du lämna eventuella kommentarer till frågeområdet personal. Vänligen skriv inga siffror här.",
             groups=[
                 Group(
@@ -596,14 +596,15 @@ survey_template = SurveyTemplate(
                         Row(
                             description="Totalt antal anställda personer",
                             explanation="",
-                            cells=[Cell(variable_key=u"Personer99", types=['sum'], sum_of=[u"Personer01", u"Personer02"])]
+                            cells=[
+                                Cell(variable_key=u"Personer99", types=['sum'], sum_of=[u"Personer01", u"Personer02"])]
                         )
                     ]
                 )
             ]
         ),
         Section(
-            title=u"Frågor om ekonomi", # TODO Koppla comment till Ekonomikomm
+            title=u"Frågor om ekonomi",  # TODO Koppla comment till Ekonomikomm
             comment=u"Här kan du lämna eventuella kommentarer till frågeområdet ekonomi. Vänligen skriv inga siffror här.",
             groups=[
                 Group(
@@ -614,37 +615,45 @@ survey_template = SurveyTemplate(
                         Row(
                             description="Inköp av tryckta medier och audiovisuella medier",
                             explanation="",
-                            cells=[Cell(variable_key=u"Utgift01", types=['sum'], sum_siblings=[u"Utgift02",u"Utgift03",u"Utgift04",u"Utgift05",u"Utgift06"])]
+                            cells=[Cell(variable_key=u"Utgift01", types=['sum'],
+                                        sum_siblings=[u"Utgift02", u"Utgift03", u"Utgift04", u"Utgift05", u"Utgift06"])]
                         ),
                         Row(
                             description="Inköp av virtuella e-baserade media och databaslicenser (exklusive kostnader för biblioteksdatasystemet)",
                             explanation="",
-                            cells=[Cell(variable_key=u"Utgift02", types=['sum'], sum_siblings=[u"Utgift01",u"Utgift03",u"Utgift04",u"Utgift05",u"Utgift06"])]
+                            cells=[Cell(variable_key=u"Utgift02", types=['sum'],
+                                        sum_siblings=[u"Utgift01", u"Utgift03", u"Utgift04", u"Utgift05", u"Utgift06"])]
                         ),
                         Row(
                             description="Lönekostnader personal",
                             explanation="",
-                            cells=[Cell(variable_key=u"Utgift03", types=['sum'], sum_siblings=[u"Utgift01",u"Utgift02",u"Utgift04",u"Utgift05",u"Utgift06"])]
+                            cells=[Cell(variable_key=u"Utgift03", types=['sum'],
+                                        sum_siblings=[u"Utgift01", u"Utgift02", u"Utgift04", u"Utgift05", u"Utgift06"])]
                         ),
                         Row(
                             description="Kostnader för personalens kompetensutveckling",
                             explanation="",
-                            cells=[Cell(variable_key=u"Utgift04", types=['sum'], sum_siblings=[u"Utgift01",u"Utgift02",u"Utgift03",u"Utgift05",u"Utgift06"])]
+                            cells=[Cell(variable_key=u"Utgift04", types=['sum'],
+                                        sum_siblings=[u"Utgift01", u"Utgift02", u"Utgift03", u"Utgift05", u"Utgift06"])]
                         ),
                         Row(
                             description="Lokalkostnader",
                             explanation="",
-                            cells=[Cell(variable_key=u"Utgift05", types=['sum'], sum_siblings=[u"Utgift01",u"Utgift02",u"Utgift03",u"Utgift04",u"Utgift06"])]
+                            cells=[Cell(variable_key=u"Utgift05", types=['sum'],
+                                        sum_siblings=[u"Utgift01", u"Utgift02", u"Utgift03", u"Utgift04", u"Utgift06"])]
                         ),
                         Row(
                             description="Övriga driftskostnader som inte ingår i punkterna ovan (inklusive kostnader för bibliotekssystemet)",
                             explanation="",
-                            cells=[Cell(variable_key=u"Utgift06", types=['sum'], sum_siblings=[u"Utgift01",u"Utgift02",u"Utgift03",u"Utgift04",u"Utgift05"])]
+                            cells=[Cell(variable_key=u"Utgift06", types=['sum'],
+                                        sum_siblings=[u"Utgift01", u"Utgift02", u"Utgift03", u"Utgift04", u"Utgift05"])]
                         ),
                         Row(
                             description="Totala driftskostnader för biblioteksverksamheten (summan av ovanstående)",
                             explanation="",
-                            cells=[Cell(variable_key=u"Utgift99", types=['sum'], sum_of=[u"Utgift01",u"Utgift02",u"Utgift03",u"Utgift04",u"Utgift05",u"Utgift06"])]
+                            cells=[Cell(variable_key=u"Utgift99", types=['sum'],
+                                        sum_of=[u"Utgift01", u"Utgift02", u"Utgift03", u"Utgift04", u"Utgift05",
+                                                u"Utgift06"])]
                         ),
                         Row(
                             description="Investeringsutgifter, inklusive kapitalkostnader för dessa",
@@ -661,22 +670,26 @@ survey_template = SurveyTemplate(
                         Row(
                             description="Projektmedel som inte kommer från huvudmannen eller moderorganisationen samt sponsring och gåvor",
                             explanation="",
-                            cells=[Cell(variable_key=u"Intakt01", types=['sum'], sum_siblings=[u"Intakt02",u"Intakt03"])]
+                            cells=[
+                                Cell(variable_key=u"Intakt01", types=['sum'], sum_siblings=[u"Intakt02", u"Intakt03"])]
                         ),
                         Row(
                             description="Försäljning av bibliotekstjänster och personalresurser till andra huvudmän, organisationer och företag",
                             explanation="",
-                            cells=[Cell(variable_key=u"Intakt02", types=['sum'], sum_siblings=[u"Intakt01",u"Intakt03"])]
+                            cells=[
+                                Cell(variable_key=u"Intakt02", types=['sum'], sum_siblings=[u"Intakt01", u"Intakt03"])]
                         ),
                         Row(
                             description="Försenings- och reservationsutgifter eller intäkter av uthyrningsverksamhet samt försäljning av böcker och profilprodukter",
                             explanation="",
-                            cells=[Cell(variable_key=u"Intakt03", types=['sum'], sum_siblings=[u"Intakt01",u"Intakt02"])]
+                            cells=[
+                                Cell(variable_key=u"Intakt03", types=['sum'], sum_siblings=[u"Intakt01", u"Intakt02"])]
                         ),
                         Row(
                             description="Totalt antal kronor egengenererade inkomster",
                             explanation="",
-                            cells=[Cell(variable_key=u"Intakt99", types=['sum'], sum_of=[u"Intakt01",u"Intakt02",u"Intakt03"])]
+                            cells=[Cell(variable_key=u"Intakt99", types=['sum'],
+                                        sum_of=[u"Intakt01", u"Intakt02", u"Intakt03"])]
                         ),
                     ]
                 )

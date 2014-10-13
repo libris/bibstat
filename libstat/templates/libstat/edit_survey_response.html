@@ -3,165 +3,180 @@
 {% load libstat_tags %}
 
 {% block content %}
-  <div class="container">
-    <div class="page-header">
-      <div class="row">
-        <div class="col-md-10">
-          <h1>{% trans "Statistikenkät" %} {{form.instance.sample_year|add:"1"}} <small>{{form.instance.library_name}}</small></h1>
-        </div>
-        <div class="col-md-2 header-actions">
-          <form action="{% url 'publish_survey_response' form.instance.id %}" method="POST" role="form" class="form publish-survey-response-form">
-             {% csrf_token %}
-            <input type="submit" class="btn btn-primary pull-right" value="{% trans 'Publicera' %}"/> 
-          </form>
-        </div>
-      </div>
-    </div>
-
-    <div class="row">
-      <div class="col-md-12">
-        <form action="{% url 'edit_survey_response' form.instance.id %}" method="POST" role="form" class="form edit-survey-response-form">
-          {% csrf_token %}
-          
-          <div class="panel panel-default inverse">
-            <div class="panel-heading">
-              <h3 class="panel-title">{% trans "Information om enkät och svarande organisation" %}</h3>
+    <div class="container">
+        <div class="page-header">
+            <div class="row">
+                <div class="col-md-10">
+                    <h1>{% trans "Statistikenkät" %} {{ form.instance.sample_year|add:"1" }}
+                        <small>{{ form.instance.library_name }}</small>
+                    </h1>
+                </div>
+                <div class="col-md-2 header-actions">
+                    <form action="{% url 'publish_survey_response' form.instance.id %}" method="POST" role="form"
+                          class="form publish-survey-response-form">
+                        {% csrf_token %}
+                        <input type="submit" class="btn btn-primary pull-right" value="{% trans 'Publicera' %}"/>
+                    </form>
+                </div>
             </div>
-            <div class="panel-body">
-              <div class="form-group">
-                <span class="text-danger errors ">{{form.non_field_errors}}</span>
-                <div class="row">
-                  <div class="col-md-2">
-                    <label for="id_sample_year">{% trans "Mätår" %}:</label>
-                  </div>
-                  <div class="col-md-10">
-                    <span class="sample_year">{{form.instance.sample_year}}</span>
-                    {{form.sample_year}}
-                  </div>
-                </div>
-                <div class="row">
-                  <div class="col-md-2">
-                    <label for="id_target_group">{% trans "Bibliotekstyp" %}:</label>
-                  </div>
-                  <div class="col-md-10">             
-                    <span class="target_group">{{form.instance.target_group|tg_label}}</span>
-                    {{form.target_group}}
-                   </div>
-                </div>
-                <div class="row">
-                  <div class="col-md-2">
-                    <label>{% trans "Senast ändrad" %}:</label>
-                  </div>
-                  <div class="col-md-10">
-                    <span class="date_modified">{{form.instance.date_modified|utc_tz|date:"Y-m-d H:i"}}</span> 
-                    <span class="modified_by">{% if form.instance.modified_by %}av {{form.instance.modified_by}}{% endif %}</span>
-                  </div>
-                </div>
-                <div class="row">
-                  <div class="col-md-2">
-                    <label>{% trans "Publicerad" %}:</label>
-                  </div>
-                  <div class="col-md-10">
-                    <span {% if not form.instance.latest_version_published %}class="text-warning bold""{% endif %}>
-                      <span class="published_at">{{form.instance.published_at|utc_tz|date:"Y-m-d H:i"}}</span>
-                      <span class="published-by">{% if form.instance.published_by %}av {{form.instance.published_by}}{% endif %}</span>
-                      {% if form.is_published and not form.instance.latest_version_published %}
-                        <span class="text-warning warnings right">{% trans "Senaste version är inte publicerad" %}</span>
-                      {% endif %}
-                    </span>
-                  </div>
-                </div>
-              </div>
-              §
-              <div class="row">
-                <div class="col-md-6">
-                  <label>{% trans "Bibliotek/organisation" %}</label>
-                  <!-- Nested panel, it seems to work... -->
-                  <div class="panel panel-default responding-library">
-                    <div class="panel-body">
-                      <div class="form-group">
-                        <label for="id_library_name">{% trans "Namn" %}:</label>
-                        {{form.library_name}}
-                        <span class="text-danger errors library_name">{{form.library_name.errors }}</span>
-                      </div>
-                      <div class="form-group">
-                        <label for="id_municipality_name">{% trans "Kommun/län" %}:</label>
-                        {{form.municipality_name}}
-                        <span class="text-danger errors municipality_name">{{form.municipality_name.errors }}</span>
-                      </div>
-                      <div class="form-group">
-                        <label for="id_municipality_code">{% trans "Kommun/länskod" %}:</label>
-                        {{form.municipality_code}}
-                        <span class="text-danger errors municipality_code">{{form.municipality_code.errors }}</span>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-                  
-                <div class="col-md-6">
-                  <label>{% trans "Svarande person" %}</label>
-                  <!-- Nested panel, it seems to work... -->
-                  <div class="panel panel-default responding-person">
-                    <div class="panel-body">
-                      <div class="form-group">
-                        <label for="id_respondent_name">{% trans "Namn" %}:</label>
-                        {{form.respondent_name}}
-                        <span class="text-danger errors respondent_name">{{form.respondent_name.errors }}</span>
-                      </div>
-                      <div class="form-group">
-                        <label for="id_respondent_email">{% trans "E-post" %}:</label>
-                        {{form.respondent_email}}
-                        <span class="text-danger errors respondent_email">{{form.respondent_email.errors }}</span>
-                      </div>
-                      <div class="form-group">
-                        <label for="id_respondent_phone">{% trans "Telefonnr" %}:</label>
-                        {{form.respondent_phone}}
-                        <span class="text-danger errors respondent_phone">{{form.respondent_phone.errors }}</span>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
+        </div>
 
-              <div class="form-group">
-                <input type="submit" class="btn btn-primary pull-right" value="{% trans 'Spara'%}"/>
-              </div>
+        <div class="row">
+            <div class="col-md-12">
+                <form action="{% url 'edit_survey_response' form.instance.id %}" method="POST" role="form"
+                      class="form edit-survey-response-form">
+                    {% csrf_token %}
 
-            </div><!-- panel-body -->
-          </div><!-- panel -->
-        </form>
-      </div><!-- col -->
-    </div><!-- row -->
-    
-    <div class="page-header">
-      <h2>{% trans "Undersökningens frågor" %}</h2>
-    </div>
-    <div class="row">
-      <div class="col-md-8">
-        <form action="{% url 'edit_survey_observations' form.instance.id %}" method="POST" role="form" class="form edit-survey-observations-form">
-          {% csrf_token %}
-          
-          {% for field in observations_form %}
-            <div class="form-group">
-              {{field.label}}
-              {{field}}
-              <span class="text-danger errors {{field.name}}">{{field.errors}}</span>
+                    <div class="panel panel-default inverse">
+                        <div class="panel-heading">
+                            <h3 class="panel-title">{% trans "Information om enkät och svarande organisation" %}</h3>
+                        </div>
+                        <div class="panel-body">
+                            <div class="form-group">
+                                <span class="text-danger errors ">{{ form.non_field_errors }}</span>
+
+                                <div class="row">
+                                    <div class="col-md-2">
+                                        <label for="id_sample_year">{% trans "Mätår" %}:</label>
+                                    </div>
+                                    <div class="col-md-10">
+                                        <span class="sample_year">{{ form.instance.sample_year }}</span>
+                                        {{ form.sample_year }}
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-2">
+                                        <label for="id_target_group">{% trans "Bibliotekstyp" %}:</label>
+                                    </div>
+                                    <div class="col-md-10">
+                                        <span class="target_group">{{ form.instance.target_group|tg_label }}</span>
+                                        {{ form.target_group }}
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-2">
+                                        <label>{% trans "Senast ändrad" %}:</label>
+                                    </div>
+                                    <div class="col-md-10">
+                                        <span class="date_modified">{{ form.instance.date_modified|utc_tz|date:"Y-m-d H:i" }}</span>
+                                        <span class="modified_by">{% if form.instance.modified_by %}av
+                                            {{ form.instance.modified_by }}{% endif %}</span>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-2">
+                                        <label>{% trans "Publicerad" %}:</label>
+                                    </div>
+                                    <div class="col-md-10">
+                                        <span {% if not form.instance.latest_version_published %}class="text-warning bold"
+                                                  "{% endif %}>
+                                        <span class="published_at">{{ form.instance.published_at|utc_tz|date:"Y-m-d H:i" }}</span>
+                                        <span class="published-by">{% if form.instance.published_by %}av
+                                            {{ form.instance.published_by }}{% endif %}</span>
+                                        {% if form.is_published and not form.instance.latest_version_published %}
+                                            <span class="text-warning warnings right">{% trans "Senaste version är inte publicerad" %}</span>
+                                        {% endif %}
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                            §
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <label>{% trans "Bibliotek/organisation" %}</label>
+                                    <!-- Nested panel, it seems to work... -->
+                                    <div class="panel panel-default responding-library">
+                                        <div class="panel-body">
+                                            <div class="form-group">
+                                                <label for="id_library_name">{% trans "Namn" %}:</label>
+                                                {{ form.library_name }}
+                                                <span class="text-danger errors library_name">{{ form.library_name.errors }}</span>
+                                            </div>
+                                            <div class="form-group">
+                                                <label for="id_municipality_name">{% trans "Kommun/län" %}:</label>
+                                                {{ form.municipality_name }}
+                                                <span class="text-danger errors municipality_name">{{ form.municipality_name.errors }}</span>
+                                            </div>
+                                            <div class="form-group">
+                                                <label for="id_municipality_code">{% trans "Kommun/länskod" %}:</label>
+                                                {{ form.municipality_code }}
+                                                <span class="text-danger errors municipality_code">{{ form.municipality_code.errors }}</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="col-md-6">
+                                    <label>{% trans "Svarande person" %}</label>
+                                    <!-- Nested panel, it seems to work... -->
+                                    <div class="panel panel-default responding-person">
+                                        <div class="panel-body">
+                                            <div class="form-group">
+                                                <label for="id_respondent_name">{% trans "Namn" %}:</label>
+                                                {{ form.respondent_name }}
+                                                <span class="text-danger errors respondent_name">{{ form.respondent_name.errors }}</span>
+                                            </div>
+                                            <div class="form-group">
+                                                <label for="id_respondent_email">{% trans "E-post" %}:</label>
+                                                {{ form.respondent_email }}
+                                                <span class="text-danger errors respondent_email">{{ form.respondent_email.errors }}</span>
+                                            </div>
+                                            <div class="form-group">
+                                                <label for="id_respondent_phone">{% trans "Telefonnr" %}:</label>
+                                                {{ form.respondent_phone }}
+                                                <span class="text-danger errors respondent_phone">{{ form.respondent_phone.errors }}</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <input type="submit" class="btn btn-primary pull-right" value="{% trans 'Spara' %}"/>
+                            </div>
+
+                        </div>
+                        <!-- panel-body -->
+                    </div>
+                    <!-- panel -->
+                </form>
             </div>
-          {% endfor %}
-          
-          <div class="form-group">
-            <!-- TODO -->
-            <input type="submit" class="btn btn-primary pull-right" value="{% trans 'Spara'%}"/>
-          </div>
-        </form>
-      </div><!-- col -->
-      
-      <div class="col-md-4"></div>
-    </div><!-- row -->
-  
-    <hr>
-    <footer>
-      <p>&copy; {% trans "Kungliga Biblioteket" %} 2014</p>
-    </footer>
-  </div><!-- container -->
+            <!-- col -->
+        </div>
+        <!-- row -->
+
+        <div class="page-header">
+            <h2>{% trans "Undersökningens frågor" %}</h2>
+        </div>
+        <div class="row">
+            <div class="col-md-8">
+                <form action="{% url 'edit_survey_observations' form.instance.id %}" method="POST" role="form"
+                      class="form edit-survey-observations-form">
+                    {% csrf_token %}
+
+                    {% for field in observations_form %}
+                        <div class="form-group">
+                            {{ field.label }}
+                            {{ field }}
+                            <span class="text-danger errors {{ field.name }}">{{ field.errors }}</span>
+                        </div>
+                    {% endfor %}
+
+                    <div class="form-group">
+                        <!-- TODO -->
+                        <input type="submit" class="btn btn-primary pull-right" value="{% trans 'Spara' %}"/>
+                    </div>
+                </form>
+            </div>
+            <!-- col -->
+
+            <div class="col-md-4"></div>
+        </div>
+        <!-- row -->
+
+        <hr>
+        <footer>
+            <p>&copy; {% trans "Kungliga Biblioteket" %} 2014</p>
+        </footer>
+    </div><!-- container -->
 {% endblock %}

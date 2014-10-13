@@ -21,15 +21,15 @@ TYPE_INTEGER = (u"integer", u"Integer")
 TYPE_LONG = (u"long", u"Long")
 TYPE_DECIMAL = (u"decimal", u"Decimal")
 TYPE_PERCENT = (u"percent", u"Procent")
-#TODO: TYPE_DECIMAL1 = (u"decimal1", u"1 decimals noggrannhet"), Type_DECIMAL2 = (u"decimal2", u"2 decimalers noggrannhet") isf TYPE_DECIMAL
+# TODO: TYPE_DECIMAL1 = (u"decimal1", u"1 decimals noggrannhet"), Type_DECIMAL2 = (u"decimal2", u"2 decimalers noggrannhet") isf TYPE_DECIMAL
 #TODO: TYPE_TEXT = (u"text", u"Text") för kommentarer (textarea), TYPE_STRING=(u"string", u"Textsträng") för icke-numeriska värden "numerical" (input)
 VARIABLE_TYPES = (TYPE_STRING, TYPE_BOOLEAN, TYPE_INTEGER, TYPE_LONG, TYPE_DECIMAL, TYPE_PERCENT)
 
 """
     Mapping between stored variable type and RDF compatible type to be presented as open data
 """
-rdfVariableTypes = {TYPE_STRING[0]:u"xsd:string" , TYPE_BOOLEAN[0]: u"xsd:boolean", TYPE_INTEGER[0]: u"xsd:integer", 
-                      TYPE_LONG[0]: u"xsd:long", TYPE_DECIMAL[0]: u"xsd:decimal", TYPE_PERCENT[0]:u"xsd:decimal" }
+rdfVariableTypes = {TYPE_STRING[0]: u"xsd:string", TYPE_BOOLEAN[0]: u"xsd:boolean", TYPE_INTEGER[0]: u"xsd:integer",
+                    TYPE_LONG[0]: u"xsd:long", TYPE_DECIMAL[0]: u"xsd:decimal", TYPE_PERCENT[0]: u"xsd:decimal"}
 
 """
     Useful definitions when importing data from spreadsheets
@@ -49,7 +49,7 @@ def parse_datetime_from_isodate_str(date_str):
     """
     if not date_str:
         return None
-    
+
     datetime_obj = parse_datetime(date_str, "%Y-%m-%dT%H:%M:%S.%f")
     if not datetime_obj:
         datetime_obj = parse_datetime(date_str, "%Y-%m-%dT%H:%M:%S")
@@ -64,8 +64,8 @@ def parse_datetime_from_isodate_str(date_str):
     if not datetime_obj:
         datetime_obj = parse_datetime(date_str, "%Y")
     return datetime_obj
-    
-        
+
+
 def parse_datetime(date_str, date_format):
     """
         Parse a datetime string with specified format to a datetime object
@@ -74,8 +74,8 @@ def parse_datetime(date_str, date_format):
         return datetime.datetime.strptime(date_str, date_format)
     except ValueError:
         return None
- 
-   
+
+
 def target_groups_label(value):
     """
         Get a string label for a list or a single target group key.

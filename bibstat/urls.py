@@ -3,15 +3,16 @@ from django.core.urlresolvers import reverse_lazy
 from django.views.generic import RedirectView
 
 from django.contrib import admin
+
 admin.autodiscover()
 
 urlpatterns = patterns('',
-    # Examples:
-    # url(r'^$', 'bibstat.views.home', name='home'),
-    # url(r'^blog/', include('blog.urls')),
-    
-    url(r'^statistics/', include('libstat.urls')),
-    url(r'^$', 'libstat.views.index'),
-    url(r'^.well-known/void$', RedirectView.as_view(url=reverse_lazy('open_data'), permanent=False)),
-    url(r'^jsreverse/$', 'django_js_reverse.views.urls_js', name='js_reverse')
+                       # Examples:
+                       # url(r'^$', 'bibstat.views.home', name='home'),
+                       # url(r'^blog/', include('blog.urls')),
+
+                       url(r'^statistics/', include('libstat.urls')),
+                       url(r'^$', 'libstat.views.index'),
+                       url(r'^.well-known/void$', RedirectView.as_view(url=reverse_lazy('open_data'), permanent=False)),
+                       url(r'^jsreverse/$', 'django_js_reverse.views.urls_js', name='js_reverse')
 )

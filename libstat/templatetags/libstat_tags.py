@@ -1,10 +1,14 @@
 # -*- coding: UTF-8 -*-
-import pytz
 from datetime import datetime
+
+import pytz
 from django import template
+
 from libstat.utils import target_groups_label
 
+
 register = template.Library()
+
 
 def utc_tz(value):
     """
@@ -13,12 +17,15 @@ def utc_tz(value):
     """
     return value.replace(tzinfo=pytz.utc) if value and isinstance(value, datetime) else value
 
+
 def tg_label(value):
     return target_groups_label(value)
+
 
 @register.filter(name='access')
 def access(value, arg):
     return value[arg]
+
 
 register.filter('utc_tz', utc_tz)
 register.filter('tg_label', tg_label)

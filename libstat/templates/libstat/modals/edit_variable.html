@@ -1,293 +1,303 @@
 {% load i18n %}
 {% load libstat_tags %}
 
-<form role="form" class="edit-variable-form" method="post" action="{{form_url}}">
-  <div class="modal-dialog">
-    <div class="modal-content">
-      <div class="modal-header">
-        <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">{% trans 'Stäng' %}</span></button>
-        <h4 class="modal-title">{{modal_title}}</h4>
-      </div>
-      <div class="modal-body">
-        {% csrf_token %}
-        
-        <span class="general-errors text-danger form-validation"></span>
-        
-        {% if  mode == 'edit' and not form.instance.state.state == "current" %}
-        <div class="panel panel-default">
-          <div class="panel-body warnings">
-            {% if form.instance.replaced_by %}
-              <span class="text-warning">
+<form role="form" class="edit-variable-form" method="post" action="{{ form_url }}">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span
+                        class="sr-only">{% trans 'Stäng' %}</span></button>
+                <h4 class="modal-title">{{ modal_title }}</h4>
+            </div>
+            <div class="modal-body">
+                {% csrf_token %}
+
+                <span class="general-errors text-danger form-validation"></span>
+
+                {% if  mode == 'edit' and not form.instance.state.state == "current" %}
+                    <div class="panel panel-default">
+                        <div class="panel-body warnings">
+                            {% if form.instance.replaced_by %}
+                                <span class="text-warning">
                 <span class=" glyphicon glyphicon-warning-sign"></span>
                 <span>
                   {% trans "Ersätts av" %} 
-                  <a id="replaced_by" href="#" data-form="{% url 'edit_variable' form.instance.replaced_by.id %}">{{form.instance.replaced_by.key}}</a>
-                  {% trans "från och med" %} {{form.instance.active_to|utc_tz|date:"Y-m-d"}}
+                  <a id="replaced_by" href="#"
+                     data-form="{% url 'edit_variable' form.instance.replaced_by.id %}">{{ form.instance.replaced_by.key }}</a>
+                  {% trans "från och med" %} {{ form.instance.active_to|utc_tz|date:"Y-m-d" }}
                 </span>
               </span>
-            {% endif %}
-            {% if form.instance.is_draft %}
-              <span class="text-info">
+                            {% endif %}
+                            {% if form.instance.is_draft %}
+                                <span class="text-info">
                 <span class=" glyphicon glyphicon-info-sign"></span>
                 <span>{% trans "Detta är ett utkast som ej är synligt för användare eller som öppna data. För att aktivera utkastet, klicka på knappen 'Aktivera' nedan." %}</span>
               </span>
-            {% endif %}
-            {% if form.instance.state.state == "pending" %}
-              <span class="text-info">
+                            {% endif %}
+                            {% if form.instance.state.state == "pending" %}
+                                <span class="text-info">
                 <span class=" glyphicon glyphicon-info-sign"></span>
-                <span>{% trans "Den här termen börjar gälla" %} {{form.instance.active_from|utc_tz|date:"Y-m-d"}}</span>
+                <span>{% trans "Den här termen börjar gälla" %} {{ form.instance.active_from|utc_tz|date:"Y-m-d" }}</span>
               </span>
-            {% endif %}
-            {% if form.instance.state.state == "discontinued" %}
-              <span class="text-info">
+                            {% endif %}
+                            {% if form.instance.state.state == "discontinued" %}
+                                <span class="text-info">
                 <span class=" glyphicon glyphicon-info-sign"></span>
-                <span>{% trans "Den här termen slutade vara giltig" %} {{form.instance.active_to|utc_tz|date:"Y-m-d"}}</span>
+                <span>{% trans "Den här termen slutade vara giltig" %} {{ form.instance.active_to|utc_tz|date:"Y-m-d" }}</span>
               </span>
-            {% endif %}
-          </div>
-        </div>
-        {% endif %}
+                            {% endif %}
+                        </div>
+                    </div>
+                {% endif %}
 
-        {% if mode == 'create' %}
-          <div class="form-group key" data-field="key">
-             <label for="id_key">{% trans "Nyckel (unik)" %}</label>
-             <span class="text-danger form-validation after"></span>
-             {{form.key}}
-             <span class="glyphicon glyphicon-remove form-control-feedback"></span>
-          </div>
-        {% endif %}
-        
-        
-        <div class="row">
-          <div class="col-md-6">
-            <div class="form-group active_from" data-field="active_from">
-              <label for="id_active_from">{% trans "Giltig fr o m" %}</label>
-              <span class="text-danger form-validation after"></span>
-              <div class="input-group date">
-                 {{form.active_from}}<span class="input-group-addon"><i class="glyphicon glyphicon-th"></i></span>
-              </div>
+                {% if mode == 'create' %}
+                    <div class="form-group key" data-field="key">
+                        <label for="id_key">{% trans "Nyckel (unik)" %}</label>
+                        <span class="text-danger form-validation after"></span>
+                        {{ form.key }}
+                        <span class="glyphicon glyphicon-remove form-control-feedback"></span>
+                    </div>
+                {% endif %}
+
+
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-group active_from" data-field="active_from">
+                            <label for="id_active_from">{% trans "Giltig fr o m" %}</label>
+                            <span class="text-danger form-validation after"></span>
+
+                            <div class="input-group date">
+                                {{ form.active_from }}<span class="input-group-addon"><i
+                                    class="glyphicon glyphicon-th"></i></span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group active_to" data-field="active_to">
+                            <label for="id_active_to">{% trans "Giltig till" %}</label>
+                            <span class="text-danger form-validation after"></span>
+
+                            <div class="input-group date">
+                                <input id="id_active_to" class="form-control" type="text" name="active_to"
+                                       value="{{ form.active_to.value|utc_tz|date:"Y-m-d" }}"
+                                       {% if form.instance.replaced_by %}disabled="disabled"{% endif %}/>
+                                <span class="input-group-addon"><i class="glyphicon glyphicon-th"></i></span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group replaces" data-field="replaces">
+                    <label for="id_replaces">{% trans "Ersätter termer" %}</label>
+                    <input type="hidden" id="id_replaces_initial" value="{{ form.replaces_initial_value }}"/>
+                    <span class="text-danger form-validation after"></span>
+                    {{ form.replaces }}
+                    <span class="glyphicon glyphicon-remove form-control-feedback"></span>
+                </div>
+                <div class="form-group question" data-field="question">
+                    <label for="id_question">{% trans "Formulärfråga" %}</label>
+                    <span class="text-danger form-validation after"></span>
+                    {{ form.question }}
+                    <span class="glyphicon glyphicon-remove form-control-feedback"></span>
+                </div>
+                <div class="form-group question_part" data-field="question_part">
+                    <label for="id_question_part">{% trans "Delfråga" %}</label>
+                    <span class="text-danger form-validation after"></span>
+                    {{ form.question_part }}
+                    <span class="glyphicon glyphicon-remove form-control-feedback"></span>
+                </div>
+                <div class="form-group category" data-field="category">
+                    <label for="id_category">{% trans "Huvudgrupp" %}</label>
+                    <span class="text-danger form-validation after"></span>
+                    {{ form.category }}
+                    <span class="glyphicon glyphicon-remove form-control-feedback"></span>
+                </div>
+                <div class="form-group sub_category" data-field="sub_category">
+                    <label for="id_sub_category">{% trans "Undergrupp" %}</label>
+                    <span class="text-danger form-validation after"></span>
+                    {{ form.sub_category }}
+                    <span class="glyphicon glyphicon-remove form-control-feedback"></span>
+                </div>
+                <div class="form-group type" data-field="type">
+                    <label>{% trans "Enhet" %}</label>
+                    <span class="text-danger form-validation after"></span>
+
+                    <div>
+                        {% for type_choice in form.type %}
+                            <label class="radio-inline">
+                                {{ type_choice.tag }}
+                                {{ type_choice.choice_label }}
+                            </label>
+                        {% endfor %}
+                    </div>
+                </div>
+                <div class="form-group is_public" data-field="is_public">
+                    <label>{% trans "Synlighet" %}</label>
+                    <span class="text-danger form-validation after"></span>
+
+                    <div class="checkbox">
+                        {{ form.is_public }}
+                        {% trans "Termen visas som öppna data" %}
+                    </div>
+                </div>
+                <div class="form-group target_groups" data-field="target_groups">
+                    <label>{% trans "Bibliotekstyper" %}</label>
+                    <span class="text-danger form-validation after"></span>
+
+                    <div>
+                        {% for target_group in form.target_groups %}
+                            <label class="checkbox-inline">
+                                {{ target_group.tag }}
+                                {{ target_group.choice_label }}
+                            </label>
+                        {% endfor %}
+                    </div>
+                </div>
+                <div class="form-group description" data-field="description">
+                    <label for="description">{% trans "Beskrivning" %}</label>
+                    <span class="text-danger form-validation after"></span>
+                    {{ form.description }}
+                    <span class="glyphicon glyphicon-remove form-control-feedback"></span>
+                </div>
+                <div class="form-group comment" data-field="comment">
+                    <label for="comment">{% trans "Kommentar (visas ej publikt)" %}</label>
+                    <span class="text-danger form-validation after"></span>
+                    {{ form.comment }}
+                    <span class="glyphicon glyphicon-remove form-control-feedback"></span>
+                </div>
             </div>
-          </div>
-          <div class="col-md-6">
-            <div class="form-group active_to" data-field="active_to">
-              <label for="id_active_to">{% trans "Giltig till" %}</label>
-              <span class="text-danger form-validation after"></span>
-              <div class="input-group date">
-                <input id="id_active_to" class="form-control" type="text" name="active_to" 
-                       value="{{form.active_to.value|utc_tz|date:"Y-m-d"}}" {% if form.instance.replaced_by %}disabled="disabled"{% endif %}/>
-                <span class="input-group-addon"><i class="glyphicon glyphicon-th"></i></span>
-              </div>
+
+            <div class="modal-footer">
+                <input type="hidden" id="submit_action" name="submit_action" value="save"/>
+                <button type="button" class="btn btn-default" data-dismiss="modal">{% trans "Avbryt" %}</button>
+                {% if mode == 'create' %}
+                    <input type="submit" class="btn btn-primary" value="{% trans 'Spara utkast' %}"/>
+                {% elif form.instance.is_draft %}
+                    <input type="submit" id="delete" class="btn btn-danger" value="{% trans 'Ta bort' %}"/>
+                    <input type="submit" class="btn btn-primary" value="{% trans 'Spara utkast' %}"/>
+                    <input type="submit" id="save_and_activate" class="btn btn-primary"
+                           value="{% trans 'Spara och aktivera' %}"/>
+                {% else %}
+                    {% if form.instance.is_deletable %}
+                        <input type="submit" id="delete" class="btn btn-danger" value="{% trans 'Ta bort' %}"/>
+                    {% endif %}
+                    <input type="submit" class="btn btn-primary" value="{% trans 'Spara ändringar' %}"/>
+                {% endif %}
             </div>
-          </div>
+
         </div>
-          
-        <div class="form-group replaces" data-field="replaces">
-          <label for="id_replaces">{% trans "Ersätter termer" %}</label>
-          <input type="hidden" id="id_replaces_initial" value="{{form.replaces_initial_value}}" />
-          <span class="text-danger form-validation after"></span>
-          {{form.replaces}}
-          <span class="glyphicon glyphicon-remove form-control-feedback"></span>
-        </div>
-        <div class="form-group question" data-field="question">
-            <label for="id_question">{% trans "Formulärfråga" %}</label>
-            <span class="text-danger form-validation after"></span>
-            {{form.question}}
-            <span class="glyphicon glyphicon-remove form-control-feedback"></span>
-        </div>
-        <div class="form-group question_part" data-field="question_part">
-            <label for="id_question_part">{% trans "Delfråga" %}</label>
-            <span class="text-danger form-validation after"></span>
-            {{form.question_part}}
-            <span class="glyphicon glyphicon-remove form-control-feedback"></span>
-        </div>
-        <div class="form-group category" data-field="category">
-            <label for="id_category">{% trans "Huvudgrupp" %}</label>
-            <span class="text-danger form-validation after"></span>
-            {{form.category}}
-            <span class="glyphicon glyphicon-remove form-control-feedback"></span>
-        </div>
-        <div class="form-group sub_category" data-field="sub_category">
-            <label for="id_sub_category">{% trans "Undergrupp" %}</label>
-            <span class="text-danger form-validation after"></span>
-            {{form.sub_category}}
-            <span class="glyphicon glyphicon-remove form-control-feedback"></span>
-        </div>
-        <div class="form-group type" data-field="type">
-            <label>{% trans "Enhet" %}</label>
-            <span class="text-danger form-validation after"></span>
-            <div>
-              {% for type_choice in form.type %}
-                <label class="radio-inline">
-                    {{type_choice.tag}}
-                    {{type_choice.choice_label}}
-                </label>
-              {% endfor %}
-            </div>
-        </div>
-        <div class="form-group is_public" data-field="is_public">
-            <label>{% trans "Synlighet" %}</label>
-            <span class="text-danger form-validation after"></span>
-            <div class="checkbox">
-              {{form.is_public}}
-              {% trans "Termen visas som öppna data" %}
-            </div>
-        </div>
-        <div class="form-group target_groups" data-field="target_groups">
-            <label>{% trans "Bibliotekstyper" %}</label>
-            <span class="text-danger form-validation after"></span>
-            <div>
-              {% for target_group in form.target_groups %}
-                <label class="checkbox-inline">
-                  {{target_group.tag}}
-                  {{target_group.choice_label}}
-                </label>
-              {% endfor %}
-            </div>
-        </div>
-        <div class="form-group description" data-field="description">
-            <label for="description">{% trans "Beskrivning" %}</label>
-            <span class="text-danger form-validation after"></span>
-            {{form.description}}
-            <span class="glyphicon glyphicon-remove form-control-feedback"></span>
-        </div>
-        <div class="form-group comment" data-field="comment">
-            <label for="comment">{% trans "Kommentar (visas ej publikt)" %}</label>
-            <span class="text-danger form-validation after"></span>
-            {{form.comment}}
-            <span class="glyphicon glyphicon-remove form-control-feedback"></span>
-        </div>
-      </div>
-      
-      <div class="modal-footer">
-        <input type="hidden" id="submit_action" name="submit_action" value="save"/> 
-        <button type="button" class="btn btn-default" data-dismiss="modal" >{% trans "Avbryt" %}</button>
-        {% if mode == 'create' %}
-          <input type="submit" class="btn btn-primary" value="{% trans 'Spara utkast' %}" />
-        {% elif form.instance.is_draft %}
-          <input type="submit" id="delete" class="btn btn-danger" value="{% trans 'Ta bort' %}" />
-          <input type="submit" class="btn btn-primary" value="{% trans 'Spara utkast' %}" />
-          <input type="submit" id="save_and_activate" class="btn btn-primary" value="{% trans 'Spara och aktivera' %}" />
-        {% else %}
-            {% if form.instance.is_deletable %}
-                <input type="submit" id="delete" class="btn btn-danger" value="{% trans 'Ta bort' %}" />
-            {% endif %}
-          <input type="submit" class="btn btn-primary" value="{% trans 'Spara ändringar' %}" />
-        {% endif %}
-      </div>
-      
     </div>
-  </div>
 </form>
 
 <script type="text/javascript">
-$(document).ready(function() {
+    $(document).ready(function () {
 
-	var replaceable_variables = new Bloodhound({
-		datumTokenizer: function(item) {
-			return Bloodhound.tokenizers.whitespace(item.value);
-		},
-		queryTokenizer: Bloodhound.tokenizers.whitespace,
-		limit: 20,
-		remote: {
-		  	url: '/statistics/variables/replaceable?q=%QUERY',
-		    filter: function(list) {
-		      return $.map(list, function(item) { 
-		    	  return { label: item.key, value: item.id , description: item.description }; 
-		      });
-		    }
-		},
-	});
-	// kicks off the loading/processing of `local` and `prefetch`
-	replaceable_variables.initialize();
-	var initial_tokens = function() {
-		var tokens = []
-		var keysIds = $("#id_replaces_initial").val().split(", ");
-		return $.map(keysIds, function(keyId) {
-			var labelValue = keyId.split(":");
-			return { label: labelValue[0], value: labelValue[1] }; 
-		});
-	}
-	$('#id_replaces').tokenfield({
-	  	typeahead: [null, {
-		  	displayKey: 'label',
-		  	source: replaceable_variables.ttAdapter(),
-		  	templates: {
-				empty: "<div class='suggestion empty'><span class='description'>Inga träffar för sökord</span></div>",
-			    suggestion: _.template([
-			    	"<div class='suggestion'><span class='key'><%- label %></span>",
-			    	"<span class='description' title='<%- description %>'><%- ellipsis(description, 120-(label.length+1)) %></span></div>"
-			    ].join("\n")),
-			}
-	  	}]
-	}).tokenfield('setTokens', initial_tokens());
-	$('#id_replaces').on('tokenfield:initialize', function(event){
-		$(this).find(".tt-dropdown-menu").attr("style", "position:relative; top:100%; left:0; zIndex:100; display:none;")
-	});
-	
-	
-	$('.form-group.active_from .input-group.date').datepicker({
-	    format: "yyyy-mm-dd",
-	    weekStart: 1,
-	    language: "sv"
-	});
-	$('.form-group.active_to .input-group.date').datepicker({
-	    format: "yyyy-mm-dd",
-	    weekStart: 1,
-	    language: "sv"
-	});
-	
-	$("#replaced_by").click(function(event){
-		event.preventDefault();
-		var url = $(this).data("form"); // get form
-		$("#variableModal").load(url, function() { // load the url into the modal
-			$(this).modal('show'); // display the modal on url load
-		});
-		return false; // prevent the click propagation
-	});
-	
-	$("#save_and_activate").click(function(event) {
-		$("#submit_action").val("save_and_activate");
-	});
+        var replaceable_variables = new Bloodhound({
+            datumTokenizer: function (item) {
+                return Bloodhound.tokenizers.whitespace(item.value);
+            },
+            queryTokenizer: Bloodhound.tokenizers.whitespace,
+            limit: 20,
+            remote: {
+                url: '/statistics/variables/replaceable?q=%QUERY',
+                filter: function (list) {
+                    return $.map(list, function (item) {
+                        return { label: item.key, value: item.id, description: item.description };
+                    });
+                }
+            },
+        });
+        // kicks off the loading/processing of `local` and `prefetch`
+        replaceable_variables.initialize();
+        var initial_tokens = function () {
+            var tokens = []
+            var keysIds = $("#id_replaces_initial").val().split(", ");
+            return $.map(keysIds, function (keyId) {
+                var labelValue = keyId.split(":");
+                return { label: labelValue[0], value: labelValue[1] };
+            });
+        }
+        $('#id_replaces').tokenfield({
+            typeahead: [null, {
+                displayKey: 'label',
+                source: replaceable_variables.ttAdapter(),
+                templates: {
+                    empty: "<div class='suggestion empty'><span class='description'>Inga träffar för sökord</span></div>",
+                    suggestion: _.template([
+                        "<div class='suggestion'><span class='key'><%- label %></span>",
+                        "<span class='description' title='<%- description %>'><%- ellipsis(description, 120-(label.length+1)) %></span></div>"
+                    ].join("\n")),
+                }
+            }]
+        }).tokenfield('setTokens', initial_tokens());
+        $('#id_replaces').on('tokenfield:initialize', function (event) {
+            $(this).find(".tt-dropdown-menu").attr("style", "position:relative; top:100%; left:0; zIndex:100; display:none;")
+        });
 
-    $("#delete").click(function(event) {
-        $("#submit_action").val("delete");
+
+        $('.form-group.active_from .input-group.date').datepicker({
+            format: "yyyy-mm-dd",
+            weekStart: 1,
+            language: "sv"
+        });
+        $('.form-group.active_to .input-group.date').datepicker({
+            format: "yyyy-mm-dd",
+            weekStart: 1,
+            language: "sv"
+        });
+
+        $("#replaced_by").click(function (event) {
+            event.preventDefault();
+            var url = $(this).data("form"); // get form
+            $("#variableModal").load(url, function () { // load the url into the modal
+                $(this).modal('show'); // display the modal on url load
+            });
+            return false; // prevent the click propagation
+        });
+
+        $("#save_and_activate").click(function (event) {
+            $("#submit_action").val("save_and_activate");
+        });
+
+        $("#delete").click(function (event) {
+            $("#submit_action").val("delete");
+        });
+
+        $('.edit-variable-form').submit(function (event) {
+            event.preventDefault();
+
+            var self = this;
+            $(self).find(".form-group").removeClass("has-feedback has-error");
+            $(self).find(".form-validation").text("");
+
+            $.ajax({
+                type: $(this).attr('method'),
+                url: this.action,
+                data: $(this).serialize(),
+                context: this,
+                success: function (data, status) {
+                    if (data.errors) {
+                        $(".form-group").each(function () {
+                            var field = $(this).attr("data-field")
+                            if (data.errors.hasOwnProperty(field)) {
+                                $(this).addClass("has-feedback has-error");
+                                $(this).find(".form-validation").text(data.errors[field]);
+                            }
+                        })
+                        if (data.errors.hasOwnProperty("__all__")) {
+                            $(".general-errors").text(data.errors["__all__"]);
+                        }
+                    } else {
+                        console.info("saved variable: ", data);
+                        $('#variableModal').modal('hide');
+                        window.location.reload(true);
+                    }
+                },
+                error: function (data, status) {
+                    console.info("An error occured while saving variable!")
+                }
+            });
+            return false;
+        });
     });
-
-	$('.edit-variable-form').submit(function(event) {
-		event.preventDefault();
-		
-		var self = this;
-		$(self).find(".form-group").removeClass("has-feedback has-error");
-		$(self).find(".form-validation").text("");
-	    
-		$.ajax({ 
-	    	type: $(this).attr('method'), 
-	        url: this.action, 
-	        data: $(this).serialize(),
-	        context: this,
-	        success: function(data, status) {
-	        	if(data.errors) {
-	        		$(".form-group").each(function() {
-	        			var field = $(this).attr("data-field")
-	        			if(data.errors.hasOwnProperty(field)) {
-	        				$(this).addClass("has-feedback has-error");
-	        				$(this).find(".form-validation").text(data.errors[field]);
-	        			}
-	        		})
-	        		if(data.errors.hasOwnProperty("__all__")) {
-	        			$(".general-errors").text(data.errors["__all__"]);
-	        		}
-	        	} else {
-    	            console.info("saved variable: ", data);
-    	            $('#variableModal').modal('hide');
-    	            window.location.reload(true);
-	        	}
-	        }, 
-	        error: function(data, status) {
-	        	console.info("An error occured while saving variable!")
-	        }
-	    });
-	    return false;
-	});
-});
 </script>

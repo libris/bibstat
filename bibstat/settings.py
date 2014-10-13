@@ -10,6 +10,7 @@ https://docs.djangoproject.com/en/1.6/ref/settings/
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 import os
+
 BASE_DIR = os.path.dirname(os.path.dirname(__file__))
 
 # Quick-start development settings - unsuitable for production
@@ -138,27 +139,27 @@ LOGGING = {
             'level': 'DEBUG',
             'class': 'logging.StreamHandler',
             'formatter': 'verbose'
-            },
-#         'file': {
-#             'level': 'DEBUG',
-#             'class': 'logging.FileHandler',
-#             'filename': 'logs/bibstat.log',
-#             'formatter': 'verbose'
-#             },
         },
+        # 'file': {
+        #             'level': 'DEBUG',
+        #             'class': 'logging.FileHandler',
+        #             'filename': 'logs/bibstat.log',
+        #             'formatter': 'verbose'
+        #             },
+    },
     'loggers': {
         'django.request': {
             'handlers': ['console'],
             'level': LOG_LEVEL,
             'propagate': True,
-            },
+        },
         'libstat': {
             'handlers': ['console'],
             'level': LOG_LEVEL,
             'propagate': True,
-            },
-        }
+        },
     }
+}
 if DEBUG:
     # make all loggers use the console.
     for logger in LOGGING['loggers']:
@@ -180,13 +181,13 @@ MONGOENGINE_USER_DOCUMENT = 'mongoengine.django.auth.User'
 SESSION_ENGINE = 'mongoengine.django.sessions'
 SESSION_SERIALIZER = 'mongoengine.django.sessions.BSONSerializer'
 # 1h session timeout, cleanup of sessions is done with document TTL in mongodb
-SESSION_COOKIE_AGE = 60*60*1   
+SESSION_COOKIE_AGE = 60 * 60 * 1
 
 # Initialize MongoDB connection
 MONGODB_DATABASE_HOST = 'mongodb://%s:%s@%s/%s' % (MONGODB_USER, MONGODB_PASSWD, MONGODB_HOST, MONGODB_NAME)
 
 mongoengine.connect(MONGODB_NAME, host=MONGODB_DATABASE_HOST)
-#mongoengine.connect(MONGODB_NAME)
+# mongoengine.connect(MONGODB_NAME)
 
 # Use custom test runner to skip setup/teardown of fixtures for test database
 TEST_RUNNER = 'libstat.tests.MongoEngineTestRunner'
