@@ -88,6 +88,36 @@ def _get_listview_from_modalview(relative_url=""):
 
 
 @permission_required('is_superuser', login_url='index')
+def surveyable_variables_api(request):
+    """
+        Helper Json API method to populate search field for surveyable variable when constructing a Survey. (Ajax call)
+    """
+    query = request.REQUEST.get("q", None)
+    if query:
+        variables = Variable.objects.surveyable().filter(key__icontains=query)
+    else:
+        variables = Variable.objects.surveyable()
+    data = [{'key': v.key, 'id': str(v.id)} for v in variables];
+    return HttpResponse(json.dumps(data), content_type="application/json")
+
+
+@permission_required('is_superuser', login_url='index')
+def replaceable_variables_api(request):
+    """
+        Helper Json API method to populate search field for replaceable variables. (Ajax call)
+    """
+    query = request.REQUEST.get("q", None)
+    if query:
+        key_query = Q(key__icontains=query)
+        description_query = Q(description__icontains=query)
+        variables = Variable.objects.replaceable().filter(key_query | description_query)
+    else:
+        variables = Variable.objects.replaceable()
+    data = [v.as_simple_dict() for v in variables];
+    return HttpResponse(json.dumps(data), content_type="application/json")
+
+
+@permission_required('is_superuser', login_url='index')
 def variables(request):
     target_groups = request.GET.getlist("target_group", [])
     if target_groups:
@@ -303,27 +333,7 @@ def publish_survey_response(request, survey_response_id):
     return redirect("edit_survey", survey_response_id)
 
 
-@permission_required('is_superuser', login_url='index')
-def replaceable_variables_api(request):
-    """
-        Helper Json API method to populate search field for replaceable variables. (Ajax call)
-    """
-    query = request.REQUEST.get("q", None)
-    if query:
-        key_query = Q(key__icontains=query)
-        description_query = Q(description__icontains=query)
-        variables = Variable.objects.replaceable().filter(key_query | description_query)
-    else:
-        variables = Variable.objects.replaceable()
-    data = [v.as_simple_dict() for v in variables];
-    return HttpResponse(json.dumps(data), content_type="application/json")
-
-
-###############################
-### Begin survey experiment ###
-###############################
-
-def survey_response_from_template(template, create_non_existing_variables=False):
+def _survey_response_from_template(template, create_non_existing_variables=False):
     response = SurveyResponse(
         library_name=u"Motala stadsbibliotek",
         sample_year=2014,
@@ -358,7 +368,17 @@ def survey_response_from_template(template, create_non_existing_variables=False)
     return response
 
 
-def save_survey_from_form(survey_id, form):
+@permission_required('is_superuser', login_url='index')
+def create_survey_response(request):
+    try:
+        _survey_response_from_template(survey_template, create_non_existing_variables=True).save()
+    except NotUniqueError:
+        pass
+
+    return index(request)
+
+
+def _save_survey_from_form(survey_id, form):
     response = SurveyResponse.objects.get(pk=survey_id)
     if form.is_valid():
         disabled_inputs = form.cleaned_data["disabled_inputs"].split(" ")
@@ -372,42 +392,14 @@ def save_survey_from_form(survey_id, form):
                 response.__dict__["_data"][field] = form.cleaned_data[field]
     response.save()
 
-@permission_required('is_superuser', login_url='index')
-def create_survey_response(request):
-    try:
-        survey_response_from_template(survey_template, create_non_existing_variables=True).save()
-    except NotUniqueError:
-        pass
-
-    return index(request)
-
 
 @permission_required('is_superuser', login_url='index')
 def edit_survey(request, survey_id):
     if request.method == "POST":
         survey = SurveyResponse.objects.get(pk=survey_id)
         form = SurveyForm(request.POST, instance=survey)
-        save_survey_from_form(survey_id, form)
+        _save_survey_from_form(survey_id, form)
 
     survey = SurveyResponse.objects.get(pk=survey_id)
     context = {"form": SurveyForm(instance=survey)}
     return render(request, 'libstat/edit_survey.html', context)
-
-
-#############################
-### End survey experiment ###
-#############################
-
-
-@permission_required('is_superuser', login_url='index')
-def surveyable_variables_api(request):
-    """
-        Helper Json API method to populate search field for surveyable variable when constructing a Survey. (Ajax call)
-    """
-    query = request.REQUEST.get("q", None)
-    if query:
-        variables = Variable.objects.surveyable().filter(key__icontains=query)
-    else:
-        variables = Variable.objects.surveyable()
-    data = [{'key': v.key, 'id': str(v.id)} for v in variables];
-    return HttpResponse(json.dumps(data), content_type="application/json")
