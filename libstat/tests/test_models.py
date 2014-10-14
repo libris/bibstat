@@ -3,6 +3,7 @@ from datetime import timedelta
 
 from libstat.tests import MongoTestCase
 from libstat.models import *
+from bson.objectid import ObjectId
 
 
 """

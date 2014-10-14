@@ -3,7 +3,6 @@ from django.test.runner import DiscoverRunner
 from django.test import TestCase
 from django.conf import settings
 
-
 class MongoEngineTestRunner(DiscoverRunner):
     """
         Test runner for use with MongoEngine
