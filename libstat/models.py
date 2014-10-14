@@ -1,5 +1,4 @@
 # -*- coding: UTF-8 -*-
-from datetime import datetime
 import logging
 from cookielib import logger
 

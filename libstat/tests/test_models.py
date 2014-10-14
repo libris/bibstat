@@ -1,13 +1,5 @@
 # -*- coding: UTF-8 -*-
-from datetime import datetime, date, timedelta
-import json
-
-from mongoengine.django.auth import User
-from django.conf import settings
-from mongoengine.django.sessions import MONGOENGINE_SESSION_COLLECTION
-from mongoengine.errors import DoesNotExist
-from bson.objectid import ObjectId
-from django.db.models.sql.datastructures import DateTime
+from datetime import timedelta
 
 from libstat.tests import MongoTestCase
 from libstat.models import *

@@ -8,7 +8,6 @@ from mongoengine.django.auth import User
 
 from libstat.tests import MongoTestCase
 from libstat.models import Variable, SurveyResponse, SurveyObservation, Survey, OpenData
-from libstat.utils import targetGroups
 
 
 """

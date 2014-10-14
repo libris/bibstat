@@ -1,13 +1,13 @@
 # -*- coding: UTF-8 -*-
-import math
 from collections import OrderedDict
 import logging
 
 from django import forms
 from django.utils.safestring import mark_safe
 
+from libstat.survey_templates import survey_template
 from libstat.utils import SURVEY_TARGET_GROUPS
-from libstat.utils import TYPE_STRING, TYPE_BOOLEAN, TYPE_INTEGER, TYPE_LONG, TYPE_DECIMAL, TYPE_PERCENT, VARIABLE_TYPES
+from libstat.utils import TYPE_BOOLEAN, TYPE_INTEGER, TYPE_LONG, TYPE_DECIMAL, TYPE_PERCENT, VARIABLE_TYPES
 from libstat.models import Variable, SurveyResponse, SurveyObservation, SurveyResponseMetadata, Survey
 
 
@@ -113,6 +113,113 @@ class VariableForm(forms.Form):
             variable.save_updated_self_and_modified_replaced(modified_siblings)
 
         return variable
+
+
+class SurveyForm(forms.Form):
+    def _cell_to_input_field(self, cell, observation):
+        attrs = {"class": "form-control",
+                 "id": cell.variable_key,
+                 "name": cell.variable_key}
+
+        if "sum" in cell.types:
+            if cell.sum_of:
+                attrs["data-sum-of"] = " ".join(map(lambda s: s, cell.sum_of))
+                attrs["data-bv-notempty"] = ""
+            if cell.sum_siblings:
+                attrs["data-sum-siblings"] = " ".join(map(lambda s: s, cell.sum_siblings))
+
+        if "required" in cell.types:
+            attrs["data-bv-notempty"] = ""
+
+        if "integer" in cell.types:
+            attrs["data-bv-integer"] = ""
+            attrs["data-bv-greaterthan"] = ""
+            attrs["data-bv-greaterthan-value"] = "0"
+            attrs["data-bv-greaterthan-inclusive"] = ""
+
+        if "numeric" in cell.types:
+            attrs["data-bv-numeric"] = ""
+            attrs["data-bv-numeric-separator"] = "."
+            attrs["data-bv-greaterthan"] = ""
+            attrs["data-bv-greaterthan-value"] = "0"
+            attrs["data-bv-greaterthan-inclusive"] = ""
+
+        if "email" in cell.types:
+            attrs["data-bv-emailaddress"] = ""
+
+        if "text" in cell.types:
+            attrs["data-bv-stringlength"] = ""
+            attrs["data-bv-stringlength-min"] = "0"
+
+        if observation.disabled:
+            attrs["disabled"] = ""
+
+        field = forms.CharField(required=False, widget=forms.TextInput(attrs=attrs))
+        field.initial = observation.value
+        return field
+
+
+    def __init__(self, *args, **kwargs):
+        self.instance = kwargs.pop('instance', None)
+        super(SurveyForm, self).__init__(*args, **kwargs)
+        response = self.instance
+
+        self.fields["key"] = forms.CharField(required=False, widget=forms.HiddenInput())
+        self.fields["disabled_inputs"] = forms.CharField(required=False,
+                                                         widget=forms.HiddenInput(attrs={"id": "disabled_inputs"}))
+        self.fields["library_name"] = forms.CharField(required=False,
+                                                      widget=forms.TextInput(attrs={"class": "form-control",
+                                                                                    "disabled": "",
+                                                                                    "id": "organization_name"}))
+        self.fields["municipality_name"] = forms.CharField(required=False,
+                                                           widget=forms.TextInput(attrs={"class": "form-control",
+                                                                                         "disabled": "",
+                                                                                         "id": "municipality"}))
+        self.fields["municipality_code"] = forms.CharField(required=False,
+                                                           widget=forms.TextInput(attrs={"class": "form-control",
+                                                                                         "disabled": "",
+                                                                                         "id": "municipality_code"}))
+        self.fields["head_authority"] = forms.CharField(required=False,
+                                                        widget=forms.TextInput(attrs={"class": "form-control",
+                                                                                      "disabled": "",
+                                                                                      "id": "head_authority"}))
+        self.fields["respondent_name"] = forms.CharField(required=False,
+                                                         widget=forms.TextInput(attrs={"class": "form-control",
+                                                                                       "id": "respondent_name"}))
+        self.fields["respondent_email"] = forms.CharField(required=False,
+                                                          widget=forms.TextInput(attrs={"class": "form-control",
+                                                                                        "id": "respondent_name"}))
+        self.fields["respondent_phone"] = forms.CharField(required=False,
+                                                          widget=forms.TextInput(attrs={"class": "form-control",
+                                                                                        "id": "respondent_phone"}))
+        self.fields["website"] = forms.CharField(required=False,
+                                                 widget=forms.TextInput(attrs={"class": "form-control",
+                                                                               "id": "website"}))
+
+        self.fields["key"].initial = response.pk
+        self.fields["library_name"].initial = response.library_name
+        self.fields["municipality_name"].initial = response.metadata.municipality_name
+        self.fields["municipality_code"].initial = response.metadata.municipality_code
+        self.fields["head_authority"].initial = u""
+        self.fields["respondent_name"].initial = response.metadata.respondent_name
+        self.fields["respondent_email"].initial = response.metadata.respondent_email
+        self.fields["respondent_phone"].initial = response.metadata.respondent_phone
+        self.fields["website"].initial = response.metadata.website
+
+        self.sample_year = response.sample_year
+        self.sections = survey_template.sections
+        for section in survey_template.sections:
+            for group in section.groups:
+                for row in group.rows:
+                    for cell in row.cells:
+                        variable_key = cell.variable_key
+                        observation = response.get_observation(variable_key)
+                        print(observation)
+                        if not observation:
+                            variable = Variable.objects.get(key=variable_key)
+                            response.observations.append(SurveyObservation(variable=variable,
+                                                                           _source_key=variable.id))
+                        self.fields[variable_key] = self._cell_to_input_field(cell, observation)
 
 
 class SurveyResponseForm(forms.Form):
@@ -295,7 +402,7 @@ class SurveyObservationsForm(forms.Form):
         return surveyResponse
 
 
-class SurveyForm(forms.Form):
+class SurveyForm_(forms.Form):
     sample_year = forms.CharField(required=True, max_length=4, widget=forms.TextInput(attrs={'class': 'form-control'}))
     target_groups = forms.MultipleChoiceField(required=True, widget=forms.CheckboxSelectMultiple())
 
