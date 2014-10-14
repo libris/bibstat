@@ -417,7 +417,7 @@ def edit_survey(request, survey_id):
 
     survey = SurveyResponse.objects.get(pk=survey_id)
     context = {"form": SurveyForm(instance=survey)}
-    return render(request, 'libstat/survey_template.html', context)
+    return render(request, 'libstat/edit_survey.html', context)
 
 
 #############################
