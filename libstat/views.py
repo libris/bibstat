@@ -769,9 +769,9 @@ def cell_to_input_field(cell, observation):
         attrs["data-bv-greaterthan"] = ""
         attrs["data-bv-greaterthan-value"] = "0"
         attrs["data-bv-greaterthan-inclusive"] = ""
-        attrs["data-bv-notempty"] = ""
         if cell.sum_of:
             attrs["data-sum-of"] = " ".join(map(lambda s: s, cell.sum_of))
+            attrs["data-bv-notempty"] = ""
         if cell.sum_siblings:
             attrs["data-sum-siblings"] = " ".join(map(lambda s: s, cell.sum_siblings))
 

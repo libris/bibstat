@@ -121,8 +121,17 @@ define(['jquery', 'cell.sum', 'bootstrap.validator.sv'], function($, sum) {
         init: function() {
 
             /* Enable bootstrap validator on survey form. */
-            $('#survey-form').bootstrapValidator({
+            $('#survey-form').on('init.field.bv', function(e, data) { // http://bootstrapvalidator.com/examples/showing-required-icon/
+                var $parent = data.element.parents('.form-group'),
+                    $icon = $parent.find('.form-control-feedback[data-bv-icon-for="' + data.field + '"]'),
+                    options = data.bv.getOptions(),
+                    validators = data.bv.getOptions(data.field).validators;
+
+                if(validators.notEmpty && options.feedbackIcons && options.feedbackIcons.required)
+                    $icon.addClass(options.feedbackIcons.required).show();
+            }).bootstrapValidator({
                 feedbackIcons: {
+                    required: 'fa fa-asterisk',
                     valid: 'fa fa-check',
                     invalid: 'fa fa-times',
                     validating: 'fa fa-refresh'
@@ -136,10 +145,20 @@ define(['jquery', 'cell.sum', 'bootstrap.validator.sv'], function($, sum) {
                 var disabled_input_ids = $("input[disabled]").map(function() {
                     return $(this).attr("id");
                 }).get().join(" ");
+
                 if(disabled_input_ids) {
                     $("#disabled_inputs").val(disabled_input_ids);
                 }
+
                 $("input[disabled]").prop("disabled", false);
+            }).on('status.field.bv', function(e, data) { // http://bootstrapvalidator.com/examples/showing-required-icon/
+                var $parent = data.element.parents('.form-group'),
+                    $icon = $parent.find('.form-control-feedback[data-bv-icon-for="' + data.field + '"]'),
+                    options = data.bv.getOptions(),
+                    validators = data.bv.getOptions(data.field).validators;
+
+                if(validators.notEmpty && options.feedbackIcons && options.feedbackIcons.required)
+                    $icon.removeClass(options.feedbackIcons.required).addClass('fa');
             });
 
             /* Move feedback icons to the right of the input field. */
