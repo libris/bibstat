@@ -304,32 +304,6 @@ def publish_survey_response(request, survey_response_id):
 
 
 @permission_required('is_superuser', login_url='index')
-def edit_survey_observations(request, survey_response_id):
-    """
-        Handling saving of survey observations in a separate view method.
-        Called from view edit_survey_response.
-    """
-    try:
-        survey_response = SurveyResponse.objects.get(pk=survey_response_id)
-    except:
-        raise Http404
-
-    if request.method == "POST":
-        form = SurveyObservationsForm(request.POST, instance=survey_response)
-        if form.is_valid():
-            try:
-                survey_response = form.save(user=request.user)
-            except Exception as e:
-                logger.warning(u"Error updating SurveyResponse observations {}: {}".format(survey_response_id, e))
-                form._errors['__all__'] = ErrorList([u"Kan inte uppdatera enkätsvar"])
-        else:
-            logger.debug(u"Form has validation errors: {}".format(form.errors))
-            return _render_survey_response_view(request, SurveyResponseForm(instance=survey_response), form)
-
-    return redirect("edit_survey_response", survey_response_id)
-
-
-@permission_required('is_superuser', login_url='index')
 def replaceable_variables_api(request):
     """
         Helper Json API method to populate search field for replaceable variables. (Ajax call)
