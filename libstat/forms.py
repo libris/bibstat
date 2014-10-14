@@ -90,7 +90,7 @@ class VariableForm(forms.Form):
         variable.active_from = self.cleaned_data[
             'active_from']  # Need to convert to UTC? It's a date and not a datetime...
         variable.active_to = self.instance.active_to if self.instance and self.instance.replaced_by else \
-        self.cleaned_data['active_to']
+            self.cleaned_data['active_to']
         variable.question = self.cleaned_data['question']
         variable.question_part = self.cleaned_data['question_part']
         variable.category = self.cleaned_data['category']
@@ -195,7 +195,7 @@ class SurveyResponseForm(forms.Form):
     """
         Custom form for creating/editing a SurveyResponse with all embedded documents.
     """
-    sample_year = forms.CharField(required=True, max_length=4, widget=forms.HiddenInput)  #TODO: Remove or make hidden
+    sample_year = forms.CharField(required=True, max_length=4, widget=forms.HiddenInput)  # TODO: Remove or make hidden
     target_group = forms.CharField(required=True, widget=forms.HiddenInput)  # TODO: Remove or make hidden
 
     library_name = forms.CharField(required=True, max_length=100,
@@ -250,7 +250,8 @@ class SurveyResponseForm(forms.Form):
         surveyResponse.target_group = self.instance.target_group if self.instance else self.cleaned_data['target_group']
 
         surveyResponse.metadata = self.instance.metadata if self.instance.metadata and (
-        self.cleaned_data['municipality_name'] or self.cleaned_data['municipality_code']) else SurveyResponseMetadata()
+            self.cleaned_data['municipality_name'] or self.cleaned_data[
+                'municipality_code']) else SurveyResponseMetadata()
         surveyResponse.metadata.municipality_name = self.cleaned_data['municipality_name']
         surveyResponse.metadata.municipality_code = self.cleaned_data['municipality_code']
         surveyResponse.metadata.respondent_name = self.cleaned_data['respondent_name']
@@ -296,7 +297,7 @@ class SurveyObservationsForm(forms.Form):
                 elif observation.variable.type == TYPE_INTEGER[0]:
                     self.fields[observation._source_key] = forms.IntegerField(required=False,
                                                                               widget=forms.NumberInput(attrs={
-                                                                              'class': 'form-control width-auto'}),
+                                                                                  'class': 'form-control width-auto'}),
                                                                               min_value=0,
                                                                               label=label,
                                                                               initial=int(round(
@@ -306,7 +307,7 @@ class SurveyObservationsForm(forms.Form):
                 elif observation.variable.type == TYPE_LONG[0]:
                     self.fields[observation._source_key] = forms.IntegerField(required=False,
                                                                               widget=forms.NumberInput(attrs={
-                                                                              'class': 'form-control width-auto'}),
+                                                                                  'class': 'form-control width-auto'}),
                                                                               label=label,
                                                                               min_value=0,
                                                                               initial=long(round(
@@ -316,7 +317,7 @@ class SurveyObservationsForm(forms.Form):
                 elif observation.variable.type == TYPE_DECIMAL[0]:
                     self.fields[observation._source_key] = forms.DecimalField(required=False,
                                                                               widget=forms.NumberInput(attrs={
-                                                                              'class': 'form-control width-auto'}),
+                                                                                  'class': 'form-control width-auto'}),
                                                                               label=label,
                                                                               decimal_places=2,
                                                                               initial=round(observation.value,
@@ -326,7 +327,7 @@ class SurveyObservationsForm(forms.Form):
                 elif observation.variable.type == TYPE_PERCENT[0]:
                     self.fields[observation._source_key] = forms.IntegerField(required=False,
                                                                               widget=forms.NumberInput(attrs={
-                                                                              'class': 'form-control width-auto'}),
+                                                                                  'class': 'form-control width-auto'}),
                                                                               label=label,
                                                                               initial=int(round(
                                                                                   observation.value * 100)) if observation.value and isinstance(
