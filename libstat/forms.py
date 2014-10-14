@@ -162,59 +162,26 @@ class SurveyForm(forms.Form):
     def __init__(self, *args, **kwargs):
         self.instance = kwargs.pop('instance', None)
         super(SurveyForm, self).__init__(*args, **kwargs)
+
         response = self.instance
 
-        self.fields["key"] = forms.CharField(required=False, widget=forms.HiddenInput())
         self.fields["disabled_inputs"] = forms.CharField(required=False,
                                                          widget=forms.HiddenInput(attrs={"id": "disabled_inputs"}))
-        self.fields["library_name"] = forms.CharField(required=False,
-                                                      widget=forms.TextInput(attrs={"class": "form-control",
-                                                                                    "disabled": "",
-                                                                                    "id": "organization_name"}))
-        self.fields["municipality_name"] = forms.CharField(required=False,
-                                                           widget=forms.TextInput(attrs={"class": "form-control",
-                                                                                         "disabled": "",
-                                                                                         "id": "municipality"}))
-        self.fields["municipality_code"] = forms.CharField(required=False,
-                                                           widget=forms.TextInput(attrs={"class": "form-control",
-                                                                                         "disabled": "",
-                                                                                         "id": "municipality_code"}))
-        self.fields["head_authority"] = forms.CharField(required=False,
-                                                        widget=forms.TextInput(attrs={"class": "form-control",
-                                                                                      "disabled": "",
-                                                                                      "id": "head_authority"}))
-        self.fields["respondent_name"] = forms.CharField(required=False,
-                                                         widget=forms.TextInput(attrs={"class": "form-control",
-                                                                                       "id": "respondent_name"}))
-        self.fields["respondent_email"] = forms.CharField(required=False,
-                                                          widget=forms.TextInput(attrs={"class": "form-control",
-                                                                                        "id": "respondent_name"}))
-        self.fields["respondent_phone"] = forms.CharField(required=False,
-                                                          widget=forms.TextInput(attrs={"class": "form-control",
-                                                                                        "id": "respondent_phone"}))
-        self.fields["website"] = forms.CharField(required=False,
-                                                 widget=forms.TextInput(attrs={"class": "form-control",
-                                                                               "id": "website"}))
 
+        self.fields["key"] = forms.CharField(required=False, widget=forms.HiddenInput())
         self.fields["key"].initial = response.pk
-        self.fields["library_name"].initial = response.library_name
-        self.fields["municipality_name"].initial = response.metadata.municipality_name
-        self.fields["municipality_code"].initial = response.metadata.municipality_code
-        self.fields["head_authority"].initial = u""
-        self.fields["respondent_name"].initial = response.metadata.respondent_name
-        self.fields["respondent_email"].initial = response.metadata.respondent_email
-        self.fields["respondent_phone"].initial = response.metadata.respondent_phone
-        self.fields["website"].initial = response.metadata.website
 
+        self.library_name = response.library_name
+        self.municipality_name = response.metadata.municipality_name
         self.sample_year = response.sample_year
         self.sections = survey_template.sections
+
         for section in survey_template.sections:
             for group in section.groups:
                 for row in group.rows:
                     for cell in row.cells:
                         variable_key = cell.variable_key
                         observation = response.get_observation(variable_key)
-                        print(observation)
                         if not observation:
                             variable = Variable.objects.get(key=variable_key)
                             response.observations.append(SurveyObservation(variable=variable,
