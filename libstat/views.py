@@ -914,7 +914,7 @@ def save_survey_from_form(survey_id, form):
                     observation.disabled = True
             else:
                 response.__dict__["_data"][field] = form.cleaned_data[field]
-
+    response.save()
 
 @permission_required('is_superuser', login_url='index')
 def create_survey_response(request):
@@ -930,7 +930,7 @@ def create_survey_response(request):
 def edit_survey(request, survey_id):
     if request.method == "POST":
         survey = SurveyResponse.objects.get(pk=survey_id)
-        form = SurveyForm(request.POST, instace=survey)
+        form = SurveyForm(request.POST, instance=survey)
         save_survey_from_form(survey_id, form)
 
     survey = SurveyResponse.objects.get(pk=survey_id)

@@ -121,14 +121,6 @@ define(['jquery', 'survey', 'jquery.tablesorter', 'bootstrap', 'bootstrap.datepi
             return false; // prevent the click propagation
         });
 
-
-
-        $("#save-btn").click(function () {
-            var survey_id = $("#id_key").val();
-            var action = Urls.edit_survey(survey_id);
-            $("#survey-form").attr("action", action).submit();
-        });
-
         survey.init();
 
         console.log('Scripts initialized.')

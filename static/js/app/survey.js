@@ -2,7 +2,6 @@ define(['jquery', 'cell.sum', 'bootstrap.validator.sv'], function($, sum) {
 
 
     var initDropdown = function() {
-
         var isActive = function(element) {
             var parent = element.parent('li');
             return parent.hasClass("active");
@@ -113,13 +112,8 @@ define(['jquery', 'cell.sum', 'bootstrap.validator.sv'], function($, sum) {
         });
     };
 
-
     return {
-
-
-
         init: function() {
-
             /* Enable bootstrap validator on survey form. */
             $('#survey-form').on('init.field.bv', function(e, data) { // http://bootstrapvalidator.com/examples/showing-required-icon/
                 var $parent = data.element.parents('.form-group'),
@@ -151,6 +145,10 @@ define(['jquery', 'cell.sum', 'bootstrap.validator.sv'], function($, sum) {
                 }
 
                 $("input[disabled]").prop("disabled", false);
+
+                var survey_id = $("#id_key").val();
+                var action = Urls.edit_survey(survey_id);
+                $("#survey-form").attr("action", action)
             }).on('status.field.bv', function(e, data) { // http://bootstrapvalidator.com/examples/showing-required-icon/
                 var $parent = data.element.parents('.form-group'),
                     $icon = $parent.find('.form-control-feedback[data-bv-icon-for="' + data.field + '"]'),
