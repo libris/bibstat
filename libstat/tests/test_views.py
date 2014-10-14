@@ -572,7 +572,7 @@ class SurveyResponsesViewTest(MongoTestCase):
             "{}?action=list&target_group=public&sample_year=2013".format(reverse("survey_responses")))
         self.assertContains(response, u'<a href="{}" title="Visa/redigera enkätsvar">Visa/redigera</a>'
                             .format(
-            reverse("edit_survey_response", kwargs={"survey_response_id": str(self.survey_response.id)})),
+            reverse("edit_survey", kwargs={"survey_id": str(self.survey_response.id)})),
                             count=1, status_code=200, html=True)
 
 
