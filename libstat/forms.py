@@ -5,7 +5,7 @@ import logging
 from django import forms
 from django.utils.safestring import mark_safe
 
-from libstat.survey_templates import survey_template
+from libstat.survey_templates import survey_template, default_template_from_survey_response
 from libstat.utils import SURVEY_TARGET_GROUPS
 from libstat.utils import TYPE_BOOLEAN, TYPE_INTEGER, TYPE_LONG, TYPE_DECIMAL, TYPE_PERCENT, VARIABLE_TYPES
 from libstat.models import Variable, SurveyResponse, SurveyObservation, SurveyResponseMetadata, Survey
@@ -165,6 +165,8 @@ class SurveyForm(forms.Form):
 
         response = self.instance
 
+        template = survey_template if response.sample_year == 2014 else default_template_from_survey_response(response)
+
         self.fields["disabled_inputs"] = forms.CharField(required=False,
                                                          widget=forms.HiddenInput(attrs={"id": "disabled_inputs"}))
 
@@ -172,11 +174,11 @@ class SurveyForm(forms.Form):
         self.fields["key"].initial = response.pk
 
         self.library_name = response.library_name
-        self.municipality_name = response.metadata.municipality_name
+        self.municipality_name = response.metadata.municipality_name if response.metadata else ""
         self.sample_year = response.sample_year
-        self.sections = survey_template.sections
+        self.sections = template.sections
 
-        for section in survey_template.sections:
+        for section in template.sections:
             for group in section.groups:
                 for row in group.rows:
                     for cell in row.cells:

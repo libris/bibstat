@@ -429,7 +429,7 @@ def create_survey(request):
 def survey_response_from_template(template, create_non_existing_variables=False):
     response = SurveyResponse(
         library_name=u"Motala stadsbibliotek",
-        sample_year=u"2014",
+        sample_year=2014,
         target_group="public",
         observations=[],
         metadata=SurveyResponseMetadata(
