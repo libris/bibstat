@@ -68,7 +68,7 @@
 
                             <div class="input-group date">
                                 {{ form.active_from }}<span class="input-group-addon"><i
-                                    class="glyphicon glyphicon-th"></i></span>
+                                        class="glyphicon glyphicon-th"></i></span>
                             </div>
                         </div>
                     </div>
@@ -173,15 +173,14 @@
                 {% if mode == 'create' %}
                     <input type="submit" class="btn btn-primary" value="{% trans 'Spara utkast' %}"/>
                 {% elif form.instance.is_draft %}
-                    <input type="submit" id="delete" class="btn btn-danger" value="{% trans 'Ta bort' %}"/>
                     <input type="submit" class="btn btn-primary" value="{% trans 'Spara utkast' %}"/>
-                    <input type="submit" id="save_and_activate" class="btn btn-primary"
-                           value="{% trans 'Spara och aktivera' %}"/>
+                    <input type="submit" id="save_and_activate" class="btn btn-primary" value="{% trans 'Spara och aktivera' %}"/>
+                    <input type="submit" id="delete" class="btn btn-danger" value="{% trans 'Ta bort' %}"/>
                 {% else %}
+                    <input type="submit" class="btn btn-primary" value="{% trans 'Spara ändringar' %}"/>
                     {% if form.instance.is_deletable %}
                         <input type="submit" id="delete" class="btn btn-danger" value="{% trans 'Ta bort' %}"/>
                     {% endif %}
-                    <input type="submit" class="btn btn-primary" value="{% trans 'Spara ändringar' %}"/>
                 {% endif %}
             </div>
 
@@ -190,33 +189,35 @@
 </form>
 
 <script type="text/javascript">
-    $(document).ready(function () {
+    $(document).ready(function() {
 
         var replaceable_variables = new Bloodhound({
-            datumTokenizer: function (item) {
+            datumTokenizer: function(item) {
                 return Bloodhound.tokenizers.whitespace(item.value);
             },
             queryTokenizer: Bloodhound.tokenizers.whitespace,
             limit: 20,
             remote: {
                 url: '/statistics/variables/replaceable?q=%QUERY',
-                filter: function (list) {
-                    return $.map(list, function (item) {
+                filter: function(list) {
+                    return $.map(list, function(item) {
                         return { label: item.key, value: item.id, description: item.description };
                     });
                 }
-            },
+            }
         });
+
         // kicks off the loading/processing of `local` and `prefetch`
         replaceable_variables.initialize();
-        var initial_tokens = function () {
-            var tokens = []
+        var initial_tokens = function() {
+            var tokens = [];
             var keysIds = $("#id_replaces_initial").val().split(", ");
-            return $.map(keysIds, function (keyId) {
+            return $.map(keysIds, function(keyId) {
                 var labelValue = keyId.split(":");
                 return { label: labelValue[0], value: labelValue[1] };
             });
-        }
+        };
+
         $('#id_replaces').tokenfield({
             typeahead: [null, {
                 displayKey: 'label',
@@ -226,14 +227,18 @@
                     suggestion: _.template([
                         "<div class='suggestion'><span class='key'><%- label %></span>",
                         "<span class='description' title='<%- description %>'><%- ellipsis(description, 120-(label.length+1)) %></span></div>"
-                    ].join("\n")),
+                    ].join("\n"))
                 }
             }]
+        }).on('tokenfield:createtoken', function(e) {
+            /* Invalid entries have wrong value (same as label). */
+            if(e.attrs.label == e.attrs.value)
+                e.preventDefault();
         }).tokenfield('setTokens', initial_tokens());
-        $('#id_replaces').on('tokenfield:initialize', function (event) {
+
+        $('#id_replaces').on('tokenfield:initialize', function(event) {
             $(this).find(".tt-dropdown-menu").attr("style", "position:relative; top:100%; left:0; zIndex:100; display:none;")
         });
-
 
         $('.form-group.active_from .input-group.date').datepicker({
             format: "yyyy-mm-dd",
@@ -246,24 +251,24 @@
             language: "sv"
         });
 
-        $("#replaced_by").click(function (event) {
+        $("#replaced_by").click(function(event) {
             event.preventDefault();
             var url = $(this).data("form"); // get form
-            $("#variableModal").load(url, function () { // load the url into the modal
+            $("#variableModal").load(url, function() { // load the url into the modal
                 $(this).modal('show'); // display the modal on url load
             });
             return false; // prevent the click propagation
         });
 
-        $("#save_and_activate").click(function (event) {
+        $("#save_and_activate").click(function(event) {
             $("#submit_action").val("save_and_activate");
         });
 
-        $("#delete").click(function (event) {
+        $("#delete").click(function(event) {
             $("#submit_action").val("delete");
         });
 
-        $('.edit-variable-form').submit(function (event) {
+        $('.edit-variable-form').submit(function(event) {
             event.preventDefault();
 
             var self = this;
@@ -275,16 +280,16 @@
                 url: this.action,
                 data: $(this).serialize(),
                 context: this,
-                success: function (data, status) {
-                    if (data.errors) {
-                        $(".form-group").each(function () {
+                success: function(data, status) {
+                    if(data.errors) {
+                        $(".form-group").each(function() {
                             var field = $(this).attr("data-field")
-                            if (data.errors.hasOwnProperty(field)) {
+                            if(data.errors.hasOwnProperty(field)) {
                                 $(this).addClass("has-feedback has-error");
                                 $(this).find(".form-validation").text(data.errors[field]);
                             }
                         })
-                        if (data.errors.hasOwnProperty("__all__")) {
+                        if(data.errors.hasOwnProperty("__all__")) {
                             $(".general-errors").text(data.errors["__all__"]);
                         }
                     } else {
@@ -293,7 +298,7 @@
                         window.location.reload(true);
                     }
                 },
-                error: function (data, status) {
+                error: function(data, status) {
                     console.info("An error occured while saving variable!")
                 }
             });
