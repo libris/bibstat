@@ -300,48 +300,7 @@ def publish_survey_response(request, survey_response_id):
             logger.error(u"Error when publishing survey response {}:".format(survey_response_id.id))
             print e
 
-    return redirect("edit_survey_response", survey_response_id)
-
-
-@permission_required('is_superuser', login_url='index')
-def edit_survey_response(request, survey_response_id):
-    try:
-        survey_response = SurveyResponse.objects.get(pk=survey_response_id)
-    except:
-        raise Http404
-
-    # Needed to render the other form in the view
-    observations_form = SurveyObservationsForm(instance=survey_response)
-
-    if request.method == "POST":
-        form = SurveyResponseForm(request.POST, instance=survey_response)
-
-        if form.is_valid():
-            try:
-                survey_response = form.save(user=request.user);
-                return redirect("edit_survey_response", survey_response_id)
-
-            except NotUniqueError as nue:
-                logger.warning(u"A SurveyResponse with library_name {} already exists for year {}: {}".format(
-                    survey_response.library_name, survey_response.sample_year, nue))
-                form._errors['library_name'] = ErrorList([u"Det finns redan ett enkätsvar för detta bibliotek"])
-            except Exception as e:
-                logger.warning(u"Error updating SurveyResponse {}: {}".format(survey_response_id, e))
-                form._errors['__all__'] = ErrorList([u"Kan inte uppdatera respondentinformation"])
-        else:
-            logger.debug(u"Form has validation errors: {}".format(form.errors))
-    else:
-        form = SurveyResponseForm(instance=survey_response)
-
-    return _render_survey_response_view(request, form, observations_form)
-
-
-def _render_survey_response_view(request, survey_response_form, survey_observations_form):
-    context = {
-        'form': survey_response_form,
-        'observations_form': survey_observations_form,
-    }
-    return render(request, 'libstat/edit_survey_response.html', context)
+    return redirect("edit_survey", survey_response_id)
 
 
 @permission_required('is_superuser', login_url='index')
