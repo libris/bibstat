@@ -116,7 +116,7 @@ class VariableForm(forms.Form):
 
 
 class SurveyForm(forms.Form):
-    def _cell_to_input_field(cell, observation):
+    def _cell_to_input_field(self, cell, observation):
         attrs = {"class": "form-control",
                  "id": cell.variable_key,
                  "name": cell.variable_key}
