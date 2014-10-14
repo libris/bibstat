@@ -2,7 +2,6 @@
 {% load i18n %}
 
 {% block content %}
-    <!-- Main jumbotron for a primary marketing message or call to action -->
     <div class="container">
         <div class="jumbotron">
             <h1>{% trans "Biblioteksstatistiken" %}</h1>
@@ -16,14 +15,15 @@
                 {% endblocktrans %}
             </p>
 
-            <p><a class="btn btn-primary btn-lg" role="button"
-                  href="http://www.kb.se/bibliotek/Statistik-kvalitet/biblioteksstatistik/">{% trans "Läs mer" %} &raquo;</a>
+            <p>
+                <a class="btn btn-primary btn-lg" role="button"
+                   href="http://www.kb.se/bibliotek/Statistik-kvalitet/biblioteksstatistik/">
+                    {% trans "Läs mer" %} &raquo;
+                </a>
             </p>
         </div>
     </div>
-
     <div class="container">
-        <!-- Example row of columns -->
         <div class="row">
             <div class="col-md-4">
                 <h2>Ditt biblioteks egen treårsrapport. Snart är den här!</h2>
@@ -37,9 +37,13 @@
                     version av excel och att kunna välja i en listruta.
                 </p>
 
-                <p><a class="btn btn-default"
-                      href="http://biblioteksstatistik.blogg.kb.se/2014/05/12/din-kommuns-egen-trearsrapport-snart-ar-den-har/"
-                      role="button">{% trans "Läs mer" %} &raquo;</a></p>
+                <p>
+                    <a class="btn btn-default"
+                       href="http://biblioteksstatistik.blogg.kb.se/2014/05/12/din-kommuns-egen-trearsrapport-snart-ar-den-har/"
+                       role="button">
+                        {% trans "Läs mer" %} &raquo;
+                    </a>
+                </p>
             </div>
             <div class="col-md-4">
                 <h2>I Regeringens tjänst på biblioteksdagarna i Umeå</h2>
@@ -52,9 +56,13 @@
                     arbete som hittills gjorts inom gruppen Kvalitetsdialog, och hur arbetet går vidare under 2014.
                 </p>
 
-                <p><a class="btn btn-default"
-                      href="http://biblioteksstatistik.blogg.kb.se/2014/05/12/i-regeringens-tjanst-pa-biblioteksdagarna-i-umea/"
-                      role="button">{% trans "Läs mer" %} &raquo;</a></p>
+                <p>
+                    <a class="btn btn-default"
+                       href="http://biblioteksstatistik.blogg.kb.se/2014/05/12/i-regeringens-tjanst-pa-biblioteksdagarna-i-umea/"
+                       role="button">
+                        {% trans "Läs mer" %} &raquo;
+                    </a>
+                </p>
             </div>
             <div class="col-md-4">
                 <h2>Snart händer det!</h2>
@@ -66,16 +74,19 @@
                     Sammanlagt lade alla bibliotek tillsammans ned tre årsverken på att sammanställa statistiken.
                 </p>
 
-                <p><a class="btn btn-default" href="http://biblioteksstatistik.blogg.kb.se/2014/04/30/snart-hander-det/"
-                      role="button">{% trans "Läs mer" %} &raquo;</a></p>
+                <p>
+                    <a class="btn btn-default"
+                       href="http://biblioteksstatistik.blogg.kb.se/2014/04/30/snart-hander-det/"
+                       role="button">
+                        {% trans "Läs mer" %} &raquo;
+                    </a>
+                </p>
             </div>
         </div>
-
         <hr>
-
         <footer>
             <p>&copy; {% trans "Kungliga Biblioteket" %} 2014</p>
         </footer>
-    </div> <!-- /container -->
+    </div>
 {% endblock %}
 
