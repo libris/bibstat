@@ -14,7 +14,7 @@ from mongoengine.errors import NotUniqueError
 from django.forms.util import ErrorList
 from excel_response import ExcelResponse
 
-from libstat.models import Observation, SurveyResponse_
+from libstat.models import Observation
 from libstat.forms import *
 from libstat.apis import *
 from libstat.survey_templates import survey_template
@@ -459,54 +459,6 @@ def survey_response_from_template(template, create_non_existing_variables=False)
                     response.observations.append(SurveyObservation(variable=v))
 
     return response
-
-
-survey_response = SurveyResponse_(
-    key=u"abcdefgh",
-    target_year=u"2014",
-    organization_name=u"Karlstads stadsbibliotek",
-    municipality=u"Karlstad",
-    municipality_code=u"1780",
-    head_authority=u"Kulturrådet i Karlstad",
-    respondent_name=u"Helena Fernström",
-    respondent_email=u"helena.fernström@bibliotek.karlstad.se",
-    respondent_phone=u"054 - 64 82 09",
-    website=u"www.bibliotek.karlstad.se",
-    observations=[
-        Observation(variable_key=u"Namn01", value="", disabled=False),
-        Observation(variable_key=u"Epost01", value="", disabled=False),
-        Observation(variable_key=u"Tele01", value="", disabled=False),
-        Observation(variable_key=u"Plan01", value="", disabled=False),
-        Observation(variable_key=u"BemanService01", value="", disabled=False),
-        Observation(variable_key=u"Integrerad01", value="", disabled=False),
-        Observation(variable_key=u"Obeman01", value="", disabled=False),
-        Observation(variable_key=u"ObemanLan01", value="", disabled=False),
-        Observation(variable_key=u"Bokbuss01", value="", disabled=False),
-        Observation(variable_key=u"BokbussHP01", value="", disabled=False),
-        Observation(variable_key=u"Bokbil01", value="", disabled=False),
-        Observation(variable_key=u"Population01", value="", disabled=False),
-        Observation(variable_key=u"Arsverke01", value="", disabled=False),
-        Observation(variable_key=u"Arsverke02", value="", disabled=False),
-        Observation(variable_key=u"Arsverke03", value="", disabled=False),
-        Observation(variable_key=u"Arsverke04", value="", disabled=False),
-        Observation(variable_key=u"Arsverke99", value="", disabled=False),
-        Observation(variable_key=u"Arsverke05", value="", disabled=False),
-        Observation(variable_key=u"Personer01", value="", disabled=False),
-        Observation(variable_key=u"Personer02", value="", disabled=False),
-        Observation(variable_key=u"Personer99", value="", disabled=False),
-        Observation(variable_key=u"Utgift01", value="", disabled=False),
-        Observation(variable_key=u"Utgift02", value="", disabled=False),
-        Observation(variable_key=u"Utgift03", value="", disabled=False),
-        Observation(variable_key=u"Utgift04", value="", disabled=False),
-        Observation(variable_key=u"Utgift05", value="", disabled=False),
-        Observation(variable_key=u"Utgift06", value="", disabled=False),
-        Observation(variable_key=u"Utgift99", value="", disabled=False),
-        Observation(variable_key=u"Utgift07", value="", disabled=False),
-        Observation(variable_key=u"Intakt01", value="", disabled=False),
-        Observation(variable_key=u"Intakt02", value="", disabled=False),
-        Observation(variable_key=u"Intakt03", value="", disabled=False),
-        Observation(variable_key=u"Intakt99", value="", disabled=False),
-    ])
 
 
 def save_survey_from_form(survey_id, form):

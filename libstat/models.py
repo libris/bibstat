@@ -323,24 +323,6 @@ class Observation(EmbeddedDocument):
     disabled = BooleanField()
 
 
-class SurveyResponse_(Document):
-    key = StringField()
-    target_year = StringField()
-    organization_name = StringField()
-    municipality = StringField()
-    municipality_code = StringField()
-    head_authority = StringField()
-    respondent_name = StringField()
-    respondent_email = StringField()
-    respondent_phone = StringField()
-    website = StringField()
-    observations = ListField(EmbeddedDocumentField(Observation))
-
-    def get_observation(self, variable_key):
-        observations = filter(lambda o: o.variable_key == variable_key, self.observations)
-        return observations[0] if len(observations) == 1 else None
-
-
 class SurveyTemplate(Document):
     key = StringField()
     target_year = StringField()
