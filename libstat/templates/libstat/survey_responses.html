@@ -4,11 +4,9 @@
 
 {% block content %}
     <div class="container">
-
         <div class="page-header">
             <h1>Enkätsvar</h1>
         </div>
-
         <div class="panel panel-default">
             <div class="panel-heading">
                 <h3 class="panel-title">{% trans "Enkätsvar uppdelat på bibliotekstyp och år" %}</h3>
@@ -22,7 +20,6 @@
                         </p>
                     </div>
                 </div>
-
                 <div class="row">
                     <div class="col-md-8">
                         <form action="." method="GET" role="form" class="form-inline">
@@ -30,39 +27,69 @@
                             <div class="form-group">
                                 <select name="sample_year" class="form-control" value={{ sample_year }}>
                                     <option value=""
-                                            {% if not sample_year %}selected="selected"{% endif %}>{% trans "År" %}</option>
+                                            {% if not sample_year %}
+                                            selected="selected"
+                                            {% endif %}>
+                                        {% trans "År" %}
+                                    </option>
                                     {% for year in sample_years %}
                                         <option value="{{ year }}"
-                                                {% ifequal year|slugify sample_year %}selected="selected"{% endifequal %}>{{ year }}</option>
+                                                {% ifequal year|slugify sample_year %}
+                                                selected="selected"
+                                                {% endifequal %}>
+                                            {{ year }}
+                                        </option>
                                     {% endfor %}
                                 </select>
                             </div>
                             <div class="form-group">
                                 <select name="target_group" class="form-control" value="{{ target_group }}">
                                     <option value=""
-                                            {% if not target_group %}selected="selected"{% endif %}>{% trans "Bibliotekstyp" %}</option>
+                                            {% if not target_group %}
+                                            selected="selected"
+                                            {% endif %}>
+                                        {% trans "Bibliotekstyp" %}
+                                    </option>
                                     <option value="public"
-                                            {% ifequal target_group "public" %}selected="selected"{% endifequal %}>{% trans 'Folkbibliotek' %}</option>
+                                            {% ifequal target_group "public" %}
+                                            selected="selected"
+                                            {% endifequal %}>
+                                        {% trans 'Folkbibliotek' %}
+                                    </option>
                                     <option value="research"
-                                            {% ifequal target_group "research" %}selected="selected"{% endifequal %}>{% trans "Forskningsbibliotek" %}</option>
+                                            {% ifequal target_group "research" %}
+                                            selected="selected"
+                                            {% endifequal %}>
+                                        {% trans "Forskningsbibliotek" %}
+                                    </option>
                                     <option value="hospital"
-                                            {% ifequal target_group "hospital" %}selected="selected"{% endifequal %}>{% trans "Sjukhusbibliotek" %}</option>
+                                            {% ifequal target_group "hospital" %}
+                                            selected="selected"
+                                            {% endifequal %}>
+                                        {% trans "Sjukhusbibliotek" %}
+                                    </option>
                                     <option value="school"
-                                            {% ifequal target_group "school" %}selected="selected"{% endifequal %}>{% trans "Skolbibliotek" %}</option>
+                                            {% ifequal target_group "school" %}
+                                            selected="selected"
+                                            {% endifequal %}>
+                                        {% trans "Skolbibliotek" %}
+                                    </option>
                                 </select>
                             </div>
                             <div class="form-group">
                                 <input type="checkbox" name="unpublished_only" value="True"
-                                       {% if unpublished_only == True %}checked="checked"{% endif %}/>
+                                        {% if unpublished_only == True %}
+                                       checked="checked"
+                                        {% endif %}/>
                                 {% trans "Där publicering ej utförd" %}
                             </div>
                             <div class="form-group">
                                 <button type="submit" name="action" value="list"
-                                        class="btn btn-default">{% trans "Lista enkätsvar" %}</button>
+                                        class="btn btn-default">
+                                    {% trans "Lista enkätsvar" %}
+                                </button>
                             </div>
                         </form>
-                    </div>
-                    <div class="col-md-4">
                     </div>
                 </div>
             </div>
@@ -76,16 +103,22 @@
                         <input type="hidden" name="target_group" value="{{ target_group }}"/>
                         <div class="form-group pull-right submit-publish">
                             <button type="submit" name="action" value="publish"
-                                    class="btn btn-primary btn-publish-survey-responses disabled">{% trans "Publicera urval" %}</button>
+                                    class="btn btn-primary btn-publish-survey-responses disabled">
+                                {% trans "Publicera urval" %}
+                            </button>
                             <button type="submit" name="action" value="export"
-                                    class="btn btn-primary btn-export-survey-responses disabled">{% trans "Exportera urval" %}</button>
+                                    class="btn btn-primary btn-export-survey-responses disabled">
+                                {% trans "Exportera urval" %}
+                            </button>
                         </div>
                     {% endif %}
                     <table class="table survey_responses">
                         <thead>
                         <tr>
-                            <th class="column selection"><input title="{% trans 'Markera alla' %}" class="select-all"
-                                                                type="checkbox" value="all"/></th>
+                            <th class="column selection">
+                                <input title="{% trans 'Markera alla' %}" class="select-all"
+                                       type="checkbox" value="all"/>
+                            </th>
                             <th class="column published">{% trans "Publicerad" %}</th>
                             <th class="column sample_year">{% trans "År" %}</th>
                             <th class="column library">{% trans "Bibliotek" %}</th>
@@ -102,17 +135,23 @@
                                                type="checkbox" value="{{ sr.id }}"/>
                                     </td>
                                     <td>
-                                      <span {% if not sr.latest_version_published %}class="text-warning bold css3-tooltip cursor-help"
-                                            title="{% trans 'Senaste version är inte publicerad' %}"{% endif %}>
+                                        {% if not sr.latest_version_published %}
+                                            <span class="text-warning bold css3-tooltip cursor-help"
+                                                  title="{% trans 'Senaste version är inte publicerad' %}">
+                                        {% else %}
+                                            <span>
+                                        {% endif %}
                                         {{ sr.published_at|utc_tz|date:"Y-m-d H:i" }}
-                                      </span>
+                                        </span>
                                     </td>
                                     <td>
                                         {{ sr.sample_year }}
                                     </td>
                                     <td>
                                         {% if sr.library and sr.library.bibdb_sigel %}
-                                            <a href="{{ bibdb_library_base_url }}/{{ sr.library.bibdb_id }}">{{ sr.library_name }}</a>
+                                            <a href="{{ bibdb_library_base_url }}/{{ sr.library.bibdb_id }}">
+                                                {{ sr.library_name }}
+                                            </a>
                                         {% else %}
                                             {{ sr.library_name }}
                                         {% endif %}
@@ -122,7 +161,9 @@
                                     </td>
                                     <td>
                                         <a title="{% trans 'Visa/redigera enkätsvar' %}"
-                                           href="{% url 'edit_survey' sr.id %}">Visa/redigera</a>
+                                           href="{% url 'edit_survey' sr.id %}">
+                                            Visa/redigera
+                                        </a>
                                     </td>
                                 </tr>
                             {% endfor %}
@@ -132,6 +173,5 @@
                 </form>
             </div>
         </div>
-
     </div>
 {% endblock %}
