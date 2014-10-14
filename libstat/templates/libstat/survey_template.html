@@ -43,7 +43,7 @@
     </style>
     <div class="container">
         <div class="page-header">
-            <h1>Statistikenkät för verksamhetsåret {{ form.target_year }}</h1>
+            <h1>Statistikenkät för verksamhetsåret {{ form.sample_year }}</h1>
         </div>
         <div class="row">
             <div class="col-sm-6">
@@ -74,11 +74,11 @@
 
                             <div class="form-group">
                                 <label class="control-label">Namn</label>
-                                {{ form.organization_name }}
+                                {{ form.library_name }}
                             </div>
                             <div class="form-group">
                                 <label class="control-label">Kommun/län</label>
-                                {{ form.municipality }}
+                                {{ form.municipality_name }}
                             </div>
                             <div class="form-group">
                                 <label class="control-label">Kommun-/länskod</label>

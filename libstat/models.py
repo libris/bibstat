@@ -457,6 +457,8 @@ class SurveyObservation(EmbeddedDocument):
     # Storing variable key on observation to avoid having to fetch variables all the time.
     _source_key = StringField(max_length=100)
 
+    disabled = BooleanField()
+
     # Public API Optimization and traceability (was this field public at the time of the survey?)
     _is_public = BooleanField(required=True, default=True)
 
@@ -488,6 +490,8 @@ class SurveyResponseMetadata(EmbeddedDocument):
     respondent_name = StringField(max_length=100)
     respondent_email = StringField(max_length=100)
     respondent_phone = StringField(max_length=20)
+    website = StringField()
+
 
     # Private
     survey_time_hours = IntField()
@@ -526,6 +530,10 @@ class SurveyResponseBase(Document):
 
     def observation_by_key(self, key):
         hits = [obs for obs in self.observations if obs._source_key == key]
+        return hits[0] if len(hits) > 0 else None
+
+    def get_observation(self, key):
+        hits = [obs for obs in self.observations if obs.variable.key == key]
         return hits[0] if len(hits) > 0 else None
 
 

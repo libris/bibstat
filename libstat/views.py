@@ -711,6 +711,42 @@ survey_template = SurveyTemplate(
     ]
 )
 
+
+def survey_response_from_template(template, create_non_existing_variables=False):
+    response = SurveyResponse(
+        library_name=u"Motala stadsbibliotek",
+        sample_year=u"2015",
+        target_group="public",
+        observations=[],
+        metadata=SurveyResponseMetadata(
+            municipality_name=u"Karlstad",
+            municipality_code=u"1780",
+        )
+    )
+    for section in template.sections:
+        for group in section.groups:
+            for row in group.rows:
+                for cell in row.cells:
+                    try:
+                        v = Variable.objects.get(key=cell.variable_key)
+                    except Exception:
+                        if create_non_existing_variables:
+                            v = Variable(
+                                key=cell.variable_key,
+                                description=u"",
+                                is_public=False,
+                                type=u"integer",
+                                target_groups=["public", "research", "hospital", "school"]
+                            )
+                            v.save_updated_self_and_modified_replaced([])
+                        else:
+                            raise Exception(
+                                "Can't create SurveyResponse with non-existing Variable " + cell.variable_key)
+                    response.observations.append(SurveyObservation(variable=v))
+
+    return response
+
+
 survey_response = SurveyResponse_(
     key=u"abcdefgh",
     target_year=u"2014",
@@ -797,20 +833,21 @@ def cell_to_input_field(cell, observation):
 
 class SurveyForm(forms.Form):
     def __init__(self, *args, **kwargs):
+        self.instance = kwargs.pop('instance', None)
         super(SurveyForm, self).__init__(*args, **kwargs)
-        response = survey_response
+        response = self.instance
 
         self.fields["key"] = forms.CharField(required=False, widget=forms.HiddenInput())
         self.fields["disabled_inputs"] = forms.CharField(required=False,
                                                          widget=forms.HiddenInput(attrs={"id": "disabled_inputs"}))
-        self.fields["organization_name"] = forms.CharField(required=False,
-                                                           widget=forms.TextInput(attrs={"class": "form-control",
-                                                                                         "disabled": "",
-                                                                                         "id": "organization_name"}))
-        self.fields["municipality"] = forms.CharField(required=False,
+        self.fields["library_name"] = forms.CharField(required=False,
                                                       widget=forms.TextInput(attrs={"class": "form-control",
                                                                                     "disabled": "",
-                                                                                    "id": "municipality"}))
+                                                                                    "id": "organization_name"}))
+        self.fields["municipality_name"] = forms.CharField(required=False,
+                                                           widget=forms.TextInput(attrs={"class": "form-control",
+                                                                                         "disabled": "",
+                                                                                         "id": "municipality"}))
         self.fields["municipality_code"] = forms.CharField(required=False,
                                                            widget=forms.TextInput(attrs={"class": "form-control",
                                                                                          "disabled": "",
@@ -832,17 +869,17 @@ class SurveyForm(forms.Form):
                                                  widget=forms.TextInput(attrs={"class": "form-control",
                                                                                "id": "website"}))
 
-        self.fields["key"].initial = response.key
-        self.fields["organization_name"].initial = response.organization_name
-        self.fields["municipality"].initial = response.municipality
-        self.fields["municipality_code"].initial = response.municipality_code
-        self.fields["head_authority"].initial = response.head_authority
-        self.fields["respondent_name"].initial = response.respondent_name
-        self.fields["respondent_email"].initial = response.respondent_email
-        self.fields["respondent_phone"].initial = response.respondent_phone
-        self.fields["website"].initial = response.website
+        self.fields["key"].initial = response.pk
+        self.fields["library_name"].initial = response.library_name
+        self.fields["municipality_name"].initial = response.metadata.municipality_name
+        self.fields["municipality_code"].initial = response.metadata.municipality_code
+        self.fields["head_authority"].initial = u""
+        self.fields["respondent_name"].initial = response.metadata.respondent_name
+        self.fields["respondent_email"].initial = response.metadata.respondent_email
+        self.fields["respondent_phone"].initial = response.metadata.respondent_phone
+        self.fields["website"].initial = response.metadata.website
 
-        self.target_year = response.target_year
+        self.sample_year = response.sample_year
         self.sections = survey_template.sections
         for section in survey_template.sections:
             for group in section.groups:
@@ -850,11 +887,16 @@ class SurveyForm(forms.Form):
                     for cell in row.cells:
                         variable_key = cell.variable_key
                         observation = response.get_observation(variable_key)
+                        print(observation)
+                        if not observation:
+                            variable = Variable.objects.get(key=variable_key)
+                            response.observations.append(SurveyObservation(variable=variable,
+                                                                           _source_key=variable.id))
                         self.fields[variable_key] = cell_to_input_field(cell, observation)
 
 
 def save_survey_from_form(survey_id, form):
-    response = survey_response
+    response = SurveyResponse.objects.get(pk=survey_id)
     if form.is_valid():
         disabled_inputs = form.cleaned_data["disabled_inputs"].split(" ")
         for field in form.cleaned_data:
@@ -868,12 +910,24 @@ def save_survey_from_form(survey_id, form):
 
 
 @permission_required('is_superuser', login_url='index')
+def create_survey_response(request):
+    try:
+        survey_response_from_template(survey_template, create_non_existing_variables=True).save()
+    except NotUniqueError:
+        pass
+
+    return index(request)
+
+
+@permission_required('is_superuser', login_url='index')
 def edit_survey(request, survey_id):
     if request.method == "POST":
-        form = SurveyForm(request.POST)
+        survey = SurveyResponse.objects.get(pk=survey_id)
+        form = SurveyForm(request.POST, instace=survey)
         save_survey_from_form(survey_id, form)
 
-    context = {"form": SurveyForm()}
+    survey = SurveyResponse.objects.get(pk=survey_id)
+    context = {"form": SurveyForm(instance=survey)}
     return render(request, 'libstat/survey_template.html', context)
 
 
