@@ -8,7 +8,7 @@ from django.utils.safestring import mark_safe
 from libstat.survey_templates import survey_template, default_template_from_survey_response
 from libstat.utils import SURVEY_TARGET_GROUPS
 from libstat.utils import TYPE_BOOLEAN, TYPE_INTEGER, TYPE_LONG, TYPE_DECIMAL, TYPE_PERCENT, VARIABLE_TYPES
-from libstat.models import Variable, SurveyResponse, SurveyObservation, SurveyResponseMetadata, Survey
+from libstat.models import Variable, SurveyResponse, SurveyObservation, SurveyResponseMetadata
 
 
 logger = logging.getLogger(__name__)

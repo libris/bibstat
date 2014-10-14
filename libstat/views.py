@@ -386,42 +386,6 @@ def replaceable_variables_api(request):
     return HttpResponse(json.dumps(data), content_type="application/json")
 
 
-@permission_required('is_superuser', login_url='index')
-def surveys(request):
-    """
-        List surveys view
-    """
-    surveys = Survey.objects.all()
-    context = {
-        'surveys': surveys,
-    }
-    return render(request, 'libstat/surveys.html', context)
-
-
-@permission_required('is_superuser', login_url='index')
-def create_survey(request):
-    context = {
-        'mode': 'create',
-        'form_url': reverse("create_survey"),
-    }
-
-    if request.method == "POST":
-        form = SurveyForm(request.POST)
-        if form.is_valid():
-            try:
-                survey = form.save(user=request.user)
-                return redirect("edit_survey", survey.id)
-            except Exception as e:
-                logger.warning(u"Error creating survey: {}".format(e))
-                form._errors['__all__'] = ErrorList([u"Kan inte skapa enkät"])
-
-    else:
-        form = SurveyForm()
-
-    context['form'] = form
-    return render(request, 'libstat/edit_survey.html', context)
-
-
 ###############################
 ### Begin survey experiment ###
 ###############################

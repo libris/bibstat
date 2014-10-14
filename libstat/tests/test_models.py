@@ -718,38 +718,3 @@ class VariableTest(MongoTestCase):
         replaced_1.reload()
         self.assertEquals(replaced_1.replaced_by.id, replacement.id)
         self.assertEquals(replaced_1.active_to, replacement.active_from)
-
-
-class SurveyTest(MongoTestCase):
-    def setUp(self):
-        v = Variable(key=u"Folk10", description=u"Antal bemannade servicesställen", type="integer", is_public=True,
-                     target_groups=["public"])
-        self.folk10 = v.save()
-
-        v2 = Variable(key=u"Folk35", description=u"Antal årsverken övrig personal", type="decimal", is_public=True,
-                      target_groups=["public"],
-                      question=u"Hur många årsverken utfördes av personal i folkbiblioteksverksamheten under 2012?",
-                      question_part=u"Antal årsverken övrig personal (ej städpersonal)")
-        self.folk35 = v2.save()
-
-        v3 = Variable(key=u"Folk31", description=u"Antal årsverken totalt", type="decimal", is_public=True,
-                      target_groups=["public"])
-        self.folk31 = v3.save()
-
-        v4 = Variable(key=u"Folk69", description=u"Totalt nyförvärv AV-medier", type="integer", is_public=True,
-                      target_groups=["public"], is_draft=True,
-                      question=u"Hur många nyförvärv av AV-media gjordes under 2012?")
-        self.folk69_draft = v4.save()
-
-        survey = Survey(sample_year=2014, target_groups=[u"public"], is_draft=False,
-                        questions=[self.folk10, self.folk31, self.folk35])
-        self.survey = survey.save()
-
-        survey_draft = Survey(sample_year=2015, target_groups=[u"public", u"research", u"hospital", u"school"],
-                              is_draft=True, questions=[])
-        self.survey_draft = survey_draft.save()
-
-
-    def test_modified_date_should_be_set(self):
-        self.assertTrue(self.survey.date_modified != None)
-        

@@ -346,22 +346,6 @@ class SurveyTemplate(Document):
         return None
 
 
-class Survey(Document):
-    target_groups = ListField(StringField(required=True, choices=SURVEY_TARGET_GROUPS))
-    sample_year = IntField(required=True)
-    questions = ListField(ReferenceField(Variable))
-    date_modified = DateTimeField(required=True, default=datetime.utcnow())
-    modified_by = ReferenceField(User)
-    is_draft = BooleanField()
-
-    meta = {
-        'collection': 'libstat_surveys'
-    }
-
-    def __unicode__(self):
-        return u"{} {}".format(self.sample_year, self.target_groups)
-
-
 class SurveyResponseQuerySet(QuerySet):
     def by_year_or_group(self, sample_year=None, target_group=None):
         target_group_query = Q(target_group=target_group) if target_group else Q()

@@ -7,7 +7,7 @@ from django.core.urlresolvers import reverse
 from mongoengine.django.auth import User
 
 from libstat.tests import MongoTestCase
-from libstat.models import Variable, SurveyResponse, SurveyObservation, Survey, OpenData
+from libstat.models import Variable, SurveyResponse, SurveyObservation, OpenData
 
 
 """
@@ -853,51 +853,6 @@ class ReplaceableVariablesApiTest(MongoTestCase):
         data = json.loads(response.content)
         self.assertEquals(data, [
             {"key": "Skol10", "id": str(self.active_private.id), "description": self.active_private.description}])
-
-
-class SurveysViewTest(MongoTestCase):
-    def setUp(self):
-        survey = Survey(sample_year=2014, target_groups=[u"public"], is_draft=False, questions=[])
-        self.survey = survey.save()
-
-        survey_draft = Survey(sample_year=2015, target_groups=[u"public", u"research", u"hospital", u"school"],
-                              is_draft=True, questions=[])
-        self.survey_draft = survey_draft.save()
-
-        self.url = reverse("surveys")
-        self.client.login(username="admin", password="admin")
-
-    def test_view_requires_admin_login(self):
-        self.client.logout()
-        response = self.client.get(self.url)
-        self.assertEquals(response.status_code, 302)
-
-        self.client.login(username="library_user", password="secret")
-        response = self.client.get(self.url)
-        self.assertEquals(response.status_code, 302)
-
-        self.client.logout()
-        self.client.login(username="admin", password="admin")
-        response = self.client.get(self.url)
-        self.assertEquals(response.status_code, 200)
-
-    def test_should_list_surveys(self):
-        response = self.client.get(self.url)
-        self.assertEquals(response.status_code, 200)
-        self.assertEquals(len(response.context["surveys"]), 2)
-
-    def test_should_have_button_to_create_survey(self):
-        response = self.client.get(self.url)
-        self.assertContains(response, u'<a href="{}" class="btn btn-primary" role="button">Skapa enkät</a>'.format(
-            reverse('create_survey')), count=1, status_code=200, html=True)
-
-    def test_each_survey_should_have_link_to_edit_view(self):
-        response = self.client.get(self.url)
-        self.assertContains(response, u'<a href="{}">2014 - Folkbibliotek</a>'.format(
-            reverse('edit_survey', kwargs={"survey_id": str(self.survey.id)})), count=1, status_code=200, html=True)
-        self.assertContains(response, u'<a href="{}">2015 - Samtliga bibliotekstyper</a>'.format(
-            reverse('edit_survey', kwargs={"survey_id": str(self.survey_draft.id)})), count=1, status_code=200,
-                            html=True)
 
 
 class SurveyableVariablesApiTest(MongoTestCase):
