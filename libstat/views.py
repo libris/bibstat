@@ -14,7 +14,6 @@ from mongoengine.errors import NotUniqueError
 from django.forms.util import ErrorList
 from excel_response import ExcelResponse
 
-from libstat.models import Observation
 from libstat.forms import *
 from libstat.apis import *
 from libstat.survey_templates import survey_template

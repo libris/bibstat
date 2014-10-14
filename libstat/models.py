@@ -317,12 +317,6 @@ class Section(EmbeddedDocument):
     groups = ListField(EmbeddedDocumentField(Group))
 
 
-class Observation(EmbeddedDocument):
-    variable_key = StringField()
-    value = StringField()
-    disabled = BooleanField()
-
-
 class SurveyTemplate(Document):
     key = StringField()
     target_year = StringField()
