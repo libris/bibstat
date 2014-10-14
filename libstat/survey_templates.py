@@ -279,8 +279,134 @@ survey_template = SurveyTemplate(
                 Group(
                     description="15. Hur stort var det fysiska mediebeståndet och det elektroniska titelbeståndet 31 december och hur många fysiska nyförvärv gjordes under kalenderåret uppdelat på olika medietyper? Om ni bara kan få fram fysiskt bestånd genom att räkna hyllmeter, använd omräkningstal 40 medier per hyllmeter om ni beräknar antal utifrån uppgift om hyllmeter.",
                     columns=3,
-                    headers=[],
-                    rows=[]
+                    headers=[u"Fysiskt bestånd antal medier/ enheter/ kapslar 31 december", u"– varav antal fysiskt nyförvärv under hela kalenderåret", u"Tillgång till antal licensierade elektroniska titlar (poster)"],
+                    rows=[
+                        Row(
+                            description="Totalt antal böcker och seriella publikationer",
+                            explanation="",
+                            cells=[
+                                Cell(variable_key=u"Bestand101", types=['sum', 'integer'], sum_siblings=['Bestand102','Bestand103','Bestand104','Bestand105','Bestand106','Bestand107','Bestand108','Bestand109','Bestand110','Bestand111','Bestand112','Bestand113']),
+                                Cell(variable_key=u"Bestand201", types=['sum', 'integer'], sum_siblings=['Bestand202','Bestand203','Bestand204','Bestand205','Bestand206','Bestand207','Bestand208','Bestand209','Bestand210','Bestand211','Bestand212','Bestand213']),
+                                Cell(variable_key=u"Bestand301", types=['sum', 'integer'], sum_siblings=['Bestand302','Bestand303','Bestand304','Bestand305','Bestand306','Bestand307','Bestand308','Bestand310','Bestand311','Bestand312','Bestand313'])
+                            ]
+                        ),
+                        Row(
+                            description="- varav kursböcker, studielitteratur, läromedel, skolböcker",
+                            explanation="",
+                            cells=[
+                                Cell(variable_key=u"Bestand102", types=['sum', 'integer'], sum_siblings=['Bestand101','Bestand103','Bestand104','Bestand105','Bestand106','Bestand107','Bestand108','Bestand109','Bestand110','Bestand111','Bestand112','Bestand113']),
+                                Cell(variable_key=u"Bestand202", types=['sum', 'integer'], sum_siblings=['Bestand201','Bestand203','Bestand204','Bestand205','Bestand206','Bestand207','Bestand208','Bestand209','Bestand210','Bestand211','Bestand212','Bestand213']),
+                                Cell(variable_key=u"Bestand302", types=['sum', 'integer'], sum_siblings=['Bestand301','Bestand303','Bestand304','Bestand305','Bestand306','Bestand307','Bestand308','Bestand310','Bestand311','Bestand312','Bestand313'])
+                            ]
+                        ),
+                        Row(
+                            description="Ljudböcker",
+                            explanation="",
+                            cells=[
+                                Cell(variable_key=u"Bestand103", types=['sum', 'integer'], sum_siblings=['Bestand101','Bestand102','Bestand104','Bestand105','Bestand106','Bestand107','Bestand108','Bestand109','Bestand110','Bestand111','Bestand112','Bestand113']),
+                                Cell(variable_key=u"Bestand203", types=['sum', 'integer'], sum_siblings=['Bestand201','Bestand202','Bestand204','Bestand205','Bestand206','Bestand207','Bestand208','Bestand209','Bestand210','Bestand211','Bestand212','Bestand213']),
+                                Cell(variable_key=u"Bestand303", types=['sum', 'integer'], sum_siblings=['Bestand301','Bestand302','Bestand304','Bestand305','Bestand306','Bestand307','Bestand308','Bestand310','Bestand311','Bestand312','Bestand313'])
+                            ]
+                        ),
+                        Row(
+                            description="Talböcker, DAISY",
+                            explanation="",
+                            cells=[
+                                Cell(variable_key=u"Bestand104", types=['sum', 'integer'], sum_siblings=['Bestand101','Bestand102','Bestand103','Bestand105','Bestand106','Bestand107','Bestand108','Bestand109','Bestand110','Bestand111','Bestand112','Bestand113']),
+                                Cell(variable_key=u"Bestand204", types=['sum', 'integer'], sum_siblings=['Bestand201','Bestand202','Bestand203','Bestand205','Bestand206','Bestand207','Bestand208','Bestand209','Bestand210','Bestand211','Bestand212','Bestand213']),
+                                Cell(variable_key=u"Bestand304", types=['sum', 'integer'], sum_siblings=['Bestand301','Bestand302','Bestand303','Bestand305','Bestand306','Bestand307','Bestand308','Bestand310','Bestand311','Bestand312','Bestand313'])
+                            ]
+                        ),
+                        Row(
+                            description="Periodika, tidskrifter, antal löpande titlar",
+                            explanation="",
+                            cells=[
+                                Cell(variable_key=u"Bestand105", types=['sum', 'integer'], sum_siblings=['Bestand101','Bestand102','Bestand103','Bestand104','Bestand106','Bestand107','Bestand108','Bestand109','Bestand110','Bestand111','Bestand112','Bestand113']),
+                                Cell(variable_key=u"Bestand205", types=['sum', 'integer'], sum_siblings=['Bestand201','Bestand202','Bestand203','Bestand204','Bestand206','Bestand207','Bestand208','Bestand209','Bestand210','Bestand211','Bestand212','Bestand213']),
+                                Cell(variable_key=u"Bestand305", types=['sum', 'integer'], sum_siblings=['Bestand301','Bestand302','Bestand303','Bestand304','Bestand306','Bestand307','Bestand308','Bestand310','Bestand311','Bestand312','Bestand313'])
+                            ]
+                        ),
+                        Row(
+                            description="Tidningar, dagstidningar, veckotidningar, löpande titlar",
+                            explanation="",
+                            cells=[
+                                Cell(variable_key=u"Bestand106", types=['sum', 'integer'], sum_siblings=['Bestand101','Bestand102','Bestand103','Bestand104','Bestand105','Bestand107','Bestand108','Bestand109','Bestand110','Bestand111','Bestand112','Bestand113']),
+                                Cell(variable_key=u"Bestand206", types=['sum', 'integer'], sum_siblings=['Bestand201','Bestand202','Bestand203','Bestand204','Bestand205','Bestand207','Bestand208','Bestand209','Bestand210','Bestand211','Bestand212','Bestand213']),
+                                Cell(variable_key=u"Bestand306", types=['sum', 'integer'], sum_siblings=['Bestand301','Bestand302','Bestand303','Bestand304','Bestand305','Bestand307','Bestand308','Bestand310','Bestand311','Bestand312','Bestand313'])
+                            ]
+                        ),
+                        Row(
+                            description="Musik",
+                            explanation="",
+                            cells=[
+                                Cell(variable_key=u"Bestand107", types=['sum', 'integer'], sum_siblings=['Bestand101','Bestand102','Bestand103','Bestand104','Bestand105','Bestand106','Bestand108','Bestand109','Bestand110','Bestand111','Bestand112','Bestand113']),
+                                Cell(variable_key=u"Bestand207", types=['sum', 'integer'], sum_siblings=['Bestand201','Bestand202','Bestand203','Bestand204','Bestand205','Bestand206','Bestand208','Bestand209','Bestand210','Bestand211','Bestand212','Bestand213']),
+                                Cell(variable_key=u"Bestand307", types=['sum', 'integer'], sum_siblings=['Bestand301','Bestand302','Bestand303','Bestand304','Bestand305','Bestand306','Bestand308','Bestand310','Bestand311','Bestand312','Bestand313'])
+                            ]
+                        ),
+                        Row(
+                            description="Film, TV, radio",
+                            explanation="",
+                            cells=[
+                                Cell(variable_key=u"Bestand108", types=['sum', 'integer'], sum_siblings=['Bestand101','Bestand102','Bestand103','Bestand104','Bestand105','Bestand106','Bestand107','Bestand109','Bestand110','Bestand111','Bestand112','Bestand113']),
+                                Cell(variable_key=u"Bestand208", types=['sum', 'integer'], sum_siblings=['Bestand201','Bestand202','Bestand203','Bestand204','Bestand205','Bestand206','Bestand207','Bestand209','Bestand210','Bestand211','Bestand212','Bestand213']),
+                                Cell(variable_key=u"Bestand308", types=['sum', 'integer'], sum_siblings=['Bestand301','Bestand302','Bestand303','Bestand304','Bestand305','Bestand306','Bestand307','Bestand310','Bestand311','Bestand312','Bestand313'])
+                            ]
+                        ),
+                        Row(
+                            description="Mikrografiska dokument, mikrofilm, mikrofiche",
+                            explanation="",
+                            cells=[
+                                Cell(variable_key=u"Bestand109", types=['sum', 'integer'], sum_siblings=['Bestand101','Bestand102','Bestand103','Bestand104','Bestand105','Bestand106','Bestand107','Bestand108','Bestand110','Bestand111','Bestand112','Bestand113']),
+                                Cell(variable_key=u"Bestand209", types=['sum', 'integer'], sum_siblings=['Bestand201','Bestand202','Bestand203','Bestand204','Bestand205','Bestand206','Bestand207','Bestand208','Bestand210','Bestand211','Bestand212','Bestand213']),
+                                ]
+                        ),
+                        Row(
+                            description="Bild, grafiska och kartografiska dokument, OH, presentationer, fotografier",
+                            explanation="",
+                            cells=[
+                                Cell(variable_key=u"Bestand110", types=['sum', 'integer'], sum_siblings=['Bestand101','Bestand102','Bestand103','Bestand104','Bestand105','Bestand106','Bestand107','Bestand108','Bestand109','Bestand111','Bestand112','Bestand113']),
+                                Cell(variable_key=u"Bestand210", types=['sum', 'integer'], sum_siblings=['Bestand201','Bestand202','Bestand203','Bestand204','Bestand205','Bestand206','Bestand207','Bestand208','Bestand209','Bestand211','Bestand212','Bestand213']),
+                                Cell(variable_key=u"Bestand310", types=['sum', 'integer'], sum_siblings=['Bestand301','Bestand302','Bestand303','Bestand304','Bestand305','Bestand306','Bestand307','Bestand308','Bestand311','Bestand312','Bestand313']),
+                                ]
+                        ),
+                        Row(
+                            description="Manuskript, artiklar, patent, konferenshandlingar, festskrifter, rapporter, musiktryck, noter",
+                            explanation="",
+                            cells=[
+                                Cell(variable_key=u"Bestand111", types=['sum', 'integer'], sum_siblings=['Bestand101','Bestand102','Bestand103','Bestand104','Bestand105','Bestand106','Bestand107','Bestand108','Bestand109','Bestand110','Bestand112','Bestand113']),
+                                Cell(variable_key=u"Bestand211", types=['sum', 'integer'], sum_siblings=['Bestand201','Bestand202','Bestand203','Bestand204','Bestand205','Bestand206','Bestand207','Bestand208','Bestand209','Bestand210','Bestand212','Bestand213']),
+                                Cell(variable_key=u"Bestand311", types=['sum', 'integer'], sum_siblings=['Bestand301','Bestand302','Bestand303','Bestand304','Bestand305','Bestand306','Bestand307','Bestand308','Bestand310','Bestand312','Bestand313']),
+                                ]
+                        ),
+                        Row(
+                            description="Interaktiva medier, CD-ROM, Tv-spel, interaktiva läromedel, konsolspel, dataspel",
+                            explanation="",
+                            cells=[
+                                Cell(variable_key=u"Bestand112", types=['sum', 'integer'], sum_siblings=['Bestand101','Bestand102','Bestand103','Bestand104','Bestand105','Bestand106','Bestand107','Bestand108','Bestand109','Bestand110','Bestand111','Bestand113']),
+                                Cell(variable_key=u"Bestand212", types=['sum', 'integer'], sum_siblings=['Bestand201','Bestand202','Bestand203','Bestand204','Bestand205','Bestand206','Bestand207','Bestand208','Bestand209','Bestand210','Bestand211','Bestand213']),
+                                Cell(variable_key=u"Bestand312", types=['sum', 'integer'], sum_siblings=['Bestand301','Bestand302','Bestand303','Bestand304','Bestand305','Bestand306','Bestand307','Bestand308','Bestand310','Bestand311','Bestand313']),
+                                ]
+                        ),
+                        Row(
+                            description="Övriga medietyper som inte ingår i ovanstående kategorier",
+                            explanation="",
+                            cells=[
+                                Cell(variable_key=u"Bestand113", types=['sum', 'integer'], sum_siblings=['Bestand101','Bestand102','Bestand103','Bestand104','Bestand105','Bestand106','Bestand107','Bestand108','Bestand109','Bestand110','Bestand111','Bestand112']),
+                                Cell(variable_key=u"Bestand213", types=['sum', 'integer'], sum_siblings=['Bestand201','Bestand202','Bestand203','Bestand204','Bestand205','Bestand206','Bestand207','Bestand208','Bestand209','Bestand210','Bestand211','Bestand212']),
+                                Cell(variable_key=u"Bestand313", types=['sum', 'integer'], sum_siblings=['Bestand301','Bestand302','Bestand303','Bestand304','Bestand305','Bestand306','Bestand307','Bestand308','Bestand310','Bestand311','Bestand312']),
+                                ]
+                        ),
+                        Row(
+                            description="Totalt antal",
+                            explanation="",
+                            cells=[
+                                Cell(variable_key=u"Bestand199", types=['sum', 'integer'], sum_of=['Bestand101','Bestand102','Bestand103','Bestand104','Bestand105','Bestand106','Bestand107','Bestand108','Bestand109','Bestand110','Bestand111','Bestand112','Bestand113']),
+                                Cell(variable_key=u"Bestand299", types=['sum', 'integer'], sum_of=['Bestand201','Bestand202','Bestand203','Bestand204','Bestand205','Bestand206','Bestand207','Bestand208','Bestand209','Bestand210','Bestand211','Bestand212','Bestand213']),
+                                Cell(variable_key=u"Bestand399", types=['sum', 'integer'], sum_of=['Bestand301','Bestand302','Bestand303','Bestand304','Bestand305','Bestand306','Bestand307','Bestand308','Bestand310','Bestand311','Bestand312','Bestand313'])
+                            ]
+                        )
+                    ]
                 )
             ]
         ),
