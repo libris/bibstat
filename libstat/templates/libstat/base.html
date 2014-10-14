@@ -8,7 +8,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="description" content="">
     <meta name="author" content="">
-    <!-- <link rel="shortcut icon" href="../../assets/ico/favicon.ico"> -->
 
     <title>{% trans "Biblioteksstatistiken" %}</title>
 
@@ -42,7 +41,6 @@
 <div class="navbar navbar-inverse navbar-static-top" role="navigation">
     <div class="container-fluid">
         <div class="container">
-
             <div class="navbar-header">
                 <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#top-main-nav">
                     <span class="sr-only">Toggle navigation</span>
@@ -52,44 +50,69 @@
                 </button>
                 <a class="navbar-brand" href="{% url 'index' %}">{% trans "KB Statistik" %}</a>
             </div>
-
             <div class="collapse navbar-collapse" id="top-main-nav">
                 <ul class="nav navbar-nav">
-                    <li class="{{ nav_start_css }}"><a href="{% url 'index' %}">{% trans "Start" %}</a></li>
-                    <li class="{{ nav_open_data_css }}"><a href="{% url 'open_data' %}">{% trans "Öppna data" %}</a>
+                    <li class="{{ nav_start_css }}">
+                        <a href="{% url 'index' %}">
+                            {% trans "Start" %}
+                        </a>
+                    </li>
+                    <li class="{{ nav_open_data_css }}">
+                        <a href="{% url 'open_data' %}">
+                            {% trans "Öppna data" %}
+                        </a>
                     </li>
                 </ul>
-
                 <ul class="nav navbar-nav navbar-right">
                     {% if user.is_authenticated %}
                         {% if user.is_superuser %}
                             <li class="dropdown">
-                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">{% trans "Administrera" %} <b
-                                        class="caret"></b></a>
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+                                    {% trans "Administrera" %}
+                                    <i class="caret"></i>
+                                </a>
                                 <ul class="dropdown-menu">
-                                    <li><a href="{% url 'variables' %}">{% trans "Termer" %}</a></li>
-                                    <li><a href="{% url 'survey_responses' %}">{% trans "Enkätsvar" %}</a></li>
-                                    <li><a href="{% url 'create_survey_response'%}">{% trans "Skapa exempelenkät" %}</a></li>
-
+                                    <li>
+                                        <a href="{% url 'variables' %}">
+                                            {% trans "Termer" %}
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a href="{% url 'survey_responses' %}">
+                                            {% trans "Enkätsvar" %}
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a href="{% url 'create_survey_response' %}">
+                                            {% trans "Skapa exempelenkät" %}
+                                        </a>
+                                    </li>
                                 </ul>
                             </li>
                         {% endif %}
-                        <li class="navbar-text">{% trans "Inloggad som" %} {{ user.username }}</li>
-                        <li><a href="{% url 'logout' %}">{% trans "Logga ut" %}</a></li>
+                        <li class="navbar-text">
+                            {% trans "Inloggad som" %} {{ user.username }}
+                        </li>
+                        <li>
+                            <a href="{% url 'logout' %}">
+                                {% trans "Logga ut" %}
+                            </a>
+                        </li>
                     {% else %}
-                        <li><a class="show-login-modal" href="#"
-                               data-form="{% url 'login' %}">{% trans "Logga in" %}</a></li>
+                        <li>
+                            <a class="show-login-modal" href="#" data-form="{% url 'login' %}">
+                                {% trans "Logga in" %}
+                            </a>
+                        </li>
                     {% endif %}
                 </ul>
             </div>
-            <!--/.navbar-collapse -->
         </div>
-        <!-- /.container-fluid -->
     </div>
 </div>
-
 <div id="content">
-    {% block content %}{% endblock %}
+    {% block content %}
+    {% endblock %}
 </div>
 
 <!-- Login modal -->
