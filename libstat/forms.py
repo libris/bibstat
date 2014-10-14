@@ -185,7 +185,7 @@ class SurveyForm(forms.Form):
                         if not observation:
                             variable = Variable.objects.get(key=variable_key)
                             response.observations.append(SurveyObservation(variable=variable,
-                                                                           _source_key=variable.id))
+                                                                           _source_key=variable.key))
                         self.fields[variable_key] = self._cell_to_input_field(cell, observation)
 
 
