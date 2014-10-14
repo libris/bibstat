@@ -20,10 +20,6 @@ from libstat.utils import SURVEY_TARGET_GROUPS, targetGroups, VARIABLE_TYPES, rd
 
 
 class VariableQuerySet(QuerySet):
-    """
-        Custom query set for Variable.
-        Contains nifty prepared filters for fetching Variables.
-    """
     is_draft_not_set_query = Q(is_draft=None)
     is_not_draft_query = Q(is_draft=False)
     public_query = Q(is_public=True)
@@ -39,15 +35,9 @@ class VariableQuerySet(QuerySet):
         return self.get(key_query & self.public_query & (self.is_draft_not_set_query | self.is_not_draft_query))
 
     def replaceable(self):
-        """
-            Get all non-draft Variables that are not already replaced
-        """
         return self.filter(self.is_not_replaced_query & (self.is_draft_not_set_query | self.is_not_draft_query))
 
     def surveyable(self):
-        """
-            Get all Variables that are not replaced or discontinued right now (today)
-        """
         today = datetime.utcnow().replace(hour=0, minute=0, second=0, microsecond=0)
         active_to_not_set = Q(active_to=None)
         is_not_discontinued = Q(active_to__gt=today)
@@ -55,19 +45,12 @@ class VariableQuerySet(QuerySet):
 
 
 class VariableBase(Document):
-    """
-        Abstract base class for Variable and backup/logging model VariableVersion
-    """
     description = StringField(required=True)
-
     # Comment is a private field and should never be returned as open data
     comment = StringField()
-
     is_public = BooleanField(required=True, default=True)
     type = StringField(required=True, choices=VARIABLE_TYPES)
-
     target_groups = ListField(StringField(choices=SURVEY_TARGET_GROUPS), required=True)
-
     category = StringField()
     sub_category = StringField()
 
@@ -78,7 +61,6 @@ class VariableBase(Document):
 
     date_modified = DateTimeField()
     modified_by = ReferenceField(User)
-
     is_draft = BooleanField()
 
     # Only date-part of these fields is relevant,
@@ -114,7 +96,7 @@ class VariableBase(Document):
         elif self._is_not_yet_active():
             return {u"state": u"pending", u"label": u"vilande"}
         else:
-            # Cannot use 'active' as state/css class, it's already a class in Bootsrap...
+            # Cannot use 'active' as state/css class, it's already a class in Bootstrap...
             return {u"state": u"current", u"label": u"aktiv"}
 
     def _is_no_longer_active(self):
@@ -125,9 +107,6 @@ class VariableBase(Document):
 
 
 class Variable(VariableBase):
-    """
-        Representation of a statistical term with corresponding survey question
-    """
     key = StringField(required=True, unique=True)
 
     meta = {
@@ -152,16 +131,9 @@ class Variable(VariableBase):
                 v.save()
 
         document.date_modified = datetime.utcnow()
-        # field modified_by is set in form
 
     @classmethod
     def post_delete_actions(cls, sender, document, **kwargs):
-        """
-            If you delete a non-draft Variable that replaces other Variables, 
-            we need to clear the 'valid_to' date on the replaced Variables.
-            The reference to the deleted Variable will be cleared by standard
-            on-cascade-delete rules.
-        """
         if document.replaces:
             for replaced in document.replaces:
                 if replaced.replaced_by and replaced.replaced_by.id == document.id:
@@ -171,15 +143,9 @@ class Variable(VariableBase):
                         u"POST_DELETE: Setting 'active_to' to None on replaced {} when deleting replacement".format(
                             replaced.id))
 
-
     @property
     def is_summary_auto_field(self):
         return len(self.summary_of) > 0 and not self.question and not self.question_part
-
-    """
-        Return a label for this Variable.
-        If the Variable has both question and question_part, an array will be returned. Otherwise a unicode string.
-    """
 
     @property
     def label(self):
@@ -193,10 +159,6 @@ class Variable(VariableBase):
 
     def replace_siblings(self, to_be_replaced=[], switchover_date=None, commit=False):
         """
-            Set this Variable instance as the replacement for a list of sibling Variables 
-            and return the list of modified siblings.
-            All instances including self will be saved if commit=True
-            
             Important: If commit=False, make sure to use instance method 'save_updated_self_and_modified_replaced(modified_siblings)'
             to ensure that siblings are not saved for draft variables and that all modifications are actually saved (no dirty transactions).
         """
@@ -318,17 +280,11 @@ class Variable(VariableBase):
 
 
 class VariableVersion(VariableBase):
-    """
-        Backup/logging of changes in a Variable.
-        
-        Prior to any changes in a Variable, a new copy should be stored as a VariableVersion.
-    """
     key = StringField(required=True)
     variable_id = ObjectIdField(required=True)
 
     meta = {
         'collection': 'libstat_variable_versions',
-        # 'ordering': ['-date_modified']
     }
 
 
@@ -409,16 +365,11 @@ class SurveyTemplate(Document):
 
 
 class Survey(Document):
-    """
-        Representation of a Survey for a sample year and target groups
-    """
-    target_groups = ListField(StringField(max_length=20, required=True, choices=SURVEY_TARGET_GROUPS))
+    target_groups = ListField(StringField(required=True, choices=SURVEY_TARGET_GROUPS))
     sample_year = IntField(required=True)
     questions = ListField(ReferenceField(Variable))
-
     date_modified = DateTimeField(required=True, default=datetime.utcnow())
     modified_by = ReferenceField(User)
-
     is_draft = BooleanField()
 
     meta = {
@@ -430,11 +381,6 @@ class Survey(Document):
 
 
 class SurveyResponseQuerySet(QuerySet):
-    """
-        Custom query set for SurveyResponse.
-        Contains some nifty prepared queries for fetching SurveyResponses.
-    """
-
     def by_year_or_group(self, sample_year=None, target_group=None):
         target_group_query = Q(target_group=target_group) if target_group else Q()
         sample_year_query = Q(sample_year=sample_year) if sample_year else Q()
@@ -450,15 +396,11 @@ class SurveyResponseQuerySet(QuerySet):
 
 class SurveyObservation(EmbeddedDocument):
     variable = ReferenceField(Variable, required=True)
-
     # Need to allow None/null values to indicate invalid or missing responses in old data
     value = DynamicField()
-
     # Storing variable key on observation to avoid having to fetch variables all the time.
-    _source_key = StringField(max_length=100)
-
+    _source_key = StringField()
     disabled = BooleanField()
-
     # Public API Optimization and traceability (was this field public at the time of the survey?)
     _is_public = BooleanField(required=True, default=True)
 
@@ -481,47 +423,30 @@ class Library(EmbeddedDocument):
 
 class SurveyResponseMetadata(EmbeddedDocument):
     # TODO: Migrera data från observations till denna modell!
-
-    # Public
-    municipality_name = StringField(max_length=100)
-    municipality_code = StringField(max_length=6)
-
-    # Private
-    respondent_name = StringField(max_length=100)
-    respondent_email = StringField(max_length=100)
-    respondent_phone = StringField(max_length=20)
+    municipality_name = StringField()
+    municipality_code = StringField()
+    respondent_name = StringField()
+    respondent_email = StringField()
+    respondent_phone = StringField()
     website = StringField()
-
-
-    # Private
     survey_time_hours = IntField()
     survey_time_minutes = IntField()
-
-    # Private
     population_nation = LongField()
     population_0to14y = LongField()
 
 
 class SurveyResponseBase(Document):
-    """
-        Abstract base class for SurveyResponse and backup/logging model SurveyResponseVersion.
-    """
     target_group = StringField(required=True, choices=SURVEY_TARGET_GROUPS)
-
     library = EmbeddedDocumentField(Library)
     metadata = EmbeddedDocumentField(SurveyResponseMetadata)
-
     published_at = DateTimeField()
     published_by = ReferenceField(User)
     # True if this version is published, False otherwise. Flag needed to optimize search for unpublished SurveyResponses.
     _is_published = BooleanField()
-
     date_created = DateTimeField(required=True, default=datetime.utcnow)
     created_by = ReferenceField(User)
-
     date_modified = DateTimeField(required=True, default=datetime.utcnow)
     modified_by = ReferenceField(User)
-
     observations = ListField(EmbeddedDocumentField(SurveyObservation))
 
     meta = {
@@ -538,11 +463,8 @@ class SurveyResponseBase(Document):
 
 
 class SurveyResponse(SurveyResponseBase):
-    """
-        A single survey response for a library, sample year (and target group).
-    """
     # Both unique fields need to be in subclasses to enable proper indexing.
-    library_name = StringField(max_length=100, required=True, unique_with='sample_year')
+    library_name = StringField(required=True, unique_with='sample_year')
     sample_year = IntField(required=True)
 
     meta = {
@@ -629,15 +551,9 @@ class SurveyResponse(SurveyResponseBase):
 
 
 class SurveyResponseVersion(SurveyResponseBase):
-    """
-        Backup/logging of changes in a SurveyResponse.
-        
-        Prior to any changes in a SurveyResponse, a new copy should be stored as a SurveyResponseVersion.
-    """
     # Not unique to enable storage of multiple versions. Both fields need to be in subclasses to enable proper indexing.
-    library_name = StringField(max_length=100, required=True)
+    library_name = StringField(required=True)
     sample_year = IntField(required=True)
-
     survey_response_id = ObjectIdField(required=True)
 
     meta = {
@@ -647,20 +563,13 @@ class SurveyResponseVersion(SurveyResponseBase):
 
 
 class OpenData(Document):
-    """
-        Open, published data based on survey observations.
-        
-        OpenData objects are created when publishing a SurveyResponse.
-    """
-
-    library_name = StringField(max_length=100, required=True, unique_with=['sample_year', 'variable'])
-    library_id = StringField(max_length=100)  # TODO
+    library_name = StringField(required=True, unique_with=['sample_year', 'variable'])
+    library_id = StringField()  # TODO
     sample_year = IntField(required=True)
     target_group = StringField(required=True, choices=SURVEY_TARGET_GROUPS)
     variable = ReferenceField(Variable, required=True)
     # Need to allow None/null values to indicate invalid or missing responses in old data
     value = DynamicField()
-
     date_created = DateTimeField(required=True, default=datetime.utcnow)
     date_modified = DateTimeField(required=True, default=datetime.utcnow)
 
@@ -697,9 +606,6 @@ class OpenData(Document):
                                         self.value)
 
 
-"""
-    Post/pre save actions and other signals
-"""
 signals.pre_save.connect(SurveyResponse.store_version_and_update_date_modified, sender=SurveyResponse)
 signals.pre_save.connect(Variable.store_version_and_update_date_modified, sender=Variable)
 Variable.register_delete_rule(Variable, "replaced_by", NULLIFY)
