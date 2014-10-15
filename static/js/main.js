@@ -14,7 +14,7 @@
             'typeahead': ['jquery']
         },
         paths: {
-            'bootstrap': ['plugins/bootstrap/3.1.1/js/bootstrap'],
+            'bootstrap': ['plugins/bootstrap/3.2.0/js/bootstrap'],
             'bootstrap.datepicker': ['plugins/bootstrap-datepicker/1.3.0/bootstrap-datepicker'],
             'bootstrap.tokenfield': ['plugins/bootstrap-tokenfield/0.12.0/bootstrap-tokenfield'],
             'bootstrap.validator': ['plugins/bootstrap-validator/0.5.2/js/bootstrapValidator'],
