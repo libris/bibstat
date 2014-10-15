@@ -61,6 +61,7 @@ define(['jquery', 'cell'], function($, cell) {
         var childCallback = function(parent, child, children) {
             cell.onChange(child, function() {
                 $(parent).val(sumOf(children));
+                $(parent).change();
             });
         };
 
