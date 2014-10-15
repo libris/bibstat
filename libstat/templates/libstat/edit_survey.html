@@ -38,6 +38,14 @@
             padding-bottom: 70px;
         }
 
+        .answers-progress {
+            margin-bottom: 0;
+        }
+
+        .navbar-submit {
+            margin-top: 10px;
+        }
+
     </style>
     <div class="container container-survey">
         <div class="page-header">
@@ -123,8 +131,19 @@
 
             <div class="navbar navbar-default navbar-fixed-bottom" role="navigation">
                 <div class="container">
-                    <div class="navbar-right">
-                        <button type="submit" class="btn btn-primary navbar-btn" id="save-btn">Spara</button>
+
+                    <div class="navbar-left">
+                        <div class="navbar-text">
+                            <span class="answers-text"></span>
+                            <div class="progress answers-progress" style="width: 275px">
+                                <div class="progress-bar progress-bar-success progress-bar-striped" role="progressbar">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="navbar-right navbar-submit">
+                        <button type="submit" class="btn btn-primary navbar-btn">Spara</button>
                         <button type="submit" class="btn btn-success navbar-btn">Skicka</button>
                     </div>
                 </div>

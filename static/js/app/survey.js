@@ -1,6 +1,4 @@
-define(['jquery', 'cell.sum', 'bootstrap.validator.sv'], function($, sum) {
-
-
+define(['jquery', 'cell.sum', 'cell', 'bootstrap.validator.sv'], function($, sum, cell) {
     var initDropdown = function() {
         var isActive = function(element) {
             var parent = element.parent('li');
@@ -111,6 +109,30 @@ define(['jquery', 'cell.sum', 'bootstrap.validator.sv'], function($, sum) {
             input.focus();
         });
     };
+    var initProgress = function() {
+        var getInputs = function() {
+            return $('#survey-form input').not('[type="hidden"]').not('[disabled]');
+        };
+
+        var updateProgress = function() {
+            var inputs = getInputs();
+            var correct = inputs.filter(function() {
+                return this.value && $(this).closest('.form-group').hasClass('has-success');
+            });
+
+            var percentCorrect = (correct.length / inputs.length) * 100;
+            $('.answers-text').text('Du har svarat rätt på ' + correct.length + ' av ' + inputs.length + ' frågor totalt.');
+            $('.answers-progress .progress-bar-success').css('width', percentCorrect + '%');
+        };
+
+        $.each(getInputs(), function() {
+            cell.onChange($(this), function() {
+                updateProgress();
+            });
+        });
+
+        updateProgress();
+    };
 
     return {
         init: function() {
@@ -152,12 +174,13 @@ define(['jquery', 'cell.sum', 'bootstrap.validator.sv'], function($, sum) {
                 element.css("left", left + "px");
             });
 
-            initDropdown();
-
             /* Enable help button popover. */
             $(".btn-help").popover();
 
+            initDropdown();
             sum.init();
+            initProgress();
+
         }
     };
 });
