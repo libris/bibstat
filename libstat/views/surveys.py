@@ -161,6 +161,10 @@ def _survey_response_from_template(template, create_non_existing_variables=False
 @permission_required('is_superuser', login_url='index')
 def create_survey_response(request):
     try:
+        SurveyResponse.objects.get(sample_year=2014).delete()
+    except Exception:
+        pass
+    try:
         _survey_response_from_template(survey_template(), create_non_existing_variables=True).save()
     except NotUniqueError:
         pass
