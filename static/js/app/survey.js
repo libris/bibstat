@@ -172,6 +172,7 @@ define(['jquery', 'cell.sum', 'cell', 'bootstrap.validator.sv'], function($, sum
 
                 element.css("right", "inherit");
                 element.css("left", left + "px");
+                element.css("top", "10px");
             });
 
             /* Enable help button popover. */
