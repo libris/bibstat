@@ -193,6 +193,7 @@ def edit_survey(request, survey_id):
         form = SurveyForm(request.POST, instance=survey_response)
         _save_survey_response_from_form(survey_response, form)
 
+    print(survey_template())
     survey_response = SurveyResponse.objects.get(pk=survey_id)
     context = {"form": SurveyForm(instance=survey_response)}
     return render(request, 'libstat/edit_survey.html', context)
