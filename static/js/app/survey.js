@@ -87,6 +87,8 @@ define(['jquery', 'cell.sum', 'cell', 'bootstrap.validator.sv'], function($, sum
                 disableInput(inputs[index], element);
                 disableDropdown(inputs[index]);
             }
+
+            updateProgress();
         });
 
         $(".cell .input-group-btn .dropdown-menu .menu-enable").click(function(e) {
@@ -106,24 +108,27 @@ define(['jquery', 'cell.sum', 'cell', 'bootstrap.validator.sv'], function($, sum
                 enableDropdown(inputs[index]);
             }
 
+            updateProgress();
+
             input.focus();
         });
     };
     var getInputs = function() {
         return $('#survey-form input').not('[type="hidden"]').not('[disabled]');
     };
+
+    var updateProgress = function() {
+        var inputs = getInputs();
+        var correct = inputs.filter(function() {
+            return this.value && $(this).closest('.form-group').hasClass('has-success');
+        });
+
+        var percentCorrect = (correct.length / inputs.length) * 100;
+        $('.answers-text').text('Du har svarat rätt på ' + correct.length + ' av ' + inputs.length + ' frågor totalt.');
+        $('.answers-progress .progress-bar-success').css('width', percentCorrect + '%');
+    };
+
     var initProgress = function() {
-        var updateProgress = function() {
-            var inputs = getInputs();
-            var correct = inputs.filter(function() {
-                return this.value && $(this).closest('.form-group').hasClass('has-success');
-            });
-
-            var percentCorrect = (correct.length / inputs.length) * 100;
-            $('.answers-text').text('Du har svarat rätt på ' + correct.length + ' av ' + inputs.length + ' frågor totalt.');
-            $('.answers-progress .progress-bar-success').css('width', percentCorrect + '%');
-        };
-
         $.each(getInputs(), function() {
             cell.onChange($(this), function() {
                 updateProgress();
