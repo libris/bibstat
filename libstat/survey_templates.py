@@ -624,7 +624,7 @@ def survey_template():
                                     Cell(variable_key=u"Titlar399", types=["sum", "integer"],
                                          sum_of=[u"Titlar301", u"Titlar302"]),
                                     Cell(variable_key=u"Titlar499", types=["sum", "integer"],
-                                         sum_of=[u"Titlar497", u"Titlar498"]),
+                                         sum_of=[u"Titlar199", u"Titlar299", u"Titlar399"]),
                                 ]
                             )
                         ]
