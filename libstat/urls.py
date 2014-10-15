@@ -5,6 +5,7 @@ from django.contrib.auth.views import logout
 from libstat import views
 
 
+
 urlpatterns = patterns('libstat.views',
                        # Public views
                        url(r'^$', views.index, name='index'),
@@ -24,17 +25,20 @@ urlpatterns = patterns('libstat.views',
                        url(r'^variables/$', views.variables, name='variables'),
                        url(r'^variables/new/$', views.create_variable, name='create_variable'),
                        url(r'^variables/(?P<variable_id>\w+)/$', views.edit_variable, name='edit_variable'),
-                       url(r'^surveys/edit/(?P<survey_id>\w+)/$', views.edit_survey, name='edit_survey'),
-                       url(r'^surveys/create$', views.create_survey_response, name='create_survey_response'),
                        url(r'^survey_responses/$', views.survey_responses, name='survey_responses'),
+                       url(r'^survey_responses/create$', views.create_survey_response, name='create_survey_response'),
+                       url(r'^survey_responses/edit/(?P<survey_id>\w+)/$', views.edit_survey, name='edit_survey'),
                        url(r'^survey_responses/publish$', views.publish_survey_responses,
                            name='publish_survey_responses'),
-                       url(r'^survey_responses/export$', views.export_survey_responses, name='export_survey_responses'),
-                       url(r'^survey_responses/(?P<survey_response_id>\w+)/publish/$', views.publish_survey_response,
+                       url(r'^survey_responses/publish/(?P<survey_response_id>\w+)/$', views.publish_survey_response,
                            name='publish_survey_response'),
+                       url(r'^survey_responses/export$', views.export_survey_responses, name='export_survey_responses'),
+
 
                        # Admin helper APIs
                        url(r'^variables/replaceable$', views.replaceable_variables_api,
                            name='replaceable_variables_api'),
                        url(r'^variables/surveyable$', views.surveyable_variables_api, name='surveyable_variables_api'),
 )
+
+
