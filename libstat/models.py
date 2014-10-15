@@ -296,6 +296,7 @@ class Cell(EmbeddedDocument):
     sum_of = ListField(StringField())
     sum_siblings = ListField(StringField())
     types = ListField(StringField())
+    disabled = BooleanField()
 
 
 class Row(EmbeddedDocument):

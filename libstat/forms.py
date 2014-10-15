@@ -165,7 +165,7 @@ class SurveyForm(forms.Form):
 
         response = self.instance
 
-        template = survey_template if response.sample_year == 2014 else default_template_from_survey_response(response)
+        template = survey_template() if response.sample_year == 2014 else default_template_from_survey_response(response)
 
         self.fields["disabled_inputs"] = forms.CharField(required=False,
                                                          widget=forms.HiddenInput(attrs={"id": "disabled_inputs"}))
@@ -184,6 +184,7 @@ class SurveyForm(forms.Form):
                     for cell in row.cells:
                         variable_key = cell.variable_key
                         observation = response.get_observation(variable_key)
+                        cell.disabled = observation.disabled
                         if not observation:
                             variable = Variable.objects.get(key=variable_key)
                             response.observations.append(SurveyObservation(variable=variable,
