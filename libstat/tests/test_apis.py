@@ -7,7 +7,7 @@ from django.conf import settings
 
 from libstat.tests import MongoTestCase
 from libstat.models import Variable, OpenData
-from libstat.apis import data_context, term_context
+from libstat.views.apis import data_context, term_context
 
 
 """

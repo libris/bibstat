@@ -1,15 +1,16 @@
 # -*- coding: utf-8 -*-
 import json
 import datetime
-import logging
 
 from django.http import HttpResponse, Http404
-from django.conf import settings
 from django.core.urlresolvers import reverse
 from mongoengine.queryset import Q
+from django.shortcuts import render
 
-from libstat.models import Variable, OpenData
+from libstat.models import OpenData
 from libstat.utils import parse_datetime_from_isodate_str
+from bibstat import settings
+from libstat.forms import *
 
 
 logger = logging.getLogger(__name__)
@@ -120,6 +121,15 @@ core_term_ids = {term[u"@id"] for term in core_terms}
 """
 
 
+def open_data(request):
+    context = {
+        "nav_start_css": "",
+        "nav_open_data_css": "active",
+        "api_base_url": settings.API_BASE_URL
+    }
+    return render(request, 'libstat/open_data.html', context)
+
+
 def data_api(request):
     from_date = parse_datetime_from_isodate_str(request.GET.get("from_date", None))
     to_date = parse_datetime_from_isodate_str(request.GET.get("to_date", None))
@@ -141,10 +151,10 @@ def data_api(request):
             variable = Variable.objects.get(key=term)
             logger.debug(
                 u"Fetching statistics data for term {} published between {} and {}, items {} to {}".format(variable.key,
-                                                                                                           from_date,
-                                                                                                           to_date,
-                                                                                                           offset,
-                                                                                                           offset + limit))
+                    from_date,
+                    to_date,
+                    offset,
+                    offset + limit))
             objects = OpenData.objects.filter(Q(variable=variable) & modified_from_query & modified_to_query).skip(
                 offset).limit(limit)
         except Exception:
@@ -153,7 +163,7 @@ def data_api(request):
     else:
         logger.debug(
             u"Fetching statistics data published between {} and {}, items {} to {}".format(from_date, to_date, offset,
-                                                                                           offset + limit))
+                offset + limit))
         objects = OpenData.objects.filter(modified_from_query & modified_to_query).skip(offset).limit(limit)
 
     observations = []
