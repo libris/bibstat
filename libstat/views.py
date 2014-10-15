@@ -377,8 +377,7 @@ def create_survey_response(request):
     return index(request)
 
 
-def _save_survey_from_form(survey_id, form):
-    response = SurveyResponse.objects.get(pk=survey_id)
+def _save_survey_response_from_form(response, form):
     if form.is_valid():
         disabled_inputs = form.cleaned_data["disabled_inputs"].split(" ")
         for field in form.cleaned_data:
@@ -389,16 +388,16 @@ def _save_survey_from_form(survey_id, form):
                     observation.disabled = True
             else:
                 response.__dict__["_data"][field] = form.cleaned_data[field]
-    response.save()
+        response.save()
 
 
 @permission_required('is_superuser', login_url='index')
 def edit_survey(request, survey_id):
     if request.method == "POST":
-        survey = SurveyResponse.objects.get(pk=survey_id)
-        form = SurveyForm(request.POST, instance=survey)
-        _save_survey_from_form(survey_id, form)
+        survey_response = SurveyResponse.objects.get(pk=survey_id)
+        form = SurveyForm(request.POST, instance=survey_response)
+        _save_survey_response_from_form(survey_response, form)
 
-    survey = SurveyResponse.objects.get(pk=survey_id)
-    context = {"form": SurveyForm(instance=survey)}
+    surveyresponse = SurveyResponse.objects.get(pk=survey_id)
+    context = {"form": SurveyForm(instance=survey_response)}
     return render(request, 'libstat/edit_survey.html', context)
