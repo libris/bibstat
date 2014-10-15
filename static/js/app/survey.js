@@ -109,11 +109,10 @@ define(['jquery', 'cell.sum', 'cell', 'bootstrap.validator.sv'], function($, sum
             input.focus();
         });
     };
+    var getInputs = function() {
+        return $('#survey-form input').not('[type="hidden"]').not('[disabled]');
+    };
     var initProgress = function() {
-        var getInputs = function() {
-            return $('#survey-form input').not('[type="hidden"]').not('[disabled]');
-        };
-
         var updateProgress = function() {
             var inputs = getInputs();
             var correct = inputs.filter(function() {
@@ -138,8 +137,8 @@ define(['jquery', 'cell.sum', 'cell', 'bootstrap.validator.sv'], function($, sum
         init: function() {
             /* Enable bootstrap validator on survey form. */
             $('#survey-form').bootstrapValidator({
+                excluded: ['.disable-validation', ':disabled', ':hidden', ':not(:visible)'],
                 feedbackIcons: {
-                    required: 'fa fa-asterisk',
                     valid: 'fa fa-check',
                     invalid: 'fa fa-times',
                     validating: 'fa fa-refresh'
@@ -162,7 +161,9 @@ define(['jquery', 'cell.sum', 'cell', 'bootstrap.validator.sv'], function($, sum
 
                 var survey_id = $("#id_key").val();
                 var action = Urls.edit_survey(survey_id);
-                $("#survey-form").attr("action", action)
+                $("#survey-form").attr("action", action);
+
+                $("#survey-form").data('bootstrapValidator').defaultSubmit();
             });
 
             /* Move feedback icons to the right of the input field. */
@@ -177,6 +178,17 @@ define(['jquery', 'cell.sum', 'cell', 'bootstrap.validator.sv'], function($, sum
 
             /* Enable help button popover. */
             $(".btn-help").popover();
+
+
+            $("#save-survey-btn").click(function(e) {
+                e.preventDefault();
+                var empty_inputs = getInputs().filter(function(e) {
+                    return !$(this).val();
+                });
+                empty_inputs.addClass("disable-validation");
+                $("#survey-form").data('bootstrapValidator').validate();
+                empty_inputs.removeClass("disable-validation");
+            });
 
             initDropdown();
             sum.init();
