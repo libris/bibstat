@@ -56,7 +56,7 @@ define(['jquery', 'cell.sum', 'bootstrap.validator.sv'], function($, sum) {
         };
 
         var disableDropdown = function(input) {
-            if(!input.attr('data-sum-of')) {
+            if(input.attr('data-sum-siblings')) {
                 var dropdown = input.next(".input-group-btn").children(".btn-dropdown");
                 dropdown.prop('disabled', true);
             }
