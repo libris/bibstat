@@ -115,15 +115,7 @@ define(['jquery', 'cell.sum', 'bootstrap.validator.sv'], function($, sum) {
     return {
         init: function() {
             /* Enable bootstrap validator on survey form. */
-            $('#survey-form').on('init.field.bv', function(e, data) { // http://bootstrapvalidator.com/examples/showing-required-icon/
-                var $parent = data.element.parents('.form-group'),
-                    $icon = $parent.find('.form-control-feedback[data-bv-icon-for="' + data.field + '"]'),
-                    options = data.bv.getOptions(),
-                    validators = data.bv.getOptions(data.field).validators;
-
-                if(validators.notEmpty && options.feedbackIcons && options.feedbackIcons.required)
-                    $icon.addClass(options.feedbackIcons.required).show();
-            }).bootstrapValidator({
+            $('#survey-form').bootstrapValidator({
                 feedbackIcons: {
                     required: 'fa fa-asterisk',
                     valid: 'fa fa-check',
@@ -149,14 +141,6 @@ define(['jquery', 'cell.sum', 'bootstrap.validator.sv'], function($, sum) {
                 var survey_id = $("#id_key").val();
                 var action = Urls.edit_survey(survey_id);
                 $("#survey-form").attr("action", action)
-            }).on('status.field.bv', function(e, data) { // http://bootstrapvalidator.com/examples/showing-required-icon/
-                var $parent = data.element.parents('.form-group'),
-                    $icon = $parent.find('.form-control-feedback[data-bv-icon-for="' + data.field + '"]'),
-                    options = data.bv.getOptions(),
-                    validators = data.bv.getOptions(data.field).validators;
-
-                if(validators.notEmpty && options.feedbackIcons && options.feedbackIcons.required)
-                    $icon.removeClass(options.feedbackIcons.required).addClass('fa');
             });
 
             /* Move feedback icons to the right of the input field. */
