@@ -8,6 +8,8 @@ define(['jquery', 'cell.sum', 'cell', 'bootstrap.validator.sv'], function($, sum
         inputs: function() { return survey.form('input').not('[type="hidden"]'); },
         disabledInputs: function() { return survey.inputs().filter("[disabled]"); },
         enabledInputs: function() { return survey.inputs().not('[disabled]'); },
+        filledInputs: function() { return survey.enabledInputs().filter(function() { return $(this).val(); }); },
+        emptyInputs: function() { return survey.enabledInputs().filter(function() { return !$(this).val(); }); },
         correctInputs: function() {
             return survey.enabledInputs().filter(function() {
                 return this.value && $(this).closest('.form-group').hasClass('has-success');
@@ -126,6 +128,11 @@ define(['jquery', 'cell.sum', 'cell', 'bootstrap.validator.sv'], function($, sum
             });
         });
 
+        var validator = survey.validator();
+        $.each(survey.filledInputs(), function() {
+            validator.validateField($(this));
+        });
+
         updateProgress();
     };
 
@@ -168,7 +175,7 @@ define(['jquery', 'cell.sum', 'cell', 'bootstrap.validator.sv'], function($, sum
             survey.form("#save-survey-btn").click(function(e) {
                 e.preventDefault();
                 $("#submit_action").val("save");
-                var empty = survey.enabledInputs().filter(function() { return !$(this).val(); });
+                var empty = survey.emptyInputs();
                 empty.addClass("disable-validation");
                 survey.validator().validate();
                 empty.removeClass("disable-validation");
