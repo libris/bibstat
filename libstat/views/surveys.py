@@ -185,8 +185,7 @@ def _save_survey_response_from_form(response, form):
                     response.status = "submitted"
             elif observation:
                 observation.value = form.cleaned_data[field]
-                if field in disabled_inputs:
-                    observation.disabled = True
+                observation.disabled = (field in disabled_inputs)
             else:
                 response.__dict__["_data"][field] = form.cleaned_data[field]
         response.save()

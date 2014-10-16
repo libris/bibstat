@@ -7,17 +7,25 @@
                 {{ form|access:variable_key }}
             {% endwith %}
             <div class="input-group-btn">
-                <button type="button" class="btn btn-default btn-dropdown dropdown-toggle" data-toggle="dropdown">
-                    <span class="caret"></span>
-                </button>
-                <ul class="dropdown-menu dropdown-menu-right" role="menu">
-                    <li {% if cell.disabled %} class="active" {% endif %}>
-                        <a href="#" class="menu-disable">Värdet är okänt</a>
-                    </li>
-                    <li {% if not cell.disabled %} class="active" {% endif %}>
-                        <a href="#" class="menu-enable">Ange värdet</a>
-                    </li>
-                </ul>
+                {% with variable=form|access:cell.variable_key %}
+                    <button type="button"
+                            class="btn btn-default btn-dropdown dropdown-toggle"
+                            data-toggle="dropdown"
+                            {% if cell.disabled and cell.sum_siblings %} disabled {% endif %}
+                            >
+                        <span class="caret"></span>
+                    </button>
+
+                    <ul class="dropdown-menu dropdown-menu-right" role="menu">
+                        {% if cell.disabled and variable.value == 'Värdet är okänt' %}
+                            <li class="active"><a href="#" class="menu-disable">Värdet är okänt</a></li>
+                            <li><a href="#" class="menu-enable">Ange värdet</a></li>
+                        {% else %}
+                            <li><a href="#" class="menu-disable">Värdet är okänt</a></li>
+                            <li class="active"><a href="#" class="menu-enable">Ange värdet</a></li>
+                        {% endif %}
+                    </ul>
+                {% endwith %}
                 <button class="btn btn-default btn-value disabled">
                     {% if cell.previous_value %}
                         ({{ cell.previous_value }})

@@ -1,20 +1,32 @@
 define(['jquery', 'cell.sum', 'cell', 'bootstrap.validator.sv'], function($, sum, cell) {
+    var survey = {
+        form: function(selector) {
+            if(selector) return $('#survey-form ' + selector);
+            else return $('#survey-form');
+        },
+        validator: function() { return survey.form().data('bootstrapValidator'); },
+        inputs: function() { return survey.form('input').not('[type="hidden"]'); },
+        disabledInputs: function() { return survey.inputs().filter("[disabled]"); },
+        enabledInputs: function() { return survey.inputs().not('[disabled]'); },
+        correctInputs: function() {
+            return survey.enabledInputs().filter(function() {
+                return this.value && $(this).closest('.form-group').hasClass('has-success');
+            });
+        }
+    };
     var initDropdown = function() {
         var isActive = function(element) {
             var parent = element.parent('li');
             return parent.hasClass("active");
         };
-
         var setActive = function(element) {
             var parent = element.parent('li');
             parent.siblings("li").removeClass("active");
             parent.addClass("active");
         };
-
         var getInput = function(element) {
             return element.closest(".input-group-btn").prev("input");
         };
-
         var getInputs = function(input) {
             var getAttributeInputs = function(input, attribute) {
                 var inputs = [];
@@ -27,39 +39,31 @@ define(['jquery', 'cell.sum', 'cell', 'bootstrap.validator.sv'], function($, sum
 
                 return inputs;
             };
-
             var getSiblings = function(input) {
                 return getAttributeInputs(input, 'data-sum-siblings');
             };
-
             var getChildren = function(input) {
                 return getAttributeInputs(input, 'data-sum-of');
             };
 
             return [input].concat(getSiblings(input)).concat(getChildren(input));
         };
-
         var disableInput = function(input, element) {
-            $('#survey-form').bootstrapValidator('enableFieldValidators', input.attr('name'), false);
             input.css("padding-right", "0px");
             input.val(element.text());
             input.prop('disabled', true);
         };
-
         var enableInput = function(input) {
-            $('#survey-form').bootstrapValidator('enableFieldValidators', input.attr('name'), true);
             input.css("padding-right", "");
             input.val("");
             input.prop('disabled', false);
         };
-
         var disableDropdown = function(input) {
             if(input.attr('data-sum-siblings')) {
                 var dropdown = input.next(".input-group-btn").children(".btn-dropdown");
                 dropdown.prop('disabled', true);
             }
         };
-
         var enableDropdown = function(input) {
             if(!input.attr('data-sum-of')) {
                 var dropdown = input.next(".input-group-btn").children(".btn-dropdown");
@@ -70,14 +74,10 @@ define(['jquery', 'cell.sum', 'cell', 'bootstrap.validator.sv'], function($, sum
             }
         };
 
-        /* Handle the dropdown menu for cells. */
-        $(".cell .input-group-btn .dropdown-menu .menu-disable").click(function(e) {
+        survey.form(".cell .input-group-btn .dropdown-menu .menu-disable").click(function(e) {
             e.preventDefault();
 
             var element = $(this);
-            if(isActive(element))
-                return;
-
             setActive(element);
 
             var input = getInput(element);
@@ -90,8 +90,7 @@ define(['jquery', 'cell.sum', 'cell', 'bootstrap.validator.sv'], function($, sum
 
             updateProgress();
         });
-
-        $(".cell .input-group-btn .dropdown-menu .menu-enable").click(function(e) {
+        survey.form(".cell .input-group-btn .dropdown-menu .menu-enable").click(function(e) {
             e.preventDefault();
 
             var element = $(this);
@@ -109,27 +108,19 @@ define(['jquery', 'cell.sum', 'cell', 'bootstrap.validator.sv'], function($, sum
             }
 
             updateProgress();
-
-            input.focus();
         });
+        survey.form(".cell .input-group-btn .dropdown-menu li.active a").click();
     };
-    var getInputs = function() {
-        return $('#survey-form input').not('[type="hidden"]').not('[disabled]');
-    };
-
     var updateProgress = function() {
-        var inputs = getInputs();
-        var correct = inputs.filter(function() {
-            return this.value && $(this).closest('.form-group').hasClass('has-success');
-        });
+        var total = survey.enabledInputs().length;
+        var correct = survey.correctInputs().length;
+        var percent = (correct / total) * 100;
 
-        var percentCorrect = (correct.length / inputs.length) * 100;
-        $('.answers-text').text('Du har svarat rätt på ' + correct.length + ' av ' + inputs.length + ' frågor totalt.');
-        $('.answers-progress .progress-bar-success').css('width', percentCorrect + '%');
+        survey.form('.answers-text').text('Du har svarat på ' + correct + ' av ' + total + ' frågor totalt.');
+        survey.form('.answers-progress .progress-bar-success').css('width', percent + '%');
     };
-
     var initProgress = function() {
-        $.each(getInputs(), function() {
+        $.each(survey.inputs(), function() {
             cell.onChange($(this), function() {
                 updateProgress();
             });
@@ -140,8 +131,7 @@ define(['jquery', 'cell.sum', 'cell', 'bootstrap.validator.sv'], function($, sum
 
     return {
         init: function() {
-            /* Enable bootstrap validator on survey form. */
-            $('#survey-form').bootstrapValidator({
+            survey.form().bootstrapValidator({
                 excluded: ['.disable-validation', ':disabled', ':hidden', ':not(:visible)'],
                 feedbackIcons: {
                     valid: 'fa fa-check',
@@ -153,26 +143,17 @@ define(['jquery', 'cell.sum', 'cell', 'bootstrap.validator.sv'], function($, sum
                     .data('bv.messages')
                     .find('.help-block[data-bv-for="' + data.field + '"]').hide()
                     .filter('[data-bv-validator="' + data.validator + '"]').show();
-            }).on('success.form.bv', function(e) {
-                var disabled_input_ids = $("input[disabled]").map(function() {
-                    return $(this).attr("id");
-                }).get().join(" ");
+            }).on('success.form.bv', function() {
+                var disabledInputIds = survey.disabledInputs().map(function() { return $(this).attr("id"); }).get().join(" ");
+                survey.disabledInputs().prop("disabled", false);
+                $("#disabled_inputs").val(disabledInputIds);
 
-                if(disabled_input_ids) {
-                    $("#disabled_inputs").val(disabled_input_ids);
-                }
-
-                $("input[disabled]").prop("disabled", false);
-
-                var survey_id = $("#id_key").val();
-                var action = Urls.edit_survey(survey_id);
-                $("#survey-form").attr("action", action);
-
-                $("#survey-form").data('bootstrapValidator').defaultSubmit();
+                survey.form().attr("action", Urls.edit_survey(survey.form("#id_key").val()));
+                survey.validator().defaultSubmit();
             });
 
-            /* Move feedback icons to the right of the input field. */
-            $.each($(".cell .form-control-feedback"), function() {
+            /* Move feedback icons to the right side of the input field. */
+            $.each(survey.form(".cell .form-control-feedback"), function() {
                 var element = $(this), input = element.prev(".input-group").children("input");
                 var left = input.outerWidth() - element.width();
 
@@ -182,18 +163,15 @@ define(['jquery', 'cell.sum', 'cell', 'bootstrap.validator.sv'], function($, sum
             });
 
             /* Enable help button popover. */
-            $(".btn-help").popover();
+            survey.form(".btn-help").popover();
 
-
-            $("#save-survey-btn").click(function(e) {
+            survey.form("#save-survey-btn").click(function(e) {
                 e.preventDefault();
                 $("#submit_action").val("save");
-                var empty_inputs = getInputs().filter(function(e) {
-                    return !$(this).val();
-                });
-                empty_inputs.addClass("disable-validation");
-                $("#survey-form").data('bootstrapValidator').validate();
-                empty_inputs.removeClass("disable-validation");
+                var empty = survey.enabledInputs().filter(function() { return !$(this).val(); });
+                empty.addClass("disable-validation");
+                survey.validator().validate();
+                empty.removeClass("disable-validation");
             });
 
             $("#submit-survey-btn").click(function(e) {
@@ -202,10 +180,9 @@ define(['jquery', 'cell.sum', 'cell', 'bootstrap.validator.sv'], function($, sum
                 $("#survey-form").data('bootstrapValidator').validate();
             });
 
-            initDropdown();
             sum.init();
+            initDropdown();
             initProgress();
-
         }
     };
 });

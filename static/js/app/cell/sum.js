@@ -107,6 +107,8 @@ define(['jquery', 'cell'], function($, cell) {
             cell.onChange(element, function() {
                 validateSetup(setup);
             });
+
+            validateSetup(setup);
         });
     };
 
