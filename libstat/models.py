@@ -290,7 +290,6 @@ class VariableVersion(VariableBase):
 
 class Cell(EmbeddedDocument):
     variable_key = StringField()
-    value = StringField()
     required = BooleanField()
     previous_value = StringField()
     sum_of = ListField(StringField())
