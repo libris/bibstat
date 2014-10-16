@@ -1,8 +1,11 @@
 {% if row.explanation %}
-    <button type="button" class="btn btn-default btn-help"
-            title="Förklaring"
-            data-toggle="popover" data-placement="top"
-            data-content="{{ row.explanation }}">
+    <a type="button" class="btn btn-default btn-help"
+       href="#"
+       title="Förklaring"
+       tabindex="0"
+       data-toggle="popover" data-placement="top"
+       data-content="{{ row.explanation }}"
+       data-trigger="focus">
         <i class="fa fa-question"></i>
-    </button>
+    </a>
 {% endif %}

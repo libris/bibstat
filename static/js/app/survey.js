@@ -170,7 +170,11 @@ define(['jquery', 'cell.sum', 'cell', 'bootstrap.validator.sv'], function($, sum
             });
 
             /* Enable help button popover. */
-            survey.form(".btn-help").popover();
+            survey.form(".btn-help").popover({
+                container: 'body'
+            }).click(function(e) {
+                e.preventDefault();
+            });
 
             survey.form("#save-survey-btn").click(function(e) {
                 e.preventDefault();
