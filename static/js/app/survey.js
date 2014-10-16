@@ -157,6 +157,10 @@ define(['jquery', 'cell.sum', 'cell', 'bootstrap.validator.sv'], function($, sum
 
                 survey.form().attr("action", Urls.edit_survey(survey.form("#id_key").val()));
                 survey.validator().defaultSubmit();
+            }).on('error.form.bv', function() {
+                $('html, body').animate({
+                    scrollTop: survey.validator().getInvalidFields().first().offset().top - 100
+                }, 300);
             });
 
             /* Move feedback icons to the right side of the input field. */
@@ -185,10 +189,20 @@ define(['jquery', 'cell.sum', 'cell', 'bootstrap.validator.sv'], function($, sum
                 empty.removeClass("disable-validation");
             });
 
-            $("#submit-survey-btn").click(function(e) {
+            survey.form("#submit-survey-btn").click(function(e) {
+                e.preventDefault();
+                var validator = survey.validator();
+                if(validator.isValid()) {
+                    $("#submit-confirm-modal").modal("show");
+                } else {
+                    validator.validate();
+                }
+            });
+
+            $("#confirm-submit-survey-btn").click(function(e) {
                 e.preventDefault();
                 $("#submit_action").val("submit");
-                $("#survey-form").data('bootstrapValidator').validate();
+                survey.validator().validate();
             });
 
             sum.init();
