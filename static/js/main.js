@@ -27,7 +27,8 @@
             /* App */
             'cell': ['app/cell/cell'],
             'cell.sum': ['app/cell/sum'],
-            'survey': ['app/survey']
+            'survey': ['app/survey'],
+            'login': ['app/login']
         },
 
         deps: ['app/main']

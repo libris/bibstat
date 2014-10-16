@@ -1,5 +1,5 @@
-define(['jquery', 'survey', 'jquery.tablesorter', 'bootstrap', 'bootstrap.datepicker', 'bootstrap.tokenfield',
-    'typeahead', 'underscore'], function($, survey) {
+define(['jquery', 'survey', 'login', 'jquery.tablesorter', 'bootstrap', 'bootstrap.datepicker', 'bootstrap.tokenfield',
+    'typeahead', 'underscore'], function($, survey, login) {
 
     window.ellipsis = function(text, max_chars) {
         max_chars = max_chars || 50;
@@ -10,44 +10,6 @@ define(['jquery', 'survey', 'jquery.tablesorter', 'bootstrap', 'bootstrap.datepi
     };
 
     $(document).ready(function() {
-
-        /* Open login modal on redirect */
-        if($(".show-login-modal").length == 1) {
-            var sPageUrl = window.location.search.substring(1);
-            var urlParams = {};
-
-            if(sPageUrl.length > 0) {
-                $.each(sPageUrl.split("&"), function(index, p) {
-                    var key_value = p.split("=");
-                    urlParams[key_value[0]] = key_value[1];
-                });
-            }
-
-            if("next" in urlParams) {
-                var url = $(".show-login-modal").data("form") + "?next=" + urlParams["next"];
-                $("#loginModal").load(url, function() {
-                    $(this).modal("show");
-                    var nextInput = $(this).find("input[name=next]");
-                    // nextInput.attr("value", urlParams["next"]);
-                });
-            }
-        }
-
-        /* Login */
-        $(".show-login-modal").click(function(e) {
-            e.preventDefault();
-            var url = $(this).data("form");
-            $("#loginModal").load(url, function() {
-                $(this).modal("show");
-            });
-            return false;
-        });
-
-        /* Focus username input field when login modal is shown. */
-        $("#loginModal").on("shown.bs.modal", function() {
-            $("#username").focus();
-        });
-
         /* Make Variables table sortable */
         $(".table.variables").addClass("tablesorter").tablesorter({
             sortList: [
@@ -122,6 +84,7 @@ define(['jquery', 'survey', 'jquery.tablesorter', 'bootstrap', 'bootstrap.datepi
         });
 
         survey.init();
+        login.init();
 
         console.log('Scripts initialized.')
     });

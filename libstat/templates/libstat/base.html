@@ -100,7 +100,7 @@
                         </li>
                     {% else %}
                         <li>
-                            <a class="show-login-modal" href="#" data-form="{% url 'login' %}">
+                            <a class="show-login-modal" href="#" data-toggle="modal" data-target="#loginModal">
                                 {% trans "Logga in" %}
                             </a>
                         </li>
@@ -117,6 +117,7 @@
 
 <!-- Login modal -->
 <div class="modal fade" id="loginModal" tabindex="-1" role="dialog" aria-labelledby="loginLabel" aria-hidden="true">
+    {% include "libstat/modals/login.html" %}
 </div>
 
 <!-- Bootstrap core JavaScript

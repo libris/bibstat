@@ -40,32 +40,3 @@
         </div>
     </div>
 </form>
-
-<script type="text/javascript">
-    $(document).ready(function () {
-        $(".login-form").submit(function (e) {
-            e.preventDefault();
-            var self = this;
-            $(self).find(".errors").text("");
-            $.ajax({
-                type: "POST",
-                url: "/statistics/login",
-                data: $(self).serialize(),
-                success: function (data) {
-                    if (data.errors) {
-                        $(self).find(".errors.username").text(data.errors.username);
-                        $(self).find(".errors.password").text(data.errors.password);
-                        $(self).find(".errors.all").text(data.errors.__all__);
-                    }
-                    else {
-                        window.location = data.next
-                    }
-                },
-                error: function () {
-                    console.info("An error occurred!")
-                }
-            });
-            return false;
-        });
-    });
-</script>
