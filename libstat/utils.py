@@ -108,4 +108,7 @@ def target_groups_label(value):
             if value in targetGroups:
                 display_names.append(targetGroups[value])
     return ", ".join(display_names)
-        
+
+
+def survey_response_status_label(key):
+    return survey_response_statuses[key]
