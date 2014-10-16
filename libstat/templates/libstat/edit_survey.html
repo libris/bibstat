@@ -69,6 +69,7 @@
             {% csrf_token %}
             {{ form.key }}
             {{ form.disabled_inputs }}
+            {{ form.submit_action }}
 
             <h2 class="section-title">Om svarande organisation och person</h2>
 
@@ -144,7 +145,7 @@
 
                     <div class="navbar-right navbar-submit">
                         <a href="#" id="save-survey-btn" class="btn btn-primary navbar-btn">Spara</a>
-                        <button type="submit" class="btn btn-success navbar-btn">Skicka</button>
+                        <a href="#" id="submit-survey-btn" class="btn btn-success navbar-btn">Skicka</a>
                     </div>
                 </div>
             </div>

@@ -11,7 +11,7 @@ from mongoengine.errors import DoesNotExist
 from mongoengine.queryset.queryset import QuerySet
 from django.conf import settings
 
-from libstat.utils import ISO8601_utc_format
+from libstat.utils import ISO8601_utc_format, SURVEY_RESPONSE_STATUSES, NOT_VIEWED
 
 
 logger = logging.getLogger(__name__)
@@ -409,6 +409,7 @@ class SurveyResponseBase(Document):
     date_modified = DateTimeField(required=True, default=datetime.utcnow)
     modified_by = ReferenceField(User)
     observations = ListField(EmbeddedDocumentField(SurveyObservation))
+    status = StringField(choices=SURVEY_RESPONSE_STATUSES, default=NOT_VIEWED[0])
 
     meta = {
         'abstract': True,

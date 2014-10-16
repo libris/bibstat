@@ -169,6 +169,8 @@ class SurveyForm(forms.Form):
 
         self.fields["disabled_inputs"] = forms.CharField(required=False,
                                                          widget=forms.HiddenInput(attrs={"id": "disabled_inputs"}))
+        self.fields["submit_action"] = forms.CharField(required=False,
+                                                         widget=forms.HiddenInput(attrs={"id": "submit_action"}))
 
         self.fields["key"] = forms.CharField(required=False, widget=forms.HiddenInput())
         self.fields["key"].initial = response.pk

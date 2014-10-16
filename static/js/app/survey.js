@@ -187,12 +187,19 @@ define(['jquery', 'cell.sum', 'cell', 'bootstrap.validator.sv'], function($, sum
 
             $("#save-survey-btn").click(function(e) {
                 e.preventDefault();
+                $("#submit_action").val("save");
                 var empty_inputs = getInputs().filter(function(e) {
                     return !$(this).val();
                 });
                 empty_inputs.addClass("disable-validation");
                 $("#survey-form").data('bootstrapValidator').validate();
                 empty_inputs.removeClass("disable-validation");
+            });
+
+            $("#submit-survey-btn").click(function(e) {
+                e.preventDefault();
+                $("#submit_action").val("submit");
+                $("#survey-form").data('bootstrapValidator').validate();
             });
 
             initDropdown();

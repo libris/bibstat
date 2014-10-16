@@ -12,6 +12,18 @@ SCHOOL_LIBRARY = ("school", "Skolbibliotek")
 SURVEY_TARGET_GROUPS = (PUBLIC_LIBRARY, RESEARCH_LIBRARY, HOSPITAL_LIBRARY, SCHOOL_LIBRARY)
 targetGroups = dict(SURVEY_TARGET_GROUPS)
 
+
+"""
+    Status of survey responses
+"""
+NOT_VIEWED = (u"not_viewed", u"Ej öppnad")
+INITIATED = (u"initiated", u"Påbörjad")
+SUBMITTED = (u"submitted", u"Inskickad")
+CONTROLLED = (u"controlled", u"Kontrollerad")
+PUBLISHED = (u"published", u"Publicerad")
+SURVEY_RESPONSE_STATUSES = (NOT_VIEWED, INITIATED, SUBMITTED, CONTROLLED, PUBLISHED)
+survey_response_statuses = dict(SURVEY_RESPONSE_STATUSES)
+
 """
     Types for variables
 """
@@ -25,16 +37,19 @@ TYPE_PERCENT = (u"percent", u"Procent")
 #TODO: TYPE_TEXT = (u"text", u"Text") för kommentarer (textarea), TYPE_STRING=(u"string", u"Textsträng") för icke-numeriska värden "numerical" (input)
 VARIABLE_TYPES = (TYPE_STRING, TYPE_BOOLEAN, TYPE_INTEGER, TYPE_LONG, TYPE_DECIMAL, TYPE_PERCENT)
 
+
 """
     Mapping between stored variable type and RDF compatible type to be presented as open data
 """
 rdfVariableTypes = {TYPE_STRING[0]: u"xsd:string", TYPE_BOOLEAN[0]: u"xsd:boolean", TYPE_INTEGER[0]: u"xsd:integer",
                     TYPE_LONG[0]: u"xsd:long", TYPE_DECIMAL[0]: u"xsd:decimal", TYPE_PERCENT[0]: u"xsd:decimal"}
 
+
 """
     Useful definitions when importing data from spreadsheets
 """
 DATA_IMPORT_nonMeasurementCategories = [u"Bakgrundsvariabel", u"Tid", u"Befolkning", u"Bakgrundsvariabler"]
+
 
 """
     Datetime in ISO8601 format with apppending 'Z' to indicate UTC time zone

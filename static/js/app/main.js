@@ -62,7 +62,7 @@ define(['jquery', 'survey', 'jquery.tablesorter', 'bootstrap', 'bootstrap.datepi
                 0: {
                     sorter: false
                 },
-                5: {
+                6: {
                     sorter: false
                 }
             },

@@ -119,6 +119,7 @@
                                 <input title="{% trans 'Markera alla' %}" class="select-all"
                                        type="checkbox" value="all"/>
                             </th>
+                            <th class="column status">{% trans "Status" %}</th>
                             <th class="column published">{% trans "Publicerad" %}</th>
                             <th class="column sample_year">{% trans "År" %}</th>
                             <th class="column library">{% trans "Bibliotek" %}</th>
@@ -133,6 +134,9 @@
                                     <td>
                                         <input title="{% trans 'Välj' %}" class="select-one" name="survey-response-ids"
                                                type="checkbox" value="{{ sr.id }}"/>
+                                    </td>
+                                    <td>
+                                        {{ sr.status|srs_label }}
                                     </td>
                                     <td>
                                         {% if not sr.latest_version_published %}
