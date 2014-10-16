@@ -200,5 +200,9 @@ def edit_survey(request, survey_id):
         _save_survey_response_from_form(survey_response, form)
 
     survey_response = SurveyResponse.objects.get(pk=survey_id)
+    if survey_response.status == "not_viewed":
+        survey_response.status = "initiated"
+        survey_response.save()
+        
     context = {"form": SurveyForm(instance=survey_response)}
     return render(request, 'libstat/edit_survey.html', context)
