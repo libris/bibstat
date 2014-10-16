@@ -129,28 +129,44 @@
                     </div>
                 {% endif %}
             {% endfor %}
-
             <div class="navbar navbar-default navbar-fixed-bottom" role="navigation">
                 <div class="container">
-
                     <div class="navbar-left">
                         <div class="navbar-text">
                             <span class="answers-text"></span>
+
                             <div class="progress answers-progress" style="width: 275px">
                                 <div class="progress-bar progress-bar-success progress-bar-striped" role="progressbar">
                                 </div>
                             </div>
                         </div>
                     </div>
-
                     <div class="navbar-right navbar-submit">
                         <a href="#" id="save-survey-btn" class="btn btn-primary navbar-btn">Spara</a>
-                        <a href="#" id="submit-survey-btn" class="btn btn-success navbar-btn">Skicka</a>
+                        <a href="#" class="btn btn-success navbar-btn" data-toggle="modal"
+                           data-target="#submit-confirm-modal">Skicka</a>
                     </div>
                 </div>
             </div>
         </form>
-
     </div>
-
+    <div class="modal fade" id="submit-confirm-modal" tabindex="-1" role="dialog" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-body">
+                    <p>
+                        Är du säker på att du vill skicka in din enkät?
+                    </p>
+                    <p>
+                        När du väl skickat in din enkät kommer vi börja behandla dina inskickade svar och du kommer
+                        då inte längre kunna göra några ändringar.
+                    </p>
+                </div>
+                <div class="modal-footer">
+                    <a href="#" class="btn btn-danger" data-dismiss="modal">Nej</a>
+                    <a href="#" id="submit-survey-btn" class="btn btn-success">Ja</a>
+                </div>
+            </div>
+        </div>
+    </div>
 {% endblock %}
