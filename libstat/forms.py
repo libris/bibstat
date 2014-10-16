@@ -154,7 +154,11 @@ class SurveyForm(forms.Form):
         if observation.disabled:
             attrs["disabled"] = ""
 
-        field = forms.CharField(required=False, widget=forms.TextInput(attrs=attrs))
+        if "comment" in cell.types:
+            field = forms.CharField(required=False, widget=forms.Textarea(attrs=attrs))
+        else:
+            field = forms.CharField(required=False, widget=forms.TextInput(attrs=attrs))
+
         field.initial = observation.value
         return field
 

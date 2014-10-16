@@ -142,8 +142,7 @@ def survey_template():
                 ]
             ),
             Section(
-                title=u"Frågor om bemanning och personal",  # Personkomm variabel för comment
-                comment=u"Här kan du lämna eventuella kommentarer till frågeområdet personal. Vänligen skriv inga siffror här.",
+                title=u"Frågor om bemanning och personal",
                 groups=[
                     Group(
                         description="11. Hur många årsverken avsattes för biblioteksverksamheten under kalenderåret?",
@@ -214,12 +213,25 @@ def survey_template():
                                          sum_of=[u"Personer01", u"Personer02"])]
                             )
                         ]
+                    ),
+                    Group(
+                        description=u"Här kan du lämna eventuella kommentarer till frågeområdet personal. Vänligen skriv inga siffror här.",
+                        columns=1,
+                        headers=[],
+                        rows=[
+                            Row(
+                                description=u"",
+                                explanation=u"",
+                                cells=[
+                                    Cell(variable_key=u"Personkomm", types=["comment"])
+                                ]
+                            )
+                        ]
                     )
                 ]
             ),
             Section(
-                title=u"Frågor om ekonomi",  # TODO Koppla comment till Ekonomikomm
-                comment=u"Här kan du lämna eventuella kommentarer till frågeområdet ekonomi. Vänligen skriv inga siffror här.",
+                title=u"Frågor om ekonomi",
                 groups=[
                     Group(
                         description="13. Vilka utgifter hade biblioteksverksamheten under kalenderåret? Antal hela kronor inklusive mervärdesskatt. Avrunda inte till tusental. Vänligen skriv uppgifterna utan punkt, mellanslag eller kommatecken.",
@@ -315,12 +327,25 @@ def survey_template():
                                             sum_of=[u"Intakt01", u"Intakt02", u"Intakt03"])]
                             ),
                         ]
+                    ),
+                    Group(
+                        description=u"Här kan du lämna eventuella kommentarer till frågeområdet ekonomi. Vänligen skriv inga siffror här.",
+                        columns=1,
+                        headers=[],
+                        rows=[
+                            Row(
+                                description=u"",
+                                explanation=u"",
+                                cells=[
+                                    Cell(variable_key=u"Ekonomikomm", types=["comment"])
+                                ]
+                            )
+                        ]
                     )
                 ]
             ),
             Section(
                 title=u"Bestånd – nyförvärv",
-                comment=u"",
                 groups=[
                     Group(
                         description="15. Hur stort var det fysiska mediebeståndet och det elektroniska titelbeståndet 31 december och hur många fysiska nyförvärv gjordes under kalenderåret uppdelat på olika medietyper? Om ni bara kan få fram fysiskt bestånd genom att räkna hyllmeter, använd omräkningstal 40 medier per hyllmeter om ni beräknar antal utifrån uppgift om hyllmeter.",

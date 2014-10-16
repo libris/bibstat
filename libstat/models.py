@@ -312,7 +312,6 @@ class Group(EmbeddedDocument):
 
 
 class Section(EmbeddedDocument):
-    comment = StringField()
     title = StringField()
     groups = ListField(EmbeddedDocumentField(Group))
 
