@@ -184,6 +184,7 @@ class SurveyForm(forms.Form):
         self.library_name = response.library_name
         self.municipality_name = response.metadata.municipality_name if response.metadata else ""
         self.sample_year = response.sample_year
+        self.submitted = not response.status in (u"not_viewed", u"initiated")
         self.sections = template.sections
 
         for section in template.sections:
