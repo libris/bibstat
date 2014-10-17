@@ -118,7 +118,7 @@ define(['jquery', 'cell.sum', 'cell', 'bootstrap.validator.sv'], function($, sum
         var correct = survey.correctInputs().length;
         var percent = (correct / total) * 100;
 
-        survey.form('.answers-text').text('Du har svarat på ' + correct + ' av ' + total + ' frågor totalt.');
+        survey.form('.answers-text').text('Du har svarat på ' + correct + ' av ' + total + ' frågor totalt');
         survey.form('.answers-progress .progress-bar-success').css('width', percent + '%');
     };
     var initProgress = function() {
@@ -203,6 +203,10 @@ define(['jquery', 'cell.sum', 'cell', 'bootstrap.validator.sv'], function($, sum
                 e.preventDefault();
                 $("#submit_action").val("submit");
                 survey.validator().validate();
+            });
+
+            cell.onChange(survey.form("input,textarea").not("[type='hidden']"), function () {
+               $("#unsaved-changes-label").text("Det finns ifyllda svar som inte sparats");
             });
 
             sum.init();
