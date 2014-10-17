@@ -130,7 +130,7 @@ def _survey_response_from_template(template, create_non_existing_variables=False
         target_group="public",
         observations=[],
         metadata=SurveyResponseMetadata(
-            municipality_name=u"Karlstad",
+            municipality_name=u"Motala",
             municipality_code=u"1780",
         )
     )
