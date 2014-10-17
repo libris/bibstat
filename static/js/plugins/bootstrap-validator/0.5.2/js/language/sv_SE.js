@@ -190,7 +190,7 @@
             'default': 'Vänligen mata in ett giltigt IMO-nummer'
         },
         integer: {
-            'default': 'Vänligen mata in ett giltigt heltal'
+            'default': 'Vänligen mata in ett giltigt heltal utan punkter, mellanslag etc.'
         },
         ip: {
             'default': 'Vänligen mata in en giltig IP-adress',
