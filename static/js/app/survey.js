@@ -151,6 +151,9 @@ define(['jquery', 'cell.sum', 'cell', 'bootstrap.validator.sv'], function($, sum
                     .find('.help-block[data-bv-for="' + data.field + '"]').hide()
                     .filter('[data-bv-validator="' + data.validator + '"]').show();
             }).on('success.form.bv', function() {
+                if(!$("#submit_action").val())
+                    return;
+
                 var disabledInputIds = survey.disabledInputs().map(function() { return $(this).attr("id"); }).get().join(" ");
                 survey.disabledInputs().prop("disabled", false);
                 $("#disabled_inputs").val(disabledInputIds);
@@ -182,6 +185,7 @@ define(['jquery', 'cell.sum', 'cell', 'bootstrap.validator.sv'], function($, sum
 
             survey.form("#save-survey-btn").click(function(e) {
                 e.preventDefault();
+
                 $("#submit_action").val("save");
                 var empty = survey.emptyInputs();
                 empty.addClass("disable-validation");
@@ -191,11 +195,11 @@ define(['jquery', 'cell.sum', 'cell', 'bootstrap.validator.sv'], function($, sum
 
             survey.form("#submit-survey-btn").click(function(e) {
                 e.preventDefault();
+
                 var validator = survey.validator();
+                validator.validate();
                 if(validator.isValid()) {
                     $("#submit-confirm-modal").modal("show");
-                } else {
-                    validator.validate();
                 }
             });
 
@@ -205,8 +209,8 @@ define(['jquery', 'cell.sum', 'cell', 'bootstrap.validator.sv'], function($, sum
                 survey.validator().validate();
             });
 
-            cell.onChange(survey.form("input,textarea").not("[type='hidden']"), function () {
-               $("#unsaved-changes-label").text("Det finns ifyllda svar som inte sparats");
+            cell.onChange(survey.form("input,textarea").not("[type='hidden']"), function() {
+                $("#unsaved-changes-label").text("Det finns ifyllda svar som inte sparats");
             });
 
             sum.init();
