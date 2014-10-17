@@ -51,13 +51,14 @@
         <div class="page-header">
             <h1>Statistikenkät för verksamhetsåret {{ form.sample_year }}</h1>
         </div>
-        {% if form.submitted %}
+        {% if form.is_read_only %}
             {% include "libstat/survey/submitted_notice.html" %}
         {% endif %}
         <div class="row">
             <div class="col-xs-12 col-sm-10 col-md-7">
                 <div class="alert alert-info" role="alert">
-                    Hej, du svarar på enkäten för <b>{{ form.library_name }}</b> i <b>{{ form.municipality_name }}</b> kommun.
+                    Hej, du svarar på enkäten för <b>{{ form.library_name }}</b> i <b>{{ form.municipality_name }}</b>
+                    kommun.
                 </div>
             </div>
         </div>
@@ -66,8 +67,10 @@
             <div class="col-xs-12 col-sm-10 col-md-7">
                 <p>Välkommen!</p>
 
-                <p>Du har nu kommit till enkäten för Sveriges officiella biblioteksstatistik som gäller för alla offentligt finansierade bibliotekstyper.
-                   Tanken med att använda samma formulär till alla bibliotekstyper är att kunna presentera en samlad nationell biblioteksstatistik för offentligt finansierade bibliotek.</p>
+                <p>Du har nu kommit till enkäten för Sveriges officiella biblioteksstatistik som gäller för alla
+                    offentligt finansierade bibliotekstyper.
+                    Tanken med att använda samma formulär till alla bibliotekstyper är att kunna presentera en samlad
+                    nationell biblioteksstatistik för offentligt finansierade bibliotek.</p>
 
             </div>
         </div>
@@ -76,6 +79,7 @@
             {{ form.key }}
             {{ form.disabled_inputs }}
             {{ form.submit_action }}
+            {{ form.read_only }}
 
             {% for section in form.sections %}
                 <h2 class="section-title">{{ section.title }}</h2>
@@ -98,25 +102,28 @@
                     </div>
                 {% endfor %}
             {% endfor %}
-            <div class="navbar navbar-default navbar-fixed-bottom" role="navigation">
-                <div class="container">
-                    <div class="navbar-left">
-                        <div class="navbar-text">
-                            <span class="answers-text">Du har svarat på 0 av 0 frågor totalt</span>
+            {% if not form.is_read_only %}
+                <div class="navbar navbar-default navbar-fixed-bottom" role="navigation">
+                    <div class="container">
+                        <div class="navbar-left">
+                            <div class="navbar-text">
+                                <span class="answers-text">Du har svarat på 0 av 0 frågor totalt</span>
 
-                            <div class="progress answers-progress" style="width: 250px">
-                                <div class="progress-bar progress-bar-success progress-bar-striped" role="progressbar">
+                                <div class="progress answers-progress" style="width: 250px">
+                                    <div class="progress-bar progress-bar-success progress-bar-striped"
+                                         role="progressbar">
+                                    </div>
                                 </div>
                             </div>
                         </div>
-                    </div>
-                    <div class="navbar-right navbar-submit">
-                        <div id="unsaved-changes-label" class="navbar-text"></div>
-                        <a href="#" id="save-survey-btn" class="btn btn-primary navbar-btn">Spara</a>
-                        <a href="#" id="submit-survey-btn" class="btn btn-success navbar-btn">Skicka</a>
+                        <div class="navbar-right navbar-submit">
+                            <div id="unsaved-changes-label" class="navbar-text"></div>
+                            <a href="#" id="save-survey-btn" class="btn btn-primary navbar-btn">Spara</a>
+                            <a href="#" id="submit-survey-btn" class="btn btn-success navbar-btn">Skicka</a>
+                        </div>
                     </div>
                 </div>
-            </div>
+            {% endif %}
         </form>
     </div>
     <div class="modal fade" id="submit-confirm-modal" tabindex="-1" role="dialog" aria-hidden="true">

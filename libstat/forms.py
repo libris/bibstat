@@ -171,12 +171,15 @@ class SurveyForm(forms.Form):
 
         response = self.instance
 
-        template = survey_template() if response.sample_year == 2014 else default_template_from_survey_response(response)
+        template = survey_template() if response.sample_year == 2014 else default_template_from_survey_response(
+            response)
 
         self.fields["disabled_inputs"] = forms.CharField(required=False,
                                                          widget=forms.HiddenInput(attrs={"id": "disabled_inputs"}))
         self.fields["submit_action"] = forms.CharField(required=False,
-                                                         widget=forms.HiddenInput(attrs={"id": "submit_action"}))
+                                                       widget=forms.HiddenInput(attrs={"id": "submit_action"}))
+        self.fields["read_only"] = forms.CharField(required=False,
+                                                   widget=forms.HiddenInput(attrs={"id": "read_only"}))
 
         self.fields["key"] = forms.CharField(required=False, widget=forms.HiddenInput())
         self.fields["key"].initial = response.pk
@@ -184,7 +187,7 @@ class SurveyForm(forms.Form):
         self.library_name = response.library_name
         self.municipality_name = response.metadata.municipality_name if response.metadata else ""
         self.sample_year = response.sample_year
-        self.submitted = not response.status in (u"not_viewed", u"initiated")
+        self.is_read_only = not response.status in (u"not_viewed", u"initiated")
         self.sections = template.sections
 
         for section in template.sections:
@@ -199,3 +202,8 @@ class SurveyForm(forms.Form):
                             response.observations.append(SurveyObservation(variable=variable,
                                                                            _source_key=variable.key))
                         self.fields[variable_key] = self._cell_to_input_field(cell, observation)
+
+        if self.is_read_only:
+            self.fields["read_only"].initial = "true"
+            for key, input in self.fields.iteritems():
+                input.widget.attrs["readonly"] = ""

@@ -12,6 +12,7 @@
                             class="btn btn-default btn-dropdown dropdown-toggle"
                             data-toggle="dropdown"
                             {% if cell.disabled and cell.sum_siblings %} disabled {% endif %}
+                            {% if form.is_read_only %} disabled {% endif %}
                             >
                         <span class="caret"></span>
                     </button>
