@@ -96,6 +96,9 @@ define(['jquery', 'cell.sum', 'cell', 'bootstrap.validator.sv'], function ($, su
             e.preventDefault();
 
             var element = $(this);
+            if(!isActive(element))
+                showChangesNotSaved();
+
             setActive(element);
 
             var input = getInput(element);
@@ -126,6 +129,7 @@ define(['jquery', 'cell.sum', 'cell', 'bootstrap.validator.sv'], function ($, su
             }
 
             updateProgress();
+            showChangesNotSaved();
         });
         survey.form(".cell .input-group-btn .dropdown-menu li.active a").click();
     };
@@ -158,6 +162,9 @@ define(['jquery', 'cell.sum', 'cell', 'bootstrap.validator.sv'], function ($, su
         }).click(function (e) {
             e.preventDefault();
         });
+    };
+    var showChangesNotSaved = function() {
+        $("#unsaved-changes-label").text("Det finns ifyllda svar som inte sparats");
     };
     return {
         init: function () {
@@ -233,7 +240,7 @@ define(['jquery', 'cell.sum', 'cell', 'bootstrap.validator.sv'], function ($, su
             });
 
             cell.onChange(survey.form("input,textarea").not("[type='hidden']"), function () {
-                $("#unsaved-changes-label").text("Det finns ifyllda svar som inte sparats");
+                showChangesNotSaved();
             });
 
             sum.init();
