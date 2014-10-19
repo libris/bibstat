@@ -2,7 +2,7 @@
 from libstat.models import Section, Group, Cell, Row, SurveyTemplate
 
 
-def default_template_from_survey_response(response):
+def _default_template_from_survey_response(response):
     rows = []
     for observation in response.observations:
         variable = observation.variable
@@ -27,7 +27,7 @@ def default_template_from_survey_response(response):
     )
 
 
-def survey_template():
+def _survey_template_2014():
     return SurveyTemplate(
         key="",
         target_year="",
@@ -658,3 +658,9 @@ def survey_template():
             ),
         ]
     )
+
+
+def survey_template(year, response=None):
+    if year == 2014:
+        return _survey_template_2014()
+    return _default_template_from_survey_response(response)

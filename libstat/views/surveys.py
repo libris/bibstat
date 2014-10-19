@@ -1,4 +1,6 @@
 # -*- coding: utf-8 -*-
+import logging
+
 from time import strftime
 from django.core.urlresolvers import reverse
 
@@ -9,7 +11,8 @@ from mongoengine.errors import NotUniqueError
 from excel_response import ExcelResponse
 from bibstat import settings
 
-from libstat.forms import *
+from libstat.models import SurveyResponse
+from libstat.forms import SurveyForm
 from libstat.survey_templates import survey_template
 
 

@@ -1,19 +1,15 @@
 # -*- coding: UTF-8 -*-
-from collections import OrderedDict
 import logging
 
 from django import forms
-from django.utils.safestring import mark_safe
 
-from libstat.survey_templates import survey_template, default_template_from_survey_response
+from libstat.survey_templates import survey_template
 from libstat.utils import SURVEY_TARGET_GROUPS
-from libstat.utils import TYPE_BOOLEAN, TYPE_INTEGER, TYPE_LONG, TYPE_DECIMAL, TYPE_PERCENT, VARIABLE_TYPES
-from libstat.models import Variable, SurveyResponse, SurveyObservation, SurveyResponseMetadata
-
+from libstat.utils import VARIABLE_TYPES
+from libstat.models import Variable, SurveyObservation
 
 logger = logging.getLogger(__name__)
 
-# TODO: Define a LoginForm class with extra css-class 'form-control' ?
 
 class VariableForm(forms.Form):
     active_from = forms.DateField(required=False, widget=forms.TextInput(attrs={'class': 'form-control'}))
@@ -26,7 +22,8 @@ class VariableForm(forms.Form):
 
     type = forms.ChoiceField(required=True, widget=forms.RadioSelect())
 
-    # Since this is a checkbox, a value will only be returned in form if the checkbox is checked. Hence the required=False.
+    # Since this is a checkbox, a value will only be returned in form if the
+    # checkbox is checked. Hence the required=False.
     is_public = forms.BooleanField(required=False, widget=forms.CheckboxInput(attrs={'value': '1'}))
 
     target_groups = forms.MultipleChoiceField(required=True, widget=forms.CheckboxSelectMultiple())
@@ -40,13 +37,16 @@ class VariableForm(forms.Form):
         self.instance = kwargs.pop('instance', None)
         super(VariableForm, self).__init__(*args, **kwargs)
         if not self.instance:
-            self.fields['key'] = forms.CharField(required=True, widget=forms.TextInput(attrs={'class': 'form-control'}))
+            self.fields['key'] = forms.CharField(required=True,
+                                                 widget=forms.TextInput(attrs={'class': 'form-control'}))
 
         self.fields['type'].choices = [type for type in VARIABLE_TYPES]
         self.fields['target_groups'].choices = [target_group for target_group in SURVEY_TARGET_GROUPS]
 
         if self.instance:
-            self.fields['active_from'].initial = self.instance.active_from.date() if self.instance.active_from else None
+            self.fields['active_from'].initial = (self.instance.active_from.date()
+                                                  if self.instance.active_from
+                                                  else None)
             self.fields['active_to'].initial = self.instance.active_to.date() if self.instance.active_to else None
             self.fields['question'].initial = self.instance.question
             self.fields['question_part'].initial = self.instance.question_part
@@ -62,7 +62,6 @@ class VariableForm(forms.Form):
             self.replaces_initial_value = ", ".join(
                 ["{}:{}".format(v.key, str(v.id)) for v in self.instance.replaces] if self.instance.replaces else [])
 
-
     def clean(self):
         cleaned_data = super(VariableForm, self).clean()
 
@@ -77,12 +76,11 @@ class VariableForm(forms.Form):
             del cleaned_data['active_from']
 
         active_to = cleaned_data['active_to'] if 'active_to' in cleaned_data else None
-        if self.instance and self.instance.replaced_by and active_to and self.instance.active_to and active_to != self.instance.active_to.date():
+        if (self.instance and self.instance.replaced_by and active_to and self.instance.active_to
+                and active_to != self.instance.active_to.date()):
             self._errors['active_to'] = self.error_class([u"Styrs av ersättande term"])
-
             del cleaned_data['active_to']
         return cleaned_data
-
 
     def save(self, commit=True, user=None, activate=False):
         variable = self.instance if self.instance else Variable(is_draft=True)
@@ -116,6 +114,7 @@ class VariableForm(forms.Form):
 
 
 class SurveyForm(forms.Form):
+
     def _cell_to_input_field(self, cell, observation):
         attrs = {"class": "form-control",
                  "id": cell.variable_key,
@@ -164,15 +163,11 @@ class SurveyForm(forms.Form):
         field.initial = observation.value
         return field
 
-
     def __init__(self, *args, **kwargs):
-        self.instance = kwargs.pop('instance', None)
+        response = kwargs.pop('instance', None)
         super(SurveyForm, self).__init__(*args, **kwargs)
 
-        response = self.instance
-
-        template = survey_template() if response.sample_year == 2014 else default_template_from_survey_response(
-            response)
+        template = survey_template(response.sample_year, response)
 
         self.fields["disabled_inputs"] = forms.CharField(required=False,
                                                          widget=forms.HiddenInput(attrs={"id": "disabled_inputs"}))
@@ -180,9 +175,9 @@ class SurveyForm(forms.Form):
                                                        widget=forms.HiddenInput(attrs={"id": "submit_action"}))
         self.fields["read_only"] = forms.CharField(required=False,
                                                    widget=forms.HiddenInput(attrs={"id": "read_only"}))
-
-        self.fields["key"] = forms.CharField(required=False, widget=forms.HiddenInput())
-        self.fields["key"].initial = response.pk
+        self.fields["key"] = forms.CharField(required=False,
+                                             widget=forms.HiddenInput(),
+                                             initial=response.pk)
 
         self.library_name = response.library_name
         self.municipality_name = response.metadata.municipality_name if response.metadata else ""
