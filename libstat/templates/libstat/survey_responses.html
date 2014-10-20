@@ -152,12 +152,12 @@
                                         {{ sr.sample_year }}
                                     </td>
                                     <td>
-                                        {% if sr.library and sr.library.bibdb_sigel %}
+                                        {% if sr.library and sr.library.sigel %}
                                             <a href="{{ bibdb_library_base_url }}/{{ sr.library.bibdb_id }}">
-                                                {{ sr.library_name }}
+                                                {{ sr.library.name }}
                                             </a>
                                         {% else %}
-                                            {{ sr.library_name }}
+                                            {{ sr.library.name }}
                                         {% endif %}
                                     </td>
                                     <td>

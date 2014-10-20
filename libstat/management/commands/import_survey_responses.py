@@ -128,8 +128,10 @@ class Command(BaseCommand):
 
                     existing_responses = SurveyResponse.objects.filter(library_name=library_name, sample_year=year)
                     if len(existing_responses) == 0:
+                        library = Library(name=library_name)
+                        library.save()
                         sr = SurveyResponse(library_name=library_name, sample_year=year, target_group=target_group,
-                                            observations=[])
+                                            observations=[], library=library)
                         # sr_metadata = SurveyResponseMetadata()
                         if library:
                             sr.library = library  #TODO

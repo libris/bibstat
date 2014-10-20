@@ -369,19 +369,19 @@ class SurveyObservation(EmbeddedDocument):
         return self._instance.id
 
 
-class Library(EmbeddedDocument):
-    bibdb_name = StringField()
-    bibdb_id = StringField(max_length=100)
-    bibdb_sigel = StringField(max_length=10)
+class Library(Document):
+    name = StringField()
+    bibdb_id = StringField()
+    sigel = StringField()
+    email = EmailField()
+    municipality_name = StringField()
+    municipality_code = StringField()
 
     def __unicode__(self):
         return u"libdb [{}, {}, {}]".format(self.bibdb_id, self.bibdb_sigel, self.bibdb_name)
 
 
 class SurveyResponseMetadata(EmbeddedDocument):
-    # TODO: Migrera data från observations till denna modell!
-    municipality_name = StringField()
-    municipality_code = StringField()
     respondent_name = StringField()
     respondent_email = StringField()
     respondent_phone = StringField()
@@ -394,7 +394,6 @@ class SurveyResponseMetadata(EmbeddedDocument):
 
 class SurveyResponseBase(Document):
     target_group = StringField(required=True, choices=SURVEY_TARGET_GROUPS)
-    library = EmbeddedDocumentField(Library)
     metadata = EmbeddedDocumentField(SurveyResponseMetadata)
     published_at = DateTimeField()
     published_by = ReferenceField(User)
@@ -407,7 +406,8 @@ class SurveyResponseBase(Document):
     modified_by = ReferenceField(User)
     observations = ListField(EmbeddedDocumentField(SurveyObservation))
     status = StringField(choices=SURVEY_RESPONSE_STATUSES, default=NOT_VIEWED[0])
-
+    library = ReferenceField(Library)
+    
     meta = {
         'abstract': True,
     }

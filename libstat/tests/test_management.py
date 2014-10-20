@@ -278,7 +278,7 @@ class ImportSurveyResponsesTest(MongoTestCase):
 
         self.assertEquals(len(SurveyResponse.objects.all()), 288)
         sr = SurveyResponse.objects.filter(library_name=u"KARLSTADS STADSBIBLIOTEK")[0]
-        self.assertTrue(sr.library == None)
+        self.assertTrue(sr.library.name == u"KARLSTADS STADSBIBLIOTEK")
 
         ## Check data types and visibility
         # Private, string value

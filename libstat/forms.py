@@ -179,8 +179,8 @@ class SurveyForm(forms.Form):
                                              widget=forms.HiddenInput(),
                                              initial=response.pk)
 
-        self.library_name = response.library_name
-        self.municipality_name = response.metadata.municipality_name if response.metadata else ""
+        self.library_name = response.library.name
+        self.municipality_name = response.library.municipality_name
         self.sample_year = response.sample_year
         self.is_read_only = not response.status in (u"not_viewed", u"initiated")
         self.sections = template.sections

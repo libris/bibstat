@@ -11,7 +11,7 @@ from mongoengine.errors import NotUniqueError
 from excel_response import ExcelResponse
 from bibstat import settings
 
-from libstat.models import SurveyResponse, SurveyResponseMetadata, Variable, SurveyObservation
+from libstat.models import SurveyResponse, SurveyResponseMetadata, Variable, SurveyObservation, Library
 from libstat.forms import SurveyForm
 from libstat.survey_templates import survey_template
 
@@ -128,15 +128,13 @@ def publish_survey_response(request, survey_response_id):
 
 
 def _survey_response_from_template(template, create_non_existing_variables=False):
+    library = Library.objects.get(name=u"Motala stadsbibliotek")
     response = SurveyResponse(
-        library_name=u"Motala stadsbibliotek",
+        library_name=library.name,
+        library=library,
         sample_year=2014,
         target_group="public",
-        observations=[],
-        metadata=SurveyResponseMetadata(
-            municipality_name=u"Motala",
-            municipality_code=u"1780",
-        )
+        observations=[]
     )
     for section in template.sections:
         for group in section.groups:
@@ -159,6 +157,7 @@ def _survey_response_from_template(template, create_non_existing_variables=False
                                 "Can't create SurveyResponse with non-existing Variable " + cell.variable_key)
                     response.observations.append(SurveyObservation(variable=v))
 
+    print(response)
     return response
 
 
@@ -169,9 +168,17 @@ def create_survey_response(request):
     except Exception:
         pass
     try:
-        _survey_response_from_template(survey_template(2014), create_non_existing_variables=True).save()
-    except NotUniqueError:
+        Library.objects.get(name=u"Motala stadsbibliotek").delete()
+    except Exception:
         pass
+
+    library = Library(
+        name=u"Motala stadsbibliotek",
+        email=u"kontakt@bib.motala.se",
+        municipality_name=u"Motala")
+    library.save()
+
+    _survey_response_from_template(survey_template(2014), create_non_existing_variables=True).save()
 
     return redirect(reverse('index'))
 
@@ -209,3 +216,14 @@ def edit_survey(request, survey_id):
 
     context = {"form": SurveyForm(instance=survey_response)}
     return render(request, 'libstat/edit_survey.html', context)
+
+
+@permission_required('is_superuser', login_url='index')
+def libraries(request):
+    if request.method == "POST":
+        pass
+    return render(request,
+                  'libstat/libraries.html',
+                  {
+                      "libraries": Library.objects.all()
+                  })

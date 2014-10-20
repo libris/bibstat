@@ -7,7 +7,7 @@ from django.core.urlresolvers import reverse
 from mongoengine.django.auth import User
 
 from libstat.tests import MongoTestCase
-from libstat.models import Variable, SurveyResponse, SurveyObservation, OpenData
+from libstat.models import Variable, SurveyResponse, SurveyObservation, OpenData, Library
 
 
 """
@@ -615,8 +615,10 @@ class PublishSurveyResponsesViewTest(MongoTestCase):
 
 class PublishSurveyResponseViewTest(MongoTestCase):
     def setUp(self):
+        library = Library(name=u"KARLSTAD STADSBIBLIOTEK")
+        library.save()
         self.survey_response = SurveyResponse(library_name=u"KARLSTAD STADSBIBLIOTEK", sample_year=2013,
-                                              target_group=u"public", observations=[])
+                                              target_group=u"public", observations=[], library=library)
         self.survey_response.save()
 
         self.url = reverse("publish_survey_response", kwargs={"survey_response_id": str(self.survey_response.id)})

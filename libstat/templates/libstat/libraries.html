@@ -1,0 +1,66 @@
+{% extends "libstat/base.html" %}
+{% load i18n %}
+{% load libstat_tags %}
+
+{% block content %}
+<div class="container">
+	<div class="page-header">
+		<h1>Bibliotek</h1>
+	</div>
+	<div class="panel panel-default">
+		<div class="panel-body">
+			<form action="{% url 'libraries' %}" method="POST" role="form" class="form-inline">
+				{% csrf_token %}
+				<div class="form-group">
+					<select class="form-control" value="Välj år">
+						<option value="">Välj år</option>
+						<option value="">2014</option>
+					</select>
+				</div>
+				<div class="form-group">
+					<a href="#" class="btn btn-primary">Spara urval</a>
+				</div>
+				<div class="form-group">
+					<button type="submit" class="btn btn-primary">Skapa enkät</button>
+				</div>
+				<hr>
+				<table class="table">
+					<thead>
+						<tr>
+							<th class="column selection">
+								<input title="{% trans 'Markera alla' %}" class="select-all"
+								type="checkbox" value="all"/>
+							</th>
+							<th class="column">Namn</th>
+							<th class="column">Kommun/län</th>
+							<th class="column">Email</th>
+							<th class="column">Länk</th>
+						</tr>
+					</thead>
+					<tbody>
+						{% for library in libraries %}
+						<tr>
+							<td>
+								<input class="select-one" type="checkbox"/>
+							</td>
+							<td>
+								{{ library.name }}
+							</td>
+							<td>
+								{{ library.municipality_name }}
+							</td>
+							<td>
+								{{ library.email }}
+							</td>
+							<td>
+								<a href="#">Visa i biblioteksdatabasen</a>
+							</td>
+						</tr>
+						{% endfor %}
+					</tbody>
+				</table>
+			</form>
+		</div>
+	</div>
+</div>
+{% endblock %}

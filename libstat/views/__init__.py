@@ -12,7 +12,8 @@ from surveys import (create_survey_response,
                      export_survey_responses,
                      publish_survey_response,
                      publish_survey_responses,
-                     survey_responses)
+                     survey_responses,
+                     libraries)
 from variables import (variables,
                        edit_variable,
                        create_variable)

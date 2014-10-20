@@ -20,7 +20,8 @@ from libstat.views import (open_data,
                            export_survey_responses,
                            variables,
                            create_variable,
-                           edit_variable)
+                           edit_variable,
+                           libraries)
 
 urlpatterns = patterns(
     'libstat.views',
@@ -56,4 +57,7 @@ urlpatterns = patterns(
     url(r'^variables/$', variables, name='variables'),
     url(r'^variables/new/$', create_variable, name='create_variable'),
     url(r'^variables/(?P<variable_id>\w+)/$', edit_variable, name='edit_variable'),
+
+    # Libraries
+    url(r'^libraries$', libraries, name='libraries'),
 )
