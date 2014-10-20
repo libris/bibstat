@@ -60,3 +60,6 @@ docs/_build/
 
 # OSX
 .DS_Store
+
+# MongoDB
+mongodb/

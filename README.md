@@ -102,3 +102,38 @@ Läs in statistikdata, exempelvis folkbibliotekfil som innehåller åren 2010 t 
 ### Kör tester ###
 
 	$ python manage.py test
+
+## OS X
+
+Minimal installation för OS X. Installera [Homebrew](http://brew.sh) om du inte har det sedan tidigare.
+
+	# Install prerequisites
+	brew install git mongodb python
+	pip install virtualenvwrapper
+
+	# Clone bibstat repository
+	git clone git@github.com:libris/bibstat
+	cd bibstat
+
+	# Launch mongodb
+	mkdir mongodb
+	mongod --dbpath $(pwd)/mongodb
+
+	# Create login
+	mongo
+	use bibstat
+	db.createUser({user:"bibstat", pwd:"bibstat", roles:["readWrite"]})
+	exit
+
+	# Setup virtualenv
+	source /usr/local/bin/virtualenvwrapper.sh
+	mkvirtualenv -p /usr/local/bin/python bibstat
+	workon bibstat
+
+	# Setup bibstat
+	pip install -r requirements.txt
+	cp bibstat/settings_local.py.example bibstat/settings_local.py
+	python manage.py createsuperuser --username=super --email=a@b.c
+
+	# Run bibstat
+	python manage.py runserver
