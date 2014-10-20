@@ -72,7 +72,7 @@ class VariablesViewTest(MongoTestCase):
     def test_each_variable_should_have_edit_link(self):
         response = self.client.get(self.url)
         self.assertContains(response,
-                            u'<a title="Visa/Ändra" data-form="/statistics/variables/{}/" href="#" class="edit-variable">Folk10</a>'.format(
+                            u'<a title="Visa/Ändra" data-form="/statistics/variables/{}" href="#" class="edit-variable">Folk10</a>'.format(
                                 self.folk10.id),
                             count=1,
                             status_code=200,
