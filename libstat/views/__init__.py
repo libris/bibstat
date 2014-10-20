@@ -7,7 +7,7 @@ from auth import login
 from helpers import (replaceable_variables_api,
                      surveyable_variables_api)
 from index import index
-from surveys import (create_survey_response,
+from surveys import (clean_example_surveys,
                      edit_survey,
                      export_survey_responses,
                      publish_survey_response,

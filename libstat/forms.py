@@ -6,7 +6,7 @@ from django import forms
 from libstat.survey_templates import survey_template
 from libstat.utils import SURVEY_TARGET_GROUPS
 from libstat.utils import VARIABLE_TYPES
-from libstat.models import Variable, SurveyObservation
+from libstat.models import Variable, SurveyObservation, Library
 
 logger = logging.getLogger(__name__)
 
@@ -202,3 +202,28 @@ class SurveyForm(forms.Form):
             self.fields["read_only"].initial = "true"
             for key, input in self.fields.iteritems():
                 input.widget.attrs["readonly"] = ""
+
+
+class CreateSurveysForm(forms.Form):
+    def __init__(self, *args, **kwargs):
+        super(CreateSurveysForm, self).__init__(*args, **kwargs)
+
+        self.fields["sample_year"] = forms.ChoiceField(
+            choices=[(2014, 2014)],
+            widget=forms.Select(attrs={"class": "form-control"}))
+
+        self.libraries = []
+        for library in Library.objects.all():
+            row = {}
+            row["name"] = library.name
+            row["municipality_name"] = library.municipality_name
+            row["email"] = library.email
+            checkbox_id = str(library.pk)
+            row["checkbox_id"] = checkbox_id
+            self.fields[checkbox_id] = forms.BooleanField(
+                required=False,
+                widget=forms.CheckboxInput(
+                    attrs={
+                        "value": library.pk
+                    }))
+            self.libraries.append(row)

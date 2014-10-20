@@ -12,10 +12,7 @@
 			<form action="{% url 'libraries' %}" method="POST" role="form" class="form-inline">
 				{% csrf_token %}
 				<div class="form-group">
-					<select class="form-control" value="Välj år">
-						<option value="">Välj år</option>
-						<option value="">2014</option>
-					</select>
+					{{ form.sample_year }}
 				</div>
 				<div class="form-group">
 					<a href="#" class="btn btn-primary">Spara urval</a>
@@ -38,10 +35,12 @@
 						</tr>
 					</thead>
 					<tbody>
-						{% for library in libraries %}
+						{% for library in form.libraries %}
 						<tr>
 							<td>
-								<input class="select-one" type="checkbox"/>
+								{% with key=library.checkbox_id %}
+									{{ form|access:key }}
+								{% endwith %}
 							</td>
 							<td>
 								{{ library.name }}

@@ -12,7 +12,7 @@ from excel_response import ExcelResponse
 from bibstat import settings
 
 from libstat.models import SurveyResponse, SurveyResponseMetadata, Variable, SurveyObservation, Library
-from libstat.forms import SurveyForm
+from libstat.forms import SurveyForm, CreateSurveysForm
 from libstat.survey_templates import survey_template
 
 
@@ -162,24 +162,9 @@ def _survey_response_from_template(template, create_non_existing_variables=False
 
 
 @permission_required('is_superuser', login_url='index')
-def create_survey_response(request):
-    try:
-        SurveyResponse.objects.get(sample_year=2014).delete()
-    except Exception:
-        pass
-    try:
-        Library.objects.get(name=u"Motala stadsbibliotek").delete()
-    except Exception:
-        pass
-
-    library = Library(
-        name=u"Motala stadsbibliotek",
-        email=u"kontakt@bib.motala.se",
-        municipality_name=u"Motala")
-    library.save()
-
-    _survey_response_from_template(survey_template(2014), create_non_existing_variables=True).save()
-
+def clean_example_surveys(request):
+    SurveyResponse.objects.filter(sample_year=2014).delete()
+    
     return redirect(reverse('index'))
 
 
@@ -218,12 +203,40 @@ def edit_survey(request, survey_id):
     return render(request, 'libstat/edit_survey.html', context)
 
 
+def _create_surveys(library_ids, sample_year):
+    for library_id in library_ids:
+        library = Library.objects.get(pk=library_id)
+        template = survey_template(sample_year)
+        survey = SurveyResponse(
+            library_name=library.name,
+            library=library,
+            sample_year=sample_year,
+            target_group="public",
+            observations=[])
+        for section in template.sections:
+            for group in section.groups:
+                for row in group.rows:
+                    for cell in row.cells:
+                            survey.observations.append(
+                                SurveyObservation(
+                                    variable=Variable.objects.get(key=cell.variable_key)))
+        survey.save()
+
+
 @permission_required('is_superuser', login_url='index')
 def libraries(request):
     if request.method == "POST":
-        pass
+        form = CreateSurveysForm(request.POST)
+        if form.is_valid():
+            sample_year = int(form.cleaned_data.pop("sample_year"))
+            library_ids = []
+            for field in form.cleaned_data:
+                if form.cleaned_data[field]:
+                    library_ids.append(field)
+            _create_surveys(library_ids, sample_year)
+
     return render(request,
                   'libstat/libraries.html',
                   {
-                      "libraries": Library.objects.all()
+                      "form": CreateSurveysForm()
                   })
