@@ -1,7 +1,6 @@
 # -*- coding: UTF-8 -*-
 import logging
 from datetime import datetime
-from cookielib import logger
 
 from mongoengine import *
 from mongoengine import signals
@@ -122,8 +121,7 @@ class Variable(VariableBase):
             logger.debug(u"PRE_SAVE: Fields {} have changed, creating variable version from current version".format(
                 changed_fields))
             query_set = Variable.objects.filter(pk=document.id)
-            assert len(
-                query_set) > 0  # Need to do something with query_set since it is lazy loaded. Otherwise nothing will be cloned.
+            assert len(query_set) > 0  # Trigger lazy loading
             versions = query_set.clone_into(VariableVersion.objects)
             for v in versions:
                 v.id = None
@@ -156,11 +154,12 @@ class Variable(VariableBase):
         else:
             return self.description
 
-
     def replace_siblings(self, to_be_replaced=[], switchover_date=None, commit=False):
         """
-            Important: If commit=False, make sure to use instance method 'save_updated_self_and_modified_replaced(modified_siblings)'
-            to ensure that siblings are not saved for draft variables and that all modifications are actually saved (no dirty transactions).
+            Important: If commit=False, make sure to use instance method
+            'save_updated_self_and_modified_replaced(modified_siblings)'
+            to ensure that siblings are not saved for draft variables and
+            that all modifications are actually saved (no dirty transactions).
         """
         current_replacements = set(self.replaces)
         modified_siblings = set()
@@ -171,7 +170,7 @@ class Variable(VariableBase):
             for object_id in to_be_replaced:
                 try:
                     variable = Variable.objects.get(pk=object_id)
-                    if variable.replaced_by != None and variable.replaced_by.id != self.id:
+                    if variable.replaced_by is not None and variable.replaced_by.id != self.id:
                         raise AttributeError(
                             u"Variable {} is already replaced by {}".format(object_id, variable.replaced_by.id))
                     siblings_to_replace.add(variable)
@@ -187,19 +186,20 @@ class Variable(VariableBase):
         # Release siblings that should no longer be replaced by this instance
         for to_release in siblings_to_release:
             if to_release.replaced_by:
-                to_release.replaced_by = None;
-                to_release.active_to = None;
+                to_release.replaced_by = None
+                to_release.active_to = None
                 modified_siblings.add(to_release)
 
         # Replace sibling variables
         for to_replace in siblings_to_replace:
             """
-                Nota bene: This modifies siblings for drafts as well as active variables. 
+                Nota bene: This modifies siblings for drafts as well as active variables.
                 It is important to use the instance method 'save_updated_self_and_modified_replaced(modified_siblings)'
                 to avoid saving siblings for draft variables.
             """
-            if not to_replace.replaced_by or to_replace.replaced_by.id != self.id or to_replace.active_to != switchover_date:
-                to_replace.replaced_by = self;
+            if (not to_replace.replaced_by or to_replace.replaced_by.id != self.id
+                    or to_replace.active_to != switchover_date):
+                to_replace.replaced_by = self
                 to_replace.active_to = switchover_date if switchover_date else None
                 modified_siblings.add(to_replace)
 
@@ -210,7 +210,6 @@ class Variable(VariableBase):
             modified_siblings = self.save_updated_self_and_modified_replaced(modified_siblings)
 
         return modified_siblings
-
 
     def save_updated_self_and_modified_replaced(self, modified_siblings):
         """
@@ -227,7 +226,6 @@ class Variable(VariableBase):
                     sibling.replaced_by = updated_instance
                 updated_siblings.append(sibling.save())
         return updated_siblings
-
 
     def target_groups__descriptions(self):
         display_names = []
@@ -260,7 +258,6 @@ class Variable(VariableBase):
 
     def type_to_rdf_type(self, type):
         return rdfVariableTypes[type]
-
 
     def as_simple_dict(self):
         return {u'key': self.key, u'id': str(self.id), u'description': self.description}
@@ -340,6 +337,7 @@ class SurveyTemplate(Document):
 
 
 class SurveyResponseQuerySet(QuerySet):
+
     def by_year_or_group(self, sample_year=None, target_group=None):
         target_group_query = Q(target_group=target_group) if target_group else Q()
         sample_year_query = Q(sample_year=sample_year) if sample_year else Q()
@@ -400,7 +398,8 @@ class SurveyResponseBase(Document):
     metadata = EmbeddedDocumentField(SurveyResponseMetadata)
     published_at = DateTimeField()
     published_by = ReferenceField(User)
-    # True if this version is published, False otherwise. Flag needed to optimize search for unpublished SurveyResponses.
+    # True if this version is published, False otherwise. Flag needed to
+    # optimize search for unpublished SurveyResponses.
     _is_published = BooleanField()
     date_created = DateTimeField(required=True, default=datetime.utcnow)
     created_by = ReferenceField(User)
@@ -444,7 +443,7 @@ class SurveyResponse(SurveyResponseBase):
                         changed_fields))
                 query_set = SurveyResponse.objects.filter(pk=document.id)
                 assert len(
-                    query_set) > 0  # Need to do something with query_set since it is lazy loaded. Otherwise nothing will be cloned.
+                    query_set) > 0  # Trigger lazy loading
                 versions = query_set.clone_into(SurveyResponseVersion.objects)
                 for v in versions:
                     v.id = None
@@ -468,7 +467,6 @@ class SurveyResponse(SurveyResponseBase):
     @property
     def is_published(self):
         return self._is_published if self._is_published else self.published_at != None
-
 
     def target_group__desc(self):
         return targetGroups[self.target_group]
@@ -554,7 +552,7 @@ class OpenData(Document):
             self.variable.key: self.value,
             u"published": self.date_created_str(),
             u"modified": self.date_modified_str()
-        };
+        }
         if self.library_id:
             _dict[u"library"] = {u"@id": u"{}/library/{}".format(settings.BIBDB_BASE_URL, self.library_id)}
         else:

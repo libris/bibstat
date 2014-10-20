@@ -1,5 +1,7 @@
 # -*- coding: utf-8 -*-
 import json
+import logging
+
 from django.core.urlresolvers import reverse
 
 from django.shortcuts import render
@@ -7,7 +9,9 @@ from django.http import HttpResponseForbidden, HttpResponse, Http404
 from django.contrib.auth.decorators import permission_required
 from mongoengine.errors import NotUniqueError
 
-from libstat.forms import *
+from libstat.models import Variable
+from libstat.forms import VariableForm
+from libstat.utils import SURVEY_TARGET_GROUPS
 
 
 logger = logging.getLogger(__name__)
@@ -99,7 +103,7 @@ def edit_variable(request, variable_id):
                     else:
                         return HttpResponseForbidden()
                 else:
-                    v = form.save(user=request.user, activate=(action == "save_and_activate"));
+                    v = form.save(user=request.user, activate=(action == "save_and_activate"))
 
                 # No redirect since this is displayed as a modal and we do a javascript redirect if no form errors
                 return HttpResponse(v.to_json(), content_type="application/json")

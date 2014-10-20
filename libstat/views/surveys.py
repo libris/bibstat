@@ -11,7 +11,7 @@ from mongoengine.errors import NotUniqueError
 from excel_response import ExcelResponse
 from bibstat import settings
 
-from libstat.models import SurveyResponse
+from libstat.models import SurveyResponse, SurveyResponseMetadata, Variable, SurveyObservation
 from libstat.forms import SurveyForm
 from libstat.survey_templates import survey_template
 
@@ -32,7 +32,7 @@ def survey_responses(request):
     action = request.GET.get("action", "")
     target_group = request.GET.get("target_group", "")
     sample_year = request.GET.get("sample_year", "")
-    unpublished_only = request.GET.get("unpublished_only", False);
+    unpublished_only = request.GET.get("unpublished_only", False)
     if "True" == unpublished_only:
         unpublished_only = True
     else:
@@ -41,11 +41,12 @@ def survey_responses(request):
     if action == "list":
         # TODO: Pagination
         if unpublished_only:
-            s_responses = SurveyResponse.objects.unpublished_by_year_or_group(sample_year=sample_year,
-                target_group=target_group).order_by(
-                "library")
+            s_responses = SurveyResponse.objects.unpublished_by_year_or_group(
+                sample_year=sample_year,
+                target_group=target_group).order_by("library")
         elif sample_year or target_group:
-            s_responses = SurveyResponse.objects.by_year_or_group(sample_year=sample_year,
+            s_responses = SurveyResponse.objects.by_year_or_group(
+                sample_year=sample_year,
                 target_group=target_group).order_by("library")
         else:
             message = u"Ange åtminstone ett urvalskriterium för att lista enkätsvar"
@@ -89,9 +90,9 @@ def publish_survey_responses(request):
                     print e
 
     # TODO: There has to be a better way to do this...
-    return HttpResponseRedirect(u"{}{}".format(reverse("survey_responses"),
-        u"?action=list&target_group={}&sample_year={}".format(target_group,
-            sample_year)))
+    return HttpResponseRedirect(u"{}{}".format(
+        reverse("survey_responses"),
+        u"?action=list&target_group={}&sample_year={}".format(target_group, sample_year)))
 
 
 @permission_required('is_superuser', login_url='index')
@@ -168,7 +169,7 @@ def create_survey_response(request):
     except Exception:
         pass
     try:
-        _survey_response_from_template(survey_template(), create_non_existing_variables=True).save()
+        _survey_response_from_template(survey_template(2014), create_non_existing_variables=True).save()
     except NotUniqueError:
         pass
 
@@ -205,6 +206,6 @@ def edit_survey(request, survey_id):
     if survey_response.status == "not_viewed":
         survey_response.status = "initiated"
         survey_response.save()
-        
+
     context = {"form": SurveyForm(instance=survey_response)}
     return render(request, 'libstat/edit_survey.html', context)

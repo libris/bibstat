@@ -1,16 +1,16 @@
 # -*- coding: utf-8 -*-
 import json
 import datetime
+import logging
 
 from django.http import HttpResponse, Http404
 from django.core.urlresolvers import reverse
 from mongoengine.queryset import Q
 from django.shortcuts import render
 
-from libstat.models import OpenData
+from libstat.models import Variable, OpenData
 from libstat.utils import parse_datetime_from_isodate_str
 from bibstat import settings
-from libstat.forms import *
 
 
 logger = logging.getLogger(__name__)
@@ -116,10 +116,6 @@ core_terms = [
 
 core_term_ids = {term[u"@id"] for term in core_terms}
 
-"""
-    OpenDataApi
-"""
-
 
 def open_data(request):
     context = {
@@ -150,7 +146,8 @@ def data_api(request):
         try:
             variable = Variable.objects.get(key=term)
             logger.debug(
-                u"Fetching statistics data for term {} published between {} and {}, items {} to {}".format(variable.key,
+                u"Fetching statistics data for term {} published between {} and {}, items {} to {}".format(
+                    variable.key,
                     from_date,
                     to_date,
                     offset,
@@ -162,8 +159,8 @@ def data_api(request):
 
     else:
         logger.debug(
-            u"Fetching statistics data published between {} and {}, items {} to {}".format(from_date, to_date, offset,
-                offset + limit))
+            u"Fetching statistics data published between {} and {}, items {} to {}".format(
+                from_date, to_date, offset, offset + limit))
         objects = OpenData.objects.filter(modified_from_query & modified_to_query).skip(offset).limit(limit)
 
     observations = []
@@ -177,11 +174,6 @@ def data_api(request):
     return HttpResponse(json.dumps(data), content_type="application/ld+json")
 
 
-"""
-    Observation Api
-"""
-
-
 def observation_api(request, observation_id):
     try:
         open_data = OpenData.objects.get(pk=observation_id)
@@ -191,11 +183,6 @@ def observation_api(request, observation_id):
     observation.update(open_data.to_dict())
     observation["dataSet"] = data_set["@id"]
     return HttpResponse(json.dumps(observation), content_type="application/ld+json")
-
-
-"""
-    TermsApi
-"""
 
 
 def terms_api(request):

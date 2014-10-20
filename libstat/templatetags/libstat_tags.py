@@ -11,10 +11,6 @@ register = template.Library()
 
 
 def utc_tz(value):
-    """
-        Append UTC tzinfo to a datetime to get correct localization of dates and times in view.
-        Datetime objects for documents are stored as UTC without timezone information.
-    """
     return value.replace(tzinfo=pytz.utc) if value and isinstance(value, datetime) else value
 
 
@@ -26,7 +22,6 @@ def srs_label(key):
     return survey_response_status_label(key)
 
 
-@register.filter(name='access')
 def access(value, arg):
     return value[arg]
 

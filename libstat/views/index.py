@@ -1,8 +1,7 @@
 # -*- coding: utf-8 -*-
+import logging
 
 from django.shortcuts import render
-
-from libstat.forms import *
 
 
 logger = logging.getLogger(__name__)

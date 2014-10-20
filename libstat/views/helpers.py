@@ -22,7 +22,7 @@ def surveyable_variables_api(request):
         variables = Variable.objects.surveyable().filter(key__icontains=query)
     else:
         variables = Variable.objects.surveyable()
-    data = [{'key': v.key, 'id': str(v.id)} for v in variables];
+    data = [{'key': v.key, 'id': str(v.id)} for v in variables]
     return HttpResponse(json.dumps(data), content_type="application/json")
 
 
@@ -38,6 +38,5 @@ def replaceable_variables_api(request):
         variables = Variable.objects.replaceable().filter(key_query | description_query)
     else:
         variables = Variable.objects.replaceable()
-    data = [v.as_simple_dict() for v in variables];
+    data = [v.as_simple_dict() for v in variables]
     return HttpResponse(json.dumps(data), content_type="application/json")
-

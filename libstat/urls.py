@@ -3,10 +3,27 @@ from django.conf.urls import patterns, url
 
 from django.contrib.auth.views import logout
 
-from libstat.views import *
+from libstat.views import (open_data,
+                           data_api,
+                           observation_api,
+                           terms_api,
+                           term_api,
+                           login,
+                           replaceable_variables_api,
+                           surveyable_variables_api,
+                           index,
+                           survey_responses,
+                           create_survey_response,
+                           edit_survey,
+                           publish_survey_responses,
+                           publish_survey_response,
+                           export_survey_responses,
+                           variables,
+                           create_variable,
+                           edit_variable)
 
-
-urlpatterns = patterns('libstat.views',
+urlpatterns = patterns(
+    'libstat.views',
 
     # APIs
     url(r'^open_data/$', open_data, name="open_data"),

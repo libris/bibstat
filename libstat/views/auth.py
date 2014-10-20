@@ -23,9 +23,6 @@ logger = logging.getLogger(__name__)
 @csrf_protect
 @never_cache
 def login(request):
-    """
-        Login modal view
-    """
     redirect_to = _get_listview_from_modalview(request.REQUEST.get("next", ""))
 
     if request.method == "POST":
