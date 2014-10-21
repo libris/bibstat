@@ -194,7 +194,7 @@ define(['jquery', 'cell.sum', 'cell', 'bootstrap.validator.sv'], function ($, su
                 excluded: ['.disable-validation', ':disabled', ':hidden', ':not(:visible)'],
                 feedbackIcons: {
                     valid: 'fa fa-check',
-                    invalid: 'fa fa-times',
+                    invalid: 'fa fa-ban',
                     validating: 'fa fa-refresh'
                 }
             }).on('error.validator.bv', function (e, data) { // http://bootstrapvalidator.com/examples/changing-default-behaviour/#showing-one-message-each-time
