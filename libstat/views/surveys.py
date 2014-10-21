@@ -195,6 +195,8 @@ def _save_survey_response_from_form(response, form):
             else:
                 response.__dict__["_data"][field] = form.cleaned_data[field]
         response.save()
+    else:
+        raise Exception(form.errors)
 
 
 @permission_required('is_superuser', login_url='index')

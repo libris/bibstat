@@ -156,6 +156,12 @@ class SurveyForm(forms.Form):
 
         if "comment" in cell.types:
             field = forms.CharField(required=False, widget=forms.Textarea(attrs=attrs))
+        elif "integer" in cell.types:
+            field = forms.IntegerField(required=False, widget=forms.TextInput(attrs=attrs))
+        elif "email" in cell.types:
+            field = forms.EmailField(required=False, widget=forms.TextInput(attrs=attrs))
+        elif "numeric" in cell.types:
+            field = forms.FloatField(required=False, widget=forms.TextInput(attrs=attrs))
         else:
             field = forms.CharField(required=False, widget=forms.TextInput(attrs=attrs))
 
