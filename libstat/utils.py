@@ -1,4 +1,5 @@
 # -*- coding: UTF-8 -*-
+from collections import OrderedDict
 import datetime
 
 ALL_TARGET_GROUPS_label = u"Samtliga bibliotekstyper"
@@ -15,7 +16,7 @@ SUBMITTED = (u"submitted", u"Inskickad")
 CONTROLLED = (u"controlled", u"Kontrollerad")
 PUBLISHED = (u"published", u"Publicerad")
 SURVEY_RESPONSE_STATUSES = (NOT_VIEWED, INITIATED, SUBMITTED, CONTROLLED, PUBLISHED)
-survey_response_statuses = dict(SURVEY_RESPONSE_STATUSES)
+survey_response_statuses = OrderedDict(SURVEY_RESPONSE_STATUSES)
 
 TYPE_STRING = (u"string", u"Text")
 TYPE_BOOLEAN = (u"boolean", u"Boolesk")
