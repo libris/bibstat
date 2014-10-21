@@ -21,7 +21,9 @@ from libstat.views import (open_data,
                            create_variable,
                            edit_variable,
                            libraries,
-                           edit_survey_status)
+                           edit_survey_status,
+                           import_libraries,
+                           remove_libraries)
 
 
 urlpatterns = patterns(
@@ -61,4 +63,6 @@ urlpatterns = patterns(
 
     # Libraries
     url(r'^libraries$', libraries, name='libraries'),
+    url(r'^libraries/import$', import_libraries, name='import_libraries'),
+    url(r'^libraries/remove$', remove_libraries, name='remove_libraries')
 )

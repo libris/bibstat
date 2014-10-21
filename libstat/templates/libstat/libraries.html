@@ -15,11 +15,16 @@
 					{{ form.sample_year }}
 				</div>
 				<div class="form-group">
-					<a href="#" class="btn btn-primary">Spara urval</a>
-				</div>
-				<div class="form-group">
 					<button type="submit" class="btn btn-primary">Skapa enkät</button>
 				</div>
+				<span class="pull-right">
+					<div class="form-group">
+						<a href="{% url 'import_libraries' %}" class="btn btn-primary">Importera bibliotek</a>
+					</div>
+					<div class="form-group">
+						<a href="{% url 'remove_libraries' %}" class="btn btn-danger">Ta bort alla bibliotek</a>
+					</div>
+				</span>
 				<hr>
 				<table class="table">
 					<thead>
@@ -29,9 +34,8 @@
 								type="checkbox" value="all"/>
 							</th>
 							<th class="column">Namn</th>
-							<th class="column">Kommun/län</th>
+							<th class="column">Stad</th>
 							<th class="column">Email</th>
-							<th class="column">Länk</th>
 						</tr>
 					</thead>
 					<tbody>
@@ -50,9 +54,6 @@
 							</td>
 							<td>
 								{{ library.email }}
-							</td>
-							<td>
-								<a href="#">Visa i biblioteksdatabasen</a>
 							</td>
 						</tr>
 						{% endfor %}

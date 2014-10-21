@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 import logging
+import requests
 
 from time import strftime
 from django.core.urlresolvers import reverse
@@ -163,18 +164,7 @@ def _survey_response_from_template(template, create_non_existing_variables=False
 
 @permission_required('is_superuser', login_url='index')
 def clean_example_surveys(request):
-    Library.objects.filter().delete()
-    Library(name="Sjöbo bibliotek",
-            municipality_name="Sjöbo",
-            email="kontakt@bib.sjobo.se").save()
-    Library(name="Centrumbiblioteket",
-            municipality_name="Flen",
-            email="statistik@bib.flen.se").save()
-    Library(name="Motala stadsbibliotek",
-            municipality_name="Motala",
-            email="kontakt@bib.motala.se").save()
     SurveyResponse.objects.filter(sample_year=2014).delete()
-
     return redirect(reverse('index'))
 
 
@@ -274,3 +264,52 @@ def libraries(request):
                   {
                       "form": CreateSurveysForm()
                   })
+
+
+def _get_paginated_library_data(start_index=0):
+    print("Iterating with start_index=%d" % start_index)
+    response = requests.get(
+        url="http://bibdb.libris.kb.se/api/lib?dump=true&start=%d" % start_index,
+        headers={"APIKEY_AUTH_HEADER": "bibstataccess"})
+    libraries = []
+    for library in response.json()["libraries"]:
+        libraries.append({
+            "name": library["name"],
+            "city": next((a["city"] for a in library["address"] if a["address_type"] == "gen"), ""),
+            "email": next((c["email"] for c in library["contact"] if c["contact_type"] == "bibchef"), "dummy@org.org"),
+            "sigel": library["sigel"]
+            })
+    return libraries
+
+
+def _get_all_library_data():
+    libraries = []
+    for start_index in range(0, 6000, 200):
+        libraries += _get_paginated_library_data(start_index)
+    return libraries
+
+
+def update_libraries():
+    for lib_data in _get_all_library_data():
+        try:
+            library = Library.objects.get(sigel=lib_data["sigel"])
+        except Library.DoesNotExist:
+            library = Library()
+        print(lib_data["email"])
+        library.sigel = lib_data["sigel"]
+        library.name = lib_data["name"]
+        # library.email = lib_data["email"]
+        library.municipality_name = lib_data["city"]
+        library.save()
+
+
+@permission_required('is_superuser', login_url='index')
+def remove_libraries(request):
+    Library.objects.filter().delete()
+    return redirect(reverse('libraries'))
+
+
+@permission_required('is_superuser', login_url='index')
+def import_libraries(request):
+    update_libraries()
+    return redirect(reverse('libraries'))
