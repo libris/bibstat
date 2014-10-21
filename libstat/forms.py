@@ -4,7 +4,7 @@ import logging
 from django import forms
 
 from libstat.survey_templates import survey_template
-from libstat.utils import SURVEY_TARGET_GROUPS
+from libstat.utils import SURVEY_TARGET_GROUPS, survey_response_statuses
 from libstat.utils import VARIABLE_TYPES
 from libstat.models import Variable, SurveyObservation, Library
 
@@ -77,7 +77,7 @@ class VariableForm(forms.Form):
 
         active_to = cleaned_data['active_to'] if 'active_to' in cleaned_data else None
         if (self.instance and self.instance.replaced_by and active_to and self.instance.active_to
-                and active_to != self.instance.active_to.date()):
+            and active_to != self.instance.active_to.date()):
             self._errors['active_to'] = self.error_class([u"Styrs av ersättande term"])
             del cleaned_data['active_to']
         return cleaned_data
@@ -114,7 +114,6 @@ class VariableForm(forms.Form):
 
 
 class SurveyForm(forms.Form):
-
     def _cell_to_input_field(self, cell, observation):
         attrs = {"class": "form-control",
                  "id": cell.variable_key,
@@ -175,14 +174,21 @@ class SurveyForm(forms.Form):
                                                        widget=forms.HiddenInput(attrs={"id": "submit_action"}))
         self.fields["read_only"] = forms.CharField(required=False,
                                                    widget=forms.HiddenInput(attrs={"id": "read_only"}))
+
         self.fields["key"] = forms.CharField(required=False,
                                              widget=forms.HiddenInput(),
                                              initial=response.pk)
+
+        self.fields["selected_status"] = forms.CharField(required=False,
+                                             widget=forms.HiddenInput(),
+                                             initial=survey_response_statuses[response.status])
 
         self.library_name = response.library.name
         self.municipality_name = response.library.municipality_name
         self.sample_year = response.sample_year
         self.is_read_only = not response.status in (u"not_viewed", u"initiated")
+        self.status = survey_response_statuses[response.status]
+        self.statuses = survey_response_statuses.values()
         self.sections = template.sections
 
         for section in template.sections:

@@ -13,6 +13,7 @@ from bibstat import settings
 from libstat.models import SurveyResponse, Variable, SurveyObservation, Library
 from libstat.forms import SurveyForm, CreateSurveysForm
 from libstat.survey_templates import survey_template
+from libstat.utils import survey_response_statuses
 
 
 logger = logging.getLogger(__name__)
@@ -230,6 +231,26 @@ def _create_surveys(library_ids, sample_year):
                                 SurveyObservation(
                                     variable=Variable.objects.get(key=cell.variable_key)))
         survey.save()
+
+
+def _get_status_key_from_value(status):
+    keys = list(survey_response_statuses.keys())
+    values = list(survey_response_statuses.values())
+    return keys[values.index(status)]
+
+
+@permission_required('is_superuser', login_url='index')
+def edit_survey_status(request, survey_id):
+    if request.method == "POST":
+        status = request.POST[u'selected_status']
+        if not status in survey_response_statuses.values():
+            raise Exception("Invalid status '" + status + "' for survey '" + survey_id + "'.")
+
+        survey = SurveyResponse.objects.get(pk=survey_id)
+        survey.status = _get_status_key_from_value(status)
+        survey.save()
+
+    return redirect(reverse('edit_survey', args=(survey_id,)))
 
 
 @permission_required('is_superuser', login_url='index')

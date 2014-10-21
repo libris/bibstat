@@ -32,6 +32,7 @@ define(['jquery', 'cell.sum', 'cell', 'bootstrap.validator.sv'], function ($, su
             });
         }
     };
+
     var initDropdown = function () {
         var isActive = function (element) {
             var parent = element.parent('li');
@@ -96,7 +97,7 @@ define(['jquery', 'cell.sum', 'cell', 'bootstrap.validator.sv'], function ($, su
             e.preventDefault();
 
             var element = $(this);
-            if(!isActive(element))
+            if (!isActive(element))
                 showChangesNotSaved();
 
             setActive(element);
@@ -155,15 +156,31 @@ define(['jquery', 'cell.sum', 'cell', 'bootstrap.validator.sv'], function ($, su
 
         updateProgress();
     };
-    var readOnlyInit = function() {
+    var readOnlyInit = function () {
+
         /* Enable help button popover. */
         survey.form(".btn-help").popover({
             container: 'body'
         }).click(function (e) {
             e.preventDefault();
         });
+
+        var initAdmin = function () {
+            $("#form-admin .dropdown-menu > li > a").click(function () {
+                var element = $(this);
+
+                $("#id_selected_status").val(element.text());
+                element.closest(".dropdown").children(".dropdown-toggle").html(element.text() + ' <span class="caret"></span>')
+
+                var item = element.closest("li");
+                item.siblings("li").removeClass("active");
+                item.addClass("active");
+            });
+        };
+
+        initAdmin();
     };
-    var showChangesNotSaved = function() {
+    var showChangesNotSaved = function () {
         $("#unsaved-changes-label").text("Det finns ifyllda svar som inte sparats");
     };
     return {
