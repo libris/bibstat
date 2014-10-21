@@ -10,7 +10,7 @@ from mongoengine.errors import DoesNotExist
 from mongoengine.queryset.queryset import QuerySet
 from django.conf import settings
 
-from libstat.utils import ISO8601_utc_format, SURVEY_RESPONSE_STATUSES, NOT_VIEWED
+from libstat.utils import ISO8601_utc_format, SURVEY_RESPONSE_STATUSES, NOT_VIEWED, PUBLISHED
 
 
 logger = logging.getLogger(__name__)
@@ -479,7 +479,7 @@ class SurveyResponse(SurveyResponseBase):
         for obs in self.observations:
             # Only publish public observations that have a value
             if obs._is_public and obs.value != None:
-                # TODO: Warn if already is_published?
+                # TODO: Need to handle consequent publishes
                 data_item = None
                 existing = OpenData.objects.filter(library_name=self.library_name, sample_year=self.sample_year,
                                                    variable=obs.variable)
@@ -496,6 +496,7 @@ class SurveyResponse(SurveyResponseBase):
                 data_item.date_modified = publishing_date
                 data_item.save()
 
+        self.status = PUBLISHED[0]
         self.published_at = publishing_date
         self.published_by = user
 

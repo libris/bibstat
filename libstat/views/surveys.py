@@ -187,7 +187,7 @@ def _save_survey_response_from_form(response, form):
                 pass
             elif field == "submit_action":
                 action = form.cleaned_data[field]
-                if action == "submit":
+                if action == "submit" and response.status == "initiated":
                     response.status = "submitted"
             elif observation:
                 observation.value = form.cleaned_data[field]
@@ -207,11 +207,11 @@ def edit_survey(request, survey_id):
         _save_survey_response_from_form(survey_response, form)
 
     survey_response = SurveyResponse.objects.get(pk=survey_id)
-    if survey_response.status == "not_viewed":
+    if not request.user.is_authenticated() and survey_response.status == "not_viewed":
         survey_response.status = "initiated"
         survey_response.save()
 
-    context = {"form": SurveyForm(instance=survey_response)}
+    context = {"form": SurveyForm(instance=survey_response, authenticated=request.user.is_authenticated())}
     return render(request, 'libstat/edit_survey.html', context)
 
 
@@ -245,6 +245,8 @@ def _get_status_key_from_value(status):
 def edit_survey_status(request, survey_id):
     if request.method == "POST":
         status = request.POST[u'selected_status']
+        if status == "published":
+            raise Exception("Cannot set published status for survey '" + survey_id + "'.")
         if not status in survey_response_statuses.values():
             raise Exception("Invalid status '" + status + "' for survey '" + survey_id + "'.")
 
