@@ -7,11 +7,10 @@ from django.core.urlresolvers import reverse
 from django.shortcuts import render, redirect
 from django.http import HttpResponseRedirect, Http404
 from django.contrib.auth.decorators import permission_required
-from mongoengine.errors import NotUniqueError
 from excel_response import ExcelResponse
 from bibstat import settings
 
-from libstat.models import SurveyResponse, SurveyResponseMetadata, Variable, SurveyObservation, Library
+from libstat.models import SurveyResponse, Variable, SurveyObservation, Library
 from libstat.forms import SurveyForm, CreateSurveysForm
 from libstat.survey_templates import survey_template
 
@@ -163,8 +162,18 @@ def _survey_response_from_template(template, create_non_existing_variables=False
 
 @permission_required('is_superuser', login_url='index')
 def clean_example_surveys(request):
+    Library.objects.filter().delete()
+    Library(name="Sjöbo bibliotek",
+            municipality_name="Sjöbo",
+            email="kontakt@bib.sjobo.se").save()
+    Library(name="Centrumbiblioteket",
+            municipality_name="Flen",
+            email="statistik@bib.flen.se").save()
+    Library(name="Motala stadsbibliotek",
+            municipality_name="Motala",
+            email="kontakt@bib.motala.se").save()
     SurveyResponse.objects.filter(sample_year=2014).delete()
-    
+
     return redirect(reverse('index'))
 
 
