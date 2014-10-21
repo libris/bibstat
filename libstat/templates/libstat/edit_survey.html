@@ -47,6 +47,47 @@
         }
 
     </style>
+
+    {% if user.is_authenticated %}
+        <div class="container">
+            <div class="jumbotron">
+                <p>
+                    Du ser nu {{ form.sample_year }} års enkät för <b>{{ form.library_name }}</b> i
+                    <b>{{ form.municipality_name }}</b> kommun.
+                    <br>Enkäten har just nu status <b>{{ form.status }}</b> men du kan ändra statusen nedan.
+                    <br>Du har också möjligheten att kontrollera, korrigera och spara enkäten.
+                </p>
+
+                <form id="form-admin" class="form" action="{% url 'edit_survey_status' form.key.value %}" method="post">
+                    {% csrf_token %}
+                    {{ form.selected_status }}
+
+                    <div class="form-group">
+                        <div class="input-group">
+                            <label>Ändra status</label>
+
+                            <div class="dropdown">
+                                <button class="btn btn-default dropdown-toggle" type="button" data-toggle="dropdown">
+                                    {{ form.status }} <span class="caret"></span>
+                                </button>
+                                <ul class="dropdown-menu" role="menu">
+                                    {% for status in form.statuses %}
+                                        {% if status == form.status %}
+                                            <li class="active"><a href="#">{{ status }}</a></li>
+                                        {% else %}
+                                            <li><a href="#">{{ status }}</a></li>
+                                        {% endif %}
+                                    {% endfor %}
+                                </ul>
+                                <button type="submit" class="btn btn-primary">Ändra</button>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    {% endif %}
+
     <div class="container container-survey">
         <div class="page-header">
             <h1>Statistikenkät för verksamhetsåret {{ form.sample_year }}</h1>
