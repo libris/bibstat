@@ -4,7 +4,7 @@ import logging
 from django import forms
 
 from libstat.survey_templates import survey_template
-from libstat.utils import SURVEY_TARGET_GROUPS, survey_response_statuses
+from libstat.utils import SURVEY_TARGET_GROUPS, survey_response_statuses, PUBLISHED
 from libstat.utils import VARIABLE_TYPES
 from libstat.models import Variable, SurveyObservation, Library
 
@@ -164,6 +164,7 @@ class SurveyForm(forms.Form):
 
     def __init__(self, *args, **kwargs):
         response = kwargs.pop('instance', None)
+        authenticated = kwargs.pop('authenticated', False)
         super(SurveyForm, self).__init__(*args, **kwargs)
 
         template = survey_template(response.sample_year, response)
@@ -180,15 +181,18 @@ class SurveyForm(forms.Form):
                                              initial=response.pk)
 
         self.fields["selected_status"] = forms.CharField(required=False,
-                                             widget=forms.HiddenInput(),
-                                             initial=survey_response_statuses[response.status])
+                                                         widget=forms.HiddenInput(),
+                                                         initial=survey_response_statuses[response.status])
 
         self.library_name = response.library.name
         self.municipality_name = response.library.municipality_name
         self.sample_year = response.sample_year
-        self.is_read_only = not response.status in (u"not_viewed", u"initiated")
+        self.is_user_read_only = not response.status in (u"not_viewed", u"initiated")
+        self.is_read_only = not authenticated and self.is_user_read_only
+        self.can_submit = not authenticated and response.status == "initiated"
         self.status = survey_response_statuses[response.status]
-        self.statuses = survey_response_statuses.values()
+        self.statuses = [status for status in survey_response_statuses.values() if not status == PUBLISHED[1]]
+        self.is_published = response.status == PUBLISHED[0]
         self.sections = template.sections
 
         for section in template.sections:

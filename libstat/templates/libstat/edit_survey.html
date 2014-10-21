@@ -54,36 +54,49 @@
                 <p>
                     Du ser nu {{ form.sample_year }} års enkät för <b>{{ form.library_name }}</b> i
                     <b>{{ form.municipality_name }}</b> kommun.
-                    <br>Enkäten har just nu status <b>{{ form.status }}</b> men du kan ändra statusen nedan.
-                    <br>Du har också möjligheten att kontrollera, korrigera och spara enkäten.
+                    <br>Enkäten har just nu status <b>{{ form.status|lower }}</b> och är
+                    <b>{% if form.is_user_read_only %} stängd {% else %} öppen {% endif %}</b> för respondenten.
+
+                    {% if form.is_published %}
+                        <br>
+                        <br>Eftersom enkäten har publicerats kan du inte längre ändra status.
+                        <br>Däremot kan du fortfarande kontrollera, korrigera och spara enkäten.
+                        <br>Du behöver publicera enkäten igen för att ändringar ska synas utåt.
+                    {% else %}
+                        <br>Här kan du kontrollera, korrigera, spara och ändra status på enkäten.
+                    {% endif %}
                 </p>
 
-                <form id="form-admin" class="form" action="{% url 'edit_survey_status' form.key.value %}" method="post">
-                    {% csrf_token %}
-                    {{ form.selected_status }}
+                {% if not form.is_published %}
+                    <form id="form-admin" class="form" action="{% url 'edit_survey_status' form.key.value %}"
+                          method="post">
+                        {% csrf_token %}
+                        {{ form.selected_status }}
 
-                    <div class="form-group">
-                        <div class="input-group">
-                            <label>Ändra status</label>
+                        <div class="form-group">
+                            <div class="input-group">
+                                <label>Ändra status</label>
 
-                            <div class="dropdown">
-                                <button class="btn btn-default dropdown-toggle" type="button" data-toggle="dropdown">
-                                    {{ form.status }} <span class="caret"></span>
-                                </button>
-                                <ul class="dropdown-menu" role="menu">
-                                    {% for status in form.statuses %}
-                                        {% if status == form.status %}
-                                            <li class="active"><a href="#">{{ status }}</a></li>
-                                        {% else %}
-                                            <li><a href="#">{{ status }}</a></li>
-                                        {% endif %}
-                                    {% endfor %}
-                                </ul>
-                                <button type="submit" class="btn btn-primary">Ändra</button>
+                                <div class="dropdown">
+                                    <button class="btn btn-default dropdown-toggle" type="button"
+                                            data-toggle="dropdown">
+                                        {{ form.status }} <span class="caret"></span>
+                                    </button>
+                                    <ul class="dropdown-menu" role="menu">
+                                        {% for status in form.statuses %}
+                                            {% if status == form.status %}
+                                                <li class="active"><a href="#">{{ status }}</a></li>
+                                            {% else %}
+                                                <li><a href="#">{{ status }}</a></li>
+                                            {% endif %}
+                                        {% endfor %}
+                                    </ul>
+                                    <button type="submit" class="btn btn-primary">Ändra</button>
+                                </div>
                             </div>
                         </div>
-                    </div>
-                </form>
+                    </form>
+                {% endif %}
             </div>
         </div>
     {% endif %}
@@ -160,7 +173,8 @@
                         <div class="navbar-right navbar-submit">
                             <div id="unsaved-changes-label" class="navbar-text"></div>
                             <a href="#" id="save-survey-btn" class="btn btn-primary navbar-btn">Spara</a>
-                            <a href="#" id="submit-survey-btn" class="btn btn-success navbar-btn">Skicka</a>
+                            <a href="#" id="submit-survey-btn" class="btn btn-success navbar-btn
+                                {% if not form.can_submit %} disabled {% endif %}">Skicka</a>
                         </div>
                     </div>
                 </div>
