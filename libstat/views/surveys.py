@@ -258,6 +258,7 @@ def libraries(request):
                 if form.cleaned_data[field]:
                     library_ids.append(field)
             _create_surveys(library_ids, sample_year)
+            return redirect(reverse("survey_responses"))
 
     return render(request,
                   'libstat/libraries.html',
@@ -266,41 +267,22 @@ def libraries(request):
                   })
 
 
-def _get_paginated_library_data(start_index=0):
-    print("Iterating with start_index=%d" % start_index)
-    response = requests.get(
-        url="http://bibdb.libris.kb.se/api/lib?dump=true&start=%d" % start_index,
-        headers={"APIKEY_AUTH_HEADER": "bibstataccess"})
-    libraries = []
-    for library in response.json()["libraries"]:
-        libraries.append({
-            "name": library["name"],
-            "city": next((a["city"] for a in library["address"] if a["address_type"] == "gen"), ""),
-            "email": next((c["email"] for c in library["contact"] if c["contact_type"] == "bibchef"), "dummy@org.org"),
-            "sigel": library["sigel"]
-            })
-    return libraries
-
-
-def _get_all_library_data():
-    libraries = []
+def _update_libraries():
     for start_index in range(0, 6000, 200):
-        libraries += _get_paginated_library_data(start_index)
-    return libraries
-
-
-def update_libraries():
-    for lib_data in _get_all_library_data():
-        try:
-            library = Library.objects.get(sigel=lib_data["sigel"])
-        except Library.DoesNotExist:
-            library = Library()
-        print(lib_data["email"])
-        library.sigel = lib_data["sigel"]
-        library.name = lib_data["name"]
-        # library.email = lib_data["email"]
-        library.municipality_name = lib_data["city"]
-        library.save()
+        response = requests.get(
+            url="http://bibdb.libris.kb.se/api/lib?dump=true&start=%d" % start_index,
+            headers={"APIKEY_AUTH_HEADER": "bibstataccess"})
+        for lib_data in response.json()["libraries"]:
+            try:
+                library = Library.objects.get(sigel=lib_data["sigel"])
+            except Library.DoesNotExist:
+                library = Library()
+            library.sigel = lib_data["sigel"]
+            library.name = lib_data["name"]
+            library.municipality_name = next((a["city"] for a in lib_data["address"] if a["address_type"] == "gen"),
+                                             "")
+            # library.email = "a@a.a"  # next((c["email"] for c in lib_data["contact"] if c["contact_type"] == "bibchef"), "dummy@dummy.org")
+            library.save()
 
 
 @permission_required('is_superuser', login_url='index')
@@ -311,5 +293,5 @@ def remove_libraries(request):
 
 @permission_required('is_superuser', login_url='index')
 def import_libraries(request):
-    update_libraries()
+    _update_libraries()
     return redirect(reverse('libraries'))
