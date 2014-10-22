@@ -381,6 +381,11 @@ class Library(Document):
         return u"libdb [{}, {}, {}]".format(self.bibdb_id, self.bibdb_sigel, self.bibdb_name)
 
 
+class LibrarySelection(Document):
+    name = StringField(unique=True)
+    sigels = ListField()
+
+
 class SurveyResponseMetadata(EmbeddedDocument):
     respondent_name = StringField()
     respondent_email = StringField()

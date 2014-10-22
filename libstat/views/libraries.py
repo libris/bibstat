@@ -1,3 +1,4 @@
+# -*- coding: UTF-8 -*-
 import requests
 import random
 import string
@@ -6,7 +7,7 @@ from django.core.urlresolvers import reverse
 from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import permission_required
 
-from libstat.models import Library, SurveyResponse, SurveyObservation, Variable
+from libstat.models import Library, LibrarySelection, SurveyResponse, SurveyObservation, Variable
 from libstat.forms import CreateSurveysForm
 from libstat.survey_templates import survey_template
 
@@ -48,8 +49,15 @@ def libraries(request):
             for field in form.cleaned_data:
                 if form.cleaned_data[field]:
                     library_ids.append(field)
+        if "create_surveys_btn" in form.data:
             _create_surveys(library_ids, sample_year)
             return redirect(reverse("survey_responses"))
+        elif "save_selection_btn" in form.data:
+            lib_selection, _ = LibrarySelection.objects.get_or_create(name="lib_selection")
+            lib_selection.sigels = []
+            for lib_id in library_ids:
+                lib_selection.sigels.append(Library.objects.get(pk=lib_id).sigel)
+            lib_selection.save()
 
     return render(request, 'libstat/libraries.html', {"form": CreateSurveysForm()})
 

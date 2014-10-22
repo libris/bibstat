@@ -6,7 +6,7 @@ from django import forms
 from libstat.survey_templates import survey_template
 from libstat.utils import SURVEY_TARGET_GROUPS, survey_response_statuses, PUBLISHED
 from libstat.utils import VARIABLE_TYPES
-from libstat.models import Variable, SurveyObservation, Library
+from libstat.models import Variable, SurveyObservation, Library, LibrarySelection
 
 logger = logging.getLogger(__name__)
 
@@ -231,15 +231,18 @@ class CreateSurveysForm(forms.Form):
             choices=[(2014, 2014)],
             widget=forms.Select(attrs={"class": "form-control"}))
 
+        lib_selection, _ = LibrarySelection.objects.get_or_create(name="lib_selection")
+
         self.libraries = []
         for library in Library.objects.all():
             checkbox_id = str(library.pk)
-            self.fields[checkbox_id] = forms.BooleanField(
-                required=False,
-                widget=forms.CheckboxInput(attrs={
-                    "value": library.pk,
-                    "class": "select-one"
-                }))
+            attrs = {"value": checkbox_id,
+                     "class": "select-one"
+                     }
+            if library.sigel in lib_selection.sigels:
+                attrs["checked"] = ""
+            self.fields[checkbox_id] = forms.BooleanField(required=False,
+                                                          widget=forms.CheckboxInput(attrs=attrs))
             self.libraries.append({
                 "name": library.name,
                 "municipality_name": library.municipality_name,
