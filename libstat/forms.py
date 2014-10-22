@@ -240,6 +240,7 @@ class CreateSurveysForm(forms.Form):
                 required=False,
                 widget=forms.CheckboxInput(
                     attrs={
-                        "value": library.pk
+                        "value": library.pk,
+                        "class": "select-one"
                     }))
             self.libraries.append(row)

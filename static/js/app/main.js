@@ -32,7 +32,7 @@ define(['jquery', 'survey', 'login', 'jquery.tablesorter', 'bootstrap', 'bootstr
                 [ 3, 0 ]
             ]
         });
-        $(".table.survey_responses .select-all").change(function() {
+        $(".table .select-all").change(function() {
             var checkboxes = $(".select-one");
             if($(this).is(":checked")) {
                 checkboxes.prop("checked", "checked");
