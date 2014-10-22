@@ -77,7 +77,7 @@ class VariableForm(forms.Form):
 
         active_to = cleaned_data['active_to'] if 'active_to' in cleaned_data else None
         if (self.instance and self.instance.replaced_by and active_to and self.instance.active_to
-            and active_to != self.instance.active_to.date()):
+                and active_to != self.instance.active_to.date()):
             self._errors['active_to'] = self.error_class([u"Styrs av ersättande term"])
             del cleaned_data['active_to']
         return cleaned_data
@@ -114,6 +114,7 @@ class VariableForm(forms.Form):
 
 
 class SurveyForm(forms.Form):
+
     def _cell_to_input_field(self, cell, observation):
         attrs = {"class": "form-control",
                  "id": cell.variable_key,
@@ -221,6 +222,7 @@ class SurveyForm(forms.Form):
 
 
 class CreateSurveysForm(forms.Form):
+
     def __init__(self, *args, **kwargs):
         super(CreateSurveysForm, self).__init__(*args, **kwargs)
 
@@ -230,17 +232,17 @@ class CreateSurveysForm(forms.Form):
 
         self.libraries = []
         for library in Library.objects.all():
-            row = {}
-            row["name"] = library.name
-            row["municipality_name"] = library.municipality_name
-            row["email"] = library.email
             checkbox_id = str(library.pk)
-            row["checkbox_id"] = checkbox_id
             self.fields[checkbox_id] = forms.BooleanField(
                 required=False,
-                widget=forms.CheckboxInput(
-                    attrs={
-                        "value": library.pk,
-                        "class": "select-one"
-                    }))
-            self.libraries.append(row)
+                widget=forms.CheckboxInput(attrs={
+                    "value": library.pk,
+                    "class": "select-one"
+                }))
+            self.libraries.append({
+                "name": library.name,
+                "municipality_name": library.municipality_name,
+                "email": library.email,
+                "sigel": library.sigel,
+                "checkbox_id": checkbox_id
+            })
