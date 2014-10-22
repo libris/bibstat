@@ -216,7 +216,7 @@ def edit_survey(request, survey_id, wrong_password=False):
         else:
             wrong_password = True
 
-    return render(request, 'libstat/survey_password.html', {survey_id: survey_id, wrong_password: wrong_password})
+    return render(request, 'libstat/survey_password.html', {'survey_id': survey_id, 'wrong_password': wrong_password})
 
 
 # From: http://en.wikipedia.org/wiki/Random_password_generator#Python
