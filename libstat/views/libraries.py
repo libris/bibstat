@@ -1,4 +1,6 @@
 import requests
+import random
+import string
 
 from django.core.urlresolvers import reverse
 from django.shortcuts import render, redirect
@@ -7,6 +9,12 @@ from django.contrib.auth.decorators import permission_required
 from libstat.models import Library, SurveyResponse, SurveyObservation, Variable
 from libstat.forms import CreateSurveysForm
 from libstat.survey_templates import survey_template
+
+
+# From: http://en.wikipedia.org/wiki/Random_password_generator#Python
+def _generate_password():
+    alphabet = string.letters[0:52] + string.digits
+    return str().join(random.SystemRandom().choice(alphabet) for _ in range(10))
 
 
 def _create_surveys(library_ids, sample_year):
@@ -18,14 +26,15 @@ def _create_surveys(library_ids, sample_year):
             library=library,
             sample_year=sample_year,
             target_group="public",
+            password=_generate_password(),
             observations=[])
         for section in template.sections:
             for group in section.groups:
                 for row in group.rows:
                     for cell in row.cells:
-                            survey.observations.append(
-                                SurveyObservation(
-                                    variable=Variable.objects.get(key=cell.variable_key)))
+                        survey.observations.append(
+                            SurveyObservation(
+                                variable=Variable.objects.get(key=cell.variable_key)))
         survey.save()
 
 
@@ -42,11 +51,7 @@ def libraries(request):
             _create_surveys(library_ids, sample_year)
             return redirect(reverse("survey_responses"))
 
-    return render(request,
-                  'libstat/libraries.html',
-                  {
-                      "form": CreateSurveysForm()
-                  })
+    return render(request, 'libstat/libraries.html', {"form": CreateSurveysForm()})
 
 
 def _update_libraries():

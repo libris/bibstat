@@ -170,7 +170,7 @@ define(['jquery', 'cell.sum', 'cell', 'bootstrap.validator.sv'], function ($, su
                 var element = $(this);
 
                 $("#id_selected_status").val(element.text());
-                element.closest(".dropdown").children(".dropdown-toggle").html(element.text() + ' <span class="caret"></span>')
+                element.closest(".dropdown").children(".dropdown-toggle").html(element.text() + ' <span class="caret"></span>');
 
                 var item = element.closest("li");
                 item.siblings("li").removeClass("active");
@@ -178,7 +178,12 @@ define(['jquery', 'cell.sum', 'cell', 'bootstrap.validator.sv'], function ($, su
             });
         };
 
+        var initPassword = function () {
+            $("#form-password").bootstrapValidator();
+        };
+
         initAdmin();
+        initPassword();
     };
     var showChangesNotSaved = function () {
         $("#unsaved-changes-label").text("Det finns ifyllda svar som inte sparats");

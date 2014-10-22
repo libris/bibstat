@@ -2,10 +2,10 @@
 import logging
 
 from time import strftime
-from django.core.urlresolvers import reverse
 
+from django.core.urlresolvers import reverse
 from django.shortcuts import render, redirect
-from django.http import HttpResponseRedirect, Http404
+from django.http import HttpResponseRedirect, Http404, HttpResponseNotFound
 from django.contrib.auth.decorators import permission_required
 from excel_response import ExcelResponse
 
@@ -187,20 +187,33 @@ def _save_survey_response_from_form(response, form):
         raise Exception(form.errors)
 
 
-@permission_required('is_superuser', login_url='index')
-def edit_survey(request, survey_id):
+def edit_survey(request, survey_id, wrong_password=False):
+    try:
+        survey = SurveyResponse.objects.get(pk=survey_id)
+    except SurveyResponse.DoesNotExist:
+        return HttpResponseNotFound()
+
+    if request.user.is_authenticated() or request.session.get("password"):
+        if request.method == "POST":
+            form = SurveyForm(request.POST, instance=survey)
+            _save_survey_response_from_form(survey, form)
+
+        if not request.user.is_authenticated() and survey.status == "not_viewed":
+            survey.status = "initiated"
+            survey.save()
+
+        context = {"form": SurveyForm(instance=survey, authenticated=request.user.is_authenticated())}
+        return render(request, 'libstat/edit_survey.html', context)
+
     if request.method == "POST":
-        survey_response = SurveyResponse.objects.get(pk=survey_id)
-        form = SurveyForm(request.POST, instance=survey_response)
-        _save_survey_response_from_form(survey_response, form)
+        password = request.POST["password"]
+        if password == survey.password:
+            request.session["password"] = True
+            return redirect(reverse("edit_survey", args=(survey_id,)))
+        else:
+            wrong_password = True
 
-    survey_response = SurveyResponse.objects.get(pk=survey_id)
-    if not request.user.is_authenticated() and survey_response.status == "not_viewed":
-        survey_response.status = "initiated"
-        survey_response.save()
-
-    context = {"form": SurveyForm(instance=survey_response, authenticated=request.user.is_authenticated())}
-    return render(request, 'libstat/edit_survey.html', context)
+    return render(request, 'libstat/survey_password.html', {'survey_id': survey_id, 'wrong_password': wrong_password})
 
 
 def _get_status_key_from_value(status):

@@ -1,35 +1,38 @@
 /*
  * Customizations for libstat
  */
- 
- /* Top menu */
+
+/* Top menu */
 .libstat .navbar-inverse li:hover {
-  background-color: #333333;
+    background-color: #333333;
 }
 
 /* Table Sortable plugin */
 .libstat .tablesorter .tablesorter-header {
-	background-image: url(../img/bg.gif);
-	background-repeat: no-repeat;
-	background-position: center right;
-	cursor: pointer;
-	padding-right: 16px;
+    background-image: url(../img/bg.gif);
+    background-repeat: no-repeat;
+    background-position: center right;
+    cursor: pointer;
+    padding-right: 16px;
 }
+
 .libstat .tablesorter .tablesorter-header.tablesorter-headerAsc {
-	background-image: url(../img/asc.gif);
+    background-image: url(../img/asc.gif);
 }
+
 .libstat .tablesorter .tablesorter-header.tablesorter-headerDesc {
-	background-image: url(../img/desc.gif);
+    background-image: url(../img/desc.gif);
 }
-.libstat .tablesorter .tablesorter-header.tablesorter-headerAsc, 
+
+.libstat .tablesorter .tablesorter-header.tablesorter-headerAsc,
 .libstat .tablesorter .tablesorter-header.tablesorter-headerDesc {
-  background-color: #428BCA;
-  color: #ffffff;
+    background-color: #428BCA;
+    color: #ffffff;
 }
 
 /* List variables */
 .variables .column.header {
-  white-space: nowrap;
+    white-space: nowrap;
 }
 
 /* Publish suvey responses */
@@ -44,86 +47,101 @@
 
 /* Form validation messages */
 .errorlist {
-  list-style: none outside none;
-  padding: 0;
+    list-style: none outside none;
+    padding: 0;
 }
+
 .form-validation {
-  font-style: italic;
+    font-style: italic;
 }
+
 .has-error .form-validation::before {
-  content: "* ";
+    content: "* ";
 }
+
 .form-validation.after {
-  margin-left: 6px;
+    margin-left: 6px;
 }
-.form-validation.after .errorlist, 
+
+.form-validation.after .errorlist,
 .form-validation.after .errorlist li {
-  display: inline;
+    display: inline;
 }
+
 .form-group .glyphicon {
-  display: none;
+    display: none;
 }
+
 .form-group.has-feedback .glyphicon {
-  display: block;
+    display: block;
 }
+
 .form-group .date .glyphicon {
-  display: inline-block;
+    display: inline-block;
 }
 
 /* Custom panel styles */
 .panel-default.inverse > .panel-heading {
     background-color: #ffffff;
 }
+
 .panel-default.inverse > .panel-body {
     background-color: #f5f5f5;
 }
+
 .panel-default.inverse > .panel-footer {
     background-color: #f5f5f5;
 }
-    
+
 /* Edit survey response */
 .survey-question-order {
     font-size: 120%;
     font-weight: bold;
 }
+
 .term-key {
     color: #ccc;
 }
+
 .edit-survey-observations-form .form-group ul {
-  list-style: none outside none;
-  display: block;
-  margin-bottom: 10px;
-  margin-top: 10px;
-  min-height: 20px;
-  padding-left: 20px;
+    list-style: none outside none;
+    display: block;
+    margin-bottom: 10px;
+    margin-top: 10px;
+    min-height: 20px;
+    padding-left: 20px;
 }
+
 .edit-survey-observations-form .form-group ul label {
-  cursor: pointer;
-  display: inline;
-  font-weight: 400;
+    cursor: pointer;
+    display: inline;
+    font-weight: 400;
 }
-.edit-survey-observations-form .form-group ul input[type="radio"], 
+
+.edit-survey-observations-form .form-group ul input[type="radio"],
 .edit-survey-observations-form .form-group ul input[type="checkbox"] {
-  float: left;
-  margin-left: -20px;
+    float: left;
+    margin-left: -20px;
 }
 
 /* Edit survey */
 .form-group.question {
-  border-bottom: 1px solid #f7f7f7;
+    border-bottom: 1px solid #f7f7f7;
 }
+
 .category-label-right {
-  margin-top: 30px;
+    margin-top: 30px;
 }
 
 /* Tooltip */
 .css3-tooltip {
-  display: inline;
-  position: relative;
+    display: inline;
+    position: relative;
 }
-.css3-tooltip:hover:after{
+
+.css3-tooltip:hover:after {
     background: #333;
-    background: rgba(0,0,0,.8);
+    background: rgba(0, 0, 0, .8);
     border-radius: 5px;
     bottom: 26px;
     color: #fff;
@@ -134,7 +152,8 @@
     z-index: 98;
     width: 220px;
 }
-.css3-tooltip:hover:before{
+
+.css3-tooltip:hover:before {
     border: solid;
     border-color: #333 transparent;
     border-width: 6px 6px 0 6px;
@@ -147,71 +166,91 @@
 
 /* Twitter typeahead suggestions */
 .tokenfield.form-control .twitter-typeahead .tt-dropdown-menu {
-  width: 500px;
+    width: 500px;
 }
+
 .tt-dropdown-menu .suggestion {
-  border-bottom: 1px solid #eeeeee;
-  cursor: pointer;
+    border-bottom: 1px solid #eeeeee;
+    cursor: pointer;
 }
+
 .tt-dropdown-menu .suggestion.empty {
-  border: none;
-  display: block;
-  padding: 3px 20px;
-  cursor: default;
+    border: none;
+    display: block;
+    padding: 3px 20px;
+    cursor: default;
 }
+
 .tt-dropdown-menu .suggestion .key {
-  font-weight: bold;
-  margin-right: 4px;
+    font-weight: bold;
+    margin-right: 4px;
 }
+
 .tt-dropdown-menu .suggestion .description {
-  font-style: italic;
-  overflow: hidden;
+    font-style: italic;
+    overflow: hidden;
 }
 
 /* Bootstrap datepicker fix for modals in chrome */
 .datepicker {
-  z-index: 1060 !important;  
+    z-index: 1060 !important;
 }
 
 /* General stuff */
 .header-actions {
-  margin-top: 34px;
-}
-.warnings {
-  font-style: italic;
-}
-.warnings.right {
-  margin-left: 8px;
-}
-.bold {
-  font-weight: bold;
-}
-.cursor-help {
-  cursor: help;
+    margin-top: 34px;
 }
 
-.draft, 
+.warnings {
+    font-style: italic;
+}
+
+.warnings.right {
+    margin-left: 8px;
+}
+
+.bold {
+    font-weight: bold;
+}
+
+.cursor-help {
+    cursor: help;
+}
+
+.draft,
 .pending {
-  color: #555555;
+    color: #555555;
 }
-.replaced, 
+
+.replaced,
 .discontinued {
-  color: #888888;
-  font-style: italic;
+    color: #888888;
+    font-style: italic;
 }
+
 .draft a,
 .pending a {
-  color: #2a6496;
+    color: #2a6496;
 }
-.replaced a, 
+
+.replaced a,
 .discontinued a {
-  color: #80a9cb;
-  font-style: normal;
+    color: #80a9cb;
+    font-style: normal;
 }
+
 .current a {
-  font-weight: bold;
+    font-weight: bold;
 }
 
 label.sub-label {
-  font-weight: normal;
+    font-weight: normal;
+}
+
+.jumbotron-password p.alert {
+    margin-top: 20px;
+    margin-bottom: 0;
+    font-size: inherit;
+    font-weight: inherit;
+    width: 350px;
 }

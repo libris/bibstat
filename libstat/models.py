@@ -1,6 +1,5 @@
 # -*- coding: UTF-8 -*-
 import logging
-from datetime import datetime
 
 from mongoengine import *
 from mongoengine import signals
@@ -9,6 +8,8 @@ from mongoengine.django.auth import User
 from mongoengine.errors import DoesNotExist
 from mongoengine.queryset.queryset import QuerySet
 from django.conf import settings
+
+from datetime import datetime
 
 from libstat.utils import ISO8601_utc_format, SURVEY_RESPONSE_STATUSES, NOT_VIEWED, PUBLISHED
 
@@ -198,7 +199,7 @@ class Variable(VariableBase):
                 to avoid saving siblings for draft variables.
             """
             if (not to_replace.replaced_by or to_replace.replaced_by.id != self.id
-                    or to_replace.active_to != switchover_date):
+                or to_replace.active_to != switchover_date):
                 to_replace.replaced_by = self
                 to_replace.active_to = switchover_date if switchover_date else None
                 modified_siblings.add(to_replace)
@@ -337,7 +338,6 @@ class SurveyTemplate(Document):
 
 
 class SurveyResponseQuerySet(QuerySet):
-
     def by_year_or_group(self, sample_year=None, target_group=None):
         target_group_query = Q(target_group=target_group) if target_group else Q()
         sample_year_query = Q(sample_year=sample_year) if sample_year else Q()
@@ -425,6 +425,7 @@ class SurveyResponse(SurveyResponseBase):
     # Both unique fields need to be in subclasses to enable proper indexing.
     library_name = StringField()
     sample_year = IntField()
+    password = StringField(required=True)
 
     meta = {
         'collection': 'libstat_survey_responses',
@@ -442,8 +443,7 @@ class SurveyResponse(SurveyResponseBase):
                     u"PRE SAVE: Fields {} have changed, creating survey response version from current version".format(
                         changed_fields))
                 query_set = SurveyResponse.objects.filter(pk=document.id)
-                assert len(
-                    query_set) > 0  # Trigger lazy loading
+                assert len(query_set) > 0  # Trigger lazy loading
                 versions = query_set.clone_into(SurveyResponseVersion.objects)
                 for v in versions:
                     v.id = None
