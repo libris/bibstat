@@ -407,7 +407,7 @@ class SurveyResponseBase(Document):
     observations = ListField(EmbeddedDocumentField(SurveyObservation))
     status = StringField(choices=SURVEY_RESPONSE_STATUSES, default=NOT_VIEWED[0])
     library = ReferenceField(Library)
-    
+
     meta = {
         'abstract': True,
     }
@@ -423,8 +423,8 @@ class SurveyResponseBase(Document):
 
 class SurveyResponse(SurveyResponseBase):
     # Both unique fields need to be in subclasses to enable proper indexing.
-    library_name = StringField(required=True, unique_with='sample_year')
-    sample_year = IntField(required=True)
+    library_name = StringField()
+    sample_year = IntField()
 
     meta = {
         'collection': 'libstat_survey_responses',
