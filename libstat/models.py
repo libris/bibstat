@@ -430,7 +430,7 @@ class SurveyResponse(SurveyResponseBase):
     # Both unique fields need to be in subclasses to enable proper indexing.
     library_name = StringField()
     sample_year = IntField()
-    password = StringField(required=True)
+    password = StringField()
 
     meta = {
         'collection': 'libstat_survey_responses',
