@@ -1,16 +1,17 @@
 # -*- coding: utf-8 -*-
 import logging
-import requests
-
+import random
+import string
 from time import strftime
-from django.core.urlresolvers import reverse
 
+import requests
+from django.core.urlresolvers import reverse
 from django.shortcuts import render, redirect
-from django.http import HttpResponseRedirect, Http404
+from django.http import HttpResponseRedirect, Http404, HttpResponseNotFound
 from django.contrib.auth.decorators import permission_required
 from excel_response import ExcelResponse
-from bibstat import settings
 
+from bibstat import settings
 from libstat.models import SurveyResponse, Variable, SurveyObservation, Library
 from libstat.forms import SurveyForm, CreateSurveysForm
 from libstat.survey_templates import survey_template
@@ -189,20 +190,39 @@ def _save_survey_response_from_form(response, form):
         raise Exception(form.errors)
 
 
-@permission_required('is_superuser', login_url='index')
-def edit_survey(request, survey_id):
+def edit_survey(request, survey_id, wrong_password=False):
+    try:
+        survey = SurveyResponse.objects.get(pk=survey_id)
+    except SurveyResponse.DoesNotExist:
+        return HttpResponseNotFound()
+
+    if request.user.is_authenticated() or request.session.get("password"):
+        if request.method == "POST":
+            form = SurveyForm(request.POST, instance=survey)
+            _save_survey_response_from_form(survey, form)
+
+        if not request.user.is_authenticated() and survey.status == "not_viewed":
+            survey.status = "initiated"
+            survey.save()
+
+        context = {"form": SurveyForm(instance=survey, authenticated=request.user.is_authenticated())}
+        return render(request, 'libstat/edit_survey.html', context)
+
     if request.method == "POST":
-        survey_response = SurveyResponse.objects.get(pk=survey_id)
-        form = SurveyForm(request.POST, instance=survey_response)
-        _save_survey_response_from_form(survey_response, form)
+        password = request.POST["password"]
+        if password == survey.password:
+            request.session["password"] = True
+            return redirect(reverse("edit_survey", args=(survey_id,)))
+        else:
+            wrong_password = True
 
-    survey_response = SurveyResponse.objects.get(pk=survey_id)
-    if not request.user.is_authenticated() and survey_response.status == "not_viewed":
-        survey_response.status = "initiated"
-        survey_response.save()
+    return render(request, 'libstat/survey_password.html', {survey_id: survey_id, wrong_password: wrong_password})
 
-    context = {"form": SurveyForm(instance=survey_response, authenticated=request.user.is_authenticated())}
-    return render(request, 'libstat/edit_survey.html', context)
+
+# From: http://en.wikipedia.org/wiki/Random_password_generator#Python
+def _generate_password():
+    alphabet = string.letters[0:52] + string.digits
+    return str().join(random.SystemRandom().choice(alphabet) for _ in range(10))
 
 
 def _create_surveys(library_ids, sample_year):
@@ -214,14 +234,15 @@ def _create_surveys(library_ids, sample_year):
             library=library,
             sample_year=sample_year,
             target_group="public",
+            password=_generate_password(),
             observations=[])
         for section in template.sections:
             for group in section.groups:
                 for row in group.rows:
                     for cell in row.cells:
-                            survey.observations.append(
-                                SurveyObservation(
-                                    variable=Variable.objects.get(key=cell.variable_key)))
+                        survey.observations.append(
+                            SurveyObservation(
+                                variable=Variable.objects.get(key=cell.variable_key)))
         survey.save()
 
 
@@ -260,11 +281,7 @@ def libraries(request):
             _create_surveys(library_ids, sample_year)
             return redirect(reverse("survey_responses"))
 
-    return render(request,
-                  'libstat/libraries.html',
-                  {
-                      "form": CreateSurveysForm()
-                  })
+    return render(request, 'libstat/libraries.html', {"form": CreateSurveysForm()})
 
 
 def _update_libraries():

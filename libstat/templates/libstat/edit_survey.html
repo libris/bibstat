@@ -97,6 +97,10 @@
                         </div>
                     </form>
                 {% endif %}
+
+                <p>
+                    <br>Respondenten måste ange lösenordet <b>{{ form.password }}</b> för att svara.
+                </p>
             </div>
         </div>
     {% endif %}
@@ -105,7 +109,7 @@
         <div class="page-header">
             <h1>Statistikenkät för verksamhetsåret {{ form.sample_year }}</h1>
         </div>
-        {% if form.is_read_only %}
+        {% if form.is_user_read_only %}
             {% include "libstat/survey/submitted_notice.html" %}
         {% endif %}
         <div class="row">

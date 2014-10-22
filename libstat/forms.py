@@ -196,6 +196,7 @@ class SurveyForm(forms.Form):
         self.is_user_read_only = not response.status in (u"not_viewed", u"initiated")
         self.is_read_only = not authenticated and self.is_user_read_only
         self.can_submit = not authenticated and response.status == "initiated"
+        self.password = response.password
         self.status = survey_response_statuses[response.status]
         self.statuses = [status for status in survey_response_statuses.values() if not status == PUBLISHED[1]]
         self.is_published = response.status == PUBLISHED[0]
