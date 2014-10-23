@@ -4,178 +4,239 @@
 
 {% block content %}
     <div class="container">
-        <div class="page-header">
-            <h1>Enkätsvar</h1>
+    <div class="page-header">
+        <h1>Enkätsvar</h1>
+    </div>
+    <div class="panel panel-default">
+        <div class="panel-heading">
+            <h3 class="panel-title">{% trans "Enkätsvar uppdelat på bibliotekstyp och år" %}</h3>
         </div>
-        <div class="panel panel-default">
-            <div class="panel-heading">
-                <h3 class="panel-title">{% trans "Enkätsvar uppdelat på bibliotekstyp och år" %}</h3>
-            </div>
-            <div class="panel-body">
-                <div class="row">
-                    <div class="col-md-12">
-                        <p>
-                            {% trans "Välj bibliotekstyp och år för att lista enkätsvar" %}
-                            <span class="text-warning warnings right">{{ message }}</span>
-                        </p>
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="col-md-8">
-                        <form action="" method="GET" role="form" class="form-inline">
-                            {% csrf_token %}
-                            <div class="form-group">
-                                <select name="sample_year" class="form-control" value={{ sample_year }}>
-                                    <option value=""
-                                            {% if not sample_year %}
-                                            selected="selected"
-                                            {% endif %}>
-                                        {% trans "År" %}
-                                    </option>
-                                    {% for year in sample_years %}
-                                        <option value="{{ year }}"
-                                                {% ifequal year|slugify sample_year %}
-                                                selected="selected"
-                                                {% endifequal %}>
-                                            {{ year }}
-                                        </option>
-                                    {% endfor %}
-                                </select>
-                            </div>
-                            <div class="form-group">
-                                <select name="target_group" class="form-control" value="{{ target_group }}">
-                                    <option value=""
-                                            {% if not target_group %}
-                                            selected="selected"
-                                            {% endif %}>
-                                        {% trans "Bibliotekstyp" %}
-                                    </option>
-                                    <option value="public"
-                                            {% ifequal target_group "public" %}
-                                            selected="selected"
-                                            {% endifequal %}>
-                                        {% trans 'Folkbibliotek' %}
-                                    </option>
-                                    <option value="research"
-                                            {% ifequal target_group "research" %}
-                                            selected="selected"
-                                            {% endifequal %}>
-                                        {% trans "Forskningsbibliotek" %}
-                                    </option>
-                                    <option value="hospital"
-                                            {% ifequal target_group "hospital" %}
-                                            selected="selected"
-                                            {% endifequal %}>
-                                        {% trans "Sjukhusbibliotek" %}
-                                    </option>
-                                    <option value="school"
-                                            {% ifequal target_group "school" %}
-                                            selected="selected"
-                                            {% endifequal %}>
-                                        {% trans "Skolbibliotek" %}
-                                    </option>
-                                </select>
-                            </div>
-                            <div class="form-group">
-                                <input type="checkbox" name="unpublished_only" value="True"
-                                        {% if unpublished_only == True %}
-                                       checked="checked"
-                                        {% endif %}/>
-                                {% trans "Där publicering ej utförd" %}
-                            </div>
-                            <div class="form-group">
-                                <button type="submit" name="action" value="list"
-                                        class="btn btn-default">
-                                    {% trans "Lista enkätsvar" %}
-                                </button>
-                            </div>
-                        </form>
-                    </div>
+        <div class="panel-body">
+            <div class="row">
+                <div class="col-md-12">
+                    <p>
+                        {% trans "Välj bibliotekstyp och år för att lista enkätsvar" %}
+                        <span class="text-warning warnings right">{{ message }}</span>
+                    </p>
                 </div>
             </div>
-        </div>
-        <div class="panel panel-default">
-            <div class="panel-body">
-                <form action="" method="POST" role="form" class="form-inline publish-survey-responses-form">
-                    {% if survey_responses %}
+            <div class="row">
+                <div class="col-md-8">
+                    <form action="" method="GET" role="form" class="form-inline">
                         {% csrf_token %}
-                        <input type="hidden" name="sample_year" value="{{ sample_year }}"/>
-                        <input type="hidden" name="target_group" value="{{ target_group }}"/>
-                        <div class="form-group pull-right submit-publish">
-                            <button type="submit" name="action" value="publish"
-                                    class="btn btn-primary btn-publish-survey-responses disabled">
-                                {% trans "Publicera urval" %}
-                            </button>
-                            <button type="submit" name="action" value="export"
-                                    class="btn btn-primary btn-export-survey-responses disabled">
-                                {% trans "Exportera urval" %}
+                        <div class="form-group">
+                            <select name="sample_year" class="form-control" value={{ sample_year }}>
+                                <option value=""
+                                        {% if not sample_year %}
+                                        selected="selected"
+                                        {% endif %}>
+                                    {% trans "År" %}
+                                </option>
+                                {% for year in sample_years %}
+                                    <option value="{{ year }}"
+                                            {% ifequal year|slugify sample_year %}
+                                            selected="selected"
+                                            {% endifequal %}>
+                                        {{ year }}
+                                    </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <select name="target_group" class="form-control" value="{{ target_group }}">
+                                <option value=""
+                                        {% if not target_group %}
+                                        selected="selected"
+                                        {% endif %}>
+                                    {% trans "Bibliotekstyp" %}
+                                </option>
+                                <option value="public"
+                                        {% ifequal target_group "public" %}
+                                        selected="selected"
+                                        {% endifequal %}>
+                                    {% trans 'Folkbibliotek' %}
+                                </option>
+                                <option value="research"
+                                        {% ifequal target_group "research" %}
+                                        selected="selected"
+                                        {% endifequal %}>
+                                    {% trans "Forskningsbibliotek" %}
+                                </option>
+                                <option value="hospital"
+                                        {% ifequal target_group "hospital" %}
+                                        selected="selected"
+                                        {% endifequal %}>
+                                    {% trans "Sjukhusbibliotek" %}
+                                </option>
+                                <option value="school"
+                                        {% ifequal target_group "school" %}
+                                        selected="selected"
+                                        {% endifequal %}>
+                                    {% trans "Skolbibliotek" %}
+                                </option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <input type="checkbox" name="unpublished_only" value="True"
+                                    {% if unpublished_only == True %}
+                                   checked="checked"
+                                    {% endif %}/>
+                            {% trans "Där publicering ej utförd" %}
+                        </div>
+                        <div class="form-group">
+                            <button type="submit" name="action" value="list"
+                                    class="btn btn-default">
+                                {% trans "Lista enkätsvar" %}
                             </button>
                         </div>
-                    {% endif %}
-                    <table class="table survey_responses">
-                        <thead>
-                        <tr>
-                            <th class="column selection">
-                                <input title="{% trans 'Markera alla' %}" class="select-all"
-                                       type="checkbox" value="all"/>
-                            </th>
-                            <th class="column status">{% trans "Status" %}</th>
-                            <th class="column published">{% trans "Publicerad" %}</th>
-                            <th class="column sample_year">{% trans "År" %}</th>
-                            <th class="column library">{% trans "Bibliotek" %}</th>
-                            <th class="column target_group">{% trans "Bibliotekstyp" %}</th>
-                            <th class="column actions"></th>
-                        </tr>
-                        </thead>
-                        <tbody>
-                        {% if survey_responses %}
-                            {% for sr in survey_responses %}
-                                <tr>
-                                    <td>
-                                        <input title="{% trans 'Välj' %}" class="select-one" name="survey-response-ids"
-                                               type="checkbox" value="{{ sr.id }}"/>
-                                    </td>
-                                    <td>
-                                        {{ sr.status|srs_label }}
-                                    </td>
-                                    <td>
-                                        {% if not sr.latest_version_published %}
-                                            <span class="text-warning bold css3-tooltip cursor-help"
-                                                  title="{% trans 'Senaste version är inte publicerad' %}">
-                                        {% else %}
-                                            <span>
-                                        {% endif %}
-                                        {{ sr.published_at|utc_tz|date:"Y-m-d H:i" }}
-                                        </span>
-                                    </td>
-                                    <td>
-                                        {{ sr.sample_year }}
-                                    </td>
-                                    <td>
-                                        {% if sr.library and sr.library.sigel %}
-                                            <a href="{{ bibdb_library_base_url }}/{{ sr.library.sigel }}">
-                                                {{ sr.library.name }}
-                                            </a>
-                                        {% else %}
-                                            {{ sr.library.name }}
-                                        {% endif %}
-                                    </td>
-                                    <td>
-                                        {{ sr.target_group|tg_label }}
-                                    </td>
-                                    <td>
-                                        <a title="{% trans 'Visa/redigera enkätsvar' %}"
-                                           href="{% url 'edit_survey' sr.id %}">
-                                            Visa/redigera
-                                        </a>
-                                    </td>
-                                </tr>
-                            {% endfor %}
-                        {% endif %}
-                        </tbody>
-                    </table>
-                </form>
+                    </form>
+                </div>
             </div>
         </div>
+    </div>
+    <div class="panel panel-default">
+        <div class="panel-body">
+            <form action="" method="POST" role="form" class="form-inline publish-survey-responses-form">
+                {% if survey_responses %}
+                    {% csrf_token %}
+                    <input type="hidden" name="sample_year" value="{{ sample_year }}"/>
+                    <input type="hidden" name="target_group" value="{{ target_group }}"/>
+                    <div class="form-group pull-right submit-publish">
+                        <button class="btn btn-primary btn-survey btn-dispatch disabled">
+                            Nytt utskick
+                        </button>
+                        <button type="submit" name="action" value="publish"
+                                class="btn btn-primary btn-survey btn-publish disabled">
+                            {% trans "Publicera" %}
+                        </button>
+                        <button type="submit" name="action" value="export"
+                                class="btn btn-primary btn-survey btn-export disabled">
+                            {% trans "Exportera" %}
+                        </button>
+                    </div>
+                {% endif %}
+                <table class="table survey_responses">
+                    <thead>
+                    <tr>
+                        <th class="column selection">
+                            <input title="{% trans 'Markera alla' %}" class="select-all"
+                                   type="checkbox" value="all"/>
+                        </th>
+                        <th class="column status">{% trans "Status" %}</th>
+                        <th class="column published">{% trans "Publicerad" %}</th>
+                        <th class="column sample_year">{% trans "År" %}</th>
+                        <th class="column library">{% trans "Bibliotek" %}</th>
+                        <th class="column target_group">{% trans "Bibliotekstyp" %}</th>
+                        <th class="column actions"></th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {% if survey_responses %}
+                        {% for sr in survey_responses %}
+                            <tr>
+                                <td>
+                                    <input title="{% trans 'Välj' %}" class="select-one" name="survey-response-ids"
+                                           type="checkbox" value="{{ sr.id }}" data-library="{{ sr.library.name }}"
+                                           data-address="{% url 'edit_survey' sr.id %}" data-year="{{ sample_year }}"
+                                           data-url-base="{{ url_base }}"/>
+                                </td>
+                                <td>
+                                    {{ sr.status|srs_label }}
+                                </td>
+                                <td>
+                                    {% if not sr.latest_version_published %}
+                                        <span class="text-warning bold css3-tooltip cursor-help"
+                                              title="{% trans 'Senaste version är inte publicerad' %}">
+                                    {% else %}
+                                        <span>
+                                    {% endif %}
+                                    {{ sr.published_at|utc_tz|date:"Y-m-d H:i" }}
+                                    </span>
+                                </td>
+                                <td>
+                                    {{ sr.sample_year }}
+                                </td>
+                                <td>
+                                    {% if sr.library and sr.library.sigel %}
+                                        <a href="{{ bibdb_library_base_url }}/{{ sr.library.sigel }}">
+                                            {{ sr.library.name }}
+                                        </a>
+                                    {% else %}
+                                        {{ sr.library.name }}
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    {{ sr.target_group|tg_label }}
+                                </td>
+                                <td>
+                                    <a title="{% trans 'Visa/redigera enkätsvar' %}"
+                                       href="{% url 'edit_survey' sr.id %}">
+                                        Visa/redigera
+                                    </a>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    {% endif %}
+                    </tbody>
+                </table>
+            </form>
+
+            <!-- Dispatch Modal -->
+            <div class="modal fade" id="modal-dispatch" tabindex="-1">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <button type="button" class="close" data-dismiss="modal">
+                                <span aria-hidden="true">&times;</span>
+                                <span class="sr-only">Close</span>
+                            </button>
+                            <h4 class="modal-title">Nytt utskick</h4>
+                        </div>
+                        <div class="modal-body">
+
+                            <div class="form-group">
+                                <label for="description">Beskrivning</label>
+                                <input id="description" name="description" type="text" class="form-control"/>
+                            </div>
+
+
+                            <div class="form-group">
+                                <label for="title">Titel</label>
+                                <input id="title" name="title" type="text" class="form-control dispatch-title"/>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="message">Meddelande</label>
+                                <textarea id="message" name="message" class="form-control dispatch-message"
+                                          rows="5"></textarea>
+                            </div>
+
+                            <div class="form-group">
+                                <div class="btn-group">
+                                    <button type="button" class="btn btn-default btn-insert btn-library">Bibliotek</button>
+                                    <button type="button" class="btn btn-default btn-insert btn-year">År</button>
+                                    <button type="button" class="btn btn-default btn-insert btn-address">Enkätadress</button>
+                                    <button type="button" class="btn btn-default btn-insert btn-password">Lösenord</button>
+                                </div>
+                            </div>
+
+                            <div class="panel panel-default">
+                                <div class="panel-heading">
+                                    <p class="panel-title dispatch-example-heading"></p>
+                                </div>
+                                <div class="panel-body dispatch-example-body"></div>
+                                <div class="panel-footer dispatch-example-footer"></div>
+                            </div>
+
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-default" data-dismiss="modal">Avbryt</button>
+                            <button type="button" class="btn btn-primary">Spara</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
     </div>
 {% endblock %}
