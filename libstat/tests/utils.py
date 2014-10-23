@@ -1,11 +1,15 @@
 # -*- coding: UTF-8 -*-
+import random
+import string
 from datetime import datetime
 
 from libstat.models import Variable, OpenData
 
 
-def _dummy_variable(key=u"dummy_key", description=u"dummy description", type="integer", is_public=True,
+def _dummy_variable(key=None, description=u"dummy description", type="integer", is_public=True,
                     target_groups=["public"], is_draft=False, replaced_by=None, save=True):
+    if not key:
+        key = ''.join(random.choice(string.ascii_uppercase + string.digits) for _ in range(8))
     variable = Variable(key=key, description=description, type=type, is_public=is_public, target_groups=target_groups,
                         is_draft=is_draft, replaced_by=replaced_by)
     if save:
