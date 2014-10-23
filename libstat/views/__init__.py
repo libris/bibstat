@@ -10,6 +10,7 @@ from index import index
 from surveys import (clean_example_surveys,
                      edit_survey,
                      edit_survey_status,
+                     dispatch_survey_responses,
                      export_survey_responses,
                      publish_survey_response,
                      publish_survey_responses,

@@ -57,7 +57,8 @@ def survey_responses(request):
         'sample_year': sample_year,
         'unpublished_only': unpublished_only,
         'bibdb_library_base_url': u"{}/library".format(settings.BIBDB_BASE_URL),
-        'message': message
+        'message': message,
+        'url_base': settings.API_BASE_URL
     }
     return render(request, 'libstat/survey_responses.html', context)
 
@@ -92,6 +93,11 @@ def publish_survey_responses(request):
     return HttpResponseRedirect(u"{}{}".format(
         reverse("survey_responses"),
         u"?action=list&target_group={}&sample_year={}".format(target_group, sample_year)))
+
+
+@permission_required('is_superuser', login_url='index')
+def dispatch_survey_responses(request):
+    pass
 
 
 @permission_required('is_superuser', login_url='index')
