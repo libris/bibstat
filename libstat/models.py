@@ -268,7 +268,7 @@ class Variable(VariableBase):
             return True
 
         # TODO: Check if Survey is referencing variable when Survey model has been updated.
-        referenced_in_survey_response = SurveyResponse.objects.filter(observations__variable=str(self.id)).count() > 0
+        referenced_in_survey_response = Survey.objects.filter(observations__variable=str(self.id)).count() > 0
         referenced_in_open_data = OpenData.objects.filter(variable=str(self.id)).count() > 0
 
         return not referenced_in_survey_response and not referenced_in_open_data
@@ -387,7 +387,7 @@ class LibrarySelection(Document):
     sigels = ListField()
 
 
-class SurveyResponseMetadata(EmbeddedDocument):
+class SurveyMetadata(EmbeddedDocument):
     respondent_name = StringField()
     respondent_email = StringField()
     respondent_phone = StringField()
@@ -398,9 +398,9 @@ class SurveyResponseMetadata(EmbeddedDocument):
     population_0to14y = LongField()
 
 
-class SurveyResponseBase(Document):
+class SurveyBase(Document):
     target_group = StringField(required=True, choices=SURVEY_TARGET_GROUPS)
-    metadata = EmbeddedDocumentField(SurveyResponseMetadata)
+    metadata = EmbeddedDocumentField(SurveyMetadata)
     published_at = DateTimeField()
     published_by = ReferenceField(User)
     # True if this version is published, False otherwise. Flag needed to
@@ -427,14 +427,14 @@ class SurveyResponseBase(Document):
         return hits[0] if len(hits) > 0 else None
 
 
-class SurveyResponse(SurveyResponseBase):
+class Survey(SurveyBase):
     # Both unique fields need to be in subclasses to enable proper indexing.
     library_name = StringField()
     sample_year = IntField()
     password = StringField()
 
     meta = {
-        'collection': 'libstat_survey_responses',
+        'collection': 'libstat_surveys',
         'queryset_class': SurveyResponseQuerySet,
     }
 
@@ -448,9 +448,9 @@ class SurveyResponse(SurveyResponseBase):
                 logger.info(
                     u"PRE SAVE: Fields {} have changed, creating survey response version from current version".format(
                         changed_fields))
-                query_set = SurveyResponse.objects.filter(pk=document.id)
+                query_set = Survey.objects.filter(pk=document.id)
                 assert len(query_set) > 0  # Trigger lazy loading
-                versions = query_set.clone_into(SurveyResponseVersion.objects)
+                versions = query_set.clone_into(SurveyVersion.objects)
                 for v in versions:
                     v.id = None
                     v.survey_response_id = document.id
@@ -515,14 +515,14 @@ class SurveyResponse(SurveyResponseBase):
         return u"{} {} {}".format(self.target_group, self.library_name, self.sample_year)
 
 
-class SurveyResponseVersion(SurveyResponseBase):
+class SurveyVersion(SurveyBase):
     # Not unique to enable storage of multiple versions. Both fields need to be in subclasses to enable proper indexing.
     library_name = StringField(required=True)
     sample_year = IntField(required=True)
     survey_response_id = ObjectIdField(required=True)
 
     meta = {
-        'collection': 'libstat_survey_response_versions',
+        'collection': 'libstat_survey_versions',
         'ordering': ['-date_modified']
     }
 
@@ -571,7 +571,7 @@ class OpenData(Document):
                                         self.value)
 
 
-signals.pre_save.connect(SurveyResponse.store_version_and_update_date_modified, sender=SurveyResponse)
+signals.pre_save.connect(Survey.store_version_and_update_date_modified, sender=Survey)
 signals.pre_save.connect(Variable.store_version_and_update_date_modified, sender=Variable)
 Variable.register_delete_rule(Variable, "replaced_by", NULLIFY)
 Variable.register_delete_rule(Variable, "replaces", PULL)

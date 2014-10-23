@@ -7,7 +7,7 @@ from django.core.urlresolvers import reverse
 from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import permission_required
 
-from libstat.models import Library, LibrarySelection, SurveyResponse, SurveyObservation, Variable
+from libstat.models import Library, LibrarySelection, Survey, SurveyObservation, Variable
 from libstat.forms import CreateSurveysForm
 from libstat.survey_templates import survey_template
 
@@ -22,7 +22,7 @@ def _create_surveys(library_ids, sample_year):
     for library_id in library_ids:
         library = Library.objects.get(pk=library_id)
         template = survey_template(sample_year)
-        survey = SurveyResponse(
+        survey = Survey(
             library_name=library.name,
             library=library,
             sample_year=sample_year,

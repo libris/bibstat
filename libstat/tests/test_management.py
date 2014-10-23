@@ -3,7 +3,7 @@ from django.core.management import call_command
 from django.core.management.base import CommandError
 
 from libstat.tests import MongoTestCase
-from libstat.models import Variable, SurveyResponse
+from libstat.models import Variable, Survey
 
 
 """
@@ -244,7 +244,7 @@ class ImportSurveyResponsesTest(MongoTestCase):
         opts = {"target_group": "public", "year": 2012}
         call_command('import_survey_responses', *args, **opts)
 
-        self.assertEquals(len(SurveyResponse.objects.all()), 0)
+        self.assertEquals(len(Survey.objects.all()), 0)
 
 
     def test_import_variables_requires_target_group_option(self):
@@ -252,14 +252,14 @@ class ImportSurveyResponsesTest(MongoTestCase):
         opts = {"file": "libstat/tests/data/Folk2012.xlsx", "year": 2012}
         call_command('import_survey_responses', *args, **opts)
 
-        self.assertEquals(len(SurveyResponse.objects.all()), 0)
+        self.assertEquals(len(Survey.objects.all()), 0)
 
     def test_import_variables_requires_year_option(self):
         args = []
         opts = {"file": "libstat/tests/data/Folk2012.xlsx", "target_group": "public"}
         call_command('import_survey_responses', *args, **opts)
 
-        self.assertEquals(len(SurveyResponse.objects.all()), 0)
+        self.assertEquals(len(Survey.objects.all()), 0)
 
     def test_import_survey_responses_should_abort_if_invalid_year(self):
         args = []
@@ -276,8 +276,8 @@ class ImportSurveyResponsesTest(MongoTestCase):
         opts = {"file": "libstat/tests/data/Folk2012.xlsx", "target_group": "public", "year": 2012}
         call_command('import_survey_responses', *args, **opts)
 
-        self.assertEquals(len(SurveyResponse.objects.all()), 288)
-        sr = SurveyResponse.objects.filter(library_name=u"KARLSTADS STADSBIBLIOTEK")[0]
+        self.assertEquals(len(Survey.objects.all()), 288)
+        sr = Survey.objects.filter(library_name=u"KARLSTADS STADSBIBLIOTEK")[0]
         self.assertTrue(sr.library.name == u"KARLSTADS STADSBIBLIOTEK")
 
         ## Check data types and visibility
@@ -321,7 +321,7 @@ class ImportSurveyResponsesTest(MongoTestCase):
         self.assertFalse(folk201_obs._is_public)
 
         # Check parsing of bool value when 1/1.0/True
-        sr2 = SurveyResponse.objects.filter(library_name=u"GISLAVEDS BIBLIOTEK")[0]
+        sr2 = Survey.objects.filter(library_name=u"GISLAVEDS BIBLIOTEK")[0]
         folk8_obs = [obs for obs in sr2.observations if obs.variable.key == "Folk8"][0]
         self.assertTrue(isinstance(folk8_obs.value, bool))
         self.assertEquals(folk8_obs.value, True)
@@ -331,5 +331,5 @@ class ImportSurveyResponsesTest(MongoTestCase):
         opts = {"file": "libstat/tests/data/Folk2012.xlsx", "target_group": "public", "year": 2012, "use_bibdb": "True"}
         call_command('import_survey_responses', *args, **opts)
 
-        self.assertEquals(len(SurveyResponse.objects.all()), 288)
-        self.assertTrue(SurveyResponse.objects.filter(library_name=u"KARLSTADS STADSBIBLIOTEK")[0].library != None)
+        self.assertEquals(len(Survey.objects.all()), 288)
+        self.assertTrue(Survey.objects.filter(library_name=u"KARLSTADS STADSBIBLIOTEK")[0].library != None)

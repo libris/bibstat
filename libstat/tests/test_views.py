@@ -7,7 +7,7 @@ from django.core.urlresolvers import reverse
 from mongoengine.django.auth import User
 
 from libstat.tests import MongoTestCase
-from libstat.models import Variable, SurveyResponse, SurveyObservation, OpenData, Library
+from libstat.models import Variable, Survey, SurveyObservation, OpenData, Library
 from libstat.tests.utils import _dummy_open_data, _dummy_variable
 
 
@@ -511,7 +511,7 @@ class EditVariableViewTest(MongoTestCase):
         return open_data
 
     def new_survey_response(self):
-        return SurveyResponse(
+        return Survey(
             target_group='public',
             library_name='test',
             sample_year='1234'
@@ -544,13 +544,13 @@ class SurveyResponsesViewTest(MongoTestCase):
 
     def setUp(self):
         self.publishing_date = datetime(2014, 8, 22, 10, 40, 33, 876)
-        self.survey_response = SurveyResponse(library_name=u"KARLSTAD STADSBIBLIOTEK", sample_year=2013,
+        self.survey_response = Survey(library_name=u"KARLSTAD STADSBIBLIOTEK", sample_year=2013,
                                               target_group="public", observations=[], published_at=self.publishing_date)
         self.survey_response.save()
-        sr2 = SurveyResponse(library_name=u"NORRBOTTENS LÄNSBIBLIOTEK", sample_year=2012, target_group="public",
+        sr2 = Survey(library_name=u"NORRBOTTENS LÄNSBIBLIOTEK", sample_year=2012, target_group="public",
                              observations=[], published_at=self.publishing_date)
         sr2.save()
-        sr3 = SurveyResponse(library_name=u"Sjukhusbiblioteken i Dalarnas län", sample_year=2013,
+        sr3 = Survey(library_name=u"Sjukhusbiblioteken i Dalarnas län", sample_year=2013,
                              target_group="hospital", observations=[])
         self.hospital_sr = sr3.save()
 
@@ -600,13 +600,13 @@ class SurveyResponsesViewTest(MongoTestCase):
 class PublishSurveyResponsesViewTest(MongoTestCase):
 
     def setUp(self):
-        self.survey_response = SurveyResponse(library_name="KARLSTAD STADSBIBLIOTEK", sample_year=2013,
+        self.survey_response = Survey(library_name="KARLSTAD STADSBIBLIOTEK", sample_year=2013,
                                               target_group="public", observations=[])
         self.survey_response.save()
-        sr2 = SurveyResponse(library_name="NORRBOTTENS LÄNSBIBLIOTEK", sample_year=2012, target_group="public",
+        sr2 = Survey(library_name="NORRBOTTENS LÄNSBIBLIOTEK", sample_year=2012, target_group="public",
                              observations=[])
         sr2.save()
-        sr3 = SurveyResponse(library_name=u"Sjukhusbiblioteken i Dalarnas län", sample_year=2013,
+        sr3 = Survey(library_name=u"Sjukhusbiblioteken i Dalarnas län", sample_year=2013,
                              target_group="hospital", observations=[])
         sr3.save()
 
@@ -620,7 +620,7 @@ class PublishSurveyResponsesViewTest(MongoTestCase):
                                     follow=True)
         self.assertEquals(response.status_code, 200)
 
-        survey_response = SurveyResponse.objects.get(pk=self.survey_response.id)
+        survey_response = Survey.objects.get(pk=self.survey_response.id)
         self.assertTrue(survey_response.published_at != None)
         self.assertEquals(survey_response.published_by, User.objects.filter(username="admin")[0])
 
@@ -630,7 +630,7 @@ class PublishSurveyResponsesViewTest(MongoTestCase):
                                                u"survey-response-ids": []},
                                     follow=True)
         self.assertEquals(response.status_code, 200)
-        survey_response = SurveyResponse.objects.get(pk=self.survey_response.id)
+        survey_response = Survey.objects.get(pk=self.survey_response.id)
         self.assertEquals(survey_response.published_at, None)
         self.assertEquals(survey_response.published_by, None)
 
@@ -640,7 +640,7 @@ class PublishSurveyResponseViewTest(MongoTestCase):
     def setUp(self):
         library = Library(name=u"KARLSTAD STADSBIBLIOTEK")
         library.save()
-        self.survey_response = SurveyResponse(library_name=u"KARLSTAD STADSBIBLIOTEK", sample_year=2013,
+        self.survey_response = Survey(library_name=u"KARLSTAD STADSBIBLIOTEK", sample_year=2013,
                                               target_group=u"public", observations=[], library=library)
         self.survey_response.save()
 
@@ -656,5 +656,5 @@ class PublishSurveyResponseViewTest(MongoTestCase):
         response = self.client.post(self.url, {}, follow=True)
         self.assertEquals(response.status_code, 200)
 
-        result = SurveyResponse.objects.get(pk=self.survey_response.id)
+        result = Survey.objects.get(pk=self.survey_response.id)
         self.assertTrue(result.is_published)

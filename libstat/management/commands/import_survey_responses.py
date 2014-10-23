@@ -10,7 +10,7 @@ from requests import get
 
 from libstat.utils import PUBLIC_LIBRARY, RESEARCH_LIBRARY, HOSPITAL_LIBRARY, SCHOOL_LIBRARY
 from libstat.utils import TYPE_BOOLEAN, TYPE_INTEGER, TYPE_LONG
-from libstat.models import SurveyResponse, SurveyObservation, Variable, Library
+from libstat.models import Survey, SurveyObservation, Variable, Library
 
 
 class Command(BaseCommand):
@@ -126,11 +126,11 @@ class Command(BaseCommand):
                                     #                                         lib[u"id"], lib[u"sigel"], lib[u"name"], len(libraries))
                                     break
 
-                    existing_responses = SurveyResponse.objects.filter(library_name=library_name, sample_year=year)
+                    existing_responses = Survey.objects.filter(library_name=library_name, sample_year=year)
                     if len(existing_responses) == 0:
                         library = Library(name=library_name)
                         library.save()
-                        sr = SurveyResponse(library_name=library_name, sample_year=year, target_group=target_group,
+                        sr = Survey(library_name=library_name, sample_year=year, target_group=target_group,
                                             observations=[], library=library)
                         # sr_metadata = SurveyResponseMetadata()
                         if library:

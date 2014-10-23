@@ -10,7 +10,7 @@ from django.contrib.auth.decorators import permission_required
 from excel_response import ExcelResponse
 
 from bibstat import settings
-from libstat.models import SurveyResponse, Variable, SurveyObservation, Library
+from libstat.models import Survey, Variable, SurveyObservation, Library
 from libstat.forms import SurveyForm
 from libstat.utils import survey_response_statuses
 
@@ -24,7 +24,7 @@ def survey_responses(request):
     message = ""
 
     # TODO: Cache sample_years
-    sample_years = SurveyResponse.objects.distinct("sample_year")
+    sample_years = Survey.objects.distinct("sample_year")
     sample_years.sort()
     sample_years.reverse()
 
@@ -40,11 +40,11 @@ def survey_responses(request):
     if action == "list":
         # TODO: Pagination
         if unpublished_only:
-            s_responses = SurveyResponse.objects.unpublished_by_year_or_group(
+            s_responses = Survey.objects.unpublished_by_year_or_group(
                 sample_year=sample_year,
                 target_group=target_group).order_by("library")
         elif sample_year or target_group:
-            s_responses = SurveyResponse.objects.by_year_or_group(
+            s_responses = Survey.objects.by_year_or_group(
                 sample_year=sample_year,
                 target_group=target_group).order_by("library")
         else:
@@ -81,7 +81,7 @@ def publish_survey_responses(request):
                     MAX_PUBLISH_LIMIT))
 
         if len(survey_response_ids) > 0:
-            s_responses = SurveyResponse.objects.filter(id__in=survey_response_ids)
+            s_responses = Survey.objects.filter(id__in=survey_response_ids)
             for sr in s_responses:
                 try:
                     sr.publish(user=request.user)
@@ -104,7 +104,7 @@ def dispatch_survey_responses(request):
 def export_survey_responses(request):
     if request.method == "POST":
         survey_response_ids = request.POST.getlist("survey-response-ids", [])
-        responses = SurveyResponse.objects.filter(id__in=survey_response_ids).order_by('library_name')
+        responses = Survey.objects.filter(id__in=survey_response_ids).order_by('library_name')
         filename = u"Exporterade enkätsvar ({})".format(strftime("%Y-%m-%d %H.%M.%S"))
 
         rows = [[unicode(observation._source_key) for observation in responses[0].observations]]
@@ -118,7 +118,7 @@ def export_survey_responses(request):
 @permission_required('is_superuser', login_url='index')
 def publish_survey_response(request, survey_response_id):
     try:
-        survey_response = SurveyResponse.objects.get(pk=survey_response_id)
+        survey_response = Survey.objects.get(pk=survey_response_id)
     except:
         raise Http404
 
@@ -134,7 +134,7 @@ def publish_survey_response(request, survey_response_id):
 
 def _survey_response_from_template(template, create_non_existing_variables=False):
     library = Library.objects.get(name=u"Motala stadsbibliotek")
-    response = SurveyResponse(
+    response = Survey(
         library_name=library.name,
         library=library,
         sample_year=2014,
@@ -168,7 +168,7 @@ def _survey_response_from_template(template, create_non_existing_variables=False
 
 @permission_required('is_superuser', login_url='index')
 def clean_example_surveys(request):
-    SurveyResponse.objects.filter(sample_year=2014).delete()
+    Survey.objects.filter(sample_year=2014).delete()
     return redirect(reverse('index'))
 
 
@@ -195,8 +195,8 @@ def _save_survey_response_from_form(response, form):
 
 def edit_survey(request, survey_id, wrong_password=False):
     try:
-        survey = SurveyResponse.objects.get(pk=survey_id)
-    except SurveyResponse.DoesNotExist:
+        survey = Survey.objects.get(pk=survey_id)
+    except Survey.DoesNotExist:
         return HttpResponseNotFound()
 
     if request.user.is_authenticated() or request.session.get("password"):
@@ -237,7 +237,7 @@ def edit_survey_status(request, survey_id):
         if not status in survey_response_statuses.values():
             raise Exception("Invalid status '" + status + "' for survey '" + survey_id + "'.")
 
-        survey = SurveyResponse.objects.get(pk=survey_id)
+        survey = Survey.objects.get(pk=survey_id)
         survey.status = _get_status_key_from_value(status)
         survey.save()
 

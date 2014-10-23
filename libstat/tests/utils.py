@@ -5,7 +5,7 @@ from datetime import datetime
 
 from django.core.urlresolvers import reverse
 
-from libstat.models import Variable, OpenData, SurveyResponse, Library
+from libstat.models import Variable, OpenData, Survey, Library
 
 
 def _get(instance=None, action=None, kwargs=None):
@@ -31,7 +31,7 @@ def _dummy_library():
 
 def _dummy_survey(library_name="dummy_name", sample_year=2001, password=None):
     library = _dummy_library()
-    survey = SurveyResponse(library_name=library_name, library=library, sample_year=sample_year,
+    survey = Survey(library_name=library_name, library=library, sample_year=sample_year,
                             target_group="public", password=password)
     survey.save()
     survey.reload()
