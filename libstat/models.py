@@ -386,6 +386,9 @@ class LibrarySelection(Document):
     name = StringField(unique=True)
     sigels = ListField()
 
+    meta = {
+        'collection': 'libstat_library_selection'
+    }
 
 class SurveyMetadata(EmbeddedDocument):
     respondent_name = StringField()
