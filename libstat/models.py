@@ -377,8 +377,9 @@ class Library(Document):
     municipality_name = StringField()
     municipality_code = StringField()
 
-    def __unicode__(self):
-        return u"libdb [{}, {}, {}]".format(self.bibdb_id, self.bibdb_sigel, self.bibdb_name)
+    meta = {
+        'collection': 'libstat_libraries'
+    }
 
 
 class LibrarySelection(Document):
