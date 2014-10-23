@@ -3,7 +3,39 @@ import random
 import string
 from datetime import datetime
 
-from libstat.models import Variable, OpenData
+from django.core.urlresolvers import reverse
+
+from libstat.models import Variable, OpenData, SurveyResponse, Library
+
+
+def _get(instance=None, action=None, kwargs=None):
+    url = reverse(action, kwargs=kwargs)
+    return instance.client.get(url)
+
+
+def _post(instance=None, action=None, kwargs=None, data=None):
+    url = reverse(action, kwargs=kwargs)
+    return instance.client.post(url, data=data)
+
+
+def _login(instance=None, user=None, password=None):
+    instance.client.login(username="admin", password="admin")
+
+
+def _dummy_library():
+    library = Library()
+    library.save()
+    library.reload()
+    return library
+
+
+def _dummy_survey(library_name="dummy_name", sample_year=2001, password=None):
+    library = _dummy_library()
+    survey = SurveyResponse(library_name=library_name, library=library, sample_year=sample_year,
+                            target_group="public", password=password)
+    survey.save()
+    survey.reload()
+    return survey
 
 
 def _dummy_variable(key=None, description=u"dummy description", type="integer", is_public=True,

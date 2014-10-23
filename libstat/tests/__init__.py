@@ -1,4 +1,5 @@
 # -*- coding: UTF-8 -*-
+from django.test.utils import setup_test_environment
 from django.test.runner import DiscoverRunner
 from django.test import TestCase
 from django.conf import settings
@@ -25,6 +26,7 @@ class MongoTestCase(TestCase):
 
         MongoUser.objects.create_superuser("admin", "admin@example.com", "admin")
         MongoUser.objects.create_user("library_user", "library.user@example.com", "secret")
+        setup_test_environment()
 
     def _post_teardown(self):
         from mongoengine.connection import get_connection, disconnect
