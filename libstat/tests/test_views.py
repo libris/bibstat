@@ -583,10 +583,9 @@ class SurveyResponsesViewTest(MongoTestCase):
     def test_each_survey_response_should_have_checkbox_for_actions(self):
         response = self.client.get(
             "{}?action=list&target_group=public&sample_year=2013".format(reverse("survey_responses")))
-        self.assertContains(response,
-                            u'<input title="Välj" class="select-one" name="survey-response-ids" type="checkbox" value="{}"/>'.format(
-                                self.survey_response.id),
-                            count=1, status_code=200, html=True)
+
+        with self.assertHTML(response, 'input[value="' + str(self.survey_response.id) + '"]') as (input,):
+            self.assertEqual(input.type, 'checkbox')
 
     def test_each_survey_response_should_have_a_link_to_details_view(self):
         response = self.client.get(
