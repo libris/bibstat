@@ -11,6 +11,7 @@
             'bootstrap.validator': ['bootstrap'],
             'bootstrap.validator.sv': ['bootstrap.validator'],
             'jquery.tablesorter': ['jquery'],
+            'jquery.textrange': ['jquery'],
             'typeahead': ['jquery']
         },
         paths: {
@@ -21,6 +22,7 @@
             'bootstrap.validator.sv': ['plugins/bootstrap-validator/0.5.2/js/language/sv_SE'],
             'jquery': ['plugins/jquery/1.11.1/jquery'],
             'jquery.tablesorter': ['plugins/jquery/tablesorter/2.17.8/jquery.tablesorter.min'],
+            'jquery.textrange': ['plugins/jquery/textrange/1.3.0/jquery-textrange'],
             'typeahead': ['plugins/typeaheadjs/0.10.5/typeahead.bundle'],
             'underscore': ['plugins/underscorejs/1.7.0/underscore-min'],
 

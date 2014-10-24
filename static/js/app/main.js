@@ -1,5 +1,5 @@
 define(['jquery', 'survey', 'login', 'jquery.tablesorter', 'bootstrap', 'bootstrap.datepicker', 'bootstrap.tokenfield',
-    'typeahead', 'underscore'], function ($, survey, login) {
+    'typeahead', 'underscore', 'jquery.textrange'], function ($, survey, login) {
 
     window.ellipsis = function (text, max_chars) {
         max_chars = max_chars || 50;
@@ -65,18 +65,25 @@ define(['jquery', 'survey', 'login', 'jquery.tablesorter', 'bootstrap', 'bootstr
                 setupOnceComplete = true;
                 $('.btn-insert').click(function () {
                     var append = function (token) {
-                        var modal = $('#modal-dispatch')
+                        var modal = $('#modal-dispatch');
 
                         var insert = modal.data('insert');
                         if(!insert) insert = $('.dispatch-message');
                         modal.data('insert', '');
 
-                        insert.val(insert.val() + "{" + token + "}");
+                        insert.textrange('insert', "{" + token + "}");
                         insert.change();
                         insert.focus();
                     };
 
                     append($(this).text().toLowerCase());
+                });
+
+                $('.form-dispatch').bootstrapValidator({
+                    trigger: 'keyup change paste'
+                }).on('success.form.bv', function () {
+                    console.log("submit"); // TODO
+                    return false;
                 });
 
                 $('.dispatch-message, .dispatch-title').on('change paste keyup', function () {
@@ -101,7 +108,6 @@ define(['jquery', 'survey', 'login', 'jquery.tablesorter', 'bootstrap', 'bootstr
             var refresh = function () {
                 $('.dispatch-example-footer').html("Detta är ett exempelutskick för " + library + ".");
                 $('.btn-library').data('value', library);
-                $('.btn-year').data('value', year);
                 $('.btn-address').data('value', address);
                 $('.btn-password').data('value', 'VRhNVva5AR');
 
@@ -132,6 +138,8 @@ define(['jquery', 'survey', 'login', 'jquery.tablesorter', 'bootstrap', 'bootstr
 
             setupModal(library, year, address);
         });
+
+
 
         /* Edit variable */
         $(".edit-variable").click(function (ev) {
