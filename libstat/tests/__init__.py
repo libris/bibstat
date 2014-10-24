@@ -1,11 +1,12 @@
 # -*- coding: UTF-8 -*-
 from django.test.utils import setup_test_environment
 from django.test.runner import DiscoverRunner
-from with_asserts.case import TestCase
+from django.test import TestCase
 from django.conf import settings
 
 
 class MongoEngineTestRunner(DiscoverRunner):
+
     def setup_databases(self):
         pass
 
