@@ -12,9 +12,11 @@
             'bootstrap.validator.sv': ['bootstrap.validator'],
             'jquery.tablesorter': ['jquery'],
             'jquery.textrange': ['jquery'],
-            'typeahead': ['jquery']
+            'typeahead': ['jquery'],
         },
         paths: {
+
+            /* Plugins */
             'bootstrap': ['plugins/bootstrap/3.2.0/js/bootstrap'],
             'bootstrap.datepicker': ['plugins/bootstrap-datepicker/1.3.0/bootstrap-datepicker'],
             'bootstrap.tokenfield': ['plugins/bootstrap-tokenfield/0.12.0/bootstrap-tokenfield'],
@@ -30,6 +32,7 @@
             'cell': ['app/cell/cell'],
             'cell.sum': ['app/cell/sum'],
             'survey': ['app/survey'],
+            'surveys.dispatch': ['app/surveys/dispatch'],
             'login': ['app/login']
         },
 

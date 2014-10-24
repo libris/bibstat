@@ -1,4 +1,4 @@
-define(['jquery', 'cell.sum', 'cell', 'bootstrap.validator.sv'], function ($, sum, cell) {
+define(['jquery', 'cell.sum', 'cell', 'surveys.dispatch', 'bootstrap.validator.sv'], function ($, sum, cell, dispatch) {
     var survey = {
         form: function (selector) {
             if (selector) return $('#survey-form ' + selector);
@@ -217,12 +217,30 @@ define(['jquery', 'cell.sum', 'cell', 'bootstrap.validator.sv'], function ($, su
                 survey.disabledInputs().prop("disabled", false);
                 $("#disabled_inputs").val(disabledInputIds);
 
-                survey.form().attr("action", Urls.edit_survey(survey.form("#id_key").val()));
+                survey.form().attr("action", Urls.survey(survey.form("#id_key").val()));
                 survey.validator().defaultSubmit();
             }).on('error.form.bv', function () {
                 $('html, body').animate({
                     scrollTop: survey.validator().getInvalidFields().first().offset().top - 100
                 }, 300);
+            });
+
+            var submitTo = function (action) {
+                $(".publish-survey-responses-form").get(0).
+                    setAttribute('action', Urls[action]());
+            };
+
+            $(".btn-remove").click(function () { submitTo('surveys_remove'); });
+            $(".btn-publish").click(function () { submitTo('surveys_publish'); });
+            $(".btn-export").click(function () { submitTo('surveys_export'); });
+            $(".btn-dispatch").click(function (e) {
+                e.preventDefault();
+
+                var checked = $(".select-one:checked").first();
+                var library = checked.data('library');
+                var address = checked.data('url-base') + checked.data('address');
+
+                dispatch.init(library, address);
             });
 
             /* Move feedback icons to the right side of the input field. */
