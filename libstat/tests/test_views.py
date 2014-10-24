@@ -626,27 +626,3 @@ class PublishSurveyResponsesViewTest(MongoTestCase):
         survey_response = Survey.objects.get(pk=self.survey_response.id)
         self.assertEquals(survey_response.published_at, None)
         self.assertEquals(survey_response.published_by, None)
-
-
-class PublishSurveyResponseViewTest(MongoTestCase):
-    def setUp(self):
-        library = Library(name=u"KARLSTAD STADSBIBLIOTEK")
-        library.save()
-        self.survey_response = Survey(library_name=u"KARLSTAD STADSBIBLIOTEK", sample_year=2013,
-                                      target_group=u"public", observations=[], library=library)
-        self.survey_response.save()
-
-        self.url = reverse("publish_survey_response", kwargs={"survey_response_id": str(self.survey_response.id)})
-        self.edit_survey_response_url = reverse("edit_survey",
-                                                kwargs={"survey_id": str(self.survey_response.id)})
-        self.client.login(username="admin", password="admin")
-        self.current_user = User.objects.filter(username="admin")[0]
-
-    def test_should_publish_survey_response(self):
-        self.assertFalse(self.survey_response.is_published)
-
-        response = self.client.post(self.url, {}, follow=True)
-        self.assertEquals(response.status_code, 200)
-
-        result = Survey.objects.get(pk=self.survey_response.id)
-        self.assertTrue(result.is_published)

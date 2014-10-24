@@ -19,7 +19,7 @@ logger = logging.getLogger(__name__)
 
 
 @permission_required('is_superuser', login_url='index')
-def survey_responses(request):
+def surveys(request):
     s_responses = []
 
     # TODO: Cache sample_years
@@ -64,7 +64,7 @@ def survey_responses(request):
 
 
 @permission_required('is_superuser', login_url='index')
-def publish_survey_responses(request):
+def surveys_publish(request):
     MAX_PUBLISH_LIMIT = 500
 
     if request.method == "POST":
@@ -96,12 +96,12 @@ def publish_survey_responses(request):
 
 
 @permission_required('is_superuser', login_url='index')
-def dispatch_survey_responses(request):
+def surveys_dispatch(request):
     pass
 
 
 @permission_required('is_superuser', login_url='index')
-def export_survey_responses(request):
+def surveys_export(request):
     if request.method == "POST":
         survey_response_ids = request.POST.getlist("survey-response-ids", [])
         responses = Survey.objects.filter(id__in=survey_response_ids).order_by('library_name')
@@ -113,23 +113,6 @@ def export_survey_responses(request):
                 [observation.value if observation.value else "" for observation in response.observations])
 
         return ExcelResponse(rows, filename)
-
-
-@permission_required('is_superuser', login_url='index')
-def publish_survey_response(request, survey_response_id):
-    try:
-        survey_response = Survey.objects.get(pk=survey_response_id)
-    except:
-        raise Http404
-
-    if request.method == "POST":
-        try:
-            survey_response.publish(user=request.user)
-        except Exception as e:
-            logger.error(u"Error when publishing survey response {}:".format(survey_response_id.id))
-            print e
-
-    return redirect("edit_survey", survey_response_id)
 
 
 def _survey_response_from_template(template, create_non_existing_variables=False):
@@ -167,7 +150,7 @@ def _survey_response_from_template(template, create_non_existing_variables=False
 
 
 @permission_required('is_superuser', login_url='index')
-def clean_example_surveys(request):
+def surveys_clean(request):
     Survey.objects.filter(sample_year=2014).delete()
     return redirect(reverse('index'))
 
@@ -194,7 +177,7 @@ def _save_survey_response_from_form(response, form):
 
 
 @permission_required('is_superuser', login_url='index')
-def remove_surveys(request):
+def surveys_remove(request):
     if request.method == "POST":
         survey_response_ids = request.POST.getlist("survey-response-ids", [])
         Survey.objects.filter(id__in=survey_response_ids).delete()
@@ -202,7 +185,7 @@ def remove_surveys(request):
     return redirect("survey_responses")
 
 
-def edit_survey(request, survey_id, wrong_password=False):
+def survey(request, survey_id, wrong_password=False):
     try:
         survey = Survey.objects.get(pk=survey_id)
     except Survey.DoesNotExist:
@@ -238,7 +221,7 @@ def _get_status_key_from_value(status):
 
 
 @permission_required('is_superuser', login_url='index')
-def edit_survey_status(request, survey_id):
+def surveys_status(request, survey_id):
     if request.method == "POST":
         status = request.POST[u'selected_status']
         if status == "published":

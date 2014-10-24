@@ -11,21 +11,20 @@ from libstat.views import (open_data,
                            replaceable_variables_api,
                            surveyable_variables_api,
                            index,
-                           survey_responses,
-                           clean_example_surveys,
-                           edit_survey,
-                           publish_survey_responses,
-                           publish_survey_response,
-                           export_survey_responses,
-                           dispatch_survey_responses,
+                           surveys,
+                           surveys_clean,
+                           survey,
+                           surveys_publish,
+                           surveys_export,
+                           surveys_dispatch,
                            variables,
                            create_variable,
                            edit_variable,
                            libraries,
-                           edit_survey_status,
+                           surveys_status,
                            import_libraries,
                            remove_libraries,
-                           remove_surveys)
+                           surveys_remove)
 
 
 urlpatterns = patterns(
@@ -50,15 +49,14 @@ urlpatterns = patterns(
     url(r'^$', index, name='index'),
 
     # Survey
-    url(r'^surveys$', survey_responses, name='survey_responses'),
-    url(r'^surveys/clean', clean_example_surveys, name='clean_example_surveys'),
-    url(r'^surveys/dispatch$', dispatch_survey_responses, name='dispatch_survey_responses'),
-    url(r'^surveys/export$', export_survey_responses, name='export_survey_responses'),
-    url(r'^surveys/publish$', publish_survey_responses, name='publish_survey_responses'),
-    url(r'^surveys/publish/(?P<survey_response_id>\w+)$', publish_survey_response, name='publish_survey_response'),
-    url(r'^surveys/remove$', remove_surveys, name='remove_surveys'),
-    url(r'^surveys/status/(?P<survey_id>\w+)$', edit_survey_status, name='edit_survey_status'),
-    url(r'^surveys/(?P<survey_id>\w+)$', edit_survey, name='edit_survey'),
+    url(r'^surveys$', surveys, name='survey_responses'),
+    url(r'^surveys/clean', surveys_clean, name='clean_example_surveys'),
+    url(r'^surveys/dispatch$', surveys_dispatch, name='dispatch_survey_responses'),
+    url(r'^surveys/export$', surveys_export, name='export_survey_responses'),
+    url(r'^surveys/publish$', surveys_publish, name='publish_survey_responses'),
+    url(r'^surveys/remove$', surveys_remove, name='remove_surveys'),
+    url(r'^surveys/status/(?P<survey_id>\w+)$', surveys_status, name='edit_survey_status'),
+    url(r'^surveys/(?P<survey_id>\w+)$', survey, name='edit_survey'),
 
     # Variables
     url(r'^variables$', variables, name='variables'),
