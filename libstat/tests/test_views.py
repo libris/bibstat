@@ -1,18 +1,17 @@
 # -*- coding: UTF-8 -*-
 import uuid
 import json
-from datetime import datetime
 
 from django.core.urlresolvers import reverse
 from mongoengine.django.auth import User
 
+from datetime import datetime
 from libstat.tests import MongoTestCase
 from libstat.models import Variable, Survey, SurveyObservation, OpenData, Library
-from libstat.tests.utils import _dummy_open_data, _dummy_variable
+from libstat.tests.utils import _dummy_variable
 
 
 class VariablesViewTest(MongoTestCase):
-
     def setUp(self):
         self.url = reverse("variables")
         self.client.login(username="admin", password="admin")
@@ -99,7 +98,6 @@ class VariablesViewTest(MongoTestCase):
 
 
 class CreateVariableViewTest(MongoTestCase):
-
     def setUp(self):
         self.url = reverse("create_variable")
         self.client.login(username="admin", password="admin")
@@ -132,7 +130,7 @@ class CreateVariableViewTest(MongoTestCase):
                                      u"description": (u"Antal anställda manliga bibliotekarier den "
                                                       u"1 mars aktuellt mätår"),
                                      u"comment": u"Det här är ett utkast"}
-                                    )
+        )
 
         self.assertEquals(response.status_code, 200)
         data = json.loads(response.content)
@@ -165,7 +163,6 @@ class CreateVariableViewTest(MongoTestCase):
 
 # Create custom base test class with helper methods.
 class EditVariableViewTest(MongoTestCase):
-
     def setUp(self):
         self.v1 = Variable(key=u"Folk10", description=u"Antal bemannade serviceställen", type="integer", is_public=True,
                            target_groups=["public"])
@@ -541,17 +538,16 @@ class EditVariableViewTest(MongoTestCase):
 
 
 class SurveyResponsesViewTest(MongoTestCase):
-
     def setUp(self):
         self.publishing_date = datetime(2014, 8, 22, 10, 40, 33, 876)
         self.survey_response = Survey(library_name=u"KARLSTAD STADSBIBLIOTEK", sample_year=2013,
-                                              target_group="public", observations=[], published_at=self.publishing_date)
+                                      target_group="public", observations=[], published_at=self.publishing_date)
         self.survey_response.save()
         sr2 = Survey(library_name=u"NORRBOTTENS LÄNSBIBLIOTEK", sample_year=2012, target_group="public",
-                             observations=[], published_at=self.publishing_date)
+                     observations=[], published_at=self.publishing_date)
         sr2.save()
         sr3 = Survey(library_name=u"Sjukhusbiblioteken i Dalarnas län", sample_year=2013,
-                             target_group="hospital", observations=[])
+                     target_group="hospital", observations=[])
         self.hospital_sr = sr3.save()
 
         self.client.login(username="admin", password="admin")
@@ -583,31 +579,28 @@ class SurveyResponsesViewTest(MongoTestCase):
     def test_each_survey_response_should_have_checkbox_for_actions(self):
         response = self.client.get(
             "{}?action=list&target_group=public&sample_year=2013".format(reverse("survey_responses")))
-        self.assertContains(response,
-                            u'<input title="Välj" class="select-one" name="survey-response-ids" type="checkbox" value="{}"/>'.format(
-                                self.survey_response.id),
-                            count=1, status_code=200, html=True)
+
+        self.assertContains(response, 'value="{}"'.format(self.survey_response.id))
 
     def test_each_survey_response_should_have_a_link_to_details_view(self):
         response = self.client.get(
             "{}?action=list&target_group=public&sample_year=2013".format(reverse("survey_responses")))
         self.assertContains(response, u'<a href="{}" title="Visa/redigera enkätsvar">Visa/redigera</a>'
                             .format(
-                                reverse("edit_survey", kwargs={"survey_id": str(self.survey_response.id)})),
+            reverse("edit_survey", kwargs={"survey_id": str(self.survey_response.id)})),
                             count=1, status_code=200, html=True)
 
 
 class PublishSurveyResponsesViewTest(MongoTestCase):
-
     def setUp(self):
         self.survey_response = Survey(library_name="KARLSTAD STADSBIBLIOTEK", sample_year=2013,
-                                              target_group="public", observations=[])
+                                      target_group="public", observations=[])
         self.survey_response.save()
         sr2 = Survey(library_name="NORRBOTTENS LÄNSBIBLIOTEK", sample_year=2012, target_group="public",
-                             observations=[])
+                     observations=[])
         sr2.save()
         sr3 = Survey(library_name=u"Sjukhusbiblioteken i Dalarnas län", sample_year=2013,
-                             target_group="hospital", observations=[])
+                     target_group="hospital", observations=[])
         sr3.save()
 
         self.url = reverse("publish_survey_responses")
@@ -636,12 +629,11 @@ class PublishSurveyResponsesViewTest(MongoTestCase):
 
 
 class PublishSurveyResponseViewTest(MongoTestCase):
-
     def setUp(self):
         library = Library(name=u"KARLSTAD STADSBIBLIOTEK")
         library.save()
         self.survey_response = Survey(library_name=u"KARLSTAD STADSBIBLIOTEK", sample_year=2013,
-                                              target_group=u"public", observations=[], library=library)
+                                      target_group=u"public", observations=[], library=library)
         self.survey_response.save()
 
         self.url = reverse("publish_survey_response", kwargs={"survey_response_id": str(self.survey_response.id)})
