@@ -553,41 +553,41 @@ class SurveyResponsesViewTest(MongoTestCase):
         self.client.login(username="admin", password="admin")
 
     def test_should_not_fetch_survey_responses_unless_list_action_provided(self):
-        response = self.client.get(reverse("survey_responses"))
+        response = self.client.get(reverse("surveys"))
         self.assertEquals(len(response.context["survey_responses"]), 0)
 
     def test_should_list_survey_responses_by_year(self):
-        response = self.client.get("{}?action=list&sample_year=2012".format(reverse("survey_responses")))
+        response = self.client.get("{}?action=list&sample_year=2012".format(reverse("surveys")))
         self.assertEquals(len(response.context["survey_responses"]), 1)
 
     def test_should_list_survey_responses_by_target_group(self):
-        response = self.client.get("{}?action=list&target_group=public".format(reverse("survey_responses")))
+        response = self.client.get("{}?action=list&target_group=public".format(reverse("surveys")))
         self.assertEquals(len(response.context["survey_responses"]), 2)
 
     def test_should_list_survey_responses_by_year_and_target_group(self):
         response = self.client.get(
-            "{}?action=list&target_group=public&sample_year=2013".format(reverse("survey_responses")))
+            "{}?action=list&target_group=public&sample_year=2013".format(reverse("surveys")))
         self.assertEquals(len(response.context["survey_responses"]), 1)
         self.assertEquals(response.context["survey_responses"][0].library_name, u"KARLSTAD STADSBIBLIOTEK")
 
     def test_should_list_unpublished_survey_responses(self):
         self.assertFalse(self.hospital_sr.is_published)
-        response = self.client.get("{}?action=list&unpublished_only=True".format(reverse("survey_responses")))
+        response = self.client.get("{}?action=list&unpublished_only=True".format(reverse("surveys")))
         self.assertEquals(len(response.context["survey_responses"]), 1)
         self.assertEquals(response.context["survey_responses"][0].library_name, u"Sjukhusbiblioteken i Dalarnas län")
 
     def test_each_survey_response_should_have_checkbox_for_actions(self):
         response = self.client.get(
-            "{}?action=list&target_group=public&sample_year=2013".format(reverse("survey_responses")))
+            "{}?action=list&target_group=public&sample_year=2013".format(reverse("surveys")))
 
         self.assertContains(response, 'value="{}"'.format(self.survey_response.id))
 
     def test_each_survey_response_should_have_a_link_to_details_view(self):
         response = self.client.get(
-            "{}?action=list&target_group=public&sample_year=2013".format(reverse("survey_responses")))
+            "{}?action=list&target_group=public&sample_year=2013".format(reverse("surveys")))
         self.assertContains(response, u'<a href="{}" title="Visa/redigera enkätsvar">Visa/redigera</a>'
                             .format(
-            reverse("edit_survey", kwargs={"survey_id": str(self.survey_response.id)})),
+            reverse("survey", kwargs={"survey_id": str(self.survey_response.id)})),
                             count=1, status_code=200, html=True)
 
 
@@ -603,7 +603,7 @@ class PublishSurveyResponsesViewTest(MongoTestCase):
                      target_group="hospital", observations=[])
         sr3.save()
 
-        self.url = reverse("publish_survey_responses")
+        self.url = reverse("surveys_publish")
         self.client.login(username="admin", password="admin")
 
     def test_should_publish_selection(self):
@@ -614,7 +614,7 @@ class PublishSurveyResponsesViewTest(MongoTestCase):
         self.assertEquals(response.status_code, 200)
 
         survey_response = Survey.objects.get(pk=self.survey_response.id)
-        self.assertTrue(survey_response.published_at != None)
+        self.assertTrue(survey_response.published_at is not None)
         self.assertEquals(survey_response.published_by, User.objects.filter(username="admin")[0])
 
     def test_should_not_publish_unless_selected_ids(self):

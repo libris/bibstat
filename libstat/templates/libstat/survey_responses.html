@@ -153,7 +153,7 @@
                                 <td>
                                     <input title="{% trans 'Välj' %}" class="select-one" name="survey-response-ids"
                                            type="checkbox" value="{{ sr.id }}" data-library="{{ sr.library.name }}"
-                                           data-address="{% url 'edit_survey' sr.id %}" data-url-base="{{ url_base }}"/>
+                                           data-address="{% url 'survey' sr.id %}" data-url-base="{{ url_base }}"/>
                                 </td>
                                 <td>
                                     {{ sr.status|srs_label }}
@@ -185,7 +185,7 @@
                                 </td>
                                 <td>
                                     <a title="{% trans 'Visa/redigera enkätsvar' %}"
-                                       href="{% url 'edit_survey' sr.id %}">
+                                       href="{% url 'survey' sr.id %}">
                                         Visa/redigera
                                     </a>
                                 </td>

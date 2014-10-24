@@ -69,57 +69,57 @@ msgstr "Sign out"
 msgid "Logga in"
 msgstr "Sign in"
 
-#: templates/libstat/edit_survey.html:7
-#: templates/libstat/edit_survey_response.html:10
+#: templates/libstat/.html:7
+#: templates/libstat/_response.html:10
 #, fuzzy
 msgid "Statistikenkät"
 msgstr "KB Statistics"
 
-#: templates/libstat/edit_survey.html:18
-#: templates/libstat/edit_survey_response.html:35
+#: templates/libstat/.html:18
+#: templates/libstat/_response.html:35
 msgid "Mätår"
 msgstr ""
 
-#: templates/libstat/edit_survey.html:26
+#: templates/libstat/.html:26
 #: templates/libstat/modals/edit_variable.html:136
 #, fuzzy
 msgid "Bibliotekstyper"
 msgstr "Library statistics"
 
-#: templates/libstat/edit_survey.html:40
-#: templates/libstat/edit_survey_response.html:127
-#: templates/libstat/edit_survey_response.html:154
+#: templates/libstat/.html:40
+#: templates/libstat/_response.html:127
+#: templates/libstat/_response.html:154
 msgid "Spara"
 msgstr ""
 
-#: templates/libstat/edit_survey.html:46
-#: templates/libstat/edit_survey_response.html:137
+#: templates/libstat/.html:46
+#: templates/libstat/_response.html:137
 msgid "Undersökningens frågor"
 msgstr ""
 
-#: templates/libstat/edit_survey.html:71
+#: templates/libstat/.html:71
 msgid "Lägg till fråga (term)"
 msgstr ""
 
-#: templates/libstat/edit_survey.html:75
+#: templates/libstat/.html:75
 msgid "Lägg till"
 msgstr ""
 
-#: templates/libstat/edit_survey.html:88
-#: templates/libstat/edit_survey_response.html:164
+#: templates/libstat/.html:88
+#: templates/libstat/_response.html:164
 #: templates/libstat/index.html:62 templates/libstat/open_data.html:133
 msgid "Kungliga Biblioteket"
 msgstr "National Library of Sweden"
 
-#: templates/libstat/edit_survey_response.html:15
+#: templates/libstat/_response.html:15
 msgid "Publicera"
 msgstr ""
 
-#: templates/libstat/edit_survey_response.html:28
+#: templates/libstat/_response.html:28
 msgid "Information om enkät och svarande organisation"
 msgstr ""
 
-#: templates/libstat/edit_survey_response.html:44
+#: templates/libstat/_response.html:44
 #: templates/libstat/survey_responses.html:40
 #: templates/libstat/survey_responses.html:81
 #: templates/libstat/variables.html:46
@@ -127,47 +127,47 @@ msgstr ""
 msgid "Bibliotekstyp"
 msgstr "Library statistics"
 
-#: templates/libstat/edit_survey_response.html:53
+#: templates/libstat/_response.html:53
 msgid "Senast ändrad"
 msgstr ""
 
-#: templates/libstat/edit_survey_response.html:62
+#: templates/libstat/_response.html:62
 #: templates/libstat/survey_responses.html:78
 msgid "Publicerad"
 msgstr ""
 
-#: templates/libstat/edit_survey_response.html:69
+#: templates/libstat/_response.html:69
 #: templates/libstat/survey_responses.html:93
 msgid "Senaste version är inte publicerad"
 msgstr ""
 
-#: templates/libstat/edit_survey_response.html:78
+#: templates/libstat/_response.html:78
 #, fuzzy
 msgid "Bibliotek/organisation"
 msgstr "Library statistics"
 
-#: templates/libstat/edit_survey_response.html:83
-#: templates/libstat/edit_survey_response.html:107
+#: templates/libstat/_response.html:83
+#: templates/libstat/_response.html:107
 msgid "Namn"
 msgstr ""
 
-#: templates/libstat/edit_survey_response.html:88
+#: templates/libstat/_response.html:88
 msgid "Kommun/län"
 msgstr ""
 
-#: templates/libstat/edit_survey_response.html:93
+#: templates/libstat/_response.html:93
 msgid "Kommun/länskod"
 msgstr ""
 
-#: templates/libstat/edit_survey_response.html:102
+#: templates/libstat/_response.html:102
 msgid "Svarande person"
 msgstr ""
 
-#: templates/libstat/edit_survey_response.html:112
+#: templates/libstat/_response.html:112
 msgid "E-post"
 msgstr ""
 
-#: templates/libstat/edit_survey_response.html:117
+#: templates/libstat/_response.html:117
 msgid "Telefonnr"
 msgstr ""
 

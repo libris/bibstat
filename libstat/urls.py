@@ -49,14 +49,14 @@ urlpatterns = patterns(
     url(r'^$', index, name='index'),
 
     # Survey
-    url(r'^surveys$', surveys, name='survey_responses'),
-    url(r'^surveys/clean', surveys_clean, name='clean_example_surveys'),
-    url(r'^surveys/dispatch$', surveys_dispatch, name='dispatch_survey_responses'),
-    url(r'^surveys/export$', surveys_export, name='export_survey_responses'),
-    url(r'^surveys/publish$', surveys_publish, name='publish_survey_responses'),
-    url(r'^surveys/remove$', surveys_remove, name='remove_surveys'),
-    url(r'^surveys/status/(?P<survey_id>\w+)$', surveys_status, name='edit_survey_status'),
-    url(r'^surveys/(?P<survey_id>\w+)$', survey, name='edit_survey'),
+    url(r'^surveys$', surveys, name='surveys'),
+    url(r'^surveys/clean', surveys_clean, name='surveys_clean'),
+    url(r'^surveys/dispatch$', surveys_dispatch, name='surveys_dispatch'),
+    url(r'^surveys/export$', surveys_export, name='surveys_export'),
+    url(r'^surveys/publish$', surveys_publish, name='surveys_publish'),
+    url(r'^surveys/remove$', surveys_remove, name='surveys_remove'),
+    url(r'^surveys/status/(?P<survey_id>\w+)$', surveys_status, name='surveys_status'),
+    url(r'^surveys/(?P<survey_id>\w+)$', survey, name='survey'),
 
     # Variables
     url(r'^variables$', variables, name='variables'),

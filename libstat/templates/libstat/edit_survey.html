@@ -68,7 +68,7 @@
                 </p>
 
                 {% if not form.is_published %}
-                    <form id="form-admin" class="form" action="{% url 'edit_survey_status' form.key.value %}"
+                    <form id="form-admin" class="form" action="{% url 'surveys_status' form.key.value %}"
                           method="post">
                         {% csrf_token %}
                         {{ form.selected_status }}

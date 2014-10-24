@@ -91,7 +91,7 @@ def surveys_publish(request):
 
     # TODO: There has to be a better way to do this...
     return HttpResponseRedirect(u"{}{}".format(
-        reverse("survey_responses"),
+        reverse("surveys"),
         u"?action=list&target_group={}&sample_year={}".format(target_group, sample_year)))
 
 
@@ -182,7 +182,7 @@ def surveys_remove(request):
         survey_response_ids = request.POST.getlist("survey-response-ids", [])
         Survey.objects.filter(id__in=survey_response_ids).delete()
         request.session["message"] = u"En eller flera enkäter har tagits bort"
-    return redirect("survey_responses")
+    return redirect("surveys")
 
 
 def survey(request, survey_id, wrong_password=False):
@@ -207,7 +207,7 @@ def survey(request, survey_id, wrong_password=False):
         password = request.POST["password"]
         if password == survey.password:
             request.session["password"] = True
-            return redirect(reverse("edit_survey", args=(survey_id,)))
+            return redirect(reverse("survey", args=(survey_id,)))
         else:
             wrong_password = True
 
@@ -233,4 +233,4 @@ def surveys_status(request, survey_id):
         survey.status = _get_status_key_from_value(status)
         survey.save()
 
-    return redirect(reverse('edit_survey', args=(survey_id,)))
+    return redirect(reverse('survey', args=(survey_id,)))
