@@ -51,14 +51,14 @@ urlpatterns = patterns(
 
     # Survey
     url(r'^surveys$', survey_responses, name='survey_responses'),
-    url(r'^surveys/clean_example_surveys$', clean_example_surveys, name='clean_example_surveys'),
-    url(r'^surveys/edit/status/(?P<survey_id>\w+)$', edit_survey_status, name='edit_survey_status'),
-    url(r'^surveys/edit/(?P<survey_id>\w+)$', edit_survey, name='edit_survey'),
-    url(r'^surveys/remove$', remove_surveys, name='remove_surveys'),
+    url(r'^surveys/clean', clean_example_surveys, name='clean_example_surveys'),
+    url(r'^surveys/dispatch$', dispatch_survey_responses, name='dispatch_survey_responses'),
+    url(r'^surveys/export$', export_survey_responses, name='export_survey_responses'),
     url(r'^surveys/publish$', publish_survey_responses, name='publish_survey_responses'),
     url(r'^surveys/publish/(?P<survey_response_id>\w+)$', publish_survey_response, name='publish_survey_response'),
-    url(r'^surveys/export$', export_survey_responses, name='export_survey_responses'),
-    url(r'^surveys/dispatch$', dispatch_survey_responses, name='dispatch_survey_responses'),
+    url(r'^surveys/remove$', remove_surveys, name='remove_surveys'),
+    url(r'^surveys/status/(?P<survey_id>\w+)$', edit_survey_status, name='edit_survey_status'),
+    url(r'^surveys/(?P<survey_id>\w+)$', edit_survey, name='edit_survey'),
 
     # Variables
     url(r'^variables$', variables, name='variables'),
