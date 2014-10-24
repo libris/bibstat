@@ -21,7 +21,6 @@ logger = logging.getLogger(__name__)
 @permission_required('is_superuser', login_url='index')
 def survey_responses(request):
     s_responses = []
-    message = ""
 
     # TODO: Cache sample_years
     sample_years = Survey.objects.distinct("sample_year")
@@ -32,6 +31,7 @@ def survey_responses(request):
     target_group = request.GET.get("target_group", "")
     sample_year = request.GET.get("sample_year", "")
     unpublished_only = request.GET.get("unpublished_only", False)
+    message = request.session.pop("message", "")
     if "True" == unpublished_only:
         unpublished_only = True
     else:
@@ -191,6 +191,15 @@ def _save_survey_response_from_form(response, form):
         response.save()
     else:
         raise Exception(form.errors)
+
+
+@permission_required('is_superuser', login_url='index')
+def remove_surveys(request):
+    if request.method == "POST":
+        survey_response_ids = request.POST.getlist("survey-response-ids", [])
+        Survey.objects.filter(id__in=survey_response_ids).delete()
+        request.session["message"] = u"En eller flera enkäter har tagits bort"
+    return redirect("survey_responses")
 
 
 def edit_survey(request, survey_id, wrong_password=False):

@@ -102,6 +102,22 @@
                     <input type="hidden" name="sample_year" value="{{ sample_year }}"/>
                     <input type="hidden" name="target_group" value="{{ target_group }}"/>
                     <div class="form-group pull-right submit-publish">
+                        <div class="modal fade" id="confirm-remove-modal" tabindex="-1" role="dialog" aria-hidden="true">
+                            <div class="modal-dialog">
+                                <div class="modal-content">
+                                    <div class="modal-body">
+                                        Är du säker på att du vill ta bort de markerade enkäterna? Denna åtgärd kan inte ångras.
+                                    </div>
+                                    <div class="modal-footer">
+                                        <a href="#" class="btn btn-danger" data-dismiss="modal">Nej</a>
+                                        <button type="submit" class="btn btn-success btn-remove">Ja</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <a href="#" class="btn btn-danger btn-survey disabled" data-toggle="modal" data-target="#confirm-remove-modal">
+                            Ta bort
+                        </a>
                         <button class="btn btn-primary btn-survey btn-dispatch disabled">
                             Nytt utskick
                         </button>

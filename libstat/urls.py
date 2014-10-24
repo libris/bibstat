@@ -24,7 +24,8 @@ from libstat.views import (open_data,
                            libraries,
                            edit_survey_status,
                            import_libraries,
-                           remove_libraries)
+                           remove_libraries,
+                           remove_surveys)
 
 
 urlpatterns = patterns(
@@ -53,6 +54,7 @@ urlpatterns = patterns(
     url(r'^surveys/clean_example_surveys$', clean_example_surveys, name='clean_example_surveys'),
     url(r'^surveys/edit/status/(?P<survey_id>\w+)$', edit_survey_status, name='edit_survey_status'),
     url(r'^surveys/edit/(?P<survey_id>\w+)$', edit_survey, name='edit_survey'),
+    url(r'^surveys/remove$', remove_surveys, name='remove_surveys'),
     url(r'^surveys/publish$', publish_survey_responses, name='publish_survey_responses'),
     url(r'^surveys/publish/(?P<survey_response_id>\w+)$', publish_survey_response, name='publish_survey_response'),
     url(r'^surveys/export$', export_survey_responses, name='export_survey_responses'),

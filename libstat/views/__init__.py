@@ -14,7 +14,8 @@ from surveys import (clean_example_surveys,
                      export_survey_responses,
                      publish_survey_response,
                      publish_survey_responses,
-                     survey_responses)
+                     survey_responses,
+                     remove_surveys)
 from libraries import (libraries,
                        import_libraries,
                        remove_libraries)

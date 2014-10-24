@@ -113,6 +113,9 @@ define(['jquery', 'survey', 'login', 'jquery.tablesorter', 'bootstrap', 'bootstr
             refresh();
         };
 
+        $(".btn-remove").click(function () {
+            setFormAction(Urls.remove_surveys());
+        });
         $(".btn-publish").click(function () {
             setFormAction(Urls.publish_survey_responses());
         });
