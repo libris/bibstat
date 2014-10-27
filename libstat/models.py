@@ -199,7 +199,7 @@ class Variable(VariableBase):
                 to avoid saving siblings for draft variables.
             """
             if (not to_replace.replaced_by or to_replace.replaced_by.id != self.id
-                or to_replace.active_to != switchover_date):
+                    or to_replace.active_to != switchover_date):
                 to_replace.replaced_by = self
                 to_replace.active_to = switchover_date if switchover_date else None
                 modified_siblings.add(to_replace)
@@ -338,6 +338,7 @@ class SurveyTemplate(Document):
 
 
 class SurveyResponseQuerySet(QuerySet):
+
     def by_year_or_group(self, sample_year=None, target_group=None):
         target_group_query = Q(target_group=target_group) if target_group else Q()
         sample_year_query = Q(sample_year=sample_year) if sample_year else Q()
@@ -390,7 +391,8 @@ class LibrarySelection(Document):
         'collection': 'libstat_library_selection'
     }
 
-class SurveyMetadata(EmbeddedDocument):
+
+class SurveyBase(Document):
     respondent_name = StringField()
     respondent_email = StringField()
     respondent_phone = StringField()
@@ -399,16 +401,10 @@ class SurveyMetadata(EmbeddedDocument):
     survey_time_minutes = IntField()
     population_nation = LongField()
     population_0to14y = LongField()
-
-
-class SurveyBase(Document):
     target_group = StringField(required=True, choices=SURVEY_TARGET_GROUPS)
-    metadata = EmbeddedDocumentField(SurveyMetadata)
     published_at = DateTimeField()
     published_by = ReferenceField(User)
-    # True if this version is published, False otherwise. Flag needed to
-    # optimize search for unpublished SurveyResponses.
-    _is_published = BooleanField()
+    _is_published = BooleanField()  # Field necessary to optimize search for unpublished Surveys
     date_created = DateTimeField(required=True, default=datetime.utcnow)
     created_by = ReferenceField(User)
     date_modified = DateTimeField(required=True, default=datetime.utcnow)
@@ -416,6 +412,9 @@ class SurveyBase(Document):
     observations = ListField(EmbeddedDocumentField(SurveyObservation))
     status = StringField(choices=SURVEY_RESPONSE_STATUSES, default=NOT_VIEWED[0])
     library = ReferenceField(Library)
+    library_name = StringField()
+    sample_year = IntField()
+    password = StringField()
 
     meta = {
         'abstract': True,
@@ -429,13 +428,23 @@ class SurveyBase(Document):
         hits = [obs for obs in self.observations if obs.variable.key == key]
         return hits[0] if len(hits) > 0 else None
 
+    @property
+    def latest_version_published(self):
+        return self._is_published if self._is_published else (
+            self.published_at is not None and self.published_at >= self.date_modified)
+
+    @property
+    def is_published(self):
+        return self._is_published if self._is_published else self.published_at is not None
+
+    def target_group__desc(self):
+        return targetGroups[self.target_group]
+
+    def __unicode__(self):
+        return u"{} {} {}".format(self.target_group, self.library_name, self.sample_year)
+
 
 class Survey(SurveyBase):
-    # Both unique fields need to be in subclasses to enable proper indexing.
-    library_name = StringField()
-    sample_year = IntField()
-    password = StringField()
-
     meta = {
         'collection': 'libstat_surveys',
         'queryset_class': SurveyResponseQuerySet,
@@ -462,23 +471,10 @@ class Survey(SurveyBase):
                 document._is_published = False
                 # field modified_by is set in form
         else:
-            # logger.debug("PRE SAVE: Creation of new object, setting modified date to value of creation date")
             document.date_modified = document.date_created
             document.modified_by = document.created_by
             if not hasattr(document, "_is_published"):
                 document._is_published = False
-
-    @property
-    def latest_version_published(self):
-        return self._is_published if self._is_published else (
-            self.published_at != None and self.published_at >= self.date_modified)
-
-    @property
-    def is_published(self):
-        return self._is_published if self._is_published else self.published_at != None
-
-    def target_group__desc(self):
-        return targetGroups[self.target_group]
 
     def publish(self, user=None):
         # TODO: Publishing date as a parameter to enable setting correct date for old data?
@@ -514,14 +510,8 @@ class Survey(SurveyBase):
 
         self.save()
 
-    def __unicode__(self):
-        return u"{} {} {}".format(self.target_group, self.library_name, self.sample_year)
-
 
 class SurveyVersion(SurveyBase):
-    # Not unique to enable storage of multiple versions. Both fields need to be in subclasses to enable proper indexing.
-    library_name = StringField(required=True)
-    sample_year = IntField(required=True)
     survey_response_id = ObjectIdField(required=True)
 
     meta = {
@@ -536,7 +526,6 @@ class OpenData(Document):
     sample_year = IntField(required=True)
     target_group = StringField(required=True, choices=SURVEY_TARGET_GROUPS)
     variable = ReferenceField(Variable, required=True)
-    # Need to allow None/null values to indicate invalid or missing responses in old data
     value = DynamicField()
     date_created = DateTimeField(required=True, default=datetime.utcnow)
     date_modified = DateTimeField(required=True, default=datetime.utcnow)

@@ -12,6 +12,7 @@ from bson.objectid import ObjectId
 
 
 class SurveyResponseTest(MongoTestCase):
+
     def setUp(self):
         self.current_user = User.objects.filter(username="admin")[0]
 
@@ -27,7 +28,7 @@ class SurveyResponseTest(MongoTestCase):
         v3.save()
 
         sr = Survey(library_name="KARLSTAD STADSBIBLIOTEK", sample_year=2013, target_group="public",
-                            observations=[], created_by=self.current_user)
+                    observations=[], created_by=self.current_user)
         sr.library = Library(bibdb_id=u"323", bibdb_sigel="Kld1", bibdb_name=u"Karlstad stadsbibliotek")
         sr.library.save()
         sr.observations.append(SurveyObservation(variable=v1, value=7, _source_key="folk5", _is_public=v1.is_public))
@@ -35,7 +36,6 @@ class SurveyResponseTest(MongoTestCase):
         sr.observations.append(
             SurveyObservation(variable=v3, value=u"Här är en kommentar", _source_key="folk8", _is_public=v3.is_public))
         self.survey_response = sr.save()
-
 
     def test_should_export_public_non_null_observations_to_openData(self):
         self.survey_response.publish(user=self.current_user)
@@ -57,7 +57,6 @@ class SurveyResponseTest(MongoTestCase):
         sr = Survey.objects.get(pk=self.survey_response.id)
         self.assertEquals(open_data.date_created, sr.published_at)
         self.assertEquals(sr.published_by, self.current_user)
-
 
     def test_should_overwrite_value_and_date_modified_for_existing_openData(self):
         self.survey_response.publish(user=self.current_user)
@@ -82,20 +81,17 @@ class SurveyResponseTest(MongoTestCase):
         self.assertTrue(open_data.date_created)
         self.assertNotEquals(open_data.date_created, open_data.date_modified)
 
-
     def test_should_get_observation_by_variable_key(self):
         self.assertEquals(self.survey_response.observation_by_key("folk8").value, u"Här är en kommentar")
-
 
     def test_should_store_version_when_updating_existing_object(self):
         sr = self.survey_response
         sr.library_name = u"Karlstad"
-
-        sr.metadata = SurveyMetadata(city=u"Karlstad kommun",
-                                             municipality_code=u"1780",
-                                             responent_name=u"Karl Karlsson",
-                                             respondent_email=u"karl.karlsson@karlstad.se",
-                                             respondent_phone=u"054-540 23 72")
+        sr.city = u"Karlstad kommun"
+        sr.municipality_code = u"1780"
+        sr.responent_name = u"Karl Karlsson"
+        sr.respondent_email = u"karl.karlsson@karlstad.se"
+        sr.respondent_phone = u"054-540 23 72"
         sr.library.bibdb_id = u"276"
         self.survey_response = sr.save()
 
@@ -106,7 +102,6 @@ class SurveyResponseTest(MongoTestCase):
         self.assertEquals(versions[0].survey_response_id, self.survey_response.id)
         # Version should contain values before update
         self.assertEquals(versions[0].library_name, u"KARLSTAD STADSBIBLIOTEK")
-        self.assertEquals(versions[0].metadata, None)
         self.assertEquals(versions[0].library.bibdb_id, u"323")
 
     def test_should_store_one_version_for_each_change(self):
@@ -160,7 +155,6 @@ class SurveyResponseTest(MongoTestCase):
     def test_should_flag_new_object_as_not_published(self):
         self.assertFalse(self.survey_response._is_published)
 
-
     def test_should_set_published_date_but_not_modified_date_when_publishing(self):
         self.assertTrue(self.survey_response.published_at == None)
         date_modified = self.survey_response.date_modified
@@ -207,20 +201,21 @@ class SurveyResponseTest(MongoTestCase):
 
 
 class SurveyResponseQuerySetTest(MongoTestCase):
+
     def setUp(self):
         self.publishing_date = datetime(2014, 8, 22, 10, 40, 33, 876)
         sr1 = Survey(library_name="KARLSTAD STADSBIBLIOTEK", sample_year=2013, target_group="public",
-                             observations=[], published_at=self.publishing_date,
-                             _is_published=None)  # Published berore release 0.2
+                     observations=[], published_at=self.publishing_date,
+                     _is_published=None)  # Published berore release 0.2
         sr1.save()
         self.public_sr_1 = Survey.objects.get(pk=sr1.id)
         sr2 = Survey(library_name="NORRBOTTENS LÄNSBIBLIOTEK", sample_year=2012, target_group="public",
-                             observations=[], published_at=self.publishing_date,
-                             _is_published=True);  # Published after release 0.2
+                     observations=[], published_at=self.publishing_date,
+                     _is_published=True)  # Published after release 0.2
         sr2.save()
         self.public_sr_2 = Survey.objects.get(pk=sr2.id)
         sr3 = Survey(library_name="Sjukhusbiblioteken i Dalarnas län", sample_year=2013,
-                             target_group="hospital", observations=[], _is_published=False);
+                     target_group="hospital", observations=[], _is_published=False)
         sr3.save()
         self.hospital_sr = Survey.objects.get(pk=sr3.id)
 
@@ -242,15 +237,17 @@ class SurveyResponseQuerySetTest(MongoTestCase):
         self.assertTrue(self.public_sr_2.published_at != None)
         self.assertEquals(self.hospital_sr._is_published, False)
         self.assertEquals(self.hospital_sr.published_at, None)
-        # Should really get a hit for public_sr_1 as well, don't know why this isn't working. Manual test confirms that the filter works though.
+        # Should really get a hit for public_sr_1 as well, don't know why this
+        # isn't working. Manual test confirms that the filter works though.
         self.assertEquals([sr.id for sr in Survey.objects.unpublished_by_year_or_group()],
                           [self.hospital_sr.id])
 
         self.assertEquals([sr.id for sr in Survey.objects.unpublished_by_year_or_group(target_group="public")],
-            [])
+                          [])
 
 
 class OpenDataTest(MongoTestCase):
+
     def setUp(self):
         v = Variable(key=u"folk5", description=u"Antal bemannade serviceställen, sammanräknat", type="integer",
                      is_public=True, target_groups=["public"])
@@ -296,6 +293,7 @@ class OpenDataTest(MongoTestCase):
 
 
 class VariableQuerySetTest(MongoTestCase):
+
     def setUp(self):
         # Discontinued (today)
         v2 = Variable(key=u"Folk35", description=u"Antal årsverken övrig personal", type="decimal", is_public=False,
@@ -349,6 +347,7 @@ class VariableQuerySetTest(MongoTestCase):
 
 
 class VariableTest(MongoTestCase):
+
     def setUp(self):
         v = Variable(key=u"Folk10", description=u"Antal bemannade servicesställen", type="integer", is_public=True,
                      target_groups=["public"],
@@ -376,7 +375,6 @@ class VariableTest(MongoTestCase):
         v4.question = u"Hur många nyförvärv av AV-media gjordes under 2012?"
         v4.save()
         self.v4 = Variable.objects.get(pk=v4.id)
-
 
     def test_key_asc_should_be_default_sort_order(self):
         result = Variable.objects.all()
@@ -467,7 +465,6 @@ class VariableTest(MongoTestCase):
             u"valid": u"name=Giltighetstid; start=2010-01-01; end=2014-12-31;"
         }
         self.assertEqual(folk10.to_dict(), expectedVariableDict)
-
 
     def test_variable_should_have_question_and_question_part(self):
         folk35 = Variable.objects.get(pk=self.v2.id)
@@ -654,7 +651,6 @@ class VariableTest(MongoTestCase):
         self.assertEquals(Variable.objects.get(pk=self.v3.id).replaced_by, None)
         self.assertEquals(len(VariableVersion.objects.filter(key=self.v3.key)), 0)
 
-
     def test_should_clear_all_replacements(self):
         # Setup
         replacement = self.v2
@@ -665,7 +661,7 @@ class VariableTest(MongoTestCase):
         replaced_1.reload()
         replaced_2.reload()
 
-        # Clear replacements 
+        # Clear replacements
         replacement.replace_siblings([], commit=True)
 
         self.assertEquals(replacement.reload().replaces, [])
@@ -680,7 +676,7 @@ class VariableTest(MongoTestCase):
         replacement.reload()
         replaced.reload()
 
-        # Clear replacements 
+        # Clear replacements
         replacement.replace_siblings([], commit=True)
 
         self.assertEquals(replacement.reload().replaces, [])
