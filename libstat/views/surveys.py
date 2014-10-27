@@ -1,16 +1,15 @@
 # -*- coding: utf-8 -*-
 import logging
-
 from time import strftime
 
 from django.core.urlresolvers import reverse
 from django.shortcuts import render, redirect
-from django.http import HttpResponseRedirect, Http404, HttpResponseNotFound
+from django.http import HttpResponseRedirect, HttpResponseNotFound
 from django.contrib.auth.decorators import permission_required
 from excel_response import ExcelResponse
 
 from bibstat import settings
-from libstat.models import Survey, Variable, SurveyObservation, Library
+from libstat.models import Survey, Variable, SurveyObservation, Library, Dispatch
 from libstat.forms import SurveyForm
 from libstat.utils import survey_response_statuses
 
@@ -97,7 +96,19 @@ def surveys_publish(request):
 
 @permission_required('is_superuser', login_url='index')
 def surveys_dispatch(request):
-    pass
+    if request.method == "POST":
+        survey_ids = request.POST.getlist("survey-response-ids", [])
+        surveys = Survey.objects.filter(id__in=survey_ids)
+
+        for survey in surveys:
+            Dispatch(
+                message=request.POST["message"],
+                title=request.POST["title"],
+                description=request.POST["description"],
+                survey=survey
+            ).save()
+
+    return redirect(reverse("surveys"))  # TODO: Redirect to outbox
 
 
 @permission_required('is_superuser', login_url='index')

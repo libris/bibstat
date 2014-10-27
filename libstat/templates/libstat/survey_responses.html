@@ -96,7 +96,7 @@
     </div>
     <div class="panel panel-default">
         <div class="panel-body">
-            <form action="" method="POST" role="form" class="form-inline publish-survey-responses-form">
+            <form id="form-surveys" action="" method="POST" role="form" class="form-inline publish-survey-responses-form">
                 {% if survey_responses %}
                     {% csrf_token %}
                     <input type="hidden" name="sample_year" value="{{ sample_year }}"/>

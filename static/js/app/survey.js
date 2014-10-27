@@ -240,6 +240,7 @@ define(['jquery', 'cell.sum', 'cell', 'surveys.dispatch', 'bootstrap.validator.s
                 var library = checked.data('library');
                 var address = checked.data('url-base') + checked.data('address');
 
+                submitTo('surveys_dispatch');
                 dispatch.init(library, address);
             });
 
