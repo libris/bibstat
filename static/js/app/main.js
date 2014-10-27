@@ -70,6 +70,15 @@ define(['jquery', 'survey', 'login', 'jquery.tablesorter', 'bootstrap', 'bootstr
             return false; // prevent the click propagation
         });
 
+        $('.show-dispatch').click(function(e) {
+            e.preventDefault();
+
+            var element = $(this);
+            $('.modal-message .modal-title').html(element.data('title'));
+            $('.modal-message .modal-body').html(element.data('message'));
+            $('.modal-message').modal('show');
+        });
+
         survey.init();
         login.init();
 
