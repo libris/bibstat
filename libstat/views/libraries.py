@@ -51,7 +51,7 @@ def libraries(request):
                     library_ids.append(field)
         if "create_surveys_btn" in form.data:
             _create_surveys(library_ids, sample_year)
-            return redirect(reverse("survey_responses"))
+            return redirect(reverse("surveys"))
         elif "save_selection_btn" in form.data:
             lib_selection, _ = LibrarySelection.objects.get_or_create(name="lib_selection")
             lib_selection.sigels = []
