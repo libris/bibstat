@@ -32,6 +32,7 @@ define(['jquery', 'survey', 'login', 'jquery.tablesorter', 'bootstrap', 'bootstr
                 [ 3, 0 ]
             ]
         });
+
         $(".table .select-all").change(function () {
             var checkboxes = $(".select-one");
             if ($(this).is(":checked")) {
@@ -39,21 +40,15 @@ define(['jquery', 'survey', 'login', 'jquery.tablesorter', 'bootstrap', 'bootstr
             } else {
                 checkboxes.removeAttr("checked");
             }
-
         });
 
-        /* Handle export and publish of survey responses. */
-        $(".table.survey_responses .select-one, .table.survey_responses .select-all").change(function () {
+        $(".select-one, .select-all").change(function () {
             var checked = $(".select-one:checked, .select-all:checked").length > 0;
-            var buttons = $(".btn-survey");
+            var buttons = $(".btn-toggle");
 
             if (checked) buttons.removeClass("disabled");
             else buttons.addClass("disabled");
         });
-
-
-
-
 
         /* Edit variable */
         $(".edit-variable").click(function (ev) {

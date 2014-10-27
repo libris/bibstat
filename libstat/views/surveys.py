@@ -94,6 +94,17 @@ def surveys_publish(request):
         u"?action=list&target_group={}&sample_year={}".format(target_group, sample_year)))
 
 
+def _render_dispatch(text, survey):
+
+    text = text.replace("{bibliotek}", survey.library.name)
+    text = text.replace("{enkätadress}", "")
+    text = text.replace("{lösenord}", "")
+
+    return text
+
+
+
+
 @permission_required('is_superuser', login_url='index')
 def surveys_dispatch(request):
     if request.method == "POST":
