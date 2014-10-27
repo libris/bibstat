@@ -219,16 +219,16 @@ class SurveyResponseQuerySetTest(MongoTestCase):
         sr3.save()
         self.hospital_sr = Survey.objects.get(pk=sr3.id)
 
-    def test_filter_by_year_or_group(self):
-        self.assertEquals([sr.id for sr in Survey.objects.by_year_or_group(target_group="public")],
+    def test_filter_by(self):
+        self.assertEquals([sr.id for sr in Survey.objects.by(target_group="public")],
                           [self.public_sr_1.id, self.public_sr_2.id])
         self.assertEquals(
-            [sr.id for sr in Survey.objects.by_year_or_group(target_group="public", sample_year=2012)],
+            [sr.id for sr in Survey.objects.by(target_group="public", sample_year=2012)],
             [self.public_sr_2.id])
-        self.assertEquals([sr.id for sr in Survey.objects.by_year_or_group()],
+        self.assertEquals([sr.id for sr in Survey.objects.by()],
                           [self.public_sr_1.id, self.public_sr_2.id, self.hospital_sr.id])
-        self.assertEquals([sr.id for sr in Survey.objects.by_year_or_group(target_group="research")], [])
-        self.assertEquals([sr.id for sr in Survey.objects.by_year_or_group(sample_year=2014)], [])
+        self.assertEquals([sr.id for sr in Survey.objects.by(target_group="research")], [])
+        self.assertEquals([sr.id for sr in Survey.objects.by(sample_year=2014)], [])
 
     def test_filter_unpublished_by_year_or_group(self):
         self.assertEquals(self.public_sr_1._is_published, None)

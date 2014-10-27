@@ -77,6 +77,46 @@
                             </select>
                         </div>
                         <div class="form-group">
+                            <select name="status" class="form-control" value="{{ status }}">
+                                <option value=""
+                                        {% if not status %}
+                                        selected="selected"
+                                        {% endif %}>
+                                    Status
+                                </option>
+                                <option value="not_viewed"
+                                        {% ifequal status "not_viewed" %}
+                                        selected="selected"
+                                        {% endifequal %}>
+                                        Ej öppnad
+                                </option>
+                                <option value="initiated"
+                                        {% ifequal status "initiated" %}
+                                        selected="selected"
+                                        {% endifequal %}>
+                                    Påbörjad
+                                </option>
+                                <option value="submitted"
+                                        {% ifequal status "submitted" %}
+                                        selected="selected"
+                                        {% endifequal %}>
+                                    Inskickad
+                                </option>
+                                <option value="controlled"
+                                        {% ifequal status "controlled" %}
+                                        selected="selected"
+                                        {% endifequal %}>
+                                    Kontrollerad
+                                </option>
+                                <option value="published"
+                                        {% ifequal status "published" %}
+                                        selected="selected"
+                                        {% endifequal %}>
+                                    Publicerad
+                                </option>
+                            </select>
+                        </div>
+                        <div class="form-group">
                             <input type="checkbox" name="unpublished_only" value="True"
                                     {% if unpublished_only == True %}
                                    checked="checked"

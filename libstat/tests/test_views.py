@@ -537,14 +537,14 @@ class EditVariableViewTest(MongoTestCase):
             # TODO: Borde man kunna ändra enhet? Samma som ovan.
 
 
-class SurveyResponsesViewTest(MongoTestCase):
+class SurveyViewTest(MongoTestCase):
     def setUp(self):
         self.publishing_date = datetime(2014, 8, 22, 10, 40, 33, 876)
         self.survey_response = Survey(library_name=u"KARLSTAD STADSBIBLIOTEK", sample_year=2013,
                                       target_group="public", observations=[], published_at=self.publishing_date)
         self.survey_response.save()
         sr2 = Survey(library_name=u"NORRBOTTENS LÄNSBIBLIOTEK", sample_year=2012, target_group="public",
-                     observations=[], published_at=self.publishing_date)
+                     observations=[], published_at=self.publishing_date, status="submitted")
         sr2.save()
         sr3 = Survey(library_name=u"Sjukhusbiblioteken i Dalarnas län", sample_year=2013,
                      target_group="hospital", observations=[])
@@ -563,6 +563,10 @@ class SurveyResponsesViewTest(MongoTestCase):
     def test_should_list_survey_responses_by_target_group(self):
         response = self.client.get("{}?action=list&target_group=public".format(reverse("surveys")))
         self.assertEquals(len(response.context["survey_responses"]), 2)
+
+    def test_should_list_survey_responses_by_status(self):
+        response = self.client.get("{}?action=list&status=submitted".format(reverse("surveys")))
+        self.assertEquals(len(response.context["survey_responses"]), 1)
 
     def test_should_list_survey_responses_by_year_and_target_group(self):
         response = self.client.get(

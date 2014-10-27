@@ -339,10 +339,11 @@ class SurveyTemplate(Document):
 
 class SurveyResponseQuerySet(QuerySet):
 
-    def by_year_or_group(self, sample_year=None, target_group=None):
+    def by(self, sample_year=None, target_group=None, status=None):
         target_group_query = Q(target_group=target_group) if target_group else Q()
         sample_year_query = Q(sample_year=sample_year) if sample_year else Q()
-        return self.filter(target_group_query & sample_year_query)
+        status_query = Q(status=status) if status else Q()
+        return self.filter(target_group_query & sample_year_query & status_query)
 
     def unpublished_by_year_or_group(self, sample_year=None, target_group=None):
         match_target_group = Q(target_group=target_group) if target_group else Q()
