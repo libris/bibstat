@@ -59,7 +59,7 @@ def surveys(request):
         'message': message,
         'url_base': settings.API_BASE_URL
     }
-    return render(request, 'libstat/survey_responses.html', context)
+    return render(request, 'libstat/surveys.html', context)
 
 
 @permission_required('is_superuser', login_url='index')
