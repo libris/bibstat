@@ -192,7 +192,7 @@ class SurveyForm(forms.Form):
                                                          initial=survey_response_statuses[response.status])
 
         self.library_name = response.library.name
-        self.municipality_name = response.library.municipality_name
+        self.city = response.library.city
         self.sample_year = response.sample_year
         self.is_user_read_only = not response.status in (u"not_viewed", u"initiated")
         self.is_read_only = not authenticated and self.is_user_read_only
@@ -245,7 +245,7 @@ class CreateSurveysForm(forms.Form):
                                                           widget=forms.CheckboxInput(attrs=attrs))
             self.libraries.append({
                 "name": library.name,
-                "municipality_name": library.municipality_name,
+                "city": library.city,
                 "email": library.email,
                 "sigel": library.sigel,
                 "checkbox_id": checkbox_id

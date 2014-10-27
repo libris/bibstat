@@ -32,7 +32,7 @@ class Command(BaseCommand):
 
     library_name_value = [u"Biblioteksnamn"]
 
-    municipality_name_keys = [u"Folk1"]
+    city_keys = [u"Folk1"]
     municipality_code_keys = [u"Folk2"]
     respondent_name_keys = [u"Folk5"]
     respondent_email_Keys = [u"Folk6"]
@@ -121,7 +121,7 @@ class Command(BaseCommand):
                                 if lib[u"alive"] == True:
                                     library = Library(bibdb_name=lib[u"name"], bibdb_id=lib[u"id"],
                                                       bibdb_sigel=lib[u"sigel"])
-                                    #TODO: Spara municipality_name, municipality_code, county_code, school_id
+                                    #TODO: Spara city, municipality_code, county_code, school_id
                                     #                                     print u"Found active library match with id:{}, sigel:'{}' matching name:'{}' (of {} libraries in response)".format(
                                     #                                         lib[u"id"], lib[u"sigel"], lib[u"name"], len(libraries))
                                     break
@@ -185,8 +185,8 @@ class Command(BaseCommand):
 
     # TODO:
     def _extract_metadata(self, key, value, sr_metadata):
-        if key in self.municipality_name_keys:
-            sr_metadata.municipality_name = value
+        if key in self.city_keys:
+            sr_metadata.city = value
         elif key in self.municipality_code_keys:
             sr_metadata.municipality_code = value
         elif key in self.respondent_name_keys:

@@ -91,7 +91,7 @@ class SurveyResponseTest(MongoTestCase):
         sr = self.survey_response
         sr.library_name = u"Karlstad"
 
-        sr.metadata = SurveyMetadata(municipality_name=u"Karlstad kommun",
+        sr.metadata = SurveyMetadata(city=u"Karlstad kommun",
                                              municipality_code=u"1780",
                                              responent_name=u"Karl Karlsson",
                                              respondent_email=u"karl.karlsson@karlstad.se",

@@ -75,8 +75,8 @@ def _update_libraries():
             library, _ = Library.objects.get_or_create(sigel=lib_data["sigel"])
             library.sigel = lib_data["sigel"]
             library.name = lib_data["name"]
-            library.municipality_name = next((a["city"] for a in lib_data["address"]
-                                              if a["address_type"] == "gen"), None)
+            library.city = next((a["city"] for a in lib_data["address"]
+                                 if a["address_type"] == "gen"), None)
             library.email = next((c["email"] for c in lib_data["contact"]
                                   if "email" in c and c["contact_type"] == "statans"), None)
             library.save()

@@ -374,7 +374,7 @@ class Library(Document):
     bibdb_id = StringField()
     sigel = StringField()
     email = StringField()
-    municipality_name = StringField()
+    city = StringField()
     municipality_code = StringField()
 
     meta = {
