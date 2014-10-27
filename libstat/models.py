@@ -373,7 +373,7 @@ class Library(Document):
     name = StringField()
     bibdb_id = StringField()
     sigel = StringField()
-    email = EmailField()
+    email = StringField()
     municipality_name = StringField()
     municipality_code = StringField()
 

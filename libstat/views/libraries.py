@@ -63,21 +63,22 @@ def libraries(request):
 
 
 def _update_libraries():
-    for start_index in range(0, 6000, 200):
+    for start_index in range(0, 6000, 200):  # bibdb paginated by 200 and had ca. 2800 responses when this was written
         response = requests.get(
             url="http://bibdb.libris.kb.se/api/lib?dump=true&start=%d" % start_index,
             headers={"APIKEY_AUTH_HEADER": "bibstataccess"})
+
         for lib_data in response.json()["libraries"]:
-            try:
-                library = Library.objects.get(sigel=lib_data["sigel"])
-            except Library.DoesNotExist:
-                library = Library()
+            if not lib_data["country_code"] == "se":
+                continue
+
+            library, _ = Library.objects.get_or_create(sigel=lib_data["sigel"])
             library.sigel = lib_data["sigel"]
             library.name = lib_data["name"]
-            library.municipality_name = next((a["city"] for a in lib_data["address"] if a["address_type"] == "gen"),
-                                             "")
-            # library.email = "a@a.a"  # next((c["email"] for c in lib_data["contact"]
-            # if c["contact_type"] == "bibchef"), "dummy@dummy.org")
+            library.municipality_name = next((a["city"] for a in lib_data["address"]
+                                              if a["address_type"] == "gen"), None)
+            library.email = next((c["email"] for c in lib_data["contact"]
+                                  if "email" in c and c["contact_type"] == "statans"), None)
             library.save()
 
 
