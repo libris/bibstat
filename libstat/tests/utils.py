@@ -29,10 +29,15 @@ def _dummy_library():
     return library
 
 
-def _dummy_survey(library_name="dummy_name", sample_year=2001, password=None):
+def _dummy_survey(library_name="dummy_name", sample_year=2001, password=None, target_group="public",
+                  status="not_viewed", publish=False):
     library = _dummy_library()
     survey = Survey(library_name=library_name, library=library, sample_year=sample_year,
-                            target_group="public", password=password)
+                    target_group=target_group, password=password, status=status)
+    if publish:
+        survey.save()
+        survey.publish()
+        survey.reload()
     survey.save()
     survey.reload()
     return survey

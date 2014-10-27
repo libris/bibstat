@@ -8,10 +8,11 @@ from mongoengine.django.auth import User
 from datetime import datetime
 from libstat.tests import MongoTestCase
 from libstat.models import Variable, Survey, SurveyObservation, OpenData, Library
-from libstat.tests.utils import _dummy_variable
+from libstat.tests.utils import _dummy_variable, _dummy_survey
 
 
 class VariablesViewTest(MongoTestCase):
+
     def setUp(self):
         self.url = reverse("variables")
         self.client.login(username="admin", password="admin")
@@ -98,6 +99,7 @@ class VariablesViewTest(MongoTestCase):
 
 
 class CreateVariableViewTest(MongoTestCase):
+
     def setUp(self):
         self.url = reverse("create_variable")
         self.client.login(username="admin", password="admin")
@@ -130,7 +132,7 @@ class CreateVariableViewTest(MongoTestCase):
                                      u"description": (u"Antal anställda manliga bibliotekarier den "
                                                       u"1 mars aktuellt mätår"),
                                      u"comment": u"Det här är ett utkast"}
-        )
+                                    )
 
         self.assertEquals(response.status_code, 200)
         data = json.loads(response.content)
@@ -163,6 +165,7 @@ class CreateVariableViewTest(MongoTestCase):
 
 # Create custom base test class with helper methods.
 class EditVariableViewTest(MongoTestCase):
+
     def setUp(self):
         self.v1 = Variable(key=u"Folk10", description=u"Antal bemannade serviceställen", type="integer", is_public=True,
                            target_groups=["public"])
@@ -538,64 +541,85 @@ class EditVariableViewTest(MongoTestCase):
 
 
 class SurveyViewTest(MongoTestCase):
-    def setUp(self):
-        self.publishing_date = datetime(2014, 8, 22, 10, 40, 33, 876)
-        self.survey_response = Survey(library_name=u"KARLSTAD STADSBIBLIOTEK", sample_year=2013,
-                                      target_group="public", observations=[], published_at=self.publishing_date)
-        self.survey_response.save()
-        sr2 = Survey(library_name=u"NORRBOTTENS LÄNSBIBLIOTEK", sample_year=2012, target_group="public",
-                     observations=[], published_at=self.publishing_date, status="submitted")
-        sr2.save()
-        sr3 = Survey(library_name=u"Sjukhusbiblioteken i Dalarnas län", sample_year=2013,
-                     target_group="hospital", observations=[])
-        self.hospital_sr = sr3.save()
 
+    def setUp(self):
         self.client.login(username="admin", password="admin")
 
     def test_should_not_fetch_survey_responses_unless_list_action_provided(self):
+        _dummy_survey()
+        _dummy_survey()
+
         response = self.client.get(reverse("surveys"))
+
         self.assertEquals(len(response.context["survey_responses"]), 0)
 
     def test_should_list_survey_responses_by_year(self):
+        _dummy_survey(sample_year=2012)
+        _dummy_survey(sample_year=2013)
+
         response = self.client.get("{}?action=list&sample_year=2012".format(reverse("surveys")))
+
         self.assertEquals(len(response.context["survey_responses"]), 1)
 
     def test_should_list_survey_responses_by_target_group(self):
+        _dummy_survey(target_group="public")
+        _dummy_survey(target_group="school")
+        _dummy_survey(target_group="public")
+
         response = self.client.get("{}?action=list&target_group=public".format(reverse("surveys")))
+
         self.assertEquals(len(response.context["survey_responses"]), 2)
 
     def test_should_list_survey_responses_by_status(self):
+        _dummy_survey(status="not_viewed")
+        _dummy_survey(status="submitted")
+        _dummy_survey(status="published")
+
         response = self.client.get("{}?action=list&status=submitted".format(reverse("surveys")))
+
         self.assertEquals(len(response.context["survey_responses"]), 1)
 
     def test_should_list_survey_responses_by_year_and_target_group(self):
+        _dummy_survey(library_name="lib1", target_group="public", sample_year=2012)
+        _dummy_survey(library_name="lib2", target_group="public", sample_year=2013)
+        _dummy_survey(library_name="lib3", target_group="school", sample_year=2013)
+
         response = self.client.get(
             "{}?action=list&target_group=public&sample_year=2013".format(reverse("surveys")))
+
         self.assertEquals(len(response.context["survey_responses"]), 1)
-        self.assertEquals(response.context["survey_responses"][0].library_name, u"KARLSTAD STADSBIBLIOTEK")
+        self.assertEquals(response.context["survey_responses"][0].library_name, "lib2")
 
     def test_should_list_unpublished_survey_responses(self):
-        self.assertFalse(self.hospital_sr.is_published)
+        survey = _dummy_survey(library_name="lib1")
+        _dummy_survey(library_name="lib2", publish=True)
+
+        self.assertFalse(survey.is_published)
+
         response = self.client.get("{}?action=list&unpublished_only=True".format(reverse("surveys")))
+
         self.assertEquals(len(response.context["survey_responses"]), 1)
-        self.assertEquals(response.context["survey_responses"][0].library_name, u"Sjukhusbiblioteken i Dalarnas län")
+        self.assertEquals(response.context["survey_responses"][0].library_name, "lib1")
 
     def test_each_survey_response_should_have_checkbox_for_actions(self):
-        response = self.client.get(
-            "{}?action=list&target_group=public&sample_year=2013".format(reverse("surveys")))
+        survey = _dummy_survey(sample_year=2013)
 
-        self.assertContains(response, 'value="{}"'.format(self.survey_response.id))
+        response = self.client.get("{}?action=list&sample_year=2013".format(reverse("surveys")))
+
+        self.assertContains(response, 'value="{}"'.format(survey.id))
 
     def test_each_survey_response_should_have_a_link_to_details_view(self):
-        response = self.client.get(
-            "{}?action=list&target_group=public&sample_year=2013".format(reverse("surveys")))
+        survey = _dummy_survey(sample_year=2013)
+
+        response = self.client.get("{}?action=list&sample_year=2013".format(reverse("surveys")))
+
         self.assertContains(response, u'<a href="{}" title="Visa/redigera enkätsvar">Visa/redigera</a>'
-                            .format(
-            reverse("survey", kwargs={"survey_id": str(self.survey_response.id)})),
+                            .format(reverse("survey", kwargs={"survey_id": str(survey.id)})),
                             count=1, status_code=200, html=True)
 
 
 class PublishSurveyResponsesViewTest(MongoTestCase):
+
     def setUp(self):
         self.survey_response = Survey(library_name="KARLSTAD STADSBIBLIOTEK", sample_year=2013,
                                       target_group="public", observations=[])
