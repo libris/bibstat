@@ -10,7 +10,7 @@ LOG_LEVEL = 'DEBUG'
 ALLOWED_HOSTS = []
 
 # Base url for api, i.e. http://stats.kb.se
-API_BASE_URL = "http://localhost:8000/statistics"
+API_BASE_URL = "http://localhost:8000"
 BIBDB_BASE_URL = "http://bibdb.libris.kb.se"
 
 # DB connection details
