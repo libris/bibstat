@@ -108,7 +108,7 @@ def surveys_dispatch(request):
                 survey=survey
             ).save()
 
-    return redirect(reverse("surveys"))  # TODO: Redirect to outbox
+    return redirect(reverse("dispatches"))
 
 
 @permission_required('is_superuser', login_url='index')
