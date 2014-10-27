@@ -1,12 +1,24 @@
 define(['jquery', 'jquery.textrange'], function ($) {
     var initialized = false;
 
-    var modal = function () { return $('#modal-dispatch'); };
-    var messageInput = function () { return $('.dispatch-message'); };
-    var message = function() { return messageInput().val(); };
-    var title = function () { return $('.dispatch-title').val(); };
-    var bold = function(text) { return '<b>' + text + '</b>'; };
-    var asToken = function (name) { return "{" + name + "}"; };
+    var modal = function () {
+        return $('#modal-dispatch');
+    };
+    var messageInput = function () {
+        return $('.dispatch-message');
+    };
+    var message = function () {
+        return messageInput().val();
+    };
+    var title = function () {
+        return $('.dispatch-title').val();
+    };
+    var bold = function (text) {
+        return '<b>' + text + '</b>';
+    };
+    var asToken = function (name) {
+        return "{" + name + "}";
+    };
 
     var initOnce = function () {
         if (initialized) return;
@@ -27,7 +39,19 @@ define(['jquery', 'jquery.textrange'], function ($) {
         $('.form-dispatch').bootstrapValidator({
             trigger: 'keyup change paste'
         }).on('success.form.bv', function () {
-            console.log("submit"); // TODO
+            var includeInForm = function (id) {
+                var input = $('<input>').attr({
+                    type: 'hidden',
+                    id: id,
+                    name: id,
+                    value: $('#' + id).val()
+                }).appendTo('#form-surveys');
+            };
+
+            includeInForm("title");
+            includeInForm("message");
+            includeInForm("description");
+            $('#form-surveys').submit();
             return false;
         });
 

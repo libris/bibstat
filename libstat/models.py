@@ -520,6 +520,13 @@ class SurveyVersion(SurveyBase):
     }
 
 
+class Dispatch(Document):
+    description = StringField()
+    title = StringField()
+    message = StringField()
+    survey = ReferenceField(Survey)
+
+
 class OpenData(Document):
     library_name = StringField(required=True, unique_with=['sample_year', 'variable'])
     library_id = StringField()  # TODO

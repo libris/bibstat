@@ -6,6 +6,7 @@ from apis import (data_api,
 from auth import login
 from helpers import (replaceable_variables_api,
                      surveyable_variables_api)
+from dispatches import dispatches
 from index import index
 from surveys import (surveys_clean,
                      survey,
