@@ -8,8 +8,7 @@ from helpers import (replaceable_variables_api,
                      surveyable_variables_api)
 from dispatches import dispatches
 from index import index
-from surveys import (surveys_clean,
-                     survey,
+from surveys import (survey,
                      surveys_status,
                      surveys_dispatch,
                      surveys_export,

@@ -103,8 +103,6 @@ def _render_dispatch(text, survey):
     return text
 
 
-
-
 @permission_required('is_superuser', login_url='index')
 def surveys_dispatch(request):
     if request.method == "POST":
@@ -169,12 +167,6 @@ def _survey_response_from_template(template, create_non_existing_variables=False
 
     print(response)
     return response
-
-
-@permission_required('is_superuser', login_url='index')
-def surveys_clean(request):
-    Survey.objects.filter(sample_year=2014).delete()
-    return redirect(reverse('index'))
 
 
 def _save_survey_response_from_form(response, form):
