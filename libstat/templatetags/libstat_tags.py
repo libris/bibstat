@@ -3,6 +3,7 @@ from datetime import datetime
 
 import pytz
 from django import template
+from libstat.models import Dispatch
 
 from libstat.utils import target_groups_label, survey_response_status_label
 
@@ -26,7 +27,11 @@ def access(value, arg):
     return value[arg]
 
 
+def dispatches_count():
+    return Dispatch.objects.count()
+
 register.filter('utc_tz', utc_tz)
 register.filter('tg_label', tg_label)
 register.filter('srs_label', srs_label)
 register.filter('access', access)
+register.simple_tag(dispatches_count)
