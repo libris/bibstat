@@ -198,7 +198,7 @@
             queryTokenizer: Bloodhound.tokenizers.whitespace,
             limit: 20,
             remote: {
-                url: '/statistics/variables/replaceable?q=%QUERY',
+                url: '/variables/replaceable?q=%QUERY',
                 filter: function(list) {
                     return $.map(list, function(item) {
                         return { label: item.key, value: item.id, description: item.description };

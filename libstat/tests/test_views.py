@@ -81,7 +81,7 @@ class VariablesViewTest(MongoTestCase):
         response = self.client.get(self.url)
 
         self.assertContains(response,
-                            (u'<a title="Visa/Ändra" data-form="/statistics/variables/{}"'
+                            (u'<a title="Visa/Ändra" data-form="/variables/{}"'
                              u'href="#" class="edit-variable">key_1</a>').format(variable.id),
                             count=1,
                             status_code=200,

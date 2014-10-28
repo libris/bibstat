@@ -85,13 +85,14 @@ def surveys_publish(request):
         u"?action=list&target_group={}&sample_year={}".format(target_group, sample_year)))
 
 
-def _render_dispatch(text, survey):
+def _rendered_template(template, survey):
+    survey_url = settings.API_BASE_URL + reverse('survey', args=(survey.id,))
 
-    text = text.replace("{bibliotek}", survey.library.name)
-    text = text.replace("{enkätadress}", "")
-    text = text.replace("{lösenord}", "")
+    rendered = template.replace(u"{bibliotek}", survey.library.name)
+    rendered = rendered.replace(u"{lösenord}", survey.password)
+    rendered = rendered.replace(u"{enkätadress}", survey_url)
 
-    return text
+    return rendered
 
 
 @permission_required('is_superuser', login_url='index')
@@ -102,8 +103,8 @@ def surveys_dispatch(request):
 
         for survey in surveys:
             Dispatch(
-                message=request.POST["message"],
-                title=request.POST["title"],
+                message=_rendered_template(request.POST["message"], survey),
+                title=_rendered_template(request.POST["title"], survey),
                 description=request.POST["description"],
                 survey=survey
             ).save()

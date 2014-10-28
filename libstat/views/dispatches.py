@@ -12,6 +12,8 @@ def dispatches(request):
         for dispatch in Dispatch.objects.all():
             dispatches += [{
                 "description": dispatch.description,
+                "title": dispatch.title,
+                "message": dispatch.message.replace("\n", "<br>"),
                 "library_name": dispatch.survey.library.name,
                 "library_city": dispatch.survey.library.city,
                 "library_email": dispatch.survey.library.email,

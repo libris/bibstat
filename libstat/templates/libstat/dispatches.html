@@ -44,11 +44,36 @@
                                 <td>{{ dispatch.library_name }}</td>
                                 <td>{{ dispatch.library_city }}</td>
                                 <td>{{ dispatch.library_email }}</td>
-                                <td><a href="#">Visa meddelandet</a></td>
+                                <td>
+                                    <a class="show-dispatch" href="#" data-title="{{ dispatch.title }}"
+                                       data-message="{{ dispatch.message }}">Visa meddelandet</a>
+                                </td>
                             </tr>
                         {% endfor %}
                         </tbody>
                     </table>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal modal-message fade" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <form class="form">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal">
+                            <span aria-hidden="true">&times;</span>
+                            <span class="sr-only">Close</span>
+                        </button>
+                        <h4 class="modal-title"></h4>
+                    </div>
+
+                    <div class="modal-body"></div>
+
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-default" data-dismiss="modal">Stäng</button>
+                    </div>
                 </form>
             </div>
         </div>
