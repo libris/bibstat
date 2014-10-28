@@ -1,5 +1,5 @@
-define(['jquery', 'survey', 'login', 'jquery.tablesorter', 'bootstrap', 'bootstrap.datepicker', 'bootstrap.tokenfield',
-    'typeahead', 'underscore', 'jquery.textrange'], function ($, survey, login) {
+define(['jquery', 'survey', 'login', 'dispatches', 'jquery.tablesorter', 'bootstrap', 'bootstrap.datepicker', 'bootstrap.tokenfield',
+    'typeahead', 'underscore', 'jquery.textrange'], function ($, survey, login, dispatches) {
 
     window.ellipsis = function (text, max_chars) {
         max_chars = max_chars || 50;
@@ -81,6 +81,7 @@ define(['jquery', 'survey', 'login', 'jquery.tablesorter', 'bootstrap', 'bootstr
 
         survey.init();
         login.init();
+        dispatches.init();
 
         console.log('Scripts initialized.')
     });

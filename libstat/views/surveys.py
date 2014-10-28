@@ -9,7 +9,7 @@ from django.contrib.auth.decorators import permission_required
 from excel_response import ExcelResponse
 
 from bibstat import settings
-from libstat.models import Survey, Variable, SurveyObservation, Library, Dispatch
+from libstat.models import Survey, Variable, SurveyObservation, Library
 from libstat.forms import SurveyForm
 from libstat.utils import survey_response_statuses
 
@@ -83,33 +83,6 @@ def surveys_publish(request):
     return HttpResponseRedirect(u"{}{}".format(
         reverse("surveys"),
         u"?action=list&target_group={}&sample_year={}".format(target_group, sample_year)))
-
-
-def _rendered_template(template, survey):
-    survey_url = settings.API_BASE_URL + reverse('survey', args=(survey.id,))
-
-    rendered = template.replace(u"{bibliotek}", survey.library.name)
-    rendered = rendered.replace(u"{lösenord}", survey.password)
-    rendered = rendered.replace(u"{enkätadress}", survey_url)
-
-    return rendered
-
-
-@permission_required('is_superuser', login_url='index')
-def surveys_dispatch(request):
-    if request.method == "POST":
-        survey_ids = request.POST.getlist("survey-response-ids", [])
-        surveys = Survey.objects.filter(id__in=survey_ids)
-
-        for survey in surveys:
-            Dispatch(
-                message=_rendered_template(request.POST["message"], survey),
-                title=_rendered_template(request.POST["title"], survey),
-                description=request.POST["description"],
-                survey=survey
-            ).save()
-
-    return redirect(reverse("dispatches"))
 
 
 @permission_required('is_superuser', login_url='index')
