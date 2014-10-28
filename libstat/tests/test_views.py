@@ -8,7 +8,7 @@ from mongoengine.django.auth import User
 from datetime import datetime
 from libstat.tests import MongoTestCase
 from libstat.models import Variable, Survey, SurveyObservation, OpenData, Library
-from libstat.tests.utils import _dummy_variable, _dummy_survey
+from libstat.tests.utils import _dummy_variable, _dummy_survey, _dummy_library
 
 
 class VariablesViewTest(MongoTestCase):
@@ -590,17 +590,6 @@ class SurveyViewTest(MongoTestCase):
         self.assertEquals(len(response.context["survey_responses"]), 1)
         self.assertEquals(response.context["survey_responses"][0].library_name, "lib2")
 
-    def test_should_list_unpublished_survey_responses(self):
-        survey = _dummy_survey(library_name="lib1")
-        _dummy_survey(library_name="lib2", publish=True)
-
-        self.assertFalse(survey.is_published)
-
-        response = self.client.get("{}?action=list&unpublished_only=True".format(reverse("surveys")))
-
-        self.assertEquals(len(response.context["survey_responses"]), 1)
-        self.assertEquals(response.context["survey_responses"][0].library_name, "lib1")
-
     def test_each_survey_response_should_have_checkbox_for_actions(self):
         survey = _dummy_survey(sample_year=2013)
 
@@ -615,6 +604,16 @@ class SurveyViewTest(MongoTestCase):
 
         self.assertContains(response, u'<a href="{}" title="Visa/redigera enkätsvar">Visa/redigera</a>'
                             .format(reverse("survey", kwargs={"survey_id": str(survey.id)})),
+                            count=1, status_code=200, html=True)
+
+    def test_each_survey_response_should_have_a_link_to_bibdb(self):
+        library = _dummy_library(name="lib1", sigel="lib1_sigel")
+        _dummy_survey(sample_year=2013, library=library)
+
+        response = self.client.get("{}?action=list&sample_year=2013".format(reverse("surveys")))
+
+        self.assertContains(response, "<a href='http://bibdb.libris.kb.se/library/{}'>{}</a>"
+                            .format(library.sigel, library.name),
                             count=1, status_code=200, html=True)
 
 

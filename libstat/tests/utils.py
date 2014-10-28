@@ -22,16 +22,17 @@ def _login(instance=None, user=None, password=None):
     instance.client.login(username="admin", password="admin")
 
 
-def _dummy_library():
-    library = Library()
+def _dummy_library(name="dummy_name", sigel="dummy_sigel"):
+    library = Library(name=name, sigel=sigel)
     library.save()
     library.reload()
     return library
 
 
 def _dummy_survey(library_name="dummy_name", sample_year=2001, password=None, target_group="public",
-                  status="not_viewed", publish=False):
-    library = _dummy_library()
+                  status="not_viewed", publish=False, library=None):
+    if not library:
+        library = _dummy_library()
     survey = Survey(library_name=library_name, library=library, sample_year=sample_year,
                     target_group=target_group, password=password, status=status)
     if publish:

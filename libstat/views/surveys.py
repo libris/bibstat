@@ -21,7 +21,6 @@ logger = logging.getLogger(__name__)
 def surveys(request):
     s_responses = []
 
-    # TODO: Cache sample_years
     sample_years = Survey.objects.distinct("sample_year")
     sample_years.sort()
     sample_years.reverse()
@@ -30,20 +29,10 @@ def surveys(request):
     target_group = request.GET.get("target_group", "")
     sample_year = request.GET.get("sample_year", "")
     status = request.GET.get("status", "")
-    unpublished_only = request.GET.get("unpublished_only", False)
     message = request.session.pop("message", "")
-    if "True" == unpublished_only:
-        unpublished_only = True
-    else:
-        unpublished_only = False
 
     if action == "list":
-        # TODO: Pagination
-        if unpublished_only:
-            s_responses = Survey.objects.unpublished_by_year_or_group(
-                sample_year=sample_year,
-                target_group=target_group).order_by("library")
-        elif sample_year or target_group or status:
+        if sample_year or target_group or status:
             s_responses = Survey.objects.by(
                 sample_year=sample_year,
                 target_group=target_group,
@@ -57,7 +46,6 @@ def surveys(request):
         'target_group': target_group,
         'status': status,
         'sample_year': sample_year,
-        'unpublished_only': unpublished_only,
         'bibdb_library_base_url': u"{}/library".format(settings.BIBDB_BASE_URL),
         'message': message,
         'url_base': settings.API_BASE_URL

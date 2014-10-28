@@ -32,7 +32,8 @@ class SurveyResponseTest(MongoTestCase):
         sr.library = Library(bibdb_id=u"323", bibdb_sigel="Kld1", bibdb_name=u"Karlstad stadsbibliotek")
         sr.library.save()
         sr.observations.append(SurveyObservation(variable=v1, value=7, _source_key="folk5", _is_public=v1.is_public))
-        sr.observations.append(SurveyObservation(variable=v2, value=None, _source_key="folk6", _is_public=v2.is_public))
+        sr.observations.append(
+            SurveyObservation(variable=v2, value=None, _source_key="folk6", _is_public=v2.is_public))
         sr.observations.append(
             SurveyObservation(variable=v3, value=u"Här är en kommentar", _source_key="folk8", _is_public=v3.is_public))
         self.survey_response = sr.save()
@@ -146,14 +147,14 @@ class SurveyResponseTest(MongoTestCase):
         self.survey_response.save()
 
         sr = Survey.objects.get(pk=self.survey_response.id)
-        self.assertFalse(sr._is_published)
+        self.assertFalse(sr.is_published)
 
     def test_should_set_modified_date_when_creating_object(self):
         self.assertEquals(self.survey_response.date_modified, self.survey_response.date_created)
         self.assertEquals(self.survey_response.modified_by, self.current_user)
 
     def test_should_flag_new_object_as_not_published(self):
-        self.assertFalse(self.survey_response._is_published)
+        self.assertFalse(self.survey_response.is_published)
 
     def test_should_set_published_date_but_not_modified_date_when_publishing(self):
         self.assertTrue(self.survey_response.published_at == None)
@@ -168,7 +169,7 @@ class SurveyResponseTest(MongoTestCase):
     def test_should_flag_as_published_when_publishing(self):
         self.survey_response.publish(user=self.current_user)
         sr = Survey.objects.get(pk=self.survey_response.id)
-        self.assertTrue(sr._is_published)
+        self.assertTrue(sr.is_published)
 
     def test_latest_version_published(self):
         self.survey_response.published_at = self.survey_response.date_modified + timedelta(hours=-1)
@@ -180,23 +181,19 @@ class SurveyResponseTest(MongoTestCase):
         self.survey_response.published_at = None
         self.assertFalse(self.survey_response.latest_version_published)
 
-        self.survey_response._is_published = False
+        self.survey_response.status = "submitted"
         self.assertFalse(self.survey_response.latest_version_published)
 
-        self.survey_response._is_published = True
+        self.survey_response.publish()
         self.assertTrue(self.survey_response.latest_version_published)
 
     def test_is_published(self):
         self.assertFalse(self.survey_response.is_published)
 
-        self.survey_response.published_at = datetime.utcnow()
+        self.survey_response.status = "published"
         self.assertTrue(self.survey_response.is_published)
 
-        self.survey_response.published_at = None
-        self.survey_response._is_published = True
-        self.assertTrue(self.survey_response.is_published)
-
-        self.survey_response._is_published = False
+        self.survey_response.status = "submitted"
         self.assertFalse(self.survey_response.is_published)
 
 
@@ -205,17 +202,15 @@ class SurveyResponseQuerySetTest(MongoTestCase):
     def setUp(self):
         self.publishing_date = datetime(2014, 8, 22, 10, 40, 33, 876)
         sr1 = Survey(library_name="KARLSTAD STADSBIBLIOTEK", sample_year=2013, target_group="public",
-                     observations=[], published_at=self.publishing_date,
-                     _is_published=None)  # Published berore release 0.2
+                     observations=[], published_at=self.publishing_date)
         sr1.save()
         self.public_sr_1 = Survey.objects.get(pk=sr1.id)
         sr2 = Survey(library_name="NORRBOTTENS LÄNSBIBLIOTEK", sample_year=2012, target_group="public",
-                     observations=[], published_at=self.publishing_date,
-                     _is_published=True)  # Published after release 0.2
+                     observations=[], published_at=self.publishing_date, status="published")
         sr2.save()
         self.public_sr_2 = Survey.objects.get(pk=sr2.id)
         sr3 = Survey(library_name="Sjukhusbiblioteken i Dalarnas län", sample_year=2013,
-                     target_group="hospital", observations=[], _is_published=False)
+                     target_group="hospital", observations=[])
         sr3.save()
         self.hospital_sr = Survey.objects.get(pk=sr3.id)
 
@@ -229,21 +224,6 @@ class SurveyResponseQuerySetTest(MongoTestCase):
                           [self.public_sr_1.id, self.public_sr_2.id, self.hospital_sr.id])
         self.assertEquals([sr.id for sr in Survey.objects.by(target_group="research")], [])
         self.assertEquals([sr.id for sr in Survey.objects.by(sample_year=2014)], [])
-
-    def test_filter_unpublished_by_year_or_group(self):
-        self.assertEquals(self.public_sr_1._is_published, None)
-        self.assertTrue(self.public_sr_1.published_at != None)
-        self.assertEquals(self.public_sr_2._is_published, True)
-        self.assertTrue(self.public_sr_2.published_at != None)
-        self.assertEquals(self.hospital_sr._is_published, False)
-        self.assertEquals(self.hospital_sr.published_at, None)
-        # Should really get a hit for public_sr_1 as well, don't know why this
-        # isn't working. Manual test confirms that the filter works though.
-        self.assertEquals([sr.id for sr in Survey.objects.unpublished_by_year_or_group()],
-                          [self.hospital_sr.id])
-
-        self.assertEquals([sr.id for sr in Survey.objects.unpublished_by_year_or_group(target_group="public")],
-                          [])
 
 
 class OpenDataTest(MongoTestCase):

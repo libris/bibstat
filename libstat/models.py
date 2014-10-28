@@ -345,13 +345,6 @@ class SurveyResponseQuerySet(QuerySet):
         status_query = Q(status=status) if status else Q()
         return self.filter(target_group_query & sample_year_query & status_query)
 
-    def unpublished_by_year_or_group(self, sample_year=None, target_group=None):
-        match_target_group = Q(target_group=target_group) if target_group else Q()
-        match_sample_year = Q(sample_year=sample_year) if sample_year else Q()
-        never_published = Q(published_at=None)
-        changed_after_published = Q(_is_published=False)
-        return self.filter(match_target_group & match_sample_year & (changed_after_published | never_published))
-
 
 class SurveyObservation(EmbeddedDocument):
     variable = ReferenceField(Variable, required=True)
@@ -405,7 +398,6 @@ class SurveyBase(Document):
     target_group = StringField(required=True, choices=SURVEY_TARGET_GROUPS)
     published_at = DateTimeField()
     published_by = ReferenceField(User)
-    _is_published = BooleanField()  # Field necessary to optimize search for unpublished Surveys
     date_created = DateTimeField(required=True, default=datetime.utcnow)
     created_by = ReferenceField(User)
     date_modified = DateTimeField(required=True, default=datetime.utcnow)
@@ -430,13 +422,13 @@ class SurveyBase(Document):
         return hits[0] if len(hits) > 0 else None
 
     @property
-    def latest_version_published(self):
-        return self._is_published if self._is_published else (
-            self.published_at is not None and self.published_at >= self.date_modified)
+    def is_published(self):
+        return self.status == "published"
 
     @property
-    def is_published(self):
-        return self._is_published if self._is_published else self.published_at is not None
+    def latest_version_published(self):
+        return self.is_published if self.is_published else (
+            self.published_at is not None and self.published_at >= self.date_modified)
 
     def target_group__desc(self):
         return targetGroups[self.target_group]
@@ -455,7 +447,7 @@ class Survey(SurveyBase):
     def store_version_and_update_date_modified(cls, sender, document, **kwargs):
         if document.id:
             if hasattr(document, "_action_publish"):
-                document._is_published = True
+                document.status = PUBLISHED[0]
             else:
                 changed_fields = document.__dict__["_changed_fields"] if "_changed_fields" in document.__dict__ else []
                 logger.info(
@@ -469,13 +461,10 @@ class Survey(SurveyBase):
                     v.survey_response_id = document.id
                     v.save()
                 document.date_modified = datetime.utcnow()
-                document._is_published = False
                 # field modified_by is set in form
         else:
             document.date_modified = document.date_created
             document.modified_by = document.created_by
-            if not hasattr(document, "_is_published"):
-                document._is_published = False
 
     def publish(self, user=None):
         # TODO: Publishing date as a parameter to enable setting correct date for old data?
