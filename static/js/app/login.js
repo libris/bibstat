@@ -8,7 +8,7 @@ define(["jquery"], function ($) {
                 $(self).find(".errors").text("");
                 $.ajax({
                     type: "POST",
-                    url: "/statistics/login",
+                    url: "/login",
                     data: $(self).serialize(),
                     success: function (data) {
                         if (data.errors) {
