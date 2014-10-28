@@ -22,7 +22,7 @@ from libstat.views import (open_data,
                            surveys_status,
                            import_libraries,
                            remove_libraries,
-                           surveys_remove, dispatches)
+                           surveys_remove, dispatches, dispatches_delete, dispatches_send)
 
 
 urlpatterns = patterns(
@@ -56,6 +56,8 @@ urlpatterns = patterns(
 
     # Dispatch
     url(r'^dispatches$', dispatches, name='dispatches'),
+    url(r'^dispatches/delete$', dispatches_delete, name='dispatches_delete'),
+    url(r'^dispatches/send', dispatches_send, name='dispatches_send'),
 
     # Variables
     url(r'^variables$', variables, name='variables'),

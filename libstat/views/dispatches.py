@@ -36,6 +36,7 @@ def dispatches(request):
     if request.method == "GET":
         dispatches = [
             {
+                "id": dispatch.id,
                 "description": dispatch.description,
                 "title": dispatch.title,
                 "message": dispatch.message.replace("\n", "<br>"),
@@ -46,3 +47,18 @@ def dispatches(request):
         ]
 
         return render(request, 'libstat/dispatches.html', {"dispatches": dispatches})
+
+
+@permission_required('is_superuser', login_url='login')
+def dispatches_delete(request):
+    if request.method == "POST":
+        dispatch_ids = request.POST.getlist("dispatch-ids", [])
+        Dispatch.objects.filter(id__in=dispatch_ids).delete()
+
+        return redirect(reverse("dispatches"))
+
+
+@permission_required('is_superuser', login_url='login')
+def dispatches_send(request):
+    if request.method == "POST":
+        return redirect(reverse("dispatches"))

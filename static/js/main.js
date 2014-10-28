@@ -31,6 +31,7 @@
             /* App */
             'cell': ['app/cell/cell'],
             'cell.sum': ['app/cell/sum'],
+            'dispatches': ['app/dispatches'],
             'survey': ['app/survey'],
             'surveys.dispatch': ['app/surveys/dispatch'],
             'login': ['app/login']
