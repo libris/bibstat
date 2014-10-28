@@ -7,7 +7,7 @@ from mongoengine.django.auth import User
 
 from datetime import datetime
 from libstat.tests import MongoTestCase
-from libstat.models import Variable, Survey, SurveyObservation, OpenData, Library
+from libstat.models import Variable, Survey, SurveyObservation, OpenData
 from libstat.tests.utils import _dummy_variable, _dummy_survey, _dummy_library
 
 
@@ -167,8 +167,8 @@ class CreateVariableViewTest(MongoTestCase):
 class EditVariableViewTest(MongoTestCase):
 
     def setUp(self):
-        self.v1 = Variable(key=u"Folk10", description=u"Antal bemannade serviceställen", type="integer", is_public=True,
-                           target_groups=["public"])
+        self.v1 = Variable(key=u"Folk10", description=u"Antal bemannade serviceställen", type="integer",
+                           is_public=True, target_groups=["public"])
         self.v1.save()
         self.v2 = Variable(key=u"Sjukhus102",
                            description=u"Bestånd av tillgängliga medier för personer med läsnedsättning",
@@ -272,8 +272,8 @@ class EditVariableViewTest(MongoTestCase):
 
         # active_to input should be disabled
         response = self.client.get(self.url)
-        self.assertContains(response,
-                            u'<input type="text" disabled="disabled" value="2015-01-01" name="active_to" class="form-control" id="id_active_to">',
+        self.assertContains(response, (u'<input type="text" disabled="disabled" value="2015-01-01" name="active_to"'
+                                       'class="form-control" id="id_active_to">'),
                             count=1, status_code=200, html=True)
 
         # Posting a new active_to should give validation error
@@ -291,8 +291,8 @@ class EditVariableViewTest(MongoTestCase):
         response = self.client.get(edit_draft_url)
         self.assertContains(response, u'<input type="submit" value="Spara utkast" class="btn btn-primary">', count=1,
                             status_code=200, html=True)
-        self.assertContains(response,
-                            u'<input type="submit" id="save_and_activate" value="Spara och aktivera" class="btn btn-primary">',
+        self.assertContains(response, (u'<input type="submit" id="save_and_activate" value="Spara och aktivera"'
+                                       'class="btn btn-primary">'),
                             count=1, status_code=200, html=True)
 
         response = self.client.post(edit_draft_url, {u"type": self.v3.type, u"target_groups": self.v3.target_groups,
@@ -364,7 +364,7 @@ class EditVariableViewTest(MongoTestCase):
         self.assertEquals(replaced.active_to, replaced_by.active_from)
 
         # Since input active_to is disabled, an empty string is posted
-        response = self.post(u"save", replaced)
+        self.post(u"save", replaced)
 
         # Field active_to should not have been updated
         replaced.reload()
@@ -530,14 +530,6 @@ class EditVariableViewTest(MongoTestCase):
             Variable.objects.get(pk=variable.id)
         except Variable.DoesNotExist as dne:
             self.fail(str(dne))
-
-            # TODO: Borde man kunna ändra synlighet? Inte om det redan finns publik
-            # data eller inlämnade enkätsvar väl? Kommer kräva ompublicering av alla
-            # enkätsvar som har variabeln...
-
-            # TODO: Borde man kunna ta bort en bibliotekstyp? Samma som ovan.
-
-            # TODO: Borde man kunna ändra enhet? Samma som ovan.
 
 
 class SurveyViewTest(MongoTestCase):
