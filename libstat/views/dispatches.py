@@ -1,5 +1,7 @@
 # -*- coding: utf-8 -*-
+
 from django.contrib.auth.decorators import permission_required
+from django.core.mail import send_mass_mail
 from django.core.urlresolvers import reverse
 from django.shortcuts import render, redirect
 
@@ -61,4 +63,15 @@ def dispatches_delete(request):
 @permission_required('is_superuser', login_url='login')
 def dispatches_send(request):
     if request.method == "POST":
-        return redirect(reverse("dispatches"))
+        dispatch_ids = request.POST.getlist("dispatch-ids", [])
+        dispatches = Dispatch.objects.filter(id__in=dispatch_ids)
+
+        messages = [
+            (dispatch.title, dispatch.message, settings.EMAIL_SENDER, dispatch.survey.library.email)
+            for dispatch in dispatches
+        ]
+
+        send_mass_mail(messages)
+        #dispatches.delete() # TODO
+
+    return redirect(reverse("dispatches"))
