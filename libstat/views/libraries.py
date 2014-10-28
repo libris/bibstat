@@ -62,6 +62,21 @@ def libraries(request):
     return render(request, 'libstat/libraries.html', {"form": CreateSurveysForm()})
 
 
+def _dict_to_library(dict):
+    if not dict["country_code"] == "se":
+        return None
+
+    library, _ = Library.objects.get_or_create(sigel=dict["sigel"])
+    library.sigel = dict["sigel"]
+    library.name = dict["name"]
+    library.city = next((a["city"] for a in dict["address"]
+                         if a["address_type"] == "gen"), None)
+    library.email = next((c["email"] for c in dict["contact"]
+                          if "email" in c and c["contact_type"] == "statans"), None)
+
+    return library
+
+
 def _update_libraries():
     for start_index in range(0, 6000, 200):  # bibdb paginated by 200 and had ca. 2800 responses when this was written
         response = requests.get(
@@ -69,22 +84,14 @@ def _update_libraries():
             headers={"APIKEY_AUTH_HEADER": "bibstataccess"})
 
         for lib_data in response.json()["libraries"]:
-            if not lib_data["country_code"] == "se":
-                continue
-
-            library, _ = Library.objects.get_or_create(sigel=lib_data["sigel"])
-            library.sigel = lib_data["sigel"]
-            library.name = lib_data["name"]
-            library.city = next((a["city"] for a in lib_data["address"]
-                                 if a["address_type"] == "gen"), None)
-            library.email = next((c["email"] for c in lib_data["contact"]
-                                  if "email" in c and c["contact_type"] == "statans"), None)
-            library.save()
+            library = _dict_to_library(lib_data)
+            if library:
+                library.save()
 
 
 @permission_required('is_superuser', login_url='index')
 def remove_libraries(request):
-    Library.objects.filter().delete()
+    Library.objects.all().delete()
     return redirect(reverse('libraries'))
 
 

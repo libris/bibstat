@@ -8,7 +8,6 @@ from django.conf import settings
 from libstat.models import Variable
 from libstat.tests import MongoTestCase
 from libstat.views.apis import data_context, term_context
-from libstat.tests.utils import _dummy_variable, _dummy_open_data
 
 
 class OpenDataApiTest(MongoTestCase):
@@ -25,9 +24,9 @@ class OpenDataApiTest(MongoTestCase):
         self.assertEquals(data[u"@context"], data_context)
 
     def test_should_not_filter_by_date_unless_requested(self):
-        _dummy_open_data(library_id="1")
-        _dummy_open_data(library_id="2")
-        _dummy_open_data(library_id="3")
+        self._dummy_open_data(library_id="1")
+        self._dummy_open_data(library_id="2")
+        self._dummy_open_data(library_id="3")
 
         response = self.client.get(reverse("data_api"))
         data = json.loads(response.content)
@@ -35,7 +34,7 @@ class OpenDataApiTest(MongoTestCase):
         self.assertEquals(len(data[u"observations"]), 3)
 
     def test_should_filter_data_by_from_date(self):
-        _dummy_open_data(library_id="11070", date_modified=datetime(2014, 06, 05, 11, 14, 01))
+        self._dummy_open_data(library_id="11070", date_modified=datetime(2014, 06, 05, 11, 14, 01))
 
         response = self.client.get(u"{}?from_date=2014-06-04".format(reverse("data_api")))
         data = json.loads(response.content)
@@ -45,7 +44,7 @@ class OpenDataApiTest(MongoTestCase):
                           u"{}/library/11070".format(settings.BIBDB_BASE_URL))
 
     def test_should_filter_data_by_to_date(self):
-        _dummy_open_data(library_id="81", date_modified=datetime(2014, 06, 02, 11, 14, 01))
+        self._dummy_open_data(library_id="81", date_modified=datetime(2014, 06, 02, 11, 14, 01))
 
         response = self.client.get(u"{}?to_date=2014-06-03".format(reverse("data_api")))
         data = json.loads(response.content)
@@ -55,7 +54,7 @@ class OpenDataApiTest(MongoTestCase):
                           u"{}/library/81".format(settings.BIBDB_BASE_URL))
 
     def test_should_filter_data_by_date_range(self):
-        _dummy_open_data(library_id="323", date_modified=datetime(2014, 06, 03, 11, 14, 01))
+        self._dummy_open_data(library_id="323", date_modified=datetime(2014, 06, 03, 11, 14, 01))
 
         response = self.client.get(
             u"{}?from_date=2014-06-02T15:28:31.000&to_date=2014-06-04T11:14:00.000".format(reverse("data_api")))
@@ -66,9 +65,9 @@ class OpenDataApiTest(MongoTestCase):
                           u"{}/library/323".format(settings.BIBDB_BASE_URL))
 
     def test_should_limit_results(self):
-        _dummy_open_data(library_id="1")
-        _dummy_open_data(library_id="2")
-        _dummy_open_data(library_id="3")
+        self._dummy_open_data(library_id="1")
+        self._dummy_open_data(library_id="2")
+        self._dummy_open_data(library_id="3")
 
         response = self.client.get(u"{}?limit=2".format(reverse("data_api")))
         data = json.loads(response.content)
@@ -76,9 +75,9 @@ class OpenDataApiTest(MongoTestCase):
         self.assertEquals(len(data[u"observations"]), 2)
 
     def test_should_limit_results_with_offset(self):
-        _dummy_open_data(library_id="1")
-        _dummy_open_data(library_id="2")
-        _dummy_open_data(library_id="3")
+        self._dummy_open_data(library_id="1")
+        self._dummy_open_data(library_id="2")
+        self._dummy_open_data(library_id="3")
 
         response = self.client.get(u"{}?limit=2&offset=2".format(reverse("data_api")))
         data = json.loads(response.content)
@@ -86,8 +85,8 @@ class OpenDataApiTest(MongoTestCase):
         self.assertEquals(len(data[u"observations"]), 1)
 
     def test_should_filter_by_term_key(self):
-        variable = _dummy_variable(key=u"folk6")
-        _dummy_open_data(variable=variable)
+        variable = self._dummy_variable(key=u"folk6")
+        self._dummy_open_data(variable=variable)
 
         response = self.client.get(u"{}?term=folk6".format(reverse("data_api")))
         data = json.loads(response.content)
@@ -104,14 +103,14 @@ class OpenDataApiTest(MongoTestCase):
 class ObservationApiTest(MongoTestCase):
 
     def test_response_should_return_jsonld(self):
-        obs = _dummy_open_data()
+        obs = self._dummy_open_data()
 
         response = self.client.get(reverse("observation_api", kwargs={"observation_id": str(obs.id)}))
 
         self.assertEqual(response["Content-Type"], "application/ld+json")
 
     def test_response_should_contain_context(self):
-        obs = _dummy_open_data()
+        obs = self._dummy_open_data()
 
         response = self.client.get(reverse("observation_api", kwargs={"observation_id": str(obs.id)}))
         data = json.loads(response.content)
@@ -120,8 +119,8 @@ class ObservationApiTest(MongoTestCase):
         self.assertEquals(data[u"@context"][u"@base"], u"{}/data/".format(settings.API_BASE_URL))
 
     def test_should_return_one_observation(self):
-        variable = _dummy_variable(key=u"folk5")
-        obs = _dummy_open_data(variable=variable, sample_year=2013)
+        variable = self._dummy_variable(key=u"folk5")
+        obs = self._dummy_open_data(variable=variable, sample_year=2013)
 
         response = self.client.get(reverse("observation_api", kwargs={"observation_id": str(obs.id)}))
         data = json.loads(response.content)
@@ -166,7 +165,7 @@ class TermsApiTest(MongoTestCase):
         self.assertTrue(u"Observation" in ids)
 
     def test_should_return_all_variables(self):
-        _dummy_variable(key=u"folk5")
+        self._dummy_variable(key=u"folk5")
 
         response = self.client.get(reverse("terms_api"))
         data = json.loads(response.content)
@@ -175,7 +174,7 @@ class TermsApiTest(MongoTestCase):
         self.assertTrue(u"folk5" in ids)
 
     def test_should_not_return_variable_drafts(self):
-        _dummy_variable(key=u"69", is_draft=True)
+        self._dummy_variable(key=u"69", is_draft=True)
 
         response = self.client.get(reverse("terms_api"))
         data = json.loads(response.content)
@@ -187,14 +186,14 @@ class TermsApiTest(MongoTestCase):
 class TermApiTest(MongoTestCase):
 
     def test_response_should_return_jsonld(self):
-        _dummy_variable(key=u"folk5")
+        self._dummy_variable(key=u"folk5")
 
         response = self.client.get(reverse("term_api", kwargs={"term_key": "folk5"}))
 
         self.assertEqual(response["Content-Type"], "application/ld+json")
 
     def test_response_should_contain_context(self):
-        _dummy_variable(key=u"folk5")
+        self._dummy_variable(key=u"folk5")
 
         response = self.client.get(reverse("term_api", kwargs={"term_key": "folk5"}))
         data = json.loads(response.content)
@@ -213,7 +212,7 @@ class TermApiTest(MongoTestCase):
         self.assertEqual(data[u"@context"][u"valid"], {u"@id": u"dcterms:valid", u"@type": u"dcterms:Period"})
 
     def test_should_return_one_term(self):
-        _dummy_variable(key=u"folk5", description=u"some description", type="integer")
+        self._dummy_variable(key=u"folk5", description=u"some description", type="integer")
 
         response = self.client.get(reverse("term_api", kwargs={"term_key": "folk5"}))
         data = json.loads(response.content)
@@ -270,10 +269,10 @@ class ReplaceableVariablesApiTest(MongoTestCase):
         self.assertEquals(response.status_code, 200)
 
     def test_should_return_replaceable_variables_as_json(self):
-        var1 = _dummy_variable(key=u"key_1")
-        _dummy_variable(key=u"key_2", is_draft=True)
-        _dummy_variable(key=u"key_3", replaced_by=var1)
-        var4 = _dummy_variable(key=u"key_4")
+        var1 = self._dummy_variable(key=u"key_1")
+        self._dummy_variable(key=u"key_2", is_draft=True)
+        self._dummy_variable(key=u"key_3", replaced_by=var1)
+        var4 = self._dummy_variable(key=u"key_4")
 
         response = self.client.get(self.url)
         self.assertEquals(response.status_code, 200)
@@ -286,7 +285,7 @@ class ReplaceableVariablesApiTest(MongoTestCase):
                                   "description": var4.description}])
 
     def test_should_filter_replaceables_by_key(self):
-        var = _dummy_variable(key=u"Folk28")
+        var = self._dummy_variable(key=u"Folk28")
 
         response = self.client.get("{}?q=fo".format(self.url))
         self.assertEquals(response.status_code, 200)
@@ -296,7 +295,7 @@ class ReplaceableVariablesApiTest(MongoTestCase):
                                   "description": var.description}])
 
     def test_should_filter_replaceables_by_description(self):
-        var = _dummy_variable(key=u"Skol10", description=u"Postort", type="string")
+        var = self._dummy_variable(key=u"Skol10", description=u"Postort", type="string")
         response = self.client.get("{}?q=post".format(self.url))
         self.assertEquals(response.status_code, 200)
         data = json.loads(response.content)

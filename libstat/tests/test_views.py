@@ -8,17 +8,16 @@ from mongoengine.django.auth import User
 from datetime import datetime
 from libstat.tests import MongoTestCase
 from libstat.models import Variable, Survey, SurveyObservation, OpenData
-from libstat.tests.utils import _dummy_variable, _dummy_survey, _dummy_library
 
 
 class VariablesViewTest(MongoTestCase):
 
     def setUp(self):
         self.url = reverse("variables")
-        self.client.login(username="admin", password="admin")
+        self._login()
 
     def test_view_requires_admin_login(self):
-        self.client.logout()
+        self._logout()
 
         response = self.client.get(self.url)
         self.assertEquals(response.status_code, 302)
@@ -32,9 +31,9 @@ class VariablesViewTest(MongoTestCase):
         self.assertEquals(response.status_code, 200)
 
     def test_should_list_all_variables(self):
-        _dummy_variable(key=u"key_1")
-        _dummy_variable(key=u"key_2")
-        _dummy_variable(key=u"key_3")
+        self._dummy_variable(key=u"key_1")
+        self._dummy_variable(key=u"key_2")
+        self._dummy_variable(key=u"key_3")
 
         response = self.client.get(self.url)
 
@@ -42,9 +41,9 @@ class VariablesViewTest(MongoTestCase):
         self.assertEquals(len(response.context["variables"]), 3)
 
     def test_should_filter_variables_by_target_group(self):
-        _dummy_variable(key=u"key_1", target_groups=["hospital"])
-        _dummy_variable(key=u"key_2", target_groups=["school"])
-        _dummy_variable(key=u"key_3", target_groups=["hospital"])
+        self._dummy_variable(key=u"key_1", target_groups=["hospital"])
+        self._dummy_variable(key=u"key_2", target_groups=["school"])
+        self._dummy_variable(key=u"key_3", target_groups=["hospital"])
 
         response = self.client.get(u"{}?target_group=hospital".format(self.url))
 
@@ -54,9 +53,9 @@ class VariablesViewTest(MongoTestCase):
         self.assertEquals(response.context["variables"][1].key, u"key_3")
 
     def test_should_filter_variables_by_target_group_all(self):
-        _dummy_variable(key=u"key_1", target_groups=["hospital"])
-        _dummy_variable(key=u"key_2", target_groups=["public", "research", "hospital", "school"])
-        _dummy_variable(key=u"key_3", target_groups=["hospital"])
+        self._dummy_variable(key=u"key_1", target_groups=["hospital"])
+        self._dummy_variable(key=u"key_2", target_groups=["public", "research", "hospital", "school"])
+        self._dummy_variable(key=u"key_3", target_groups=["hospital"])
 
         response = self.client.get(u"{}?target_group=all".format(self.url))
 
@@ -65,8 +64,8 @@ class VariablesViewTest(MongoTestCase):
         self.assertEquals(response.context["variables"][0].key, u"key_2")
 
     def test_should_filter_variables_by_list_of_target_groups(self):
-        _dummy_variable(key=u"key_1")
-        _dummy_variable(key=u"key_2")
+        self._dummy_variable(key=u"key_1")
+        self._dummy_variable(key=u"key_2")
 
         response = self.client.get(u"{}?target_group=school&target_group=public".format(self.url))
 
@@ -76,7 +75,7 @@ class VariablesViewTest(MongoTestCase):
         self.assertEquals(response.context["variables"][1].key, u"key_2")
 
     def test_each_variable_should_have_edit_link(self):
-        variable = _dummy_variable(key=u"key_1")
+        variable = self._dummy_variable(key=u"key_1")
 
         response = self.client.get(self.url)
 
@@ -538,43 +537,43 @@ class SurveyViewTest(MongoTestCase):
         self.client.login(username="admin", password="admin")
 
     def test_should_not_fetch_survey_responses_unless_list_action_provided(self):
-        _dummy_survey()
-        _dummy_survey()
+        self._dummy_survey()
+        self._dummy_survey()
 
         response = self.client.get(reverse("surveys"))
 
         self.assertEquals(len(response.context["survey_responses"]), 0)
 
     def test_should_list_survey_responses_by_year(self):
-        _dummy_survey(sample_year=2012)
-        _dummy_survey(sample_year=2013)
+        self._dummy_survey(sample_year=2012)
+        self._dummy_survey(sample_year=2013)
 
         response = self.client.get("{}?action=list&sample_year=2012".format(reverse("surveys")))
 
         self.assertEquals(len(response.context["survey_responses"]), 1)
 
     def test_should_list_survey_responses_by_target_group(self):
-        _dummy_survey(target_group="public")
-        _dummy_survey(target_group="school")
-        _dummy_survey(target_group="public")
+        self._dummy_survey(target_group="public")
+        self._dummy_survey(target_group="school")
+        self._dummy_survey(target_group="public")
 
         response = self.client.get("{}?action=list&target_group=public".format(reverse("surveys")))
 
         self.assertEquals(len(response.context["survey_responses"]), 2)
 
     def test_should_list_survey_responses_by_status(self):
-        _dummy_survey(status="not_viewed")
-        _dummy_survey(status="submitted")
-        _dummy_survey(status="published")
+        self._dummy_survey(status="not_viewed")
+        self._dummy_survey(status="submitted")
+        self._dummy_survey(status="published")
 
         response = self.client.get("{}?action=list&status=submitted".format(reverse("surveys")))
 
         self.assertEquals(len(response.context["survey_responses"]), 1)
 
     def test_should_list_survey_responses_by_year_and_target_group(self):
-        _dummy_survey(library_name="lib1", target_group="public", sample_year=2012)
-        _dummy_survey(library_name="lib2", target_group="public", sample_year=2013)
-        _dummy_survey(library_name="lib3", target_group="school", sample_year=2013)
+        self._dummy_survey(library_name="lib1", target_group="public", sample_year=2012)
+        self._dummy_survey(library_name="lib2", target_group="public", sample_year=2013)
+        self._dummy_survey(library_name="lib3", target_group="school", sample_year=2013)
 
         response = self.client.get(
             "{}?action=list&target_group=public&sample_year=2013".format(reverse("surveys")))
@@ -583,14 +582,14 @@ class SurveyViewTest(MongoTestCase):
         self.assertEquals(response.context["survey_responses"][0].library_name, "lib2")
 
     def test_each_survey_response_should_have_checkbox_for_actions(self):
-        survey = _dummy_survey(sample_year=2013)
+        survey = self._dummy_survey(sample_year=2013)
 
         response = self.client.get("{}?action=list&sample_year=2013".format(reverse("surveys")))
 
         self.assertContains(response, 'value="{}"'.format(survey.id))
 
     def test_each_survey_response_should_have_a_link_to_details_view(self):
-        survey = _dummy_survey(sample_year=2013)
+        survey = self._dummy_survey(sample_year=2013)
 
         response = self.client.get("{}?action=list&sample_year=2013".format(reverse("surveys")))
 
@@ -599,8 +598,8 @@ class SurveyViewTest(MongoTestCase):
                             count=1, status_code=200, html=True)
 
     def test_each_survey_response_should_have_a_link_to_bibdb(self):
-        library = _dummy_library(name="lib1", sigel="lib1_sigel")
-        _dummy_survey(sample_year=2013, library=library)
+        library = self._dummy_library(name="lib1", sigel="lib1_sigel")
+        self._dummy_survey(sample_year=2013, library=library)
 
         response = self.client.get("{}?action=list&sample_year=2013".format(reverse("surveys")))
 

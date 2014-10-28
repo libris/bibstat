@@ -17,7 +17,8 @@ from surveys import (survey,
                      surveys_remove)
 from libraries import (libraries,
                        import_libraries,
-                       remove_libraries)
+                       remove_libraries,
+                       _dict_to_library)
 from variables import (variables,
                        edit_variable,
                        create_variable)
