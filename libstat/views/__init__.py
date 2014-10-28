@@ -10,7 +10,6 @@ from dispatches import dispatches
 from index import index
 from surveys import (survey,
                      surveys_status,
-                     surveys_dispatch,
                      surveys_export,
                      surveys_publish,
                      surveys,

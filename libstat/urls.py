@@ -15,7 +15,6 @@ from libstat.views import (open_data,
                            survey,
                            surveys_publish,
                            surveys_export,
-                           surveys_dispatch,
                            variables,
                            create_variable,
                            edit_variable,
@@ -49,7 +48,6 @@ urlpatterns = patterns(
 
     # Survey
     url(r'^surveys$', surveys, name='surveys'),
-    url(r'^surveys/dispatch$', surveys_dispatch, name='surveys_dispatch'),
     url(r'^surveys/export$', surveys_export, name='surveys_export'),
     url(r'^surveys/publish$', surveys_publish, name='surveys_publish'),
     url(r'^surveys/remove$', surveys_remove, name='surveys_remove'),
