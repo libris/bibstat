@@ -74,6 +74,6 @@ def dispatches_send(request):
         ]
 
         send_mass_mail(messages)
-        #dispatches.delete()
+        dispatches.delete()
 
     return redirect(reverse("dispatches"))
