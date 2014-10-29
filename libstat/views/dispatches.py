@@ -69,11 +69,11 @@ def dispatches_send(request):
         dispatches = Dispatch.objects.filter(id__in=dispatch_ids)
 
         messages = [
-            (dispatch.title, dispatch.message, settings.EMAIL_SENDER, dispatch.survey.library.email)
+            (dispatch.title, dispatch.message, settings.EMAIL_SENDER, [dispatch.survey.library.email])
             for dispatch in dispatches
         ]
 
         send_mass_mail(messages)
-        #dispatches.delete() # TODO
+        #dispatches.delete()
 
     return redirect(reverse("dispatches"))
