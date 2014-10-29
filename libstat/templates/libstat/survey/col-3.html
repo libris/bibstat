@@ -10,14 +10,7 @@
 {% for row in group.rows %}
     <div class="row">
         <div class="col-sm-3">
-            <div class="row">
-                <div class="col-sm-10">
-                    {{ row.description }}
-                </div>
-                <div class="col-sm-1">
-                    {% include "libstat/survey/explain.html" %}
-                </div>
-            </div>
+            {{ row.description }}
         </div>
 
         {% for cell in row.cells %}

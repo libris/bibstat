@@ -21,14 +21,7 @@
     {% else %}
         <div class="row">
             <div class="col-sm-5">
-                <div class="row">
-                    <div class="col-sm-11">
-                        {{ row.description }}
-                    </div>
-                    <div class="col-sm-1">
-                        {% include "libstat/survey/explain.html" %}
-                    </div>
-                </div>
+                {{ row.description }}
             </div>
 
             {% for cell in row.cells %}

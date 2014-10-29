@@ -7,6 +7,19 @@
                 {{ form|access:variable_key }}
             {% endwith %}
             <div class="input-group-btn">
+
+                {% if row.explanation %}
+                    <a type="button" class="btn btn-default btn-help"
+                       href="#"
+                       title="Förklaring"
+                       tabindex="0"
+                       data-toggle="popover" data-placement="top"
+                       data-content="{{ row.explanation }}"
+                       data-trigger="focus">
+                        <i class="fa fa-question"></i>
+                    </a>
+                {% endif %}
+
                 {% with variable=form|access:cell.variable_key %}
                     <button type="button"
                             class="btn btn-default btn-dropdown dropdown-toggle"
