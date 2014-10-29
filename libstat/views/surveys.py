@@ -185,7 +185,7 @@ def survey(request, survey_id, wrong_password=False):
             survey.save()
 
         context = {"form": SurveyForm(instance=survey, authenticated=request.user.is_authenticated())}
-        return render(request, 'libstat/edit_survey.html', context)
+        return render(request, 'libstat/survey.html', context)
 
     if has_password():
         if get_password() == survey.password:
@@ -194,7 +194,7 @@ def survey(request, survey_id, wrong_password=False):
         else:
             wrong_password = True
 
-    return render(request, 'libstat/survey_password.html', {'survey_id': survey_id, 'wrong_password': wrong_password})
+    return render(request, 'libstat/survey/password.html', {'survey_id': survey_id, 'wrong_password': wrong_password})
 
 
 def _get_status_key_from_value(status):
