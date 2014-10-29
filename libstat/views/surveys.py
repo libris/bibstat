@@ -182,9 +182,14 @@ def survey(request, survey_id, wrong_password=False):
         context = {"form": SurveyForm(instance=survey, authenticated=request.user.is_authenticated())}
         return render(request, 'libstat/edit_survey.html', context)
 
-    if request.method == "POST":
-        password = request.POST["password"]
-        if password == survey.password:
+    def has_password():
+        return request.method == "GET" and "p" in request.GET or request.method == "POST"
+
+    def get_password():
+        return request.GET["p"] if request.method == "GET" else request.POST["password"]
+
+    if has_password():
+        if get_password() == survey.password:
             request.session["password"] = True
             return redirect(reverse("survey", args=(survey_id,)))
         else:
