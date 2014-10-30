@@ -100,40 +100,6 @@ def surveys_export(request):
         return ExcelResponse(rows, filename)
 
 
-def _survey_response_from_template(template, create_non_existing_variables=False):
-    library = Library.objects.get(name=u"Motala stadsbibliotek")
-    response = Survey(
-        library_name=library.name,
-        library=library,
-        sample_year=2014,
-        target_group="public",
-        observations=[]
-    )
-    for section in template.sections:
-        for group in section.groups:
-            for row in group.rows:
-                for cell in row.cells:
-                    try:
-                        v = Variable.objects.get(key=cell.variable_key)
-                    except Exception:
-                        if create_non_existing_variables:
-                            v = Variable(
-                                key=cell.variable_key,
-                                description=u"",
-                                is_public=False,
-                                type=u"integer",
-                                target_groups=["public", "research", "hospital", "school"]
-                            )
-                            v.save_updated_self_and_modified_replaced([])
-                        else:
-                            raise Exception(
-                                "Can't create SurveyResponse with non-existing Variable " + cell.variable_key)
-                    response.observations.append(SurveyObservation(variable=v))
-
-    print(response)
-    return response
-
-
 def _save_survey_response_from_form(response, form):
     if form.is_valid():
         disabled_inputs = form.cleaned_data["disabled_inputs"].split(" ")
