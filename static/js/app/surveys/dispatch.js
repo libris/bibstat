@@ -55,11 +55,17 @@ define(['jquery', 'jquery.textrange'], function ($) {
             return false;
         });
 
+
+        // From: https://developer.mozilla.org/en/docs/Web/JavaScript/Guide/Regular_Expressions
+        function escapeRegExp(string){
+            return string.replace(/([.*+?^${}()|\[\]\/\\])/g, "\\$1");
+        }
+
         $('.dispatch-message, .dispatch-title').on('change paste keyup', function () {
             var render = function (text) {
                 var rendered = text.replace(/\n/g, '<br>');
                 $.each($('.btn-insert'), function () {
-                    var token = new RegExp(asToken($(this).text().toLowerCase()), 'g');
+                    var token = new RegExp(escapeRegExp(asToken($(this).text().toLowerCase())), 'g');
                     var value = $(this).data('value');
 
                     rendered = rendered.replace(token, value);
@@ -78,6 +84,7 @@ define(['jquery', 'jquery.textrange'], function ($) {
     var init = function (library, address) {
         $('.dispatch-example-footer').html("Detta är ett exempelutskick för " + library + ".");
         $('.btn-library').data('value', library);
+        $('.btn-address-password').data('value', address + "?p=" + 'VRhNVva5AR');
         $('.btn-address').data('value', address);
         $('.btn-password').data('value', 'VRhNVva5AR');
 

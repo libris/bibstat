@@ -43,7 +43,7 @@ define(['jquery', 'survey', 'login', 'dispatches', 'jquery.tablesorter', 'bootst
         });
 
         $(".select-one, .select-all").change(function () {
-            var checked = $(".select-one:checked, .select-all:checked").length > 0;
+            var checked = $(".select-one:checked").length > 0;
             var buttons = $(".btn-toggle");
 
             if (checked) buttons.removeClass("disabled");

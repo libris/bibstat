@@ -5,21 +5,20 @@
 {% block content %}
     <div class="container">
     <div class="page-header">
-        <h1>Enkätsvar</h1>
+        <h1>Enkäter</h1>
     </div>
     <div class="panel panel-default">
-        <div class="panel-heading">
-            <h3 class="panel-title">{% trans "Enkätsvar uppdelat på bibliotekstyp och år" %}</h3>
-        </div>
         <div class="panel-body">
-            <div class="row">
-                <div class="col-md-12">
-                    <p>
-                        {% trans "Välj bibliotekstyp och år för att lista enkätsvar" %}
-                        <span class="text-warning warnings right">{{ message }}</span>
-                    </p>
+            {% if message %}
+                <div class="row">
+                    <div class="col-md-12">
+                        <p>
+                            {% trans "Välj bibliotekstyp och år för att lista enkätsvar" %}
+                            <span class="text-warning warnings right">{{ message }}</span>
+                        </p>
+                    </div>
                 </div>
-            </div>
+            {% endif %}
             <div class="row">
                 <div class="col-md-8">
                     <form action="" method="GET" role="form" class="form-inline">
@@ -88,7 +87,7 @@
                                         {% ifequal status "not_viewed" %}
                                         selected="selected"
                                         {% endifequal %}>
-                                        Ej öppnad
+                                    Ej öppnad
                                 </option>
                                 <option value="initiated"
                                         {% ifequal status "initiated" %}
@@ -117,13 +116,6 @@
                             </select>
                         </div>
                         <div class="form-group">
-                            <input type="checkbox" name="unpublished_only" value="True"
-                                    {% if unpublished_only == True %}
-                                   checked="checked"
-                                    {% endif %}/>
-                            {% trans "Där publicering ej utförd" %}
-                        </div>
-                        <div class="form-group">
                             <button type="submit" name="action" value="list"
                                     class="btn btn-default">
                                 {% trans "Lista enkätsvar" %}
@@ -136,17 +128,20 @@
     </div>
     <div class="panel panel-default">
         <div class="panel-body">
-            <form id="form-surveys" action="" method="POST" role="form" class="form-inline publish-survey-responses-form">
+            <form id="form-surveys" action="" method="POST" role="form"
+                  class="form-inline publish-survey-responses-form">
                 {% if survey_responses %}
                     {% csrf_token %}
                     <input type="hidden" name="sample_year" value="{{ sample_year }}"/>
                     <input type="hidden" name="target_group" value="{{ target_group }}"/>
                     <div class="form-group pull-right submit-publish">
-                        <div class="modal fade" id="confirm-remove-modal" tabindex="-1" role="dialog" aria-hidden="true">
+                        <div class="modal fade" id="confirm-remove-modal" tabindex="-1" role="dialog"
+                             aria-hidden="true">
                             <div class="modal-dialog">
                                 <div class="modal-content">
                                     <div class="modal-body">
-                                        Är du säker på att du vill ta bort de markerade enkäterna? Denna åtgärd kan inte ångras.
+                                        Är du säker på att du vill ta bort de markerade enkäterna? Denna åtgärd kan inte
+                                        ångras.
                                     </div>
                                     <div class="modal-footer">
                                         <a href="#" class="btn btn-danger" data-dismiss="modal">Nej</a>
@@ -155,7 +150,8 @@
                                 </div>
                             </div>
                         </div>
-                        <a href="#" class="btn btn-danger btn-toggle btn-survey disabled" data-toggle="modal" data-target="#confirm-remove-modal">
+                        <a href="#" class="btn btn-danger btn-toggle btn-survey disabled" data-toggle="modal"
+                           data-target="#confirm-remove-modal">
                             Ta bort
                         </a>
                         <button class="btn btn-primary btn-toggle btn-survey btn-dispatch disabled">
@@ -276,6 +272,8 @@
                                     <div class="btn-group">
                                         <button type="button"
                                                 class="btn btn-default btn-insert btn-library">Bibliotek</button>
+                                        <button type="button"
+                                                class="btn btn-default btn-insert btn-address-password">Enkätadress (med lösenord)</button>
                                         <button type="button"
                                                 class="btn btn-default btn-insert btn-address">Enkätadress</button>
                                         <button type="button"

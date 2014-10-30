@@ -9,16 +9,17 @@
         </div>
 
         <div class="panel panel-default">
+            <div class="panel-body panel-dispatches">
+                <button class="btn btn-danger btn-toggle btn-delete disabled">{% trans "Ta bort" %}</button>
+                <button class="btn btn-primary btn-toggle btn-send disabled">{% trans "Skicka" %}</button>
+            </div>
+        </div>
+
+        <div class="panel panel-default">
             <div class="panel-body">
                 <form action="" method="post" class="form-inline form-dispatches">
                     {% csrf_token %}
 
-                    <div class="form-group">
-                        <button type="submit" class="btn btn-danger btn-toggle btn-delete disabled">{% trans "Ta bort" %}</button>
-                        <button type="submit" class="btn btn-primary btn-toggle btn-send disabled">{% trans "Skicka" %}</button>
-                    </div>
-
-                    <hr>
                     <table class="table">
                         <thead>
                         <tr>
