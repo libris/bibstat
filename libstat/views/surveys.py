@@ -166,14 +166,26 @@ def surveys_remove(request):
 
 def survey(request, survey_id, wrong_password=False):
 
-    def has_password(): return request.method == "GET" and "p" in request.GET or request.method == "POST"
-    def get_password(): return request.GET["p"] if request.method == "GET" else request.POST["password"]
-    def can_view_survey(survey): return request.user.is_authenticated() or request.session.get("password") == survey.id
+    def has_password():
+        return request.method == "GET" and "p" in request.GET or request.method == "POST"
+
+    def get_password():
+        return request.GET["p"] if request.method == "GET" else request.POST["password"]
+
+    def can_view_survey(survey):
+        return request.user.is_authenticated() or request.session.get("password") == survey.id
 
     try:
         survey = Survey.objects.get(pk=survey_id)
     except Survey.DoesNotExist:
         return HttpResponseNotFound()
+
+    context = {
+        'survey_id': survey_id,
+    }
+
+    if not request.user.is_superuser:
+        context["hide_navbar"] = True
 
     if can_view_survey(survey):
         if request.method == "POST":
@@ -184,7 +196,7 @@ def survey(request, survey_id, wrong_password=False):
             survey.status = "initiated"
             survey.save()
 
-        context = {"form": SurveyForm(instance=survey, authenticated=request.user.is_authenticated())}
+        context["form"] = SurveyForm(instance=survey, authenticated=request.user.is_authenticated())
         return render(request, 'libstat/survey.html', context)
 
     if has_password():
@@ -192,9 +204,9 @@ def survey(request, survey_id, wrong_password=False):
             request.session["password"] = survey.id
             return redirect(reverse("survey", args=(survey_id,)))
         else:
-            wrong_password = True
+            context["wrong_password"] = True
 
-    return render(request, 'libstat/survey/password.html', {'survey_id': survey_id, 'wrong_password': wrong_password})
+    return render(request, 'libstat/survey/password.html', context)
 
 
 def _get_status_key_from_value(status):

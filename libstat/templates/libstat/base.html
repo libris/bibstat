@@ -41,6 +41,7 @@
 
 <body class="libstat" vocab="http://schema.org/">
 
+{% if not hide_navbar %}
 <div class="navbar navbar-inverse navbar-static-top" role="navigation">
     <div class="container-fluid">
         <div class="container">
@@ -119,6 +120,7 @@
         </div>
     </div>
 </div>
+{% endif %}
 <div id="content">
     {% block content %}
     {% endblock %}

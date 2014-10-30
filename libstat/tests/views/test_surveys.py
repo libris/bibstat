@@ -55,3 +55,26 @@ class TestSurveyAuthorization(MongoTestCase):
         response = self._get(action="survey", kwargs={"survey_id": survey.pk})
         self.assertEquals(response.status_code, 200)
         self.assertTrue("form" in response.context)
+
+    def test_should_not_show_navbar_if_not_logged_in(self):
+        survey = self._dummy_survey(password="dummy_password")
+
+        self._post(action="survey", kwargs={"survey_id": survey.pk},
+                   data={"password": survey.password})
+
+        response = self._get(action="survey", kwargs={"survey_id": survey.pk})
+
+        self.assertEquals(response.status_code, 200)
+        self.assertTrue("hide_navbar" in response.context)
+
+    def test_should_show_navbar_if_logged_in(self):
+        self._login()
+        survey = self._dummy_survey(password="dummy_password")
+
+        self._post(action="survey", kwargs={"survey_id": survey.pk},
+                   data={"password": survey.password})
+
+        response = self._get(action="survey", kwargs={"survey_id": survey.pk})
+
+        self.assertEquals(response.status_code, 200)
+        self.assertFalse("hide_navbar" in response.context)
