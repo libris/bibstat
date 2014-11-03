@@ -49,23 +49,19 @@ def _survey_template_2014():
                         headers=[],
                         rows=[
                             Row(
-                                description="1. Vad heter du som fyller i enkäten?",
-                                explanation="Kontaktuppgift, om vi har någon fråga om lämnade uppgifter.",
+                                description="1. Vad heter du som fyller i enkäten? Kontaktuppgift, om vi har någon fråga om lämnade uppgifter.",
                                 cells=[Cell(variable_key=u"Namn01", types=["text"])]
                             ),
                             Row(
-                                description="2. Vad har du för e-postadress?",
-                                explanation="Vi skickar länk till rapporten när den publiceras. E-postadressen valideras automatiskt så att du fyllt i en användbar e-postadress, det går därför inte att skriva två adresser i fältet.",
+                                description="2. Vad har du för e-postadress? Vi skickar länk till rapporten när den publiceras. E-postadressen valideras automatiskt så att du fyllt i en användbar e-postadress, det går därför inte att skriva två adresser i fältet.",
                                 cells=[Cell(variable_key=u"Epost01", types=['email', 'required'])]
                             ),
                             Row(
-                                description="3. Vänligen fyll i ditt telefonnummer, inklusive riktnummer.",
-                                explanation="Används så att vi kan kontakta dig om vi har några frågor om de lämnade uppgifterna",
+                                description="3. Vänligen fyll i ditt telefonnummer, inklusive riktnummer. Används så att vi kan kontakta dig om vi har några frågor om de lämnade uppgifterna.",
                                 cells=[Cell(variable_key=u"Tele01", types=["text"])]
                             ),
                             Row(
                                 description="4. Vänligen skriv in länk till en webbplats där vi kan nå den biblioteksplan eller annan plan som styr er verksamhet.",
-                                explanation="",
                                 cells=[Cell(variable_key=u"Plan01", types=["text"])]
                             )
                         ]
@@ -78,12 +74,10 @@ def _survey_template_2014():
                         rows=[
                             Row(
                                 description="6. Enkätens uppgifter avser totalt antal bemannade servicesställen:",
-                                explanation="",
                                 cells=[Cell(variable_key=u"BemanService01", types=['required', 'integer'])]
                             ),
                             Row(
                                 description="7. Hur många av de bemannade serviceställena är integrerade bibliotek? Folk- och skolbibliotek alternativt forsknings- och sjukhusbibliotek alternativt folk- och forskningsbibliotek?",
-                                explanation="",
                                 cells=[Cell(variable_key=u"Integrerad01", types=['required', 'integer'])]
                             )
                         ]
@@ -95,12 +89,10 @@ def _survey_template_2014():
                         rows=[
                             Row(
                                 description="Antal obemannade utlåningsställen där vidare låneregistrering inte sker",
-                                explanation="",
                                 cells=[Cell(variable_key=u"Obeman01", types=['required', 'integer'])]
                             ),
                             Row(
                                 description="Antal utlån till servicesställen/institutioner där vidare lånregistrering inte sker under kalenderåret (inkl. institutionslån och depositioner)",
-                                explanation="",
                                 cells=[Cell(variable_key=u"ObemanLan01", types=['required', 'integer'])]
                             )
                         ]
@@ -112,17 +104,14 @@ def _survey_template_2014():
                         rows=[
                             Row(
                                 description="Antal bokbussar",
-                                explanation="",
                                 cells=[Cell(variable_key=u"Bokbuss01", types=['required', 'integer'])]
                             ),
                             Row(
                                 description="Antal bokbusshållplatser inom kommunen",
-                                explanation="",
                                 cells=[Cell(variable_key=u"BokbussHP01", types=['required', 'integer'])]
                             ),
                             Row(
                                 description="Antal bokbilar, transportfordon",
-                                explanation="",
                                 cells=[Cell(variable_key=u"Bokbil01", types=['integer'])]
                             )
                         ]
@@ -134,7 +123,6 @@ def _survey_template_2014():
                         rows=[
                             Row(
                                 description="Antal personer",
-                                explanation="",
                                 cells=[Cell(variable_key=u"Population01", types=['integer'])]
                             )
                         ]
@@ -151,37 +139,31 @@ def _survey_template_2014():
                         rows=[
                             Row(
                                 description="Antal årsverken bibliotekarier och dokumentalister",
-                                explanation="",
                                 cells=[Cell(variable_key=u"Arsverke01", types=['sum', 'numeric'],
                                             sum_siblings=["Arsverke02", "Arsverke03", "Arsverke04"])]
                             ),
                             Row(
                                 description="Antal årsverken biblioteksassistenter och lärarbibliotekarier",
-                                explanation="",
                                 cells=[Cell(variable_key=u"Arsverke02", types=['sum', 'numeric'],
                                             sum_siblings=["Arsverke01", "Arsverke03", "Arsverke04"])]
                             ),
                             Row(
                                 description="Antal årsverken specialister inom IT, information eller ämnessakkunniga, fackkunniga",
-                                explanation="",
                                 cells=[Cell(variable_key=u"Arsverke03", types=['sum', 'numeric'],
                                             sum_siblings=["Arsverke01", "Arsverke02", "Arsverke04"])]
                             ),
                             Row(
                                 description="Antal årsverken övrig personal inklusive kvällspersonal studentvakter, chaufförer, vaktmästare",
-                                explanation="",
                                 cells=[Cell(variable_key=u"Arsverke04", types=['sum', 'numeric'],
                                             sum_siblings=["Arsverke01", "Arsverke02", "Arsverke03"])]
                             ),
                             Row(
                                 description="Totalt antal årsverken avsatt bemanning för biblioteksverksamhet",
-                                explanation="",
                                 cells=[Cell(variable_key=u"Arsverke99", types=['sum', 'numeric'],
                                             sum_of=["Arsverke01", "Arsverke02", "Arsverke03", "Arsverke04"])]
                             ),
                             Row(
                                 description="- varav antal av dessa ovanstående årsverken var särskilt avsatta för barn och unga",
-                                explanation="",
                                 cells=[Cell(variable_key=u"Arsverke05", types=['required', 'numeric'])]
                             )
                         ]
@@ -193,21 +175,18 @@ def _survey_template_2014():
                         rows=[
                             Row(
                                 description="Antal anställda kvinnor",
-                                explanation="",
                                 cells=[
                                     Cell(variable_key=u"Personer01", types=['sum', 'integer'],
                                          sum_siblings=['Personer02'])]
                             ),
                             Row(
                                 description="Antal anställda män",
-                                explanation="",
                                 cells=[
                                     Cell(variable_key=u"Personer02", types=['sum', 'integer'],
                                          sum_siblings=['Personer01'])]
                             ),
                             Row(
                                 description="Totalt antal anställda personer",
-                                explanation="",
                                 cells=[
                                     Cell(variable_key=u"Personer99", types=['sum', 'integer'],
                                          sum_of=[u"Personer01", u"Personer02"])]
@@ -221,7 +200,6 @@ def _survey_template_2014():
                         rows=[
                             Row(
                                 description=u"",
-                                explanation=u"",
                                 cells=[
                                     Cell(variable_key=u"Personkomm", types=["comment"])
                                 ]
@@ -240,56 +218,48 @@ def _survey_template_2014():
                         rows=[
                             Row(
                                 description="Inköp av tryckta medier och audiovisuella medier",
-                                explanation="",
                                 cells=[Cell(variable_key=u"Utgift01", types=['sum', 'integer'],
                                             sum_siblings=[u"Utgift02", u"Utgift03", u"Utgift04", u"Utgift05",
                                                           u"Utgift06"])]
                             ),
                             Row(
                                 description="Inköp av virtuella e-baserade media och databaslicenser (exklusive kostnader för biblioteksdatasystemet)",
-                                explanation="",
                                 cells=[Cell(variable_key=u"Utgift02", types=['sum', 'integer'],
                                             sum_siblings=[u"Utgift01", u"Utgift03", u"Utgift04", u"Utgift05",
                                                           u"Utgift06"])]
                             ),
                             Row(
                                 description="Lönekostnader personal",
-                                explanation="",
                                 cells=[Cell(variable_key=u"Utgift03", types=['sum', 'integer'],
                                             sum_siblings=[u"Utgift01", u"Utgift02", u"Utgift04", u"Utgift05",
                                                           u"Utgift06"])]
                             ),
                             Row(
                                 description="Kostnader för personalens kompetensutveckling",
-                                explanation="",
                                 cells=[Cell(variable_key=u"Utgift04", types=['sum', 'integer'],
                                             sum_siblings=[u"Utgift01", u"Utgift02", u"Utgift03", u"Utgift05",
                                                           u"Utgift06"])]
                             ),
                             Row(
                                 description="Lokalkostnader",
-                                explanation="",
                                 cells=[Cell(variable_key=u"Utgift05", types=['sum', 'integer'],
                                             sum_siblings=[u"Utgift01", u"Utgift02", u"Utgift03", u"Utgift04",
                                                           u"Utgift06"])]
                             ),
                             Row(
                                 description="Övriga driftskostnader som inte ingår i punkterna ovan (inklusive kostnader för bibliotekssystemet)",
-                                explanation="",
                                 cells=[Cell(variable_key=u"Utgift06", types=['sum', 'integer'],
                                             sum_siblings=[u"Utgift01", u"Utgift02", u"Utgift03", u"Utgift04",
                                                           u"Utgift05"])]
                             ),
                             Row(
                                 description="Totala driftskostnader för biblioteksverksamheten (summan av ovanstående)",
-                                explanation="",
                                 cells=[Cell(variable_key=u"Utgift99", types=['sum', 'integer'],
                                             sum_of=[u"Utgift01", u"Utgift02", u"Utgift03", u"Utgift04", u"Utgift05",
                                                     u"Utgift06"])]
                             ),
                             Row(
                                 description="Investeringsutgifter, inklusive kapitalkostnader för dessa",
-                                explanation="",
                                 cells=[Cell(variable_key=u"Utgift07", types=['integer'])]
                             )
                         ]
@@ -301,28 +271,24 @@ def _survey_template_2014():
                         rows=[
                             Row(
                                 description="Projektmedel som inte kommer från huvudmannen eller moderorganisationen samt sponsring och gåvor",
-                                explanation="",
                                 cells=[
                                     Cell(variable_key=u"Intakt01", types=['sum', 'integer'],
                                          sum_siblings=[u"Intakt02", u"Intakt03"])]
                             ),
                             Row(
                                 description="Försäljning av bibliotekstjänster och personalresurser till andra huvudmän, organisationer och företag",
-                                explanation="",
                                 cells=[
                                     Cell(variable_key=u"Intakt02", types=['sum', 'integer'],
                                          sum_siblings=[u"Intakt01", u"Intakt03"])]
                             ),
                             Row(
                                 description="Försenings- och reservationsutgifter eller intäkter av uthyrningsverksamhet samt försäljning av böcker och profilprodukter",
-                                explanation="",
                                 cells=[
                                     Cell(variable_key=u"Intakt03", types=['sum', 'integer'],
                                          sum_siblings=[u"Intakt01", u"Intakt02"])]
                             ),
                             Row(
                                 description="Totalt antal kronor egengenererade inkomster",
-                                explanation="",
                                 cells=[Cell(variable_key=u"Intakt99", types=['sum', 'integer'],
                                             sum_of=[u"Intakt01", u"Intakt02", u"Intakt03"])]
                             ),
@@ -335,7 +301,6 @@ def _survey_template_2014():
                         rows=[
                             Row(
                                 description=u"",
-                                explanation=u"",
                                 cells=[
                                     Cell(variable_key=u"Ekonomikomm", types=["comment"])
                                 ]
@@ -356,7 +321,6 @@ def _survey_template_2014():
                         rows=[
                             Row(
                                 description="Totalt antal böcker och seriella publikationer",
-                                explanation="",
                                 cells=[
                                     Cell(variable_key=u"Bestand101", types=['sum', 'integer'],
                                          sum_siblings=['Bestand102', 'Bestand103', 'Bestand104', 'Bestand105',
@@ -374,7 +338,6 @@ def _survey_template_2014():
                             ),
                             Row(
                                 description="- varav kursböcker, studielitteratur, läromedel, skolböcker",
-                                explanation="",
                                 cells=[
                                     Cell(variable_key=u"Bestand102", types=['sum', 'integer'],
                                          sum_siblings=['Bestand101', 'Bestand103', 'Bestand104', 'Bestand105',
@@ -392,7 +355,6 @@ def _survey_template_2014():
                             ),
                             Row(
                                 description="Ljudböcker",
-                                explanation="",
                                 cells=[
                                     Cell(variable_key=u"Bestand103", types=['sum', 'integer'],
                                          sum_siblings=['Bestand101', 'Bestand102', 'Bestand104', 'Bestand105',
@@ -410,7 +372,6 @@ def _survey_template_2014():
                             ),
                             Row(
                                 description="Talböcker, DAISY",
-                                explanation="",
                                 cells=[
                                     Cell(variable_key=u"Bestand104", types=['sum', 'integer'],
                                          sum_siblings=['Bestand101', 'Bestand102', 'Bestand103', 'Bestand105',
@@ -428,7 +389,6 @@ def _survey_template_2014():
                             ),
                             Row(
                                 description="Periodika, tidskrifter, antal löpande titlar",
-                                explanation="",
                                 cells=[
                                     Cell(variable_key=u"Bestand105", types=['sum', 'integer'],
                                          sum_siblings=['Bestand101', 'Bestand102', 'Bestand103', 'Bestand104',
@@ -446,7 +406,6 @@ def _survey_template_2014():
                             ),
                             Row(
                                 description="Tidningar, dagstidningar, veckotidningar, löpande titlar",
-                                explanation="",
                                 cells=[
                                     Cell(variable_key=u"Bestand106", types=['sum', 'integer'],
                                          sum_siblings=['Bestand101', 'Bestand102', 'Bestand103', 'Bestand104',
@@ -464,7 +423,6 @@ def _survey_template_2014():
                             ),
                             Row(
                                 description="Musik",
-                                explanation="",
                                 cells=[
                                     Cell(variable_key=u"Bestand107", types=['sum', 'integer'],
                                          sum_siblings=['Bestand101', 'Bestand102', 'Bestand103', 'Bestand104',
@@ -482,7 +440,6 @@ def _survey_template_2014():
                             ),
                             Row(
                                 description="Film, TV, radio",
-                                explanation="",
                                 cells=[
                                     Cell(variable_key=u"Bestand108", types=['sum', 'integer'],
                                          sum_siblings=['Bestand101', 'Bestand102', 'Bestand103', 'Bestand104',
@@ -500,7 +457,6 @@ def _survey_template_2014():
                             ),
                             Row(
                                 description="Mikrografiska dokument, mikrofilm, mikrofiche",
-                                explanation="",
                                 cells=[
                                     Cell(variable_key=u"Bestand109", types=['sum', 'integer'],
                                          sum_siblings=['Bestand101', 'Bestand102', 'Bestand103', 'Bestand104',
@@ -514,7 +470,6 @@ def _survey_template_2014():
                             ),
                             Row(
                                 description="Bild, grafiska och kartografiska dokument, OH, presentationer, fotografier",
-                                explanation="",
                                 cells=[
                                     Cell(variable_key=u"Bestand110", types=['sum', 'integer'],
                                          sum_siblings=['Bestand101', 'Bestand102', 'Bestand103', 'Bestand104',
@@ -532,7 +487,6 @@ def _survey_template_2014():
                             ),
                             Row(
                                 description="Totalt antal",
-                                explanation="",
                                 cells=[
                                     Cell(variable_key=u"Bestand199", types=['sum', 'integer'],
                                          sum_of=['Bestand101', 'Bestand102', 'Bestand103', 'Bestand104', 'Bestand105',
@@ -557,47 +511,38 @@ def _survey_template_2014():
                         rows=[
                             Row(
                                 description="Barnlitteratur och skönlitteratur",
-                                explanation="",
                                 cells=[]
                             ),
                             Row(
                                 description="Totalt bestånd antal medier tryckta böcker och seriella publikationer för barn, 31 december",
-                                explanation="",
                                 cells=[Cell(variable_key=u"Barn01", types=['required', 'integer'])]
                             ),
                             Row(
                                 description="Totalt nyförvärv av tryckta böcker och seriella publikationer för barn under kalenderåret",
-                                explanation="",
                                 cells=[Cell(variable_key=u"Barn02", types=['required', 'integer'])]
                             ),
                             Row(
                                 description="Utlån av tryckta böcker och seriella publikationer för barn under kalenderåret",
-                                explanation="",
                                 cells=[Cell(variable_key=u"Barn03", types=['required', 'integer'])]
                             ),
                             Row(
                                 description="Hur många tryckta böcker eller seriella publikationer i beståndet har SAB signum H eller Dewey 800–899?",
-                                explanation="",
                                 cells=[Cell(variable_key=u"HCG04", types=['required', 'integer'])]
                             ),
                             Row(
                                 description="Hur många fysiska referensexemplar hade biblioteket totalt 31 december?",
-                                explanation="",
                                 cells=[Cell(variable_key=u"Ref05", types=['required', 'integer'])]
                             ),
                             Row(
                                 description="Medier för personer med läsnedsättning",
-                                explanation="",
                                 cells=[]
                             ),
                             Row(
                                 description="Totalt bestånd av medier för personer med läsnedsättning 31 december",
-                                explanation="",
                                 cells=[Cell(variable_key=u"LasnedBest01", types=['required', 'integer'])]
                             ),
                             Row(
                                 description="Total utlåning av medier för personer med läsnedsättning under kalenderåret",
-                                explanation="",
                                 cells=[Cell(variable_key=u"LasnedUtlan01", types=['required', 'integer'])]
                             ),
                         ]
@@ -612,7 +557,6 @@ def _survey_template_2014():
                         rows=[
                             Row(
                                 description="Antal titlar fysiska medier, tryckta medier och AV-medier",
-                                explanation="",
                                 cells=[
                                     Cell(variable_key=u"Titlar101", types=["sum", "integer"],
                                          sum_siblings=[u"Titlar102", u"Titlar201", u"Titlar301"]),
@@ -626,7 +570,6 @@ def _survey_template_2014():
                             ),
                             Row(
                                 description="Elektroniska titlar (poster)",
-                                explanation="",
                                 cells=[
                                     Cell(variable_key=u"Titlar102", types=["sum", "integer"],
                                          sum_siblings=[u"Titlar101", u"Titlar202", u"Titlar302"]),
@@ -640,7 +583,6 @@ def _survey_template_2014():
                             ),
                             Row(
                                 description="Totalt antal titlar",
-                                explanation="",
                                 cells=[
                                     Cell(variable_key=u"Titlar199", types=["sum", "integer"],
                                          sum_of=[u"Titlar101", u"Titlar102"]),
