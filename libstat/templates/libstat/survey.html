@@ -70,7 +70,14 @@
     </div>
     <div class="container container-survey">
         <div class="page-header">
-            <h1>Statistikenkät för verksamhetsåret {{ form.sample_year }}</h1>
+            <div class="row">
+                <div class="col-sm-11">
+                    <h1>Statistikenkät för verksamhetsåret {{ form.sample_year }}</h1>
+                </div>
+                <div class="col-sm-1">
+                    <img src="/static/img/kb.svg" alt="Kungl. Biblioteket">
+                </div>
+            </div>
         </div>
         {% if form.is_user_read_only %}
             {% include "libstat/survey/header_submitted.html" %}
