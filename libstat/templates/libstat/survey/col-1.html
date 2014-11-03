@@ -20,12 +20,12 @@
         </div>
     {% else %}
         <div class="row">
-            <div class="col-sm-5">
+            <div class="col-sm-6">
                 {{ row.description }}
             </div>
 
             {% for cell in row.cells %}
-                <div class="col-sm-7">
+                <div class="col-sm-4">
                     {% include "libstat/survey/cell.html" %}
                 </div>
             {% endfor %}
