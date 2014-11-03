@@ -69,16 +69,18 @@ def _dict_to_library(dict):
     library, _ = Library.objects.get_or_create(sigel=dict["sigel"])
     library.sigel = dict["sigel"]
     library.name = dict["name"]
-    library.city = next((a["city"] for a in dict["address"]
-                         if a["address_type"] == "gen"), None)
+    location = next((a for a in dict["address"] if a["address_type"] == "gen"), None)
+    library.address = location["street"] if location else ""
+    library.city = location["city"] if location else ""
     library.email = next((c["email"] for c in dict["contact"]
-                          if "email" in c and c["contact_type"] == "statans"), None)
+                          if "email" in c and c["contact_type"] == "statans"), "")
 
     return library
 
 
 def _update_libraries():
-    for start_index in range(0, 6000, 200):  # bibdb paginated by 200 and had ca. 2800 responses when this was written
+    # bibdb api paginated by 200 and had ca. 2800 responses when this was written
+    for start_index in range(0, 6000, 200):
         response = requests.get(
             url="http://bibdb.libris.kb.se/api/lib?dump=true&start=%d" % start_index,
             headers={"APIKEY_AUTH_HEADER": "bibstataccess"})

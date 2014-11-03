@@ -371,6 +371,7 @@ class Library(Document):
     email = StringField()
     city = StringField()
     municipality_code = StringField()
+    address = StringField()
 
     meta = {
         'collection': 'libstat_libraries'

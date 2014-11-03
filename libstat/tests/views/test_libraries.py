@@ -13,14 +13,26 @@ class TestLibraryImport(MongoTestCase):
             "country_code": "se",
             "sigel": "lib1_sigel",
             "name": "lib1",
-            "address": [{
-                "address_type": "gen",
-                "city": "lib1_city"
-            }],
-            "contact": [{
-                "contact_type": "statans",
-                "email": "lib1@dom.top"
-            }]
+            "address":
+            [
+                {
+                    "address_type": "gen",
+                    "city": "lib1_city",
+                    "street": "street1"
+                },
+                {
+                    "address_type": "ill",
+                    "city": "ill_lib1_city",
+                    "street": "ill_street1"
+                }
+            ],
+            "contact":
+            [
+                {
+                    "contact_type": "statans",
+                    "email": "lib1@dom.top"
+                }
+            ]
         }
 
     def test_can_not_import_libraries_if_not_logged_in(self):
@@ -39,6 +51,7 @@ class TestLibraryImport(MongoTestCase):
         self.assertEquals(library.sigel, "lib1_sigel")
         self.assertEquals(library.name, "lib1")
         self.assertEquals(library.city, "lib1_city")
+        self.assertEquals(library.address, "street1")
         self.assertEquals(library.email, "lib1@dom.top")
 
     def test_does_not_import_non_swedish_libraries(self):

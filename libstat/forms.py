@@ -246,6 +246,7 @@ class CreateSurveysForm(forms.Form):
             self.libraries.append({
                 "name": library.name,
                 "city": library.city,
+                "address": library.address,
                 "email": library.email,
                 "sigel": library.sigel,
                 "checkbox_id": checkbox_id
