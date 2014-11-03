@@ -3,168 +3,191 @@
 {% load libstat_tags %}
 
 {% block content %}
-    <style>
-        .section-title {
-            color: rgb(242, 148, 0)
-        }
+<style>
+    .section-title {
+        color: rgb(242, 148, 0)
+    }
 
-        .section-comment {
-            width: 100%;
-            height: 100%;
-        }
+    .section-comment {
+        width: 100%;
+        height: 100%;
+    }
 
-        .cell .input-group input {
-            padding-right: 34px;
-        }
+    .cell .input-group input {
+        padding-right: 34px;
+    }
 
-        .cell .input-group-btn .btn-dropdown {
-            border-radius: 0;
-        }
+    .cell .input-group-btn .btn-dropdown {
+        border-radius: 0;
+    }
 
-        .cell .input-group input[disabled] {
-            font-style: italic;
-        }
+    .cell .input-group input[disabled] {
+        font-style: italic;
+    }
 
-        .row-description {
-            display: flex;
-            align-items: center;
-        }
+    .row-description {
+        display: flex;
+        align-items: center;
+    }
 
-        .container-survey {
-            padding-bottom: 120px;
-        }
+    .container-survey {
+        padding-bottom: 120px;
+    }
 
-        .answers-progress {
-            margin-bottom: 0;
-        }
+    .answers-progress {
+        margin-bottom: 0;
+    }
 
-        .navbar-submit {
-            margin-top: 10px;
-        }
+    .navbar-submit {
+        margin-top: 10px;
+    }
 
-        ::-webkit-input-placeholder {
-            font-style: italic;
-        }
-         .navbar-library-info {
-            background-color: rgb(0, 158, 224);
-        }
-        
-        .navbar-library-info .navbar-text {
-            font-size: 25px;
-            margin-left: 0px;    
-            color: white;
-        }
-    </style>
+    ::-webkit-input-placeholder {
+        font-style: italic;
+    }
+    .navbar-library-info {
+        background-color: rgb(0, 158, 224);
+    }
 
-    {% if user.is_authenticated %}
-        {% include 'libstat/survey/header_admin.html' %}
-    {% endif %}
+    .navbar-library-info .navbar-text {
+        font-size: 25px;
+        margin-left: 0px;    
+        color: white;
+    }
+</style>
+
+{% if user.is_authenticated %}
+{% include 'libstat/survey/header_admin.html' %}
+{% endif %}
 <div class="navbar navbar-default navbar-static-top navbar-library-info" role="navigation">
-        <div class="container">
-            <div class="navbar-left">
-                <div class="navbar-text">
-                        Välkommen till enkäten för <b><u>{{ form.library_name }}</u></b> i <b><u>{{ form.city }}</u></b>!
-                </div>
+    <div class="container">
+        <div class="navbar-left">
+            <div class="navbar-text">
+                Välkommen till enkäten för <b><u>{{ form.library_name }}</u></b> i <b><u>{{ form.city }}</u></b>!
             </div>
         </div>
     </div>
-    <div class="container container-survey">
-        <div class="page-header">
-            <div class="row">
-                <div class="col-sm-11">
-                    <h1>Statistikenkät för verksamhetsåret {{ form.sample_year }}</h1>
-                </div>
-                <div class="col-sm-1">
-                    <img src="/static/img/kb.svg" alt="Kungl. Biblioteket">
-                </div>
-            </div>
-        </div>
-        {% if form.is_user_read_only %}
-            {% include "libstat/survey/header_submitted.html" %}
-        {% endif %}
-
+</div>
+<div class="container container-survey">
+    <div class="page-header">
         <div class="row">
-            <div class="col-xs-12 col-sm-10 col-md-7">
-                <p>Välkommen!</p>
-
-                <p>Du har nu kommit till enkäten för Sveriges officiella biblioteksstatistik som gäller för alla
-                    offentligt finansierade bibliotekstyper.
-                    Tanken med att använda samma formulär till alla bibliotekstyper är att kunna presentera en samlad
-                    nationell biblioteksstatistik för offentligt finansierade bibliotek.</p>
-
+            <div class="col-sm-11">
+                <h1>Statistikenkät för verksamhetsåret {{ form.sample_year }}</h1>
             </div>
-        </div>
-        <form class="survey-content" id="survey-form" method="post">
-            {% csrf_token %}
-            {{ form.key }}
-            {{ form.disabled_inputs }}
-            {{ form.submit_action }}
-            {{ form.read_only }}
-
-            {% for section in form.sections %}
-                <h2 class="section-title">{{ section.title }}</h2>
-                {% for group in section.groups %}
-                    <div class="panel panel-default inverse">
-                        <div class="panel-body">
-                            {% if group.description %}
-                                <div class="row">
-                                    <div class="col-sm-6">
-                                        <b>{{ group.description }}</b>
-                                    </div>
-                                </div>
-                                <hr>
-                            {% endif %}
-                            {% if group.columns == 1 %}{% include "libstat/survey/col-1.html" %}{% endif %}
-                            {% if group.columns == 2 %}{% include "libstat/survey/col-2.html" %}{% endif %}
-                            {% if group.columns == 3 %}{% include "libstat/survey/col-3.html" %}{% endif %}
-                            {% if group.columns == 4 %}{% include "libstat/survey/col-4.html" %}{% endif %}
-                        </div>
-                    </div>
-                {% endfor %}
-            {% endfor %}
-            {% if not form.is_read_only %}
-                <div class="navbar navbar-default navbar-fixed-bottom" role="navigation">
-                    <div class="container">
-                        <div class="navbar-left">
-                            <div class="navbar-text">
-                                <span class="answers-text">Du har svarat på 0 av 0 frågor totalt</span>
-
-                                <div class="progress answers-progress" style="width: 250px">
-                                    <div class="progress-bar progress-bar-success progress-bar-striped"
-                                         role="progressbar">
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="navbar-right navbar-submit">
-                            <div id="unsaved-changes-label" class="navbar-text"></div>
-                            <a href="#" id="save-survey-btn" class="btn btn-primary navbar-btn">Spara</a>
-                            <a href="#" id="submit-survey-btn" class="btn btn-success navbar-btn
-                                {% if not form.can_submit %} disabled {% endif %}">Skicka</a>
-                        </div>
-                    </div>
-                </div>
-            {% endif %}
-        </form>
-    </div>
-    <div class="modal fade" id="submit-confirm-modal" tabindex="-1" role="dialog" aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-body">
-                    <p>
-                        Är du säker på att du vill skicka in din enkät?
-                    </p>
-
-                    <p>
-                        När du väl skickat in din enkät kommer vi börja behandla dina inskickade svar och du kommer
-                        då inte längre kunna göra några ändringar.
-                    </p>
-                </div>
-                <div class="modal-footer">
-                    <a href="#" class="btn btn-danger" data-dismiss="modal">Nej</a>
-                    <a href="#" id="confirm-submit-survey-btn" class="btn btn-success">Ja</a>
-                </div>
+            <div class="col-sm-1">
+                <img src="/static/img/kb.svg" alt="Kungl. Biblioteket">
             </div>
         </div>
     </div>
+    {% if form.is_user_read_only %}
+    {% include "libstat/survey/header_submitted.html" %}
+    {% endif %}
+
+    <div class="row">
+        <div class="col-xs-12 col-sm-10 col-md-7">
+            <p>
+                Välkommen!
+            </p>
+            <p>
+                Du har nu kommit till enkäten för Sveriges officiella biblioteksstatistik som gäller för alla
+                offentligt finansierade bibliotekstyper.
+                Tanken med att använda samma formulär till alla bibliotekstyper är att kunna presentera en samlad
+                nationell biblioteksstatistik för offentligt finansierade bibliotek.
+            </p>
+            <p>
+                Frågorna kan besvaras för en samlad biblioteksorganisation eller ett enskilt bibliotek. Om ni måste redovisa några variabler samlat på länsnivå och resten på kommunal nivå på grund av att ni har bibliotekssystemsamarbete måste ni rekvirera en ny inloggning som gäller särskilt för dessa uppgifter.
+            </p>
+            <p>
+                Eftersom det är en ny typ av frågeformulär visas inte alltid värden från föregående mätning.
+            </p>
+            <p>
+                Sveriges officiella biblioteksstatistik samlas in på uppdrag av regeringen och statistiken görs inom ramen för Lagen om den officiella statistiken SFS 2001:99 och Förordningen om den officiella statistiken SFS 2001:100. Kungliga biblioteket är statistikansvarig myndighet för hela den officiella biblioteksstatistiken. Offentligt finansierade bibliotek som är bemannade och tillgängliga för allmänheten samt skolbibliotek tillfrågas i statistiken.
+            </p>
+            <p>
+                De aktuella definitionerna för varje fråga finns att klicka på vid varje fråga. Definitionerna följer den nya internationella standarden för biblioteksstatistik ISO 2789 från 2013 i den mån som den inte kolliderar med svensk praxis.
+            </p>
+            <p>
+                Frågor kan ställas till biblioteksstatistik@kb.se eller 010 -709-36 39, - 36 22. Löpande information om undersökningen kan också fås på http://biblioteksstatistik.blogg.kb.se/  
+            </p>
+            <p>
+                Stort tack på förhand för ditt svar!<br>
+                Cecilia Ranemo<br>
+                Kungliga biblioteket,<br> 
+                Enheten för nationell bibliotekssamverkan
+            </p>
+        </div>
+    </div>
+    <form class="survey-content" id="survey-form" method="post">
+        {% csrf_token %}
+        {{ form.key }}
+        {{ form.disabled_inputs }}
+        {{ form.submit_action }}
+        {{ form.read_only }}
+
+        {% for section in form.sections %}
+        <h2 class="section-title">{{ section.title }}</h2>
+        {% for group in section.groups %}
+        <div class="panel panel-default inverse">
+            <div class="panel-body">
+                {% if group.description %}
+                <div class="row">
+                    <div class="col-sm-6">
+                        <b>{{ group.description }}</b>
+                    </div>
+                </div>
+                <hr>
+                {% endif %}
+                {% if group.columns == 1 %}{% include "libstat/survey/col-1.html" %}{% endif %}
+                {% if group.columns == 2 %}{% include "libstat/survey/col-2.html" %}{% endif %}
+                {% if group.columns == 3 %}{% include "libstat/survey/col-3.html" %}{% endif %}
+                {% if group.columns == 4 %}{% include "libstat/survey/col-4.html" %}{% endif %}
+            </div>
+        </div>
+        {% endfor %}
+        {% endfor %}
+        {% if not form.is_read_only %}
+        <div class="navbar navbar-default navbar-fixed-bottom" role="navigation">
+            <div class="container">
+                <div class="navbar-left">
+                    <div class="navbar-text">
+                        <span class="answers-text">Du har svarat på 0 av 0 frågor totalt</span>
+
+                        <div class="progress answers-progress" style="width: 250px">
+                            <div class="progress-bar progress-bar-success progress-bar-striped"
+                            role="progressbar">
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="navbar-right navbar-submit">
+                <div id="unsaved-changes-label" class="navbar-text"></div>
+                <a href="#" id="save-survey-btn" class="btn btn-primary navbar-btn">Spara</a>
+                <a href="#" id="submit-survey-btn" class="btn btn-success navbar-btn
+                {% if not form.can_submit %} disabled {% endif %}">Skicka</a>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+</form>
+</div>
+<div class="modal fade" id="submit-confirm-modal" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-body">
+                <p>
+                    Är du säker på att du vill skicka in din enkät?
+                </p>
+
+                <p>
+                    När du väl skickat in din enkät kommer vi börja behandla dina inskickade svar och du kommer
+                    då inte längre kunna göra några ändringar.
+                </p>
+            </div>
+            <div class="modal-footer">
+                <a href="#" class="btn btn-danger" data-dismiss="modal">Nej</a>
+                <a href="#" id="confirm-submit-survey-btn" class="btn btn-success">Ja</a>
+            </div>
+        </div>
+    </div>
+</div>
 {% endblock %}
