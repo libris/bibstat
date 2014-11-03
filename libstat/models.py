@@ -287,6 +287,11 @@ class VariableVersion(VariableBase):
 
 
 class Cell(EmbeddedDocument):
+
+    def __init__(self, *args, **kwargs):
+        super(Cell, self).__init__(*args, **kwargs)
+        self.description = Variable.objects.get(key=self.variable_key).description
+
     variable_key = StringField()
     required = BooleanField()
     previous_value = StringField()
@@ -298,7 +303,6 @@ class Cell(EmbeddedDocument):
 
 class Row(EmbeddedDocument):
     description = StringField()
-    explanation = StringField()
     cells = ListField(EmbeddedDocumentField(Cell))
 
 
