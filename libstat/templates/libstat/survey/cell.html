@@ -8,13 +8,13 @@
             {% endwith %}
             <div class="input-group-btn">
 
-                {% if row.explanation %}
+                {% if cell.explanation %}
                     <a type="button" class="btn btn-default btn-help"
                        href="#"
                        title="Förklaring"
                        tabindex="0"
                        data-toggle="popover" data-placement="top"
-                       data-content="{{ row.explanation }}"
+                       data-content="{{ cell.explanation }}"
                        data-trigger="focus">
                         <i class="fa fa-question"></i>
                     </a>

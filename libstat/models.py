@@ -290,7 +290,7 @@ class Cell(EmbeddedDocument):
 
     def __init__(self, *args, **kwargs):
         super(Cell, self).__init__(*args, **kwargs)
-        self.description = Variable.objects.get(key=self.variable_key).description
+        self.explanation = Variable.objects.get(key=self.variable_key).description
 
     variable_key = StringField()
     required = BooleanField()
