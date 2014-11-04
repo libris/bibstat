@@ -139,23 +139,19 @@ def _survey_template_2014():
                         rows=[
                             Row(
                                 description="Antal årsverken bibliotekarier och dokumentalister",
-                                cells=[Cell(variable_key=u"Arsverke01", types=['sum', 'numeric'],
-                                            sum_siblings=["Arsverke02", "Arsverke03", "Arsverke04"])]
+                                cells=[Cell(variable_key=u"Arsverke01", types=['sum', 'numeric'])]
                             ),
                             Row(
                                 description="Antal årsverken biblioteksassistenter och lärarbibliotekarier",
-                                cells=[Cell(variable_key=u"Arsverke02", types=['sum', 'numeric'],
-                                            sum_siblings=["Arsverke01", "Arsverke03", "Arsverke04"])]
+                                cells=[Cell(variable_key=u"Arsverke02", types=['sum', 'numeric'])]
                             ),
                             Row(
                                 description="Antal årsverken specialister inom IT, information eller ämnessakkunniga, fackkunniga",
-                                cells=[Cell(variable_key=u"Arsverke03", types=['sum', 'numeric'],
-                                            sum_siblings=["Arsverke01", "Arsverke02", "Arsverke04"])]
+                                cells=[Cell(variable_key=u"Arsverke03", types=['sum', 'numeric'])]
                             ),
                             Row(
                                 description="Antal årsverken övrig personal inklusive kvällspersonal studentvakter, chaufförer, vaktmästare",
-                                cells=[Cell(variable_key=u"Arsverke04", types=['sum', 'numeric'],
-                                            sum_siblings=["Arsverke01", "Arsverke02", "Arsverke03"])]
+                                cells=[Cell(variable_key=u"Arsverke04", types=['sum', 'numeric'])]
                             ),
                             Row(
                                 description="Totalt antal årsverken avsatt bemanning för biblioteksverksamhet",
@@ -175,15 +171,11 @@ def _survey_template_2014():
                         rows=[
                             Row(
                                 description="Antal anställda kvinnor",
-                                cells=[
-                                    Cell(variable_key=u"Personer01", types=['sum', 'integer'],
-                                         sum_siblings=['Personer02'])]
+                                cells=[Cell(variable_key=u"Personer01", types=['sum', 'integer'])]
                             ),
                             Row(
                                 description="Antal anställda män",
-                                cells=[
-                                    Cell(variable_key=u"Personer02", types=['sum', 'integer'],
-                                         sum_siblings=['Personer01'])]
+                                cells=[Cell(variable_key=u"Personer02", types=['sum', 'integer'])]
                             ),
                             Row(
                                 description="Totalt antal anställda personer",
@@ -218,39 +210,27 @@ def _survey_template_2014():
                         rows=[
                             Row(
                                 description="Inköp av tryckta medier och audiovisuella medier",
-                                cells=[Cell(variable_key=u"Utgift01", types=['sum', 'integer'],
-                                            sum_siblings=[u"Utgift02", u"Utgift03", u"Utgift04", u"Utgift05",
-                                                          u"Utgift06"])]
+                                cells=[Cell(variable_key=u"Utgift01", types=['sum', 'integer'])]
                             ),
                             Row(
                                 description="Inköp av virtuella e-baserade media och databaslicenser (exklusive kostnader för biblioteksdatasystemet)",
-                                cells=[Cell(variable_key=u"Utgift02", types=['sum', 'integer'],
-                                            sum_siblings=[u"Utgift01", u"Utgift03", u"Utgift04", u"Utgift05",
-                                                          u"Utgift06"])]
+                                cells=[Cell(variable_key=u"Utgift02", types=['sum', 'integer'])]
                             ),
                             Row(
                                 description="Lönekostnader personal",
-                                cells=[Cell(variable_key=u"Utgift03", types=['sum', 'integer'],
-                                            sum_siblings=[u"Utgift01", u"Utgift02", u"Utgift04", u"Utgift05",
-                                                          u"Utgift06"])]
+                                cells=[Cell(variable_key=u"Utgift03", types=['sum', 'integer'])]
                             ),
                             Row(
                                 description="Kostnader för personalens kompetensutveckling",
-                                cells=[Cell(variable_key=u"Utgift04", types=['sum', 'integer'],
-                                            sum_siblings=[u"Utgift01", u"Utgift02", u"Utgift03", u"Utgift05",
-                                                          u"Utgift06"])]
+                                cells=[Cell(variable_key=u"Utgift04", types=['sum', 'integer'])]
                             ),
                             Row(
                                 description="Lokalkostnader",
-                                cells=[Cell(variable_key=u"Utgift05", types=['sum', 'integer'],
-                                            sum_siblings=[u"Utgift01", u"Utgift02", u"Utgift03", u"Utgift04",
-                                                          u"Utgift06"])]
+                                cells=[Cell(variable_key=u"Utgift05", types=['sum', 'integer'])]
                             ),
                             Row(
                                 description="Övriga driftskostnader som inte ingår i punkterna ovan (inklusive kostnader för bibliotekssystemet)",
-                                cells=[Cell(variable_key=u"Utgift06", types=['sum', 'integer'],
-                                            sum_siblings=[u"Utgift01", u"Utgift02", u"Utgift03", u"Utgift04",
-                                                          u"Utgift05"])]
+                                cells=[Cell(variable_key=u"Utgift06", types=['sum', 'integer'])]
                             ),
                             Row(
                                 description="Totala driftskostnader för biblioteksverksamheten (summan av ovanstående)",
@@ -271,21 +251,15 @@ def _survey_template_2014():
                         rows=[
                             Row(
                                 description="Projektmedel som inte kommer från huvudmannen eller moderorganisationen samt sponsring och gåvor",
-                                cells=[
-                                    Cell(variable_key=u"Intakt01", types=['sum', 'integer'],
-                                         sum_siblings=[u"Intakt02", u"Intakt03"])]
+                                cells=[Cell(variable_key=u"Intakt01", types=['sum', 'integer'])]
                             ),
                             Row(
                                 description="Försäljning av bibliotekstjänster och personalresurser till andra huvudmän, organisationer och företag",
-                                cells=[
-                                    Cell(variable_key=u"Intakt02", types=['sum', 'integer'],
-                                         sum_siblings=[u"Intakt01", u"Intakt03"])]
+                                cells=[Cell(variable_key=u"Intakt02", types=['sum', 'integer'])]
                             ),
                             Row(
                                 description="Försenings- och reservationsutgifter eller intäkter av uthyrningsverksamhet samt försäljning av böcker och profilprodukter",
-                                cells=[
-                                    Cell(variable_key=u"Intakt03", types=['sum', 'integer'],
-                                         sum_siblings=[u"Intakt01", u"Intakt02"])]
+                                cells=[Cell(variable_key=u"Intakt03", types=['sum', 'integer'])]
                             ),
                             Row(
                                 description="Totalt antal kronor egengenererade inkomster",
@@ -322,167 +296,80 @@ def _survey_template_2014():
                             Row(
                                 description="Totalt antal böcker och seriella publikationer",
                                 cells=[
-                                    Cell(variable_key=u"Bestand101", types=['sum', 'integer'],
-                                         sum_siblings=['Bestand102', 'Bestand103', 'Bestand104', 'Bestand105',
-                                                       'Bestand106', 'Bestand107', 'Bestand108', 'Bestand109',
-                                                       'Bestand110', 'Bestand111', 'Bestand112', 'Bestand113']),
-                                    Cell(variable_key=u"Bestand201", types=['sum', 'integer'],
-                                         sum_siblings=['Bestand202', 'Bestand203', 'Bestand204', 'Bestand205',
-                                                       'Bestand206', 'Bestand207', 'Bestand208', 'Bestand209',
-                                                       'Bestand210', 'Bestand211', 'Bestand212', 'Bestand213']),
-                                    Cell(variable_key=u"Bestand301", types=['sum', 'integer'],
-                                         sum_siblings=['Bestand302', 'Bestand303', 'Bestand304', 'Bestand305',
-                                                       'Bestand306', 'Bestand307', 'Bestand308', 'Bestand310',
-                                                       'Bestand311', 'Bestand312', 'Bestand313'])
+                                    Cell(variable_key=u"Bestand101", types=['sum', 'integer']),
+                                    Cell(variable_key=u"Bestand201", types=['sum', 'integer']),
+                                    Cell(variable_key=u"Bestand301", types=['sum', 'integer'])
                                 ]
                             ),
                             Row(
                                 description="- varav kursböcker, studielitteratur, läromedel, skolböcker",
                                 cells=[
-                                    Cell(variable_key=u"Bestand102", types=['sum', 'integer'],
-                                         sum_siblings=['Bestand101', 'Bestand103', 'Bestand104', 'Bestand105',
-                                                       'Bestand106', 'Bestand107', 'Bestand108', 'Bestand109',
-                                                       'Bestand110', 'Bestand111', 'Bestand112', 'Bestand113']),
-                                    Cell(variable_key=u"Bestand202", types=['sum', 'integer'],
-                                         sum_siblings=['Bestand201', 'Bestand203', 'Bestand204', 'Bestand205',
-                                                       'Bestand206', 'Bestand207', 'Bestand208', 'Bestand209',
-                                                       'Bestand210', 'Bestand211', 'Bestand212', 'Bestand213']),
-                                    Cell(variable_key=u"Bestand302", types=['sum', 'integer'],
-                                         sum_siblings=['Bestand301', 'Bestand303', 'Bestand304', 'Bestand305',
-                                                       'Bestand306', 'Bestand307', 'Bestand308', 'Bestand310',
-                                                       'Bestand311', 'Bestand312', 'Bestand313'])
+                                    Cell(variable_key=u"Bestand102", types=['sum', 'integer']),
+                                    Cell(variable_key=u"Bestand202", types=['sum', 'integer']),
+                                    Cell(variable_key=u"Bestand302", types=['sum', 'integer']),
                                 ]
                             ),
                             Row(
                                 description="Ljudböcker",
                                 cells=[
-                                    Cell(variable_key=u"Bestand103", types=['sum', 'integer'],
-                                         sum_siblings=['Bestand101', 'Bestand102', 'Bestand104', 'Bestand105',
-                                                       'Bestand106', 'Bestand107', 'Bestand108', 'Bestand109',
-                                                       'Bestand110', 'Bestand111', 'Bestand112', 'Bestand113']),
-                                    Cell(variable_key=u"Bestand203", types=['sum', 'integer'],
-                                         sum_siblings=['Bestand201', 'Bestand202', 'Bestand204', 'Bestand205',
-                                                       'Bestand206', 'Bestand207', 'Bestand208', 'Bestand209',
-                                                       'Bestand210', 'Bestand211', 'Bestand212', 'Bestand213']),
-                                    Cell(variable_key=u"Bestand303", types=['sum', 'integer'],
-                                         sum_siblings=['Bestand301', 'Bestand302', 'Bestand304', 'Bestand305',
-                                                       'Bestand306', 'Bestand307', 'Bestand308', 'Bestand310',
-                                                       'Bestand311', 'Bestand312', 'Bestand313'])
+                                    Cell(variable_key=u"Bestand103", types=['sum', 'integer']),
+                                    Cell(variable_key=u"Bestand203", types=['sum', 'integer']),
+                                    Cell(variable_key=u"Bestand303", types=['sum', 'integer'])
                                 ]
                             ),
                             Row(
                                 description="Talböcker, DAISY",
                                 cells=[
-                                    Cell(variable_key=u"Bestand104", types=['sum', 'integer'],
-                                         sum_siblings=['Bestand101', 'Bestand102', 'Bestand103', 'Bestand105',
-                                                       'Bestand106', 'Bestand107', 'Bestand108', 'Bestand109',
-                                                       'Bestand110', 'Bestand111', 'Bestand112', 'Bestand113']),
-                                    Cell(variable_key=u"Bestand204", types=['sum', 'integer'],
-                                         sum_siblings=['Bestand201', 'Bestand202', 'Bestand203', 'Bestand205',
-                                                       'Bestand206', 'Bestand207', 'Bestand208', 'Bestand209',
-                                                       'Bestand210', 'Bestand211', 'Bestand212', 'Bestand213']),
-                                    Cell(variable_key=u"Bestand304", types=['sum', 'integer'],
-                                         sum_siblings=['Bestand301', 'Bestand302', 'Bestand303', 'Bestand305',
-                                                       'Bestand306', 'Bestand307', 'Bestand308', 'Bestand310',
-                                                       'Bestand311', 'Bestand312', 'Bestand313'])
+                                    Cell(variable_key=u"Bestand104", types=['sum', 'integer']),
+                                    Cell(variable_key=u"Bestand204", types=['sum', 'integer']),
+                                    Cell(variable_key=u"Bestand304", types=['sum', 'integer'])
                                 ]
                             ),
                             Row(
                                 description="Periodika, tidskrifter, antal löpande titlar",
                                 cells=[
-                                    Cell(variable_key=u"Bestand105", types=['sum', 'integer'],
-                                         sum_siblings=['Bestand101', 'Bestand102', 'Bestand103', 'Bestand104',
-                                                       'Bestand106', 'Bestand107', 'Bestand108', 'Bestand109',
-                                                       'Bestand110', 'Bestand111', 'Bestand112', 'Bestand113']),
-                                    Cell(variable_key=u"Bestand205", types=['sum', 'integer'],
-                                         sum_siblings=['Bestand201', 'Bestand202', 'Bestand203', 'Bestand204',
-                                                       'Bestand206', 'Bestand207', 'Bestand208', 'Bestand209',
-                                                       'Bestand210', 'Bestand211', 'Bestand212', 'Bestand213']),
-                                    Cell(variable_key=u"Bestand305", types=['sum', 'integer'],
-                                         sum_siblings=['Bestand301', 'Bestand302', 'Bestand303', 'Bestand304',
-                                                       'Bestand306', 'Bestand307', 'Bestand308', 'Bestand310',
-                                                       'Bestand311', 'Bestand312', 'Bestand313'])
+                                    Cell(variable_key=u"Bestand105", types=['sum', 'integer']),
+                                    Cell(variable_key=u"Bestand205", types=['sum', 'integer']),
+                                    Cell(variable_key=u"Bestand305", types=['sum', 'integer'])
                                 ]
                             ),
                             Row(
                                 description="Tidningar, dagstidningar, veckotidningar, löpande titlar",
                                 cells=[
-                                    Cell(variable_key=u"Bestand106", types=['sum', 'integer'],
-                                         sum_siblings=['Bestand101', 'Bestand102', 'Bestand103', 'Bestand104',
-                                                       'Bestand105', 'Bestand107', 'Bestand108', 'Bestand109',
-                                                       'Bestand110', 'Bestand111', 'Bestand112', 'Bestand113']),
-                                    Cell(variable_key=u"Bestand206", types=['sum', 'integer'],
-                                         sum_siblings=['Bestand201', 'Bestand202', 'Bestand203', 'Bestand204',
-                                                       'Bestand205', 'Bestand207', 'Bestand208', 'Bestand209',
-                                                       'Bestand210', 'Bestand211', 'Bestand212', 'Bestand213']),
-                                    Cell(variable_key=u"Bestand306", types=['sum', 'integer'],
-                                         sum_siblings=['Bestand301', 'Bestand302', 'Bestand303', 'Bestand304',
-                                                       'Bestand305', 'Bestand307', 'Bestand308', 'Bestand310',
-                                                       'Bestand311', 'Bestand312', 'Bestand313'])
+                                    Cell(variable_key=u"Bestand106", types=['sum', 'integer']),
+                                    Cell(variable_key=u"Bestand206", types=['sum', 'integer']),
+                                    Cell(variable_key=u"Bestand306", types=['sum', 'integer'])
                                 ]
                             ),
                             Row(
                                 description="Musik",
                                 cells=[
-                                    Cell(variable_key=u"Bestand107", types=['sum', 'integer'],
-                                         sum_siblings=['Bestand101', 'Bestand102', 'Bestand103', 'Bestand104',
-                                                       'Bestand105', 'Bestand106', 'Bestand108', 'Bestand109',
-                                                       'Bestand110', 'Bestand111', 'Bestand112', 'Bestand113']),
-                                    Cell(variable_key=u"Bestand207", types=['sum', 'integer'],
-                                         sum_siblings=['Bestand201', 'Bestand202', 'Bestand203', 'Bestand204',
-                                                       'Bestand205', 'Bestand206', 'Bestand208', 'Bestand209',
-                                                       'Bestand210', 'Bestand211', 'Bestand212', 'Bestand213']),
-                                    Cell(variable_key=u"Bestand307", types=['sum', 'integer'],
-                                         sum_siblings=['Bestand301', 'Bestand302', 'Bestand303', 'Bestand304',
-                                                       'Bestand305', 'Bestand306', 'Bestand308', 'Bestand310',
-                                                       'Bestand311', 'Bestand312', 'Bestand313'])
+                                    Cell(variable_key=u"Bestand107", types=['sum', 'integer']),
+                                    Cell(variable_key=u"Bestand207", types=['sum', 'integer']),
+                                    Cell(variable_key=u"Bestand307", types=['sum', 'integer'])
                                 ]
                             ),
                             Row(
                                 description="Film, TV, radio",
                                 cells=[
-                                    Cell(variable_key=u"Bestand108", types=['sum', 'integer'],
-                                         sum_siblings=['Bestand101', 'Bestand102', 'Bestand103', 'Bestand104',
-                                                       'Bestand105', 'Bestand106', 'Bestand107', 'Bestand109',
-                                                       'Bestand110', 'Bestand111', 'Bestand112', 'Bestand113']),
-                                    Cell(variable_key=u"Bestand208", types=['sum', 'integer'],
-                                         sum_siblings=['Bestand201', 'Bestand202', 'Bestand203', 'Bestand204',
-                                                       'Bestand205', 'Bestand206', 'Bestand207', 'Bestand209',
-                                                       'Bestand210', 'Bestand211', 'Bestand212', 'Bestand213']),
-                                    Cell(variable_key=u"Bestand308", types=['sum', 'integer'],
-                                         sum_siblings=['Bestand301', 'Bestand302', 'Bestand303', 'Bestand304',
-                                                       'Bestand305', 'Bestand306', 'Bestand307', 'Bestand310',
-                                                       'Bestand311', 'Bestand312', 'Bestand313'])
+                                    Cell(variable_key=u"Bestand108", types=['sum', 'integer']),
+                                    Cell(variable_key=u"Bestand208", types=['sum', 'integer']),
+                                    Cell(variable_key=u"Bestand308", types=['sum', 'integer'])
                                 ]
                             ),
                             Row(
                                 description="Mikrografiska dokument, mikrofilm, mikrofiche",
                                 cells=[
-                                    Cell(variable_key=u"Bestand109", types=['sum', 'integer'],
-                                         sum_siblings=['Bestand101', 'Bestand102', 'Bestand103', 'Bestand104',
-                                                       'Bestand105', 'Bestand106', 'Bestand107', 'Bestand108',
-                                                       'Bestand110', 'Bestand111', 'Bestand112', 'Bestand113']),
-                                    Cell(variable_key=u"Bestand209", types=['sum', 'integer'],
-                                         sum_siblings=['Bestand201', 'Bestand202', 'Bestand203', 'Bestand204',
-                                                       'Bestand205', 'Bestand206', 'Bestand207', 'Bestand208',
-                                                       'Bestand210', 'Bestand211', 'Bestand212', 'Bestand213']),
+                                    Cell(variable_key=u"Bestand109", types=['sum', 'integer']),
+                                    Cell(variable_key=u"Bestand209", types=['sum', 'integer'])
                                 ]
                             ),
                             Row(
                                 description="Bild, grafiska och kartografiska dokument, OH, presentationer, fotografier",
                                 cells=[
-                                    Cell(variable_key=u"Bestand110", types=['sum', 'integer'],
-                                         sum_siblings=['Bestand101', 'Bestand102', 'Bestand103', 'Bestand104',
-                                                       'Bestand105', 'Bestand106', 'Bestand107', 'Bestand108',
-                                                       'Bestand109', 'Bestand111', 'Bestand112', 'Bestand113']),
-                                    Cell(variable_key=u"Bestand210", types=['sum', 'integer'],
-                                         sum_siblings=['Bestand201', 'Bestand202', 'Bestand203', 'Bestand204',
-                                                       'Bestand205', 'Bestand206', 'Bestand207', 'Bestand208',
-                                                       'Bestand209', 'Bestand211', 'Bestand212', 'Bestand213']),
-                                    Cell(variable_key=u"Bestand310", types=['sum', 'integer'],
-                                         sum_siblings=['Bestand301', 'Bestand302', 'Bestand303', 'Bestand304',
-                                                       'Bestand305', 'Bestand306', 'Bestand307', 'Bestand308',
-                                                       'Bestand311', 'Bestand312', 'Bestand313']),
+                                    Cell(variable_key=u"Bestand110", types=['sum', 'integer']),
+                                    Cell(variable_key=u"Bestand210", types=['sum', 'integer']),
+                                    Cell(variable_key=u"Bestand310", types=['sum', 'integer'])
                                 ]
                             ),
                             Row(
@@ -557,10 +444,8 @@ def _survey_template_2014():
                             Row(
                                 description="Antal titlar på svenska språket",
                                 cells=[
-                                    Cell(variable_key=u"Titlar101", types=["sum", "integer"],
-                                         sum_siblings=[u"Titlar102"]),
-                                    Cell(variable_key=u"Titlar102", types=["sum", "integer"],
-                                         sum_siblings=[u"Titlar101"]),
+                                    Cell(variable_key=u"Titlar101", types=["sum", "integer"]),
+                                    Cell(variable_key=u"Titlar102", types=["sum", "integer"]),
                                     Cell(variable_key=u"Titlar199", types=["sum", "integer"],
                                          sum_of=[u"Titlar101", u"Titlar102"]),
                                 ]
@@ -568,10 +453,8 @@ def _survey_template_2014():
                             Row(
                                 description="Antal titlar på nationella minoritetsspråk",
                                 cells=[
-                                    Cell(variable_key=u"Titlar201", types=["sum", "integer"],
-                                         sum_siblings=[u"Titlar202"]),
-                                    Cell(variable_key=u"Titlar202", types=["sum", "integer"],
-                                         sum_siblings=[u"Titlar201"]),
+                                    Cell(variable_key=u"Titlar201", types=["sum", "integer"]),
+                                    Cell(variable_key=u"Titlar202", types=["sum", "integer"]),
                                     Cell(variable_key=u"Titlar299", types=["sum", "integer"],
                                          sum_of=[u"Titlar201", u"Titlar202"]),
                                 ]
@@ -579,10 +462,8 @@ def _survey_template_2014():
                             Row(
                                 description="Antal titlar på utländska språk",
                                 cells=[
-                                    Cell(variable_key=u"Titlar301", types=["sum", "integer"],
-                                         sum_siblings=[u"Titlar302"]),
-                                    Cell(variable_key=u"Titlar302", types=["sum", "integer"],
-                                         sum_siblings=[u"Titlar301"]),
+                                    Cell(variable_key=u"Titlar301", types=["sum", "integer"]),
+                                    Cell(variable_key=u"Titlar302", types=["sum", "integer"]),
                                     Cell(variable_key=u"Titlar399", types=["sum", "integer"],
                                          sum_of=[u"Titlar301", u"Titlar302"]),
                                 ]
@@ -590,10 +471,8 @@ def _survey_template_2014():
                             Row(
                                 description="Totalt antal titlar",
                                 cells=[
-                                    Cell(variable_key=u"Titlar497", types=["sum", "integer"],
-                                         sum_siblings=[u"Titlar498"]),
-                                    Cell(variable_key=u"Titlar498", types=["sum", "integer"],
-                                         sum_siblings=[u"Titlar497"]),
+                                    Cell(variable_key=u"Titlar497", types=["sum", "integer"]),
+                                    Cell(variable_key=u"Titlar498", types=["sum", "integer"]),
                                     Cell(variable_key=u"Titlar499", types=["sum", "integer"],
                                          sum_of=[u"Titlar497", u"Titlar498"]),
                                 ]

@@ -125,8 +125,6 @@ class SurveyForm(forms.Form):
                 attrs["data-sum-of"] = " ".join(map(lambda s: s, cell.sum_of))
                 attrs["data-bv-notempty"] = ""
                 attrs["placeholder"] = "Obligatorisk"
-            if cell.sum_siblings:
-                attrs["data-sum-siblings"] = " ".join(map(lambda s: s, cell.sum_siblings))
 
         if "required" in cell.types:
             attrs["data-bv-notempty"] = ""
