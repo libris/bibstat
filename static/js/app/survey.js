@@ -59,7 +59,19 @@ define(['jquery', 'cell.sum', 'cell', 'surveys.dispatch', 'bootstrap.validator.s
                 return inputs;
             };
             var getSiblings = function (input) {
-                return getAttributeInputs(input, 'data-sum-siblings');
+                var inputs = [];
+                $.each($("input[data-sum-of]"), function() {
+                   var children = $(this).attr('data-sum-of').split(' ');
+                   var inputIndex = children.indexOf(input.attr("name"));
+                   if(inputIndex != -1) {
+                       for(var i = 0; i < children.length; i++) {
+                           if(i == inputIndex) continue;
+                           inputs.push($("#" + children[i]));
+                       }
+                   }
+                });
+
+                return inputs;
             };
             var getChildren = function (input) {
                 return getAttributeInputs(input, 'data-sum-of');
@@ -78,7 +90,7 @@ define(['jquery', 'cell.sum', 'cell', 'surveys.dispatch', 'bootstrap.validator.s
             input.prop('disabled', false);
         };
         var disableDropdown = function (input) {
-            if (input.attr('data-sum-siblings')) {
+            if (!input.attr('data-sum-of')) {
                 var dropdown = input.next(".input-group-btn").children(".btn-dropdown");
                 dropdown.prop('disabled', true);
             }
