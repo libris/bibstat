@@ -357,6 +357,7 @@ class SurveyObservation(EmbeddedDocument):
     # Storing variable key on observation to avoid having to fetch variables all the time.
     _source_key = StringField()
     disabled = BooleanField()
+    value_unknown = BooleanField()
     # Public API Optimization and traceability (was this field public at the time of the survey?)
     _is_public = BooleanField(required=True, default=True)
 

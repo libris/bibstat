@@ -211,12 +211,23 @@ define(['jquery', 'cell.sum', 'cell', 'surveys.dispatch', 'bootstrap.validator.s
                 if (!$("#submit_action").val())
                     return;
 
+                var unknownInputs = survey.disabledInputs().filter(function () {
+                    return $(this).val() == "Värdet är okänt";
+                });
+
+                var unknownInputIds = unknownInputs.map(function () {
+                    return $(this).attr("id");
+                }).get().join(" ");
+                $("#unknown_inputs").val(unknownInputIds);
+                unknownInputs.val(0);
+
                 var disabledInputIds = survey.disabledInputs().map(function () {
                     return $(this).attr("id");
                 }).get().join(" ");
-                survey.disabledInputs().prop("disabled", false);
                 $("#disabled_inputs").val(disabledInputIds);
 
+                survey.disabledInputs().prop("disabled", false);
+                
                 survey.form().attr("action", Urls.survey(survey.form("#id_key").val()));
                 survey.validator().defaultSubmit();
             }).on('error.form.bv', function () {

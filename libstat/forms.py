@@ -166,7 +166,8 @@ class SurveyForm(forms.Form):
         else:
             field = forms.CharField(required=False, widget=forms.TextInput(attrs=attrs))
 
-        field.initial = observation.value
+        field.initial = u"Värdet är okänt" if observation.value_unknown else observation.value
+
         return field
 
     def __init__(self, *args, **kwargs):
@@ -178,6 +179,8 @@ class SurveyForm(forms.Form):
 
         self.fields["disabled_inputs"] = forms.CharField(required=False,
                                                          widget=forms.HiddenInput(attrs={"id": "disabled_inputs"}))
+        self.fields["unknown_inputs"] = forms.CharField(required=False,
+                                                        widget=forms.HiddenInput(attrs={"id": "unknown_inputs"}))
         self.fields["submit_action"] = forms.CharField(required=False,
                                                        widget=forms.HiddenInput(attrs={"id": "submit_action"}))
         self.fields["read_only"] = forms.CharField(required=False,
