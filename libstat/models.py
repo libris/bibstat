@@ -296,7 +296,6 @@ class Cell(EmbeddedDocument):
     required = BooleanField()
     previous_value = StringField()
     sum_of = ListField(StringField())
-    sum_siblings = ListField(StringField())
     types = ListField(StringField())
     disabled = BooleanField()
 
