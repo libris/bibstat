@@ -91,7 +91,7 @@ define(['jquery', 'cell.sum', 'cell', 'surveys.dispatch', 'bootstrap.validator.s
             input.prop('disabled', false);
         };
         var disableDropdown = function (input) {
-            if (!input.attr('data-sum-of')) {
+            if (input.attr('data-is-child')) {
                 var dropdown = input.next(".input-group-btn").children(".btn-dropdown");
                 dropdown.prop('disabled', true);
             }

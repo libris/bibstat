@@ -68,6 +68,7 @@ define(['jquery', 'cell'], function($, cell) {
         for(var parent in setup) {
             $.each(setup[parent], function(i, child) {
                 childCallback(parent, child, setup[parent]);
+                $(child).attr('data-is-child', true);
             });
         }
     };
