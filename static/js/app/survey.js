@@ -80,6 +80,7 @@ define(['jquery', 'cell.sum', 'cell', 'surveys.dispatch', 'bootstrap.validator.s
             return [input].concat(getSiblings(input)).concat(getChildren(input));
         };
         var disableInput = function (input, element) {
+            survey.validator().updateStatus(input.attr("name"), "NOT_VALIDATED");
             input.css("padding-right", "0px");
             input.val(element.text());
             input.prop('disabled', true);
