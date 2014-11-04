@@ -549,49 +549,53 @@ def _survey_template_2014():
                     ),
                     Group(
                         description="17. Hur många titlar av olika medier fanns det sammanlagt i er bibliotekssystemkatalog 31 december?",
-                        columns=4,
-                        headers=["Antal titlar på svenska språket",
-                                 "Antal titlar på nationella minoritetsspråk",
-                                 "Antal titlar på utländska språk",
+                        columns=3,
+                        headers=["Antal titlar fysiska medier, tryckta medier och AV-medier",
+                                 "Elektroniska titlar (poster)",
                                  "Totalt antal titlar"],
                         rows=[
                             Row(
-                                description="Antal titlar fysiska medier, tryckta medier och AV-medier",
+                                description="Antal titlar på svenska språket",
                                 cells=[
                                     Cell(variable_key=u"Titlar101", types=["sum", "integer"],
-                                         sum_siblings=[u"Titlar102", u"Titlar201", u"Titlar301"]),
-                                    Cell(variable_key=u"Titlar201", types=["sum", "integer"],
-                                         sum_siblings=[u"Titlar202", u"Titlar101", u"Titlar301"]),
-                                    Cell(variable_key=u"Titlar301", types=["sum", "integer"],
-                                         sum_siblings=[u"Titlar101", u"Titlar201", u"Titlar302"]),
-                                    Cell(variable_key=u"Titlar497", types=["sum", "integer"],
-                                         sum_of=[u"Titlar101", u"Titlar201", u"Titlar301"]),
+                                         sum_siblings=[u"Titlar102"]),
+                                    Cell(variable_key=u"Titlar102", types=["sum", "integer"],
+                                         sum_siblings=[u"Titlar101"]),
+                                    Cell(variable_key=u"Titlar199", types=["sum", "integer"],
+                                         sum_of=[u"Titlar101", u"Titlar102"]),
                                 ]
                             ),
                             Row(
-                                description="Elektroniska titlar (poster)",
+                                description="Antal titlar på nationella minoritetsspråk",
                                 cells=[
-                                    Cell(variable_key=u"Titlar102", types=["sum", "integer"],
-                                         sum_siblings=[u"Titlar101", u"Titlar202", u"Titlar302"]),
+                                    Cell(variable_key=u"Titlar201", types=["sum", "integer"],
+                                         sum_siblings=[u"Titlar202"]),
                                     Cell(variable_key=u"Titlar202", types=["sum", "integer"],
-                                         sum_siblings=[u"Titlar201", u"Titlar102", u"Titlar302"]),
+                                         sum_siblings=[u"Titlar201"]),
+                                    Cell(variable_key=u"Titlar299", types=["sum", "integer"],
+                                         sum_of=[u"Titlar201", u"Titlar202"]),
+                                ]
+                            ),
+                            Row(
+                                description="Antal titlar på utländska språk",
+                                cells=[
+                                    Cell(variable_key=u"Titlar301", types=["sum", "integer"],
+                                         sum_siblings=[u"Titlar302"]),
                                     Cell(variable_key=u"Titlar302", types=["sum", "integer"],
-                                         sum_siblings=[u"Titlar102", u"Titlar202", u"Titlar301"]),
-                                    Cell(variable_key=u"Titlar498", types=["sum", "integer"],
-                                         sum_of=[u"Titlar102", u"Titlar202", u"Titlar302"]),
+                                         sum_siblings=[u"Titlar301"]),
+                                    Cell(variable_key=u"Titlar399", types=["sum", "integer"],
+                                         sum_of=[u"Titlar301", u"Titlar302"]),
                                 ]
                             ),
                             Row(
                                 description="Totalt antal titlar",
                                 cells=[
-                                    Cell(variable_key=u"Titlar199", types=["sum", "integer"],
-                                         sum_of=[u"Titlar101", u"Titlar102"]),
-                                    Cell(variable_key=u"Titlar299", types=["sum", "integer"],
-                                         sum_of=[u"Titlar201", u"Titlar202"]),
-                                    Cell(variable_key=u"Titlar399", types=["sum", "integer"],
-                                         sum_of=[u"Titlar301", u"Titlar302"]),
+                                    Cell(variable_key=u"Titlar497", types=["sum", "integer"],
+                                         sum_siblings=[u"Titlar498"]),
+                                    Cell(variable_key=u"Titlar498", types=["sum", "integer"],
+                                         sum_siblings=[u"Titlar497"]),
                                     Cell(variable_key=u"Titlar499", types=["sum", "integer"],
-                                         sum_of=[u"Titlar199", u"Titlar299", u"Titlar399"]),
+                                         sum_of=[u"Titlar497", u"Titlar498"]),
                                 ]
                             )
                         ]
