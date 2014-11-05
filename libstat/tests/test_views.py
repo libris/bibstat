@@ -553,20 +553,20 @@ class SurveyViewTest(MongoTestCase):
         self.assertEquals(len(response.context["survey_responses"]), 1)
 
     def test_should_list_survey_responses_by_target_group(self):
-        self._dummy_survey(target_group="public")
-        self._dummy_survey(target_group="school")
-        self._dummy_survey(target_group="public")
+        self._dummy_survey(target_group="public", sample_year=2010)
+        self._dummy_survey(target_group="school", sample_year=2010)
+        self._dummy_survey(target_group="public", sample_year=2010)
 
-        response = self.client.get("{}?action=list&target_group=public".format(reverse("surveys")))
+        response = self.client.get("{}?action=list&target_group=public&sample_year=2010".format(reverse("surveys")))
 
         self.assertEquals(len(response.context["survey_responses"]), 2)
 
     def test_should_list_survey_responses_by_status(self):
-        self._dummy_survey(status="not_viewed")
-        self._dummy_survey(status="submitted")
-        self._dummy_survey(status="published")
+        self._dummy_survey(status="not_viewed", sample_year=2010)
+        self._dummy_survey(status="submitted", sample_year=2010)
+        self._dummy_survey(status="published", sample_year=2010)
 
-        response = self.client.get("{}?action=list&status=submitted".format(reverse("surveys")))
+        response = self.client.get("{}?action=list&status=submitted&sample_year=2010".format(reverse("surveys")))
 
         self.assertEquals(len(response.context["survey_responses"]), 1)
 
