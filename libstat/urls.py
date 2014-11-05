@@ -22,7 +22,11 @@ from libstat.views import (open_data,
                            surveys_status,
                            import_libraries,
                            remove_libraries,
-                           surveys_remove, dispatches, dispatches_delete, dispatches_send)
+                           surveys_remove,
+                           dispatches,
+                           dispatches_delete,
+                           dispatches_send,
+                           surveys_overview)
 
 
 urlpatterns = patterns(
@@ -51,6 +55,7 @@ urlpatterns = patterns(
     url(r'^surveys/export$', surveys_export, name='surveys_export'),
     url(r'^surveys/publish$', surveys_publish, name='surveys_publish'),
     url(r'^surveys/remove$', surveys_remove, name='surveys_remove'),
+    url(r'^surveys/overview/(?P<sample_year>\w+)$', surveys_overview, name='surveys_overview'),
     url(r'^surveys/status/(?P<survey_id>\w+)$', surveys_status, name='surveys_status'),
     url(r'^surveys/(?P<survey_id>\w+)$', survey, name='survey'),
 

@@ -1,0 +1,46 @@
+{% extends "libstat/base.html" %}
+{% load i18n %}
+{% load libstat_tags %}
+
+{% block content %}
+<div class="container">
+	<div class="page-header">
+		<h1>Översikt över inlämning av statistik år {{ sample_year }}</h1>
+	</div>
+	{% if surveys %}
+		<div class="row">
+			<div class="col-md-12">
+				<table class="table table-bordered table-condensed table-striped">
+					<thead>
+						<tr>
+							<th></th>
+							{% for status in statuses %}
+								<th>{{ status.1 }}</th>						
+							{% endfor %}
+							<th>Total</th>
+						</tr>
+					</thead>
+					<tbody>
+						{% for target_group in target_groups %}
+							<tr>
+								<td><b>{{ target_group.1 }}</b></td>
+								{% for status in statuses %}
+									<td>{{ surveys|with_status:status.0|with_target_group:target_group.0|length }}</td>
+								{% endfor %}
+								<td><b>{{ surveys|with_target_group:target_group.0|length }}</b></td>
+							</tr>
+						{% endfor %}
+						<tr>
+							<td><b>Total</b></td>
+							{% for status in statuses %}
+								<td><b>{{ surveys|with_status:status.0|length }}</b></td>
+							{% endfor %}
+							<td><b>{{ surveys|length }}</b></td>
+						</tr>				
+					</tbody>
+				</table>
+			</div>
+		</div>
+	{% endif %}
+</div>
+{% endblock %}

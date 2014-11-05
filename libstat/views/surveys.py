@@ -9,6 +9,7 @@ from django.contrib.auth.decorators import permission_required
 from excel_response import ExcelResponse
 
 from bibstat import settings
+from libstat import utils
 from libstat.models import Survey, Variable, SurveyObservation, Library
 from libstat.forms import SurveyForm
 from libstat.utils import survey_response_statuses
@@ -19,7 +20,7 @@ logger = logging.getLogger(__name__)
 
 @permission_required('is_superuser', login_url='index')
 def surveys(request):
-    s_responses = []
+    surveys = []
 
     sample_years = Survey.objects.distinct("sample_year")
     sample_years.sort()
@@ -32,17 +33,17 @@ def surveys(request):
     message = request.session.pop("message", "")
 
     if action == "list":
-        if sample_year or target_group or status:
-            s_responses = Survey.objects.by(
+        if not sample_year:
+            message = u"Du måste ange för vilket år du vill lista enkätsvar"
+        else:
+            surveys = Survey.objects.by(
                 sample_year=sample_year,
                 target_group=target_group,
                 status=status).order_by("library")
-        else:
-            message = u"Ange åtminstone ett urvalskriterium för att lista enkätsvar"
 
     context = {
         'sample_years': sample_years,
-        'survey_responses': s_responses,
+        'survey_responses': surveys,
         'target_group': target_group,
         'status': status,
         'sample_year': sample_year,
@@ -130,6 +131,19 @@ def surveys_remove(request):
         Survey.objects.filter(id__in=survey_response_ids).delete()
         request.session["message"] = u"En eller flera enkäter har tagits bort"
     return redirect("surveys")
+
+
+@permission_required('is_superuser', login_url='index')
+def surveys_overview(request, sample_year):
+    surveys = Survey.objects.filter(sample_year=sample_year)
+    context = {
+        "sample_year": sample_year,
+        "statuses": utils.SURVEY_RESPONSE_STATUSES,
+        "target_groups": utils.SURVEY_TARGET_GROUPS,
+        "surveys": surveys
+    }
+
+    return render(request, "libstat/surveys_overview.html", context)
 
 
 def survey(request, survey_id, wrong_password=False):

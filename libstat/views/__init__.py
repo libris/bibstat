@@ -13,7 +13,8 @@ from surveys import (survey,
                      surveys_export,
                      surveys_publish,
                      surveys,
-                     surveys_remove)
+                     surveys_remove,
+                     surveys_overview)
 from libraries import (libraries,
                        import_libraries,
                        remove_libraries,

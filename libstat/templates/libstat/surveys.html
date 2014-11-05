@@ -118,12 +118,21 @@
                         <div class="form-group">
                             <button type="submit" name="action" value="list"
                                     class="btn btn-default">
-                                {% trans "Lista enkätsvar" %}
+                                {% trans "Lista enkäter" %}
                             </button>
                         </div>
                     </form>
                 </div>
             </div>
+            {% if survey_responses and sample_year %}
+                <hr>
+                <div class="row">
+                    <div class="col-md-12">
+                        Antal sökträffar: {{ survey_responses|length }} - 
+                        <a href="{% url 'surveys_overview' sample_year %}">Visa översikt av inlämningen</a>
+                    </div>
+                </div>
+            {% endif %}
         </div>
     </div>
     <div class="panel panel-default">
