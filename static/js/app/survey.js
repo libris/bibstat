@@ -172,7 +172,7 @@ define(['jquery', 'cell.sum', 'cell', 'surveys.dispatch', 'bootstrap.validator.s
     var readOnlyInit = function () {
 
         /* Enable help button popover. */
-        survey.form(".btn-help").popover({
+        $(".btn-help").popover({
             container: 'body'
         }).click(function (e) {
             e.preventDefault();
