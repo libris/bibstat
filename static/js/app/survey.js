@@ -308,6 +308,25 @@ define(['jquery', 'cell.sum', 'cell', 'surveys.dispatch', 'bootstrap.validator.s
                 showChangesNotSaved();
             });
 
+            /* FAQ Panel */
+            var setIcon = function(id, state) {
+                var icon = $("a[href='#" + id +"']").siblings('.fa');
+
+                if(state == 'collapse') {
+                    icon.removeClass("fa-angle-down");
+                    icon.addClass("fa-angle-right");
+                } else if(state == 'show') {
+                    icon.removeClass("fa-angle-right");
+                    icon.addClass("fa-angle-down");
+                }
+            };
+
+            $('#panel-help .collapse').on('show.bs.collapse', function() {
+                setIcon($(this).attr('id'), 'show');
+            }).on('hide.bs.collapse', function() {
+                setIcon($(this).attr('id'), 'collapse');
+            });
+
             sum.init();
             initDropdown();
             initProgress();

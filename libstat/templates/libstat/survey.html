@@ -54,6 +54,14 @@
         margin-left: 0px;    
         color: white;
     }
+
+    #panel-help.panel-group {
+        margin-bottom: 0;
+    }
+
+    #panel-help-top.panel-group {
+        margin-bottom: 0;
+    }
 </style>
 
 {% if user.is_authenticated %}
@@ -63,58 +71,129 @@
     <div class="container">
         <div class="navbar-left">
             <div class="navbar-text">
-                Välkommen till enkäten för <b><u>{{ form.library_name }}</u></b> i <b><u>{{ form.city }}</u></b>!
+                Välkommen till {{ form.sample_year }} års enkät för
+                <b><u>{{ form.library_name }}</u></b>
+                {% if form.city %} i <b><u>{{ form.city }}</u></b>{% endif %}!
             </div>
         </div>
     </div>
 </div>
 <div class="container container-survey">
-    <div class="page-header">
-        <div class="row">
-            <div class="col-sm-11">
-                <h1>Statistikenkät för verksamhetsåret {{ form.sample_year }}</h1>
-            </div>
-            <div class="col-sm-1">
-                <img src="/static/img/kb.svg" alt="Kungl. Biblioteket">
-            </div>
-        </div>
-    </div>
     {% if form.is_user_read_only %}
     {% include "libstat/survey/header_submitted.html" %}
     {% endif %}
 
     <div class="row">
-        <div class="col-xs-12 col-sm-10 col-md-7">
-            <p>
-                Välkommen!
-            </p>
-            <p>
-                Du har nu kommit till enkäten för Sveriges officiella biblioteksstatistik som gäller för alla
-                offentligt finansierade bibliotekstyper.
-                Tanken med att använda samma formulär till alla bibliotekstyper är att kunna presentera en samlad
-                nationell biblioteksstatistik för offentligt finansierade bibliotek.
-            </p>
-            <p>
-                Frågorna kan besvaras för en samlad biblioteksorganisation eller ett enskilt bibliotek. Om ni måste redovisa några variabler samlat på länsnivå och resten på kommunal nivå på grund av att ni har bibliotekssystemsamarbete måste ni rekvirera en ny inloggning som gäller särskilt för dessa uppgifter.
-            </p>
-            <p>
-                Eftersom det är en ny typ av frågeformulär visas inte alltid värden från föregående mätning.
-            </p>
-            <p>
-                Sveriges officiella biblioteksstatistik samlas in på uppdrag av regeringen och statistiken görs inom ramen för Lagen om den officiella statistiken SFS 2001:99 och Förordningen om den officiella statistiken SFS 2001:100. Kungliga biblioteket är statistikansvarig myndighet för hela den officiella biblioteksstatistiken. Offentligt finansierade bibliotek som är bemannade och tillgängliga för allmänheten samt skolbibliotek tillfrågas i statistiken.
-            </p>
-            <p>
-                De aktuella definitionerna för varje fråga finns att klicka på vid varje fråga. Definitionerna följer den nya internationella standarden för biblioteksstatistik ISO 2789 från 2013 i den mån som den inte kolliderar med svensk praxis.
-            </p>
-            <p>
-                Frågor kan ställas till biblioteksstatistik@kb.se eller 010 -709-36 39, - 36 22. Löpande information om undersökningen kan också fås på http://biblioteksstatistik.blogg.kb.se/  
-            </p>
-            <p>
-                Stort tack på förhand för ditt svar!<br>
-                Cecilia Ranemo<br>
-                Kungliga biblioteket,<br> 
-                Enheten för nationell bibliotekssamverkan
-            </p>
+        <div class="col-xs-11 col-sm-10 col-md-7">
+            <div class="panel-group" id="panel-help-top">
+                <div class="panel panel-default">
+                    <div class="panel-body">
+                        Du har nu kommit till enkäten för Sveriges officiella biblioteksstatistik.
+                        <br>Klicka nedan för att visa många av de vanligaste frågorna och svaren.
+                        <br>När du är redo att börja fylla i enkäten, hoppa ned till den första frågan.
+                    </div>
+
+                    <div class="panel-footer">
+                        <h4 class="panel-title">
+                            <i class="fa fa-question-circle"></i>
+                            <a data-toggle="collapse" data-parent="#panel-help-top" href="#collapseTop">
+                                Visa vanligaste frågorna och svaren
+                            </a>
+                        </h4>
+                    </div>
+
+                    <div id="collapseTop" class="panel-collapse collapse">
+                        <div class="panel-body">
+                            <div class="panel-group" id="panel-help">
+                                <div class="panel panel-default">
+                                    <div class="panel-heading">
+                                        <h4 class="panel-title">
+                                            <i class="fa fa-angle-right"></i>
+                                            <a data-toggle="collapse" data-parent="#panel-help" href="#collapseOne">
+                                                Finns det mer information om enkäten?
+                                            </a>
+                                        </h4>
+                                    </div>
+                                    <div id="collapseOne" class="panel-collapse collapse">
+                                        <div class="panel-body">
+                                            <p>Detta är enkäten för Sveriges officiella biblioteksstatistik som gäller för alla offentligt finansierade bibliotekstyper. Tanken med att använda samma formulär till alla bibliotekstyper är att kunna presentera en samlad nationell biblioteksstatistik för offentligt finansierade bibliotek.</p>
+                                            <p>Sveriges officiella biblioteksstatistik samlas in på uppdrag av regeringen och statistiken görs inom ramen för Lagen om den officiella statistiken SFS 2001:99 och Förordningen om den officiella statistiken SFS 2001:100. Kungliga biblioteket är statistikansvarig myndighet för hela den officiella biblioteksstatistiken. Offentligt finansierade bibliotek som är bemannade och tillgängliga för allmänheten samt skolbibliotek tillfrågas i statistiken.</p>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="panel panel-default">
+                                    <div class="panel-heading">
+                                        <h4 class="panel-title">
+                                            <i class="fa fa-angle-right"></i>
+                                            <a data-toggle="collapse" data-parent="#panel-help" href="#collapseTwo">
+                                                Svarar jag för organisationen eller enskilt bibliotek?
+                                            </a>
+                                        </h4>
+                                    </div>
+                                    <div id="collapseTwo" class="panel-collapse collapse">
+                                        <div class="panel-body">
+                                            <p>Frågorna kan besvaras för en samlad biblioteksorganisation eller ett enskilt bibliotek. Om ni måste redovisa några variabler samlat på länsnivå och resten på kommunal nivå på grund av att ni har bibliotekssystemsamarbete måste ni <a href="mailto:biblioteksstatistik@kb.se">rekvirera en ny inloggning</a> som gäller särskilt för dessa uppgifter.</p>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="panel panel-default">
+                                    <div class="panel-heading">
+                                        <h4 class="panel-title">
+                                            <i class="fa fa-angle-right"></i>
+                                            <a data-toggle="collapse" data-parent="#panel-help" href="#collapseThree">
+                                                Kan jag se inlämnade värden från föregående mätningar?
+                                            </a>
+                                        </h4>
+                                    </div>
+                                    <div id="collapseThree" class="panel-collapse collapse">
+                                        <div class="panel-body">
+                                            <p>Föregående års inlämnade värden visas till höger om respektive inmatningsfält. Eftersom det är en ny typ av frågeformulär visas inte alltid värden från föregående mätning.</p>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="panel panel-default">
+                                    <div class="panel-heading">
+                                        <h4 class="panel-title">
+                                            <i class="fa fa-angle-right"></i>
+                                            <a data-toggle="collapse" data-parent="#panel-help" href="#collapseFour">
+                                                Hur kan jag veta att jag fyller i rätt värde?
+                                            </a>
+                                        </h4>
+                                    </div>
+                                    <div id="collapseFour" class="panel-collapse collapse">
+                                        <div class="panel-body">
+                                            <p>De aktuella definitionerna för varje fråga finns att klicka på vid varje fråga. Definitionerna följer den nya internationella standarden för biblioteksstatistik ISO 2789 från 2013 i den mån som den inte kolliderar med svensk praxis.</p>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="panel panel-default">
+                                    <div class="panel-heading">
+                                        <h4 class="panel-title">
+                                            <i class="fa fa-angle-right"></i>
+                                            <a data-toggle="collapse" data-parent="#panel-help" href="#collapseFive">
+                                                Var ska jag vända mig om jag har frågor?
+                                            </a>
+                                        </h4>
+                                    </div>
+                                    <div id="collapseFive" class="panel-collapse collapse">
+                                        <div class="panel-body">
+                                            <p>Frågor kan ställas till <a href="mailto:biblioteksstatistik@kb.se">biblioteksstatistik@kb.se</a>, <a href="tel:+46107093639">010-709 36 39</a> eller  <a href="tel:+46107093622">010-709 36 22</a>. Löpande information om undersökningen kan också fås på <a href="http://biblioteksstatistik.blogg.kb.se" target="_blank">http://biblioteksstatistik.blogg.kb.se</a>.</p>
+                                        </div>
+                                    </div>
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-xs-1 pull-right">
+            <img src="/static/img/kb.svg" alt="Kungl. Biblioteket">
         </div>
     </div>
     <form class="survey-content" id="survey-form" method="post">
