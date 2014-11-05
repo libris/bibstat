@@ -38,24 +38,22 @@ class MongoTestCase(TestCase):
         url = reverse(action, kwargs=kwargs)
         return self.client.post(url, data=data)
 
-    def _dummy_library(self, name="dummy_name", sigel="dummy_sigel"):
-        library = Library(name=name, sigel=sigel)
-        library.save()
-        library.reload()
-        return library
+    def _dummy_library(self, name="dummy_name", sigel="dummy_sigel", bibdb_id="dummy_id", city="dummy_city",
+                       municipality_code="dummy_code"):
+        return Library(name=name, sigel=sigel, bibdb_id=bibdb_id, city=city,
+                       municipality_code=municipality_code).save()
 
     def _dummy_survey(self, library_name="dummy_name", sample_year=2001, password=None, target_group="public",
-                      status="not_viewed", publish=False, library=None):
+                      status="not_viewed", publish=False, library=None, website=None, created_by=None,
+                      observations=[]):
         if not library:
             library = self._dummy_library()
         survey = Survey(library_name=library_name, library=library, sample_year=sample_year,
-                        target_group=target_group, password=password, status=status)
+                        target_group=target_group, password=password, status=status, website=website,
+                        created_by=created_by, observations=observations).save()
         if publish:
-            survey.save()
             survey.publish()
             survey.reload()
-        survey.save()
-        survey.reload()
         return survey
 
     def _dummy_variable(self, key=None, description=u"dummy description", type="integer", is_public=True,

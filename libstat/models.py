@@ -1,5 +1,7 @@
 # -*- coding: UTF-8 -*-
 import logging
+import string
+import random
 
 from mongoengine import *
 from mongoengine import signals
@@ -369,6 +371,12 @@ class SurveyObservation(EmbeddedDocument):
 
 
 class Library(Document):
+
+    # From: http://en.wikipedia.org/wiki/Random_password_generator#Python
+    def _random_sigel(self):
+        alphabet = string.letters[0:52] + string.digits
+        return str().join(random.SystemRandom().choice(alphabet) for _ in range(10))
+
     name = StringField()
     bibdb_id = StringField()
     sigel = StringField()
@@ -380,6 +388,33 @@ class Library(Document):
     meta = {
         'collection': 'libstat_libraries'
     }
+
+    def __init__(self, *args, **kwargs):
+        sigel = kwargs.pop("sigel", None)
+        super(Library, self).__init__(*args, **kwargs)
+        self.sigel = sigel if sigel else self._random_sigel()
+
+
+class LibraryCached(EmbeddedDocument):
+    name = StringField()
+    bibdb_id = StringField()
+    sigel = StringField()
+    email = StringField()
+    city = StringField()
+    municipality_code = StringField()
+    address = StringField()
+
+    def __init__(self, *args, **kwargs):
+        library = kwargs.pop("library", None)
+        super(LibraryCached, self).__init__(*args, **kwargs)
+        if library:
+            self.name = library.name
+            self.bibdb_id = library.bibdb_id
+            self.sigel = library.sigel
+            self.email = library.email
+            self.city = library.city
+            self.municipality_code = library.municipality_code
+            self.address = library.address
 
 
 class LibrarySelection(Document):
@@ -409,7 +444,7 @@ class SurveyBase(Document):
     modified_by = ReferenceField(User)
     observations = ListField(EmbeddedDocumentField(SurveyObservation))
     status = StringField(choices=SURVEY_RESPONSE_STATUSES, default=NOT_VIEWED[0])
-    library = ReferenceField(Library)
+    _library = EmbeddedDocumentField(LibraryCached)
     library_name = StringField()
     sample_year = IntField()
     password = StringField()
@@ -435,11 +470,26 @@ class SurveyBase(Document):
         return self.is_published if self.is_published else (
             self.published_at is not None and self.published_at >= self.date_modified)
 
+    @property
+    def library(self):
+        return self._library
+
+    @library.setter
+    def library(self, library):
+        if library:
+            self._library = LibraryCached(library=library)
+            self.library_name = self._library.name
+
     def target_group__desc(self):
         return targetGroups[self.target_group]
 
     def __unicode__(self):
         return u"{} {} {}".format(self.target_group, self.library_name, self.sample_year)
+
+    def __init__(self, *args, **kwargs):
+        library = kwargs.pop("library", None)
+        super(SurveyBase, self).__init__(*args, **kwargs)
+        self.library = library
 
 
 class Survey(SurveyBase):
@@ -447,6 +497,19 @@ class Survey(SurveyBase):
         'collection': 'libstat_surveys',
         'queryset_class': SurveyResponseQuerySet,
     }
+
+    @property
+    def library(self):
+        libraries = Library.objects.filter(sigel=self._library.sigel)
+        if not self.is_published and len(libraries) != 0:
+            self.library = libraries[0]
+        return self._library
+
+    @library.setter
+    def library(self, library):
+        if library:
+            self._library = LibraryCached(library=library)
+            self.library_name = self._library.name
 
     @classmethod
     def store_version_and_update_date_modified(cls, sender, document, **kwargs):
@@ -481,10 +544,10 @@ class Survey(SurveyBase):
             if obs._is_public and obs.value != None:
                 # TODO: Need to handle consequent publishes
                 data_item = None
-                existing = OpenData.objects.filter(library_name=self.library_name, sample_year=self.sample_year,
+                existing = OpenData.objects.filter(library_name=self.library.name, sample_year=self.sample_year,
                                                    variable=obs.variable)
                 if (len(existing) == 0):
-                    data_item = OpenData(library_name=self.library_name, sample_year=self.sample_year,
+                    data_item = OpenData(library_name=self.library.name, sample_year=self.sample_year,
                                          variable=obs.variable,
                                          target_group=self.target_group, date_created=publishing_date)
                     if self.library and self.library.bibdb_id:

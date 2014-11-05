@@ -3,7 +3,7 @@ from django.core.management import call_command
 from django.core.management.base import CommandError
 
 from libstat.tests import MongoTestCase
-from libstat.models import Variable, Survey
+from libstat.models import Variable, Survey, Library
 
 
 """
@@ -12,6 +12,7 @@ from libstat.models import Variable, Survey
 
 
 class ImportVariablesTest(MongoTestCase):
+
     def test_import_variables_requires_file_option(self):
         args = []
         opts = {"target_group": "public"}
@@ -19,14 +20,12 @@ class ImportVariablesTest(MongoTestCase):
 
         self.assertEquals(len(Variable.objects.all()), 0)
 
-
     def test_import_variables_requires_target_group_option(self):
         args = []
         opts = {"target_group": "public"}
         call_command('import_variables', *args, **opts)
 
         self.assertEquals(len(Variable.objects.all()), 0)
-
 
     def test_should_import_public_lib_variables(self):
         args = []
@@ -65,7 +64,6 @@ class ImportVariablesTest(MongoTestCase):
         self.assertEquals(folk54.type, u"decimal")
         self.assertEquals(folk201.type, u"integer")
 
-
     def test_should_update_public_lib_variables(self):
         args = []
         opts = {"file": "data/folk_termer.xlsx", "target_group": "public"}
@@ -85,7 +83,6 @@ class ImportVariablesTest(MongoTestCase):
         self.assertEquals(len(Variable.objects.all()), 201)
         # Check target_group after
         self.assertEquals(Variable.objects.filter(key="Folk52")[0].target_groups, [u"school"])
-
 
     def test_should_import_research_lib_variables(self):
         args = []
@@ -117,7 +114,6 @@ class ImportVariablesTest(MongoTestCase):
         self.assertEquals(forsk19.type, u"percent")
         self.assertEquals(forsk29.type, u"long")
         self.assertEquals(forsk154.type, u"decimal")
-
 
     def test_should_update_research_lib_variables(self):
         args = []
@@ -231,6 +227,7 @@ class ImportVariablesTest(MongoTestCase):
 
 
 class ImportSurveyResponsesTest(MongoTestCase):
+
     def setUp(self):
         args = []
         opts = {"file": "data/folk_termer.xlsx", "target_group": "public"}
@@ -245,7 +242,6 @@ class ImportSurveyResponsesTest(MongoTestCase):
         call_command('import_survey_responses', *args, **opts)
 
         self.assertEquals(len(Survey.objects.all()), 0)
-
 
     def test_import_variables_requires_target_group_option(self):
         args = []
@@ -277,10 +273,14 @@ class ImportSurveyResponsesTest(MongoTestCase):
         call_command('import_survey_responses', *args, **opts)
 
         self.assertEquals(len(Survey.objects.all()), 288)
-        sr = Survey.objects.filter(library_name=u"KARLSTADS STADSBIBLIOTEK")[0]
-        self.assertTrue(sr.library.name == u"KARLSTADS STADSBIBLIOTEK")
 
-        ## Check data types and visibility
+        sr = None
+        for s in Survey.objects.all():
+            if s.library.name == u"KARLSTADS STADSBIBLIOTEK":
+                sr = s
+        self.assertEquals(sr.library.name, u"KARLSTADS STADSBIBLIOTEK")
+
+        # Check data types and visibility
         # Private, string value
         folk1_obs = [obs for obs in sr.observations if obs.variable.key == "Folk1"][0]
         self.assertTrue(isinstance(folk1_obs.value, basestring))
@@ -328,7 +328,8 @@ class ImportSurveyResponsesTest(MongoTestCase):
 
     def test_import_survey_responses_with_library_lookup(self):
         args = []
-        opts = {"file": "libstat/tests/data/Folk2012.xlsx", "target_group": "public", "year": 2012, "use_bibdb": "True"}
+        opts = {"file": "libstat/tests/data/Folk2012.xlsx",
+                "target_group": "public", "year": 2012, "use_bibdb": "True"}
         call_command('import_survey_responses', *args, **opts)
 
         self.assertEquals(len(Survey.objects.all()), 288)

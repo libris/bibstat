@@ -61,8 +61,6 @@ class Command(BaseCommand):
             work_sheet = book.sheet_by_name(str(year))
         except XLRDError as xld_e:
             raise CommandError(u"No data for year {} in workbook: {}".format(year, xld_e))
-            # except Exception as e:
-        #             raise CommandError(u"Unable to open workbook file {}: {}".format(file_name, e))
 
         self.stdout.write(u"Importing {} survey responses from: {}...".format(year, file_name))
 
@@ -117,24 +115,17 @@ class Command(BaseCommand):
                         if response and response.status_code == 200:
                             libraries = response.json()
                             for lib in libraries:
-                                # print u"Got library {}".format(lib)
-                                if lib[u"alive"] == True:
-                                    library = Library(bibdb_name=lib[u"name"], bibdb_id=lib[u"id"],
-                                                      bibdb_sigel=lib[u"sigel"])
-                                    #TODO: Spara city, municipality_code, county_code, school_id
-                                    #                                     print u"Found active library match with id:{}, sigel:'{}' matching name:'{}' (of {} libraries in response)".format(
-                                    #                                         lib[u"id"], lib[u"sigel"], lib[u"name"], len(libraries))
+                                if lib[u"alive"] is True:
+                                    library = Library(name=lib[u"name"], bibdb_id=lib[u"id"],
+                                                      sigel=lib[u"sigel"])
                                     break
 
                     existing_responses = Survey.objects.filter(library_name=library_name, sample_year=year)
                     if len(existing_responses) == 0:
-                        library = Library(name=library_name)
-                        library.save()
+                        library = Library(name=library_name).save()
                         sr = Survey(library_name=library_name, sample_year=year, target_group=target_group,
-                                            observations=[], library=library)
-                        # sr_metadata = SurveyResponseMetadata()
-                        if library:
-                            sr.library = library  #TODO
+                                    observations=[], library=library)
+
                         for n, key, variable in variable_keys:
                             value = row[n]
 
@@ -156,19 +147,15 @@ class Command(BaseCommand):
 
                             sr.observations.append(SurveyObservation(variable=variable, value=value, _source_key=key,
                                                                      _is_public=variable.is_public))
-                            #self._extract_metadata(key, value, sr_metadata)
 
-                        #sr.metadata = sr_metadata     
                         sr.save()
                         imported_responses += 1
-                    # self.stdout.write(u"Imported survey response for library name {}".format(library_name))
 
                     elif library and not existing_responses[0].library:
                         sr = existing_responses[0]
                         if library and not sr.library:
                             sr.library = library
                             sr.save()
-                            # self.stdout.write(u"Updating survey response for {} {} with library {}".format(year, library_name, library.bibdb_sigel))
 
                     else:
                         self.stdout.write(
@@ -181,25 +168,3 @@ class Command(BaseCommand):
 
         else:
             self.stdout.write(u"No known variables in source file, aborting")
-
-
-    # TODO:
-    def _extract_metadata(self, key, value, sr_metadata):
-        if key in self.city_keys:
-            sr_metadata.city = value
-        elif key in self.municipality_code_keys:
-            sr_metadata.municipality_code = value
-        elif key in self.respondent_name_keys:
-            sr_metadata.respondent_name = value
-        elif key in self.respondent_email_Keys:
-            sr_metadata.respondent_email = value
-        elif key in self.respondent_phone_keys:
-            sr_metadata.respondent_phone = value
-        elif key in self.survey_time_hours_keys:
-            sr_metadata.survey_time_hours = value
-        elif key in self.survey_time_minutes_keys:
-            sr_metadata.survey_time_minutes = value
-        elif key in self.population_nation_keys:
-            sr_metadata.population_nation = value
-        elif key in self.population_0to14y_keys:
-            sr_metadata.population_0to14y = value

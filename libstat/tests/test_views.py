@@ -571,9 +571,9 @@ class SurveyViewTest(MongoTestCase):
         self.assertEquals(len(response.context["survey_responses"]), 1)
 
     def test_should_list_survey_responses_by_year_and_target_group(self):
-        self._dummy_survey(library_name="lib1", target_group="public", sample_year=2012)
-        self._dummy_survey(library_name="lib2", target_group="public", sample_year=2013)
-        self._dummy_survey(library_name="lib3", target_group="school", sample_year=2013)
+        self._dummy_survey(library=self._dummy_library(name="lib1"), target_group="public", sample_year=2012)
+        self._dummy_survey(library=self._dummy_library(name="lib2"), target_group="public", sample_year=2013)
+        self._dummy_survey(library=self._dummy_library(name="lib3"), target_group="school", sample_year=2013)
 
         response = self.client.get(
             "{}?action=list&target_group=public&sample_year=2013".format(reverse("surveys")))
