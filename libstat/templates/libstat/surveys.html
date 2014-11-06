@@ -136,8 +136,8 @@
                                 <a href="#" class="btn btn-primary btn-toggle btn-survey btn-dispatch disabled">
                                     Nytt utskick
                                 </a>
-                                <a href="#" name="action" value="publish"
-                                        class="btn btn-primary btn-toggle btn-survey btn-publish disabled">
+                                <a href="#" class="btn btn-primary btn-toggle btn-survey disabled" data-toggle="modal"
+                                   data-target="#confirm-publish-modal">    
                                     {% trans "Publicera" %}
                                 </a>
                                 <a href="#" name="action" value="export"
@@ -168,6 +168,20 @@
                                 <div class="modal-footer">
                                     <a href="#" class="btn btn-danger" data-dismiss="modal">Nej</a>
                                     <button class="btn btn-success btn-remove">Ja</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal fade" id="confirm-publish-modal" tabindex="-1" role="dialog"
+                         aria-hidden="true">
+                        <div class="modal-dialog">
+                            <div class="modal-content">
+                                <div class="modal-body">
+                                    Är du säker på att du vill publicera de markerade enkäterna? 
+                                </div>
+                                <div class="modal-footer">
+                                    <a href="#" class="btn btn-danger" data-dismiss="modal">Nej</a>
+                                    <button class="btn btn-success btn-publish">Ja</button>
                                 </div>
                             </div>
                         </div>
