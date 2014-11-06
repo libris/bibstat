@@ -4,16 +4,22 @@
 
 {% block content %}
     <div class="container">
-    <div class="page-header">
-        <h1>Enkäter</h1>
-    </div>
+    
     <div class="panel panel-default">
+        <div class="panel-heading">
+            <h3 class="panel-title">Enkäter</h3>
+        </div>
         <div class="panel-body">
+            <p>
+                Här listas alla enkäter som finns i biblioteksstatistiken.
+            </p>
+            <p>
+                <b>Filtrera enkäter</b>
+            </p>
             {% if message %}
                 <div class="row">
                     <div class="col-md-12">
                         <p>
-                            {% trans "Välj bibliotekstyp och år för att lista enkätsvar" %}
                             <span class="text-warning warnings right">{{ message }}</span>
                         </p>
                     </div>
@@ -118,8 +124,8 @@
                         </div>
                     </div>
                 </div>
+                <hr>
                 {% if survey_responses %}
-                    <hr>
                     <div class="row surveys-actions">
                         <div class="col-md-12">
                             <div class="form-group">
@@ -166,147 +172,144 @@
                             </div>
                         </div>
                     </div>
+                    <hr>
                 {% endif %}
             </form>
         </div>
-    </div>
-    <div class="panel panel-default">
-        <div class="panel-body">
-            <form id="form-surveys" action="" method="POST" role="form"
-                  class="form-inline publish-survey-responses-form">
+        <form id="form-surveys" action="" method="POST" role="form"
+              class="form-inline publish-survey-responses-form">
+            {% if survey_responses %}
+                {% csrf_token %}
+                <input type="hidden" name="sample_year" value="{{ sample_year }}"/>
+                <input type="hidden" name="target_group" value="{{ target_group }}"/>
+            {% endif %}
+            <table class="table survey_responses">
+                <thead>
+                <tr>
+                    <th class="column selection">
+                        <input title="{% trans 'Markera alla' %}" class="select-all"
+                               type="checkbox" value="all"/>
+                    </th>
+                    <th class="column status">{% trans "Status" %}</th>
+                    <th class="column published">{% trans "Publicerad" %}</th>
+                    <th class="column sample_year">{% trans "År" %}</th>
+                    <th class="column library">{% trans "Bibliotek" %}</th>
+                    <th class="column target_group">{% trans "Bibliotekstyp" %}</th>
+                    <th class="column actions"></th>
+                </tr>
+                </thead>
+                <tbody>
                 {% if survey_responses %}
-                    {% csrf_token %}
-                    <input type="hidden" name="sample_year" value="{{ sample_year }}"/>
-                    <input type="hidden" name="target_group" value="{{ target_group }}"/>
-                {% endif %}
-                <table class="table survey_responses">
-                    <thead>
-                    <tr>
-                        <th class="column selection">
-                            <input title="{% trans 'Markera alla' %}" class="select-all"
-                                   type="checkbox" value="all"/>
-                        </th>
-                        <th class="column status">{% trans "Status" %}</th>
-                        <th class="column published">{% trans "Publicerad" %}</th>
-                        <th class="column sample_year">{% trans "År" %}</th>
-                        <th class="column library">{% trans "Bibliotek" %}</th>
-                        <th class="column target_group">{% trans "Bibliotekstyp" %}</th>
-                        <th class="column actions"></th>
-                    </tr>
-                    </thead>
-                    <tbody>
-                    {% if survey_responses %}
-                        {% for sr in survey_responses %}
-                            <tr>
-                                <td>
-                                    <input title="{% trans 'Välj' %}" class="select-one" name="survey-response-ids"
-                                           type="checkbox" value="{{ sr.id }}" data-library="{{ sr.library.name }}"
-                                           data-address="{% url 'survey' sr.id %}" data-url-base="{{ url_base }}"/>
-                                </td>
-                                <td>
-                                    {{ sr.status|srs_label }}
-                                </td>
-                                <td>
-                                    {% if not sr.latest_version_published %}
-                                        <span class="text-warning bold css3-tooltip cursor-help"
-                                              title="{% trans 'Senaste version är inte publicerad' %}">
-                                    {% else %}
-                                        <span>
-                                    {% endif %}
-                                    {{ sr.published_at|utc_tz|date:"Y-m-d H:i" }}
-                                    </span>
-                                </td>
-                                <td>
-                                    {{ sr.sample_year }}
-                                </td>
-                                <td>
-                                    {% if sr.library and sr.library.sigel %}
-                                        <a href="{{ bibdb_library_base_url }}/{{ sr.library.sigel }}">
-                                            {{ sr.library.name }}
-                                        </a>
-                                    {% else %}
+                    {% for sr in survey_responses %}
+                        <tr>
+                            <td>
+                                <input title="{% trans 'Välj' %}" class="select-one" name="survey-response-ids"
+                                       type="checkbox" value="{{ sr.id }}" data-library="{{ sr.library.name }}"
+                                       data-address="{% url 'survey' sr.id %}" data-url-base="{{ url_base }}"/>
+                            </td>
+                            <td>
+                                {{ sr.status|srs_label }}
+                            </td>
+                            <td>
+                                {% if not sr.latest_version_published %}
+                                    <span class="text-warning bold css3-tooltip cursor-help"
+                                          title="{% trans 'Senaste version är inte publicerad' %}">
+                                {% else %}
+                                    <span>
+                                {% endif %}
+                                {{ sr.published_at|utc_tz|date:"Y-m-d H:i" }}
+                                </span>
+                            </td>
+                            <td>
+                                {{ sr.sample_year }}
+                            </td>
+                            <td>
+                                {% if sr.library and sr.library.sigel %}
+                                    <a href="{{ bibdb_library_base_url }}/{{ sr.library.sigel }}">
                                         {{ sr.library.name }}
-                                    {% endif %}
-                                </td>
-                                <td>
-                                    {{ sr.target_group|tg_label }}
-                                </td>
-                                <td>
-                                    <a title="{% trans 'Visa/redigera enkätsvar' %}"
-                                       href="{% url 'survey' sr.id %}">
-                                        Visa/redigera
                                     </a>
-                                </td>
-                            </tr>
-                        {% endfor %}
-                    {% endif %}
-                    </tbody>
-                </table>
-            </form>
+                                {% else %}
+                                    {{ sr.library.name }}
+                                {% endif %}
+                            </td>
+                            <td>
+                                {{ sr.target_group|tg_label }}
+                            </td>
+                            <td>
+                                <a title="{% trans 'Visa/redigera enkätsvar' %}"
+                                   href="{% url 'survey' sr.id %}">
+                                    Visa/redigera
+                                </a>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                {% endif %}
+                </tbody>
+            </table>
+        </form>
 
-            <!-- Dispatch Modal -->
-            <div class="modal fade" id="modal-dispatch" tabindex="-1">
-                <div class="modal-dialog">
-                    <div class="modal-content">
-                        <form class="form form-dispatch">
-                            <div class="modal-header">
-                                <button type="button" class="close" data-dismiss="modal">
-                                    <span aria-hidden="true">&times;</span>
-                                    <span class="sr-only">Close</span>
-                                </button>
-                                <h4 class="modal-title">Nytt utskick</h4>
-                            </div>
+        <!-- Dispatch Modal -->
+        <div class="modal fade" id="modal-dispatch" tabindex="-1">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <form class="form form-dispatch">
+                        <div class="modal-header">
+                            <button type="button" class="close" data-dismiss="modal">
+                                <span aria-hidden="true">&times;</span>
+                                <span class="sr-only">Close</span>
+                            </button>
+                            <h4 class="modal-title">Nytt utskick</h4>
+                        </div>
 
-                            <div class="modal-body">
-                                <div class="form-group">
-                                    <label for="description">Beskrivning</label>
-                                    <input id="description" name="description" type="text"
-                                           data-bv-notempty
-                                           data-bv-notempty-message="Du måste ange en beskrivning"
-                                           class="form-control"/>
-                                </div>
-                                <div class="form-group">
-                                    <label for="title">Titel</label>
-                                    <input id="title" name="title" type="text"
-                                           data-bv-notempty
-                                           data-bv-notempty-message="Du måste ange en titel"
-                                           class="form-control dispatch-title"/>
-                                </div>
-                                <div class="form-group">
-                                    <label for="message">Meddelande</label>
-                                    <textarea id="message" name="message"
-                                              data-bv-notempty
-                                              data-bv-notempty-message="Du måste ange ett meddelande"
-                                              class="form-control dispatch-message"
-                                              rows="5"></textarea>
-                                </div>
-                                <div class="form-group">
-                                    <div class="btn-group">
-                                        <button type="button"
-                                                class="btn btn-default btn-insert btn-library">Bibliotek</button>
-                                        <button type="button"
-                                                class="btn btn-default btn-insert btn-address-password">Enkätadress (med lösenord)</button>
-                                        <button type="button"
-                                                class="btn btn-default btn-insert btn-address">Enkätadress</button>
-                                        <button type="button"
-                                                class="btn btn-default btn-insert btn-password">Lösenord</button>
-                                    </div>
-                                </div>
-                                <div class="panel panel-default">
-                                    <div class="panel-heading">
-                                        <p class="panel-title dispatch-example-heading"></p>
-                                    </div>
-                                    <div class="panel-body dispatch-example-body"></div>
-                                    <div class="panel-footer dispatch-example-footer"></div>
+                        <div class="modal-body">
+                            <div class="form-group">
+                                <label for="description">Beskrivning</label>
+                                <input id="description" name="description" type="text"
+                                       data-bv-notempty
+                                       data-bv-notempty-message="Du måste ange en beskrivning"
+                                       class="form-control"/>
+                            </div>
+                            <div class="form-group">
+                                <label for="title">Titel</label>
+                                <input id="title" name="title" type="text"
+                                       data-bv-notempty
+                                       data-bv-notempty-message="Du måste ange en titel"
+                                       class="form-control dispatch-title"/>
+                            </div>
+                            <div class="form-group">
+                                <label for="message">Meddelande</label>
+                                <textarea id="message" name="message"
+                                          data-bv-notempty
+                                          data-bv-notempty-message="Du måste ange ett meddelande"
+                                          class="form-control dispatch-message"
+                                          rows="5"></textarea>
+                            </div>
+                            <div class="form-group">
+                                <div class="btn-group">
+                                    <button type="button"
+                                            class="btn btn-default btn-insert btn-library">Bibliotek</button>
+                                    <button type="button"
+                                            class="btn btn-default btn-insert btn-address-password">Enkätadress (med lösenord)</button>
+                                    <button type="button"
+                                            class="btn btn-default btn-insert btn-address">Enkätadress</button>
+                                    <button type="button"
+                                            class="btn btn-default btn-insert btn-password">Lösenord</button>
                                 </div>
                             </div>
+                            <div class="panel panel-default">
+                                <div class="panel-heading">
+                                    <p class="panel-title dispatch-example-heading"></p>
+                                </div>
+                                <div class="panel-body dispatch-example-body"></div>
+                                <div class="panel-footer dispatch-example-footer"></div>
+                            </div>
+                        </div>
 
-                            <div class="modal-footer">
-                                <button type="button" class="btn btn-default" data-dismiss="modal">Avbryt</button>
-                                <button class="btn btn-primary">Spara</button>
-                            </div>
-                        </form>
-                    </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-default" data-dismiss="modal">Avbryt</button>
+                            <button class="btn btn-primary">Spara</button>
+                        </div>
+                    </form>
                 </div>
             </div>
         </div>

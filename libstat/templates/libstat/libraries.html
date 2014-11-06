@@ -4,11 +4,14 @@
 
 {% block content %}
 <div class="container">
-	<div class="page-header">
-		<h1>Bibliotek</h1>
-	</div>
 	<div class="panel panel-default">
+		<div class="panel-heading">
+			<h3 class="panel-title">Bibliotek</h3>
+		</div>
 		<div class="panel-body">
+			<p>
+				Här visas alla bibliotek som importerats från <a href="http://bibdb.libris.kb.se">Biblioteksstatistiken</a>.
+			</p>
 			<form action="{% url 'libraries' %}" method="POST" role="form" class="form-inline">
 				{% csrf_token %}
 				<div class="form-group">
