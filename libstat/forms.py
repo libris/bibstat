@@ -2,6 +2,8 @@
 import logging
 
 from django import forms
+from django.core.urlresolvers import reverse
+from bibstat import settings
 
 from libstat.survey_templates import survey_template
 from libstat.utils import SURVEY_TARGET_GROUPS, survey_response_statuses, PUBLISHED
@@ -203,6 +205,9 @@ class SurveyForm(forms.Form):
         self.statuses = [status for status in survey_response_statuses.values() if not status == PUBLISHED[1]]
         self.is_published = response.status == PUBLISHED[0]
         self.sections = template.sections
+
+        self.url = settings.API_BASE_URL + reverse('survey', args=(response.pk,))
+        self.url_with_password = self.url + "?p=" + self.password
 
         for section in template.sections:
             for group in section.groups:
