@@ -207,7 +207,7 @@ class SurveyForm(forms.Form):
         self.sections = template.sections
 
         self.url = settings.API_BASE_URL + reverse('survey', args=(response.pk,))
-        self.url_with_password = self.url + "?p=" + self.password
+        self.url_with_password = "{}?p={}".format(self.url, self.password)
 
         for section in template.sections:
             for group in section.groups:

@@ -10,7 +10,7 @@ from excel_response import ExcelResponse
 
 from bibstat import settings
 from libstat import utils
-from libstat.models import Survey, Variable, SurveyObservation, Library
+from libstat.models import Survey, Dispatch
 from libstat.forms import SurveyForm
 from libstat.utils import survey_response_statuses
 
@@ -128,7 +128,9 @@ def _save_survey_response_from_form(response, form):
 def surveys_remove(request):
     if request.method == "POST":
         survey_response_ids = request.POST.getlist("survey-response-ids", [])
-        Survey.objects.filter(id__in=survey_response_ids).delete()
+        for survey in Survey.objects.filter(id__in=survey_response_ids):
+            Dispatch.objects.filter(survey=survey).delete()
+            survey.delete()
         request.session["message"] = u"En eller flera enkäter har tagits bort"
     return redirect("surveys")
 

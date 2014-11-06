@@ -29,9 +29,9 @@ def dispatches(request):
 
         for survey in surveys:
             Dispatch(
-                message=_rendered_template(request.POST["message"], survey),
-                title=_rendered_template(request.POST["title"], survey),
-                description=request.POST["description"],
+                message=_rendered_template(request.POST.get("message", None), survey),
+                title=_rendered_template(request.POST.get("title", None), survey),
+                description=request.POST.get("description", None),
                 survey=survey
             ).save()
 
