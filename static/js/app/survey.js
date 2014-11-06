@@ -249,14 +249,19 @@ define(['jquery', 'cell.sum', 'cell', 'surveys.dispatch', 'bootstrap.validator.s
                 }, 300);
             });
 
-            var submitTo = function (action) {
-                $(".publish-survey-responses-form").get(0).setAttribute('action', Urls[action]());
-                $(".publish-survey-responses-form").get(0).submit();  
+            var submitTo = function (action, submit) {
+                submit = submit || false
+                var element = $(".publish-survey-responses-form").get(0);
+                element.setAttribute('action', Urls[action]());
+                if(submit) {
+                    element.submit();
+                }
+                return element;
             };
 
-            $(".btn-remove").click(function (e) { e.preventDefault(); submitTo('surveys_remove'); });
-            $(".btn-publish").click(function (e) { e.preventDefault(); submitTo('surveys_publish'); });
-            $(".btn-export").click(function (e) { e.preventDefault(); submitTo('surveys_export'); });
+            $(".btn-remove").click(function (e) { e.preventDefault(); submitTo('surveys_remove', true); });
+            $(".btn-publish").click(function (e) { e.preventDefault(); submitTo('surveys_publish', true); });
+            $(".btn-export").click(function (e) { e.preventDefault(); submitTo('surveys_export', true); });
             $(".btn-dispatch").click(function (e) {
                 e.preventDefault();
 
