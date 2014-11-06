@@ -129,7 +129,7 @@
                 <div class="row">
                     <div class="col-md-12">
                         Antal sökträffar: {{ survey_responses|length }} - 
-                        <a href="{% url 'surveys_overview' sample_year %}">Visa översikt av inlämningen</a>
+                        <a href="{% url 'surveys_overview' sample_year %}">Visa översikt av insamlingen {{ sample_year }}</a>
                     </div>
                 </div>
             {% endif %}
