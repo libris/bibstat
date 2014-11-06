@@ -19,10 +19,10 @@
                     </div>
                 </div>
             {% endif %}
-            <div class="row">
-                <div class="col-md-8">
-                    <form action="" method="GET" role="form" class="form-inline">
-                        {% csrf_token %}
+            <form action="" method="GET" role="form" class="form-inline">
+            {% csrf_token %}
+                <div class="row">
+                    <div class="col-md-8">
                         <div class="form-group">
                             <select name="sample_year" class="form-control" value={{ sample_year }}>
                                 <option value=""
@@ -40,8 +40,6 @@
                                     </option>
                                 {% endfor %}
                             </select>
-                        </div>
-                        <div class="form-group">
                             <select name="target_group" class="form-control" value="{{ target_group }}">
                                 <option value=""
                                         {% if not target_group %}
@@ -74,8 +72,6 @@
                                     {% trans "Skolbibliotek" %}
                                 </option>
                             </select>
-                        </div>
-                        <div class="form-group">
                             <select name="status" class="form-control" value="{{ status }}">
                                 <option value=""
                                         {% if not status %}
@@ -114,25 +110,64 @@
                                     Publicerad
                                 </option>
                             </select>
-                        </div>
-                        <div class="form-group">
+                            <input type="text" name="free-text" class="form-control" placeholder="Sökord">
                             <button type="submit" name="action" value="list"
-                                    class="btn btn-default">
+                                    class="btn btn-primary">
                                 {% trans "Lista enkäter" %}
                             </button>
                         </div>
-                    </form>
-                </div>
-            </div>
-            {% if survey_responses and sample_year %}
-                <hr>
-                <div class="row">
-                    <div class="col-md-12">
-                        Antal sökträffar: {{ survey_responses|length }} - 
-                        <a href="{% url 'surveys_overview' sample_year %}">Visa översikt av insamlingen {{ sample_year }}</a>
                     </div>
                 </div>
-            {% endif %}
+                {% if survey_responses %}
+                    <hr>
+                    <div class="row surveys-actions">
+                        <div class="col-md-12">
+                            <div class="btn-group">
+                                <a href="#" class="btn btn-danger btn-toggle btn-survey disabled" data-toggle="modal"
+                                   data-target="#confirm-remove-modal">
+                                    Ta bort
+                                </a>
+                                <a href="#" class="btn btn-primary btn-toggle btn-survey btn-dispatch disabled">
+                                    Nytt utskick
+                                </a>
+                                <a href="#" name="action" value="publish"
+                                        class="btn btn-primary btn-toggle btn-survey btn-publish disabled">
+                                    {% trans "Publicera" %}
+                                </a>
+                                <a href="#" name="action" value="export"
+                                        class="btn btn-primary btn-toggle btn-survey btn-export disabled">
+                                    {% trans "Exportera" %}
+                                </a>
+                            </div>
+                            <div class="pull-right">
+                                <div class="btn-group">
+                                    <div class="btn btn-label disabled">
+                                        Antal sökträffar: {{ survey_responses|length }}
+                                    </div>
+                                    <a class="btn btn-label" href="{% url 'surveys_overview' sample_year %}">
+                                        Visa översikt av insamlingen {{ sample_year }}
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal fade" id="confirm-remove-modal" tabindex="-1" role="dialog"
+                         aria-hidden="true">
+                        <div class="modal-dialog">
+                            <div class="modal-content">
+                                <div class="modal-body">
+                                    Är du säker på att du vill ta bort de markerade enkäterna? Denna åtgärd kan inte
+                                    ångras.
+                                </div>
+                                <div class="modal-footer">
+                                    <a href="#" class="btn btn-danger" data-dismiss="modal">Nej</a>
+                                    <button class="btn btn-success btn-remove">Ja</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                {% endif %}
+            </form>
         </div>
     </div>
     <div class="panel panel-default">
@@ -143,38 +178,6 @@
                     {% csrf_token %}
                     <input type="hidden" name="sample_year" value="{{ sample_year }}"/>
                     <input type="hidden" name="target_group" value="{{ target_group }}"/>
-                    <div class="form-group pull-right submit-publish">
-                        <div class="modal fade" id="confirm-remove-modal" tabindex="-1" role="dialog"
-                             aria-hidden="true">
-                            <div class="modal-dialog">
-                                <div class="modal-content">
-                                    <div class="modal-body">
-                                        Är du säker på att du vill ta bort de markerade enkäterna? Denna åtgärd kan inte
-                                        ångras.
-                                    </div>
-                                    <div class="modal-footer">
-                                        <a href="#" class="btn btn-danger" data-dismiss="modal">Nej</a>
-                                        <button type="submit" class="btn btn-success btn-remove">Ja</button>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <a href="#" class="btn btn-danger btn-toggle btn-survey disabled" data-toggle="modal"
-                           data-target="#confirm-remove-modal">
-                            Ta bort
-                        </a>
-                        <button class="btn btn-primary btn-toggle btn-survey btn-dispatch disabled">
-                            Nytt utskick
-                        </button>
-                        <button type="submit" name="action" value="publish"
-                                class="btn btn-primary btn-toggle btn-survey btn-publish disabled">
-                            {% trans "Publicera" %}
-                        </button>
-                        <button type="submit" name="action" value="export"
-                                class="btn btn-primary btn-toggle btn-survey btn-export disabled">
-                            {% trans "Exportera" %}
-                        </button>
-                    </div>
                 {% endif %}
                 <table class="table survey_responses">
                     <thead>
@@ -300,7 +303,7 @@
 
                             <div class="modal-footer">
                                 <button type="button" class="btn btn-default" data-dismiss="modal">Avbryt</button>
-                                <button type="submit" class="btn btn-primary btn-save-dispatch">Spara</button>
+                                <button class="btn btn-primary">Spara</button>
                             </div>
                         </form>
                     </div>

@@ -250,13 +250,13 @@ define(['jquery', 'cell.sum', 'cell', 'surveys.dispatch', 'bootstrap.validator.s
             });
 
             var submitTo = function (action) {
-                $(".publish-survey-responses-form").get(0).
-                    setAttribute('action', Urls[action]());
+                $(".publish-survey-responses-form").get(0).setAttribute('action', Urls[action]());
+                $(".publish-survey-responses-form").get(0).submit();  
             };
 
-            $(".btn-remove").click(function () { submitTo('surveys_remove'); });
-            $(".btn-publish").click(function () { submitTo('surveys_publish'); });
-            $(".btn-export").click(function () { submitTo('surveys_export'); });
+            $(".btn-remove").click(function (e) { e.preventDefault(); submitTo('surveys_remove'); });
+            $(".btn-publish").click(function (e) { e.preventDefault(); submitTo('surveys_publish'); });
+            $(".btn-export").click(function (e) { e.preventDefault(); submitTo('surveys_export'); });
             $(".btn-dispatch").click(function (e) {
                 e.preventDefault();
 

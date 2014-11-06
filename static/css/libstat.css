@@ -35,11 +35,6 @@
     white-space: nowrap;
 }
 
-/* Publish suvey responses */
-.publish-survey-responses-form .submit-publish {
-    margin-top: -147px;
-}
-
 /* Get actual width of form inputs without using class form-inline */
 .form-control.width-auto {
     width: auto;
@@ -253,4 +248,16 @@ label.sub-label {
     font-size: inherit;
     font-weight: inherit;
     width: 350px;
+}
+
+.surveys-actions {
+    margin-top: 10px;
+}
+
+.btn-label.disabled {
+    color: black !important;
+} 
+
+.btn-label:active {
+    box-shadow: none;
 }
