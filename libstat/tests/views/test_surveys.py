@@ -82,16 +82,6 @@ class TestSurveyAuthorization(MongoTestCase):
         self.assertContains(response,
                             u'<div class="navbar navbar-inverse navbar-static-top" role="navigation">')
 
-    def test_can_not_remove_surveys_if_not_logged_in(self):
-        survey1 = self._dummy_survey()
-        survey2 = self._dummy_survey()
-
-        response = self._post(action='surveys_remove',
-                              data={"survey-response-ids": [survey1.pk, survey2.pk]})
-
-        self.assertEquals(response.status_code, 302)
-        self.assertEquals(len(Survey.objects.all()), 2)
-
 
 class TestRemoveSurveys(MongoTestCase):
 
@@ -133,3 +123,14 @@ class TestRemoveSurveys(MongoTestCase):
         self.assertEquals(len(Dispatch.objects.filter(pk=dispatch2.pk)), 1)
         self.assertEquals(len(Dispatch.objects.filter(pk=dispatch3.pk)), 0)
         self.assertEquals(len(Dispatch.objects.filter(pk=dispatch4.pk)), 1)
+
+    def test_can_not_remove_surveys_if_not_logged_in(self):
+        self._logout()
+        survey1 = self._dummy_survey()
+        survey2 = self._dummy_survey()
+
+        response = self._post(action='surveys_remove',
+                              data={"survey-response-ids": [survey1.pk, survey2.pk]})
+
+        self.assertEquals(response.status_code, 302)
+        self.assertEquals(len(Survey.objects.all()), 2)
