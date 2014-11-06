@@ -50,7 +50,11 @@
         {% endif %}
 
         <p>
-            <br>Respondenten måste ange lösenordet <b>{{ form.password }}</b> för att svara.
+            Respondenten kan komma åt enkäten på följande adress.
+            <br><b>{{ form.url_with_password }}</b>
+            <br>
+            <br>Alternativt kan lösenordet <b>{{ form.password }}</b> användas med adressen:
+            <br><b>{{ form.url }}</b>
         </p>
     </div>
 </div>

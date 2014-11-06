@@ -146,7 +146,7 @@ def surveys_overview(request, sample_year):
     return render(request, "libstat/surveys_overview.html", context)
 
 
-def survey(request, survey_id, wrong_password=False):
+def survey(request, survey_id):
 
     def has_password():
         return request.method == "GET" and "p" in request.GET or request.method == "POST"
