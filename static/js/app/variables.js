@@ -1,9 +1,9 @@
 define(['jquery'], function($) {
     return {
         'init': function() {
-            $(".edit-variable, .create-variable").click(function(e) {
+            $(".edit-variable, .create-variable").click(function() {
                 var url = $(this).data("form");
-                $("#variableModal").load(url, function() {
+                $("#modal-variable").load(url, function() {
                     $(this).modal('show');
                 });
 

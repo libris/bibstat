@@ -12,9 +12,20 @@
             'bootstrap.validator.sv': ['bootstrap.validator'],
             'jquery.tablesorter': ['jquery'],
             'jquery.textrange': ['jquery'],
-            'typeahead': ['jquery'],
+            'typeahead': ['jquery']
         },
         paths: {
+
+            /* App */
+            'dispatches': ['app/dispatches'],
+            'libraries': ['app/libraries'],
+            'login': ['app/login'],
+            'survey': ['app/survey'],
+            'survey.cell': ['app/survey/cell'],
+            'survey.sum': ['app/survey/sum'],
+            'surveys.dispatch': ['app/surveys/dispatch'],
+            'table': ['app/table'],
+            'variables': ['app/variables'],
 
             /* Plugins */
             'bootstrap': ['plugins/bootstrap/3.2.0/js/bootstrap'],
@@ -26,18 +37,7 @@
             'jquery.tablesorter': ['plugins/jquery/tablesorter/2.17.8/jquery.tablesorter.min'],
             'jquery.textrange': ['plugins/jquery/textrange/1.3.0/jquery-textrange'],
             'typeahead': ['plugins/typeaheadjs/0.10.5/typeahead.bundle'],
-            'underscore': ['plugins/underscorejs/1.7.0/underscore-min'],
-
-            /* App */
-            'survey.cell': ['app/survey/cell'],
-            'survey.sum': ['app/survey/sum'],
-            'dispatches': ['app/dispatches'],
-            'survey': ['app/survey'],
-            'surveys.dispatch': ['app/surveys/dispatch'],
-            'login': ['app/login'],
-            'libraries': ['app/libraries'],
-            'table': ['app/table'],
-            'variables': ['app/variables']
+            'underscore': ['plugins/underscorejs/1.7.0/underscore-min']
         },
 
         deps: ['app/main']
