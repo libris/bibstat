@@ -479,8 +479,7 @@ class SurveyBase(Document):
 
     @property
     def latest_version_published(self):
-        return self.is_published if self.is_published else (
-            self.published_at is not None and self.published_at >= self.date_modified)
+        return self.published_at is not None and self.published_at >= self.date_modified
 
     @property
     def library(self):

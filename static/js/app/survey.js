@@ -333,6 +333,11 @@ define(['jquery', 'survey.sum', 'survey.cell', 'surveys.dispatch', 'bootstrap.va
                 setIcon($(this).attr('id'), 'collapse');
             });
 
+            $('.modified-after-publish').tooltip();
+            $('.modified-after-publish').on("click", function(e) {
+                e.preventDefault();
+            });
+            
             sum.init();
             initDropdown();
             initProgress();

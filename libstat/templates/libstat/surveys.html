@@ -231,13 +231,15 @@
                             </td>
                             <td>
                                 {% if not sr.latest_version_published %}
-                                    <span class="text-warning bold css3-tooltip cursor-help"
-                                          title="Senaste version är inte publicerad">
+                                    <a class="label label-danger modified-after-publish" title="" data-placement="top"
+                                       data-toggle="tooltip" href="#" data-original-title="Enkäten har ändrats efter publicering">
+                                        {{ sr.published_at|utc_tz|date:"Y-m-d H:i" }}
+                                    </a>
                                 {% else %}
                                     <span>
+                                        {{ sr.published_at|utc_tz|date:"Y-m-d H:i" }}
+                                    </span>
                                 {% endif %}
-                                {{ sr.published_at|utc_tz|date:"Y-m-d H:i" }}
-                                </span>
                             </td>
                             <td>
                                 {{ sr.sample_year }}

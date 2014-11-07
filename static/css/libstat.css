@@ -30,6 +30,12 @@
     color: #ffffff;
 }
 
+.modified-after-publish {
+    cursor: default !important;
+    font-size: 14px; 
+    margin-left: -9px;
+}
+
 /* List variables */
 .variables .column.header {
     white-space: nowrap;
