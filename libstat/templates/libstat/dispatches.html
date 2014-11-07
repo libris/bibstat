@@ -1,6 +1,6 @@
 {% extends "libstat/base.html" %}
-{% load i18n %}
 {% load libstat_tags %}
+{% load i18n %}
 
 {% block content %}
     <div class="container">
@@ -9,9 +9,7 @@
                 <h3 class="panel-title">Utkorg</h3>
             </div>
             <div class="panel-body">
-                <p>
-                    Här sparas alla utkast innan de skickas iväg.
-                </p>
+                <p>Här sparas alla utkast innan de skickas iväg.</p>
                 <div class="panel-dispatches">
                     <button class="btn btn-danger btn-toggle btn-delete disabled">{% trans "Ta bort" %}</button>
                     <button class="btn btn-primary btn-toggle btn-send disabled">{% trans "Skicka" %}</button>
@@ -24,8 +22,7 @@
                         <thead>
                         <tr>
                             <th class="column selection">
-                                <input title="{% trans 'Markera alla' %}" class="select-all"
-                                       type="checkbox" value="all"/>
+                                <input title="{% trans 'Markera alla' %}" class="select-all"type="checkbox" value="all"/>
                             </th>
                             <th class="column">{% trans "Beskrivning" %}</th>
                             <th class="column">{% trans "Bibliotek" %}</th>
@@ -37,18 +34,12 @@
                         <tbody>
                         {% for dispatch in dispatches %}
                             <tr>
-                                <td>
-                                    <input title="{% trans 'Välj' %}" class="select-one"
-                                           name="dispatch-ids" type="checkbox" value="{{ dispatch.id }}"/>
-                                </td>
+                                <td><input title="{% trans 'Välj' %}" class="select-one" name="dispatch-ids" type="checkbox" value="{{ dispatch.id }}"/></td>
                                 <td>{{ dispatch.description }}</td>
                                 <td>{{ dispatch.library_name }}</td>
                                 <td>{{ dispatch.library_city }}</td>
                                 <td>{{ dispatch.library_email }}</td>
-                                <td>
-                                    <a class="show-dispatch" href="#" data-title="{{ dispatch.title }}"
-                                       data-message="{{ dispatch.message }}">Visa meddelandet</a>
-                                </td>
+                                <td><a class="show-dispatch" href="#" data-title="{{ dispatch.title }}" data-message="{{ dispatch.message }}">Förhandsgranska</a></td>
                             </tr>
                         {% endfor %}
                         </tbody>

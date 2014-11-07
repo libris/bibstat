@@ -66,7 +66,7 @@ def dispatches_delete(request):
 def dispatches_send(request):
     if request.method == "POST":
         dispatch_ids = request.POST.getlist("dispatch-ids", [])
-        dispatches = Dispatch.objects.filter(id__in=dispatch_ids)
+        dispatches = [dispatch for dispatch in Dispatch.objects.filter(id__in=dispatch_ids) if dispatch.survey.library.email]
 
         messages = [
             (dispatch.title, dispatch.message, settings.EMAIL_SENDER, [dispatch.survey.library.email])
@@ -74,6 +74,7 @@ def dispatches_send(request):
         ]
 
         send_mass_mail(messages)
-        dispatches.delete()
+        for dispatch in dispatches:
+            dispatch.delete()
 
     return redirect(reverse("dispatches"))
