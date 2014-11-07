@@ -29,13 +29,15 @@
             'underscore': ['plugins/underscorejs/1.7.0/underscore-min'],
 
             /* App */
-            'cell': ['app/cell/cell'],
-            'cell.sum': ['app/cell/sum'],
+            'survey.cell': ['app/survey/cell'],
+            'survey.sum': ['app/survey/sum'],
             'dispatches': ['app/dispatches'],
             'survey': ['app/survey'],
             'surveys.dispatch': ['app/surveys/dispatch'],
             'login': ['app/login'],
-            'libraries': ['app/libraries']
+            'libraries': ['app/libraries'],
+            'table': ['app/table'],
+            'variables': ['app/variables']
         },
 
         deps: ['app/main']

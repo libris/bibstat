@@ -1,5 +1,4 @@
-define(['jquery', 'cell'], function($, cell) {
-
+define(['jquery', 'survey.cell'], function($, cell) {
     var sumOf = function(elements) {
         var sum = 0;
 

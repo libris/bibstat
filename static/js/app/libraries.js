@@ -9,10 +9,6 @@ define(['jquery'], function($) {
 
                 $('#modal-create .modal-body').html(message);
             });
-
-            $('.btn-create-confirm').click(function() {
-
-            });
         }
     }
 });

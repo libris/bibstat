@@ -2,8 +2,6 @@ define(["jquery"], function ($) {
     return {
         init: function () {
             $(".login-form").submit(function (e) {
-                e.preventDefault();
-                console.log("Submitting login");
                 var self = this;
                 $(self).find(".errors").text("");
                 $.ajax({
@@ -24,6 +22,7 @@ define(["jquery"], function ($) {
                         console.info("An error occurred!")
                     }
                 });
+
                 return false;
             });
 
@@ -43,19 +42,15 @@ define(["jquery"], function ($) {
                     var url = $(".show-login-modal").data("form") + "?next=" + urlParams["next"];
                     $("#loginModal").load(url, function() {
                         $(this).modal("show");
-                        var nextInput = $(this).find("input[name=next]");
                     });
                 }
             }
 
-            /* Login */
             $(".show-login-modal").click(function(e) {
-                e.preventDefault();
                 $("#loginModal").modal("show");
                 return false;
             });
 
-            /* Focus username input field when login modal is shown. */
             $("#loginModal").on("shown.bs.modal", function() {
                 $("#username").focus();
             });

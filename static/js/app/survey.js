@@ -1,4 +1,4 @@
-define(['jquery', 'cell.sum', 'cell', 'surveys.dispatch', 'bootstrap.validator.sv'], function ($, sum, cell, dispatch) {
+define(['jquery', 'survey.sum', 'survey.cell', 'surveys.dispatch', 'bootstrap.validator.sv'], function ($, sum, cell, dispatch) {
     var survey = {
         form: function (selector) {
             if (selector) return $('#survey-form ' + selector);
