@@ -21,10 +21,10 @@
 				</div>
 				<span class="pull-right">
 					<div class="form-group">
-						<a href="{% url 'import_libraries' %}" class="btn btn-primary">Importera bibliotek</a>
+						<a href="#" class="btn btn-primary" data-toggle="modal" data-target="#modal-import">Importera</a>
 					</div>
 					<div class="form-group">
-						<a href="{% url 'remove_libraries' %}" class="btn btn-danger">Ta bort alla bibliotek</a>
+                        <a href="#" class="btn btn-danger" data-toggle="modal" data-target="#modal-remove">Rensa</a>
 					</div>
 				</span>
 				<hr>
@@ -71,4 +71,42 @@
 		</div>
 	</div>
 </div>
+
+<div class="modal fade" id="modal-import">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+                <h4 class="modal-title">Bekräfta importering</h4>
+            </div>
+            <div class="modal-body">
+                <p>Denna åtgärd importerar information om alla bibliotek från biblioteksdatabasen.<br>Uppdateringen kan ta några minuter att genomföra.</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Avbryt</button>
+                <a href="{% url 'import_libraries' %}" class="btn btn-primary">Importera</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="modal-remove">
+	<div class="modal-dialog">
+		<div class="modal-content">
+			<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+				<h4 class="modal-title">Bekräfta rensning</h4>
+			</div>
+			<div class="modal-body">
+				<p>Denna åtgärd tar bort informationen om alla bibliotek.<br>Ingen information tas bort från biblioteksdatabasen.</p>
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-default" data-dismiss="modal">Avbryt</button>
+				<a href="{% url 'remove_libraries' %}" class="btn btn-danger">Rensa</a>
+			</div>
+		</div>
+	</div>
+</div>
+
+
 {% endblock %}
