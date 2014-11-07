@@ -5,6 +5,7 @@ define(['jquery', 'jquery.textrange'], function ($) {
     var messageInput = function () { return $('.dispatch-message'); };
     var message = function () { return messageInput().val(); };
     var title = function () { return $('.dispatch-title').val(); };
+    var description = function () { return $('.dispatch-description').val(); };
     var bold = function (text) { return '<b>' + text + '</b>'; };
     var asToken = function (name) { return "{" + name + "}"; };
 
@@ -69,7 +70,7 @@ define(['jquery', 'jquery.textrange'], function ($) {
         });
     };
 
-    var init = function (library, address) {
+    var init = function (library, address, closeCallback) {
         $('.dispatch-example-footer').html("Detta är ett exempelutskick för " + library + ".");
         $('.btn-library').data('value', library);
         $('.btn-address-password').data('value', address + "?p=" + 'VRhNVva5AR');
@@ -77,13 +78,16 @@ define(['jquery', 'jquery.textrange'], function ($) {
         $('.btn-password').data('value', 'VRhNVva5AR');
 
         $('.dispatch-message').change();
-        $('#modal-dispatch').modal('show');
+        $('#modal-dispatch').modal('show').on('hide.bs.modal', function() {
+            var unsavedChanges = description().length > 0 || title().length > 0 || message().length > 0;
+            closeCallback(unsavedChanges);
+        });
     };
 
     return {
-        'init': function (library, address) {
+        'init': function (library, address, closeCallback) {
             initOnce();
-            init(library, address);
+            init(library, address, closeCallback);
         }
     }
 });

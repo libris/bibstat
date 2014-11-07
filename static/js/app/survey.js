@@ -271,7 +271,12 @@ define(['jquery', 'survey.sum', 'survey.cell', 'surveys.dispatch', 'bootstrap.va
                 var address = checked.data('url-base') + checked.data('address');
 
                 submitTo('dispatches');
-                dispatch.init(library, address);
+                dispatch.init(library, address, function(unsavedChanges) {
+                    $('.btn-dispatch').text(unsavedChanges
+                            ? "Nytt utskick*"
+                            : "Nytt utskick"
+                    );
+                });
             });
 
             /* Move feedback icons to the right side of the input field. */
