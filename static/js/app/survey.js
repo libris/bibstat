@@ -232,7 +232,7 @@ define(['jquery', 'survey.sum', 'survey.cell', 'surveys.dispatch', 'bootstrap.va
                     return $(this).attr("id");
                 }).get().join(" ");
                 $("#unknown_inputs").val(unknownInputIds);
-                unknownInputs.val(0);
+                unknownInputs.val("");
 
                 var disabledInputIds = survey.disabledInputs().map(function () {
                     return $(this).attr("id");
