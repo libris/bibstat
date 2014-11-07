@@ -77,7 +77,7 @@
             <div class="navbar-text">
                 Välkommen till {{ form.sample_year }} års enkät för
                 <b><u>{{ form.library_name }}</u></b>
-                {% if form.city %} i <b><u>{{ form.city }}</u></b>{% endif %}.
+                {% if form.city %} i <b><u>{{ form.city }}</u></b>{% endif %}
             </div>
         </div>
     </div>
@@ -89,6 +89,7 @@
 
     <div class="row">
         <div class="col-xs-11 col-sm-10 col-md-7">
+            <h2 class="section-title">Innan du börjar fylla i enkäten</h2>
             {% include "libstat/survey/help.html" %}
         </div>
         <div class="col-xs-1 pull-right">

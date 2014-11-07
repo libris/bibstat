@@ -34,7 +34,8 @@
             'dispatches': ['app/dispatches'],
             'survey': ['app/survey'],
             'surveys.dispatch': ['app/surveys/dispatch'],
-            'login': ['app/login']
+            'login': ['app/login'],
+            'libraries': ['app/libraries']
         },
 
         deps: ['app/main']
