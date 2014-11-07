@@ -564,7 +564,7 @@ class SurveyViewTest(MongoTestCase):
     def test_should_list_survey_responses_by_status(self):
         self._dummy_survey(status="not_viewed", sample_year=2010)
         self._dummy_survey(status="submitted", sample_year=2010)
-        self._dummy_survey(status="published", sample_year=2010)
+        self._dummy_survey(status="initiated", sample_year=2010).publish()
 
         response = self.client.get("{}?action=list&status=submitted&sample_year=2010".format(reverse("surveys")))
 

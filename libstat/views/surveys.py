@@ -193,23 +193,22 @@ def survey(request, survey_id):
     return render(request, 'libstat/survey/password.html', context)
 
 
-def _get_status_key_from_value(status):
-    keys = list(survey_response_statuses.keys())
-    values = list(survey_response_statuses.values())
-    return keys[values.index(status)]
-
-
 @permission_required('is_superuser', login_url='index')
 def surveys_status(request, survey_id):
     if request.method == "POST":
         status = request.POST[u'selected_status']
-        if status == "published":
-            raise Exception("Cannot set published status for survey '" + survey_id + "'.")
-        if not status in survey_response_statuses.values():
-            raise Exception("Invalid status '" + status + "' for survey '" + survey_id + "'.")
-
         survey = Survey.objects.get(pk=survey_id)
-        survey.status = _get_status_key_from_value(status)
+        survey.status = status
         survey.save()
 
     return redirect(reverse('survey', args=(survey_id,)))
+
+
+@permission_required('is_superuser', login_url='index')
+def surveys_statuses(request):
+    status = request.POST.get("new_status", "")
+    survey_response_ids = request.POST.getlist("survey-response-ids", [])
+    for survey in Survey.objects.filter(id__in=survey_response_ids):
+        survey.status = status
+        survey.save()
+    return redirect("surveys")

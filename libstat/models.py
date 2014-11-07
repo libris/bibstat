@@ -347,7 +347,7 @@ class SurveyResponseQuerySet(QuerySet):
     def by(self, sample_year=None, target_group=None, status=None):
         target_group_query = Q(target_group=target_group) if target_group else Q()
         sample_year_query = Q(sample_year=sample_year) if sample_year else Q()
-        status_query = Q(status=status) if status else Q()
+        status_query = Q(_status=status) if status else Q()
         return self.filter(target_group_query & sample_year_query & status_query)
 
 
@@ -443,7 +443,7 @@ class SurveyBase(Document):
     date_modified = DateTimeField(required=True, default=datetime.utcnow)
     modified_by = ReferenceField(User)
     observations = ListField(EmbeddedDocumentField(SurveyObservation))
-    status = StringField(choices=SURVEY_RESPONSE_STATUSES, default=NOT_VIEWED[0])
+    _status = StringField(choices=SURVEY_RESPONSE_STATUSES, default=NOT_VIEWED[0])
     _library = EmbeddedDocumentField(LibraryCached)
     library_name = StringField()
     sample_year = IntField()
@@ -452,6 +452,18 @@ class SurveyBase(Document):
     meta = {
         'abstract': True,
     }
+
+    @property
+    def status(self):
+        return self._status
+
+    @status.setter
+    def status(self, status):
+        if status == "published" and not self._status == "published":
+            raise Exception("Cannot set published status for survey '{}'.".format(self.pk))
+        if not status in [s[0] for s in SURVEY_RESPONSE_STATUSES]:
+            raise KeyError("Invalid status '{}'".format(status))
+        self._status = status
 
     def observation_by_key(self, key):
         hits = [obs for obs in self.observations if obs._source_key == key]
@@ -488,8 +500,11 @@ class SurveyBase(Document):
 
     def __init__(self, *args, **kwargs):
         library = kwargs.pop("library", None)
+        status = kwargs.pop("status", None)
         super(SurveyBase, self).__init__(*args, **kwargs)
         self.library = library
+        if status:
+            self.status = status
 
 
 class Survey(SurveyBase):
@@ -515,7 +530,7 @@ class Survey(SurveyBase):
     def store_version_and_update_date_modified(cls, sender, document, **kwargs):
         if document.id:
             if hasattr(document, "_action_publish"):
-                document.status = PUBLISHED[0]
+                document._status = PUBLISHED[0]
             else:
                 changed_fields = document.__dict__["_changed_fields"] if "_changed_fields" in document.__dict__ else []
                 logger.info(
@@ -541,7 +556,7 @@ class Survey(SurveyBase):
 
         for obs in self.observations:
             # Only publish public observations that have a value
-            if obs._is_public and obs.value != None:
+            if obs._is_public and obs.value is not None:
                 # TODO: Need to handle consequent publishes
                 data_item = None
                 existing = OpenData.objects.filter(library_name=self.library.name, sample_year=self.sample_year,
@@ -559,7 +574,7 @@ class Survey(SurveyBase):
                 data_item.date_modified = publishing_date
                 data_item.save()
 
-        self.status = PUBLISHED[0]
+        self._status = PUBLISHED[0]
         self.published_at = publishing_date
         self.published_by = user
 

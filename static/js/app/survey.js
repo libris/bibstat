@@ -262,6 +262,7 @@ define(['jquery', 'cell.sum', 'cell', 'surveys.dispatch', 'bootstrap.validator.s
             $(".btn-remove").click(function (e) { e.preventDefault(); submitTo('surveys_remove', true); });
             $(".btn-publish").click(function (e) { e.preventDefault(); submitTo('surveys_publish', true); });
             $(".btn-export").click(function (e) { e.preventDefault(); submitTo('surveys_export', true); });
+            $(".btn-change-status").click(function (e) { e.preventDefault(); submitTo('surveys_statuses', true); });
             $(".btn-dispatch").click(function (e) {
                 e.preventDefault();
 

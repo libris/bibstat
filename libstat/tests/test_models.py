@@ -37,6 +37,34 @@ class SurveyResponseTest(MongoTestCase):
             SurveyObservation(variable=v3, value=u"Här är en kommentar", _source_key="folk8", _is_public=v3.is_public))
         self.survey_response = sr.save()
 
+    def test_can_not_update_status_to_invalid_value(self):
+        survey = self._dummy_survey()
+
+        try:
+            survey.status = "some_invalid_status"
+            self.assertTrue(False)
+        except KeyError:
+            pass
+
+    def test_can_create_survey_with_valid_status(self):
+        survey = self._dummy_survey(status="not_viewed")
+
+        self.assertEquals(survey.status, "not_viewed")
+
+    def test_can_not_create_survey_with_invalid_status(self):
+        try:
+            self._dummy_survey(status="some_invalid_status")
+            self.assertTrue(False)
+        except KeyError:
+            pass
+
+    def test_can_update_status_to_valid_value(self):
+        survey = self._dummy_survey(status="not_viewed")
+
+        survey.status = "initiated"
+
+        self.assertEquals(survey.status, "initiated")
+
     def test_should_export_public_non_null_observations_to_openData(self):
         variable = self._dummy_variable(key=u"key1", is_public=True)
         observation = SurveyObservation(variable=variable, value="val1", _source_key=variable.key,
@@ -197,13 +225,14 @@ class SurveyResponseTest(MongoTestCase):
         self.assertTrue(survey.latest_version_published)
 
     def test_is_published(self):
-        self.assertFalse(self.survey_response.is_published)
+        survey = self._dummy_survey()
+        self.assertFalse(survey.is_published)
 
-        self.survey_response.status = "published"
-        self.assertTrue(self.survey_response.is_published)
+        survey.publish()
+        self.assertTrue(survey.is_published)
 
-        self.survey_response.status = "submitted"
-        self.assertFalse(self.survey_response.is_published)
+        survey.status = "submitted"
+        self.assertFalse(survey.is_published)
 
 
 class SurveyLibraryCachingTest(MongoTestCase):
@@ -261,35 +290,6 @@ class SurveyLibraryCachingTest(MongoTestCase):
         survey.status = "not_viewed"
 
         self.assertEquals(survey.library.name, "new_name")
-
-
-class SurveyResponseQuerySetTest(MongoTestCase):
-
-    def setUp(self):
-        self.publishing_date = datetime(2014, 8, 22, 10, 40, 33, 876)
-        sr1 = Survey(library_name="KARLSTAD STADSBIBLIOTEK", sample_year=2013, target_group="public",
-                     observations=[], published_at=self.publishing_date)
-        sr1.save()
-        self.public_sr_1 = Survey.objects.get(pk=sr1.id)
-        sr2 = Survey(library_name="NORRBOTTENS LÄNSBIBLIOTEK", sample_year=2012, target_group="public",
-                     observations=[], published_at=self.publishing_date, status="published")
-        sr2.save()
-        self.public_sr_2 = Survey.objects.get(pk=sr2.id)
-        sr3 = Survey(library_name="Sjukhusbiblioteken i Dalarnas län", sample_year=2013,
-                     target_group="hospital", observations=[])
-        sr3.save()
-        self.hospital_sr = Survey.objects.get(pk=sr3.id)
-
-    def test_filter_by(self):
-        self.assertEquals([sr.id for sr in Survey.objects.by(target_group="public")],
-                          [self.public_sr_1.id, self.public_sr_2.id])
-        self.assertEquals(
-            [sr.id for sr in Survey.objects.by(target_group="public", sample_year=2012)],
-            [self.public_sr_2.id])
-        self.assertEquals([sr.id for sr in Survey.objects.by()],
-                          [self.public_sr_1.id, self.public_sr_2.id, self.hospital_sr.id])
-        self.assertEquals([sr.id for sr in Survey.objects.by(target_group="research")], [])
-        self.assertEquals([sr.id for sr in Survey.objects.by(sample_year=2014)], [])
 
 
 class OpenDataTest(MongoTestCase):

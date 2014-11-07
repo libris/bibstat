@@ -133,6 +133,10 @@
                                    data-target="#confirm-remove-modal">
                                     Ta bort
                                 </a>
+                                <a href="#" class="btn btn-primary btn-toggle btn-survey disabled" data-toggle="modal"
+                                   data-target="#change-status-modal">
+                                    Ändra status
+                                </a>
                                 <a href="#" class="btn btn-primary btn-toggle btn-survey btn-dispatch disabled">
                                     Nytt utskick
                                 </a>
@@ -260,6 +264,39 @@
                 {% endif %}
                 </tbody>
             </table>
+            <div class="modal fade" id="change-status-modal" tabindex="-1" role="dialog"
+                         aria-hidden="true">
+                        <div class="modal-dialog">
+                            <div class="modal-content">
+                                <div class="modal-body">
+                                    <p>
+                                        Välj vilken status de markerade enkäterna ska få.
+                                    </p>
+                                    <select name="new_status" class="form-control">
+                                        <option value="" selected="selected">
+                                            Status
+                                        </option>
+                                        <option value="not_viewed">
+                                            Ej öppnad
+                                        </option>
+                                        <option value="initiated">
+                                            Påbörjad
+                                        </option>
+                                        <option value="submitted">
+                                            Inskickad
+                                        </option>
+                                        <option value="controlled">
+                                            Kontrollerad
+                                        </option>
+                                    </select>
+                                </div>
+                                <div class="modal-footer">
+                                    <a href="#" class="btn btn-danger" data-dismiss="modal">Avbryt</a>
+                                    <button class="btn btn-success btn-change-status">Ändra status</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
         </form>
 
         <!-- Dispatch Modal -->

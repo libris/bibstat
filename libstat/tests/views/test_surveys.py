@@ -134,3 +134,25 @@ class TestRemoveSurveys(MongoTestCase):
 
         self.assertEquals(response.status_code, 302)
         self.assertEquals(len(Survey.objects.all()), 2)
+
+
+class TestSurveyStatus(MongoTestCase):
+
+    def setUp(self):
+        self._login()
+
+    def test_updates_status_for_multiple_surveys(self):
+        survey1 = self._dummy_survey(status="not_viewed")
+        survey2 = self._dummy_survey(status="initiated")
+        survey3 = self._dummy_survey(status="initiated")
+        survey4 = self._dummy_survey(status="controlled")
+
+        response = self._post(action='surveys_statuses',
+                              data={"survey-response-ids": [survey1.pk, survey3.pk],
+                                    "new_status": "controlled"})
+
+        self.assertEquals(response.status_code, 302)
+        self.assertEquals(survey1.reload().status, "controlled")
+        self.assertEquals(survey2.reload().status, "initiated")
+        self.assertEquals(survey3.reload().status, "controlled")
+        self.assertEquals(survey4.reload().status, "controlled")
