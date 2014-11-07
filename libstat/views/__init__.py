@@ -15,7 +15,8 @@ from surveys import (survey,
                      surveys_publish,
                      surveys,
                      surveys_remove,
-                     surveys_overview)
+                     surveys_overview,
+                     _surveys_redirect)
 from libraries import (libraries,
                        import_libraries,
                        remove_libraries,

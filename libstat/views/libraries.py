@@ -9,6 +9,7 @@ from django.contrib.auth.decorators import permission_required
 
 from libstat.models import Library, LibrarySelection, Survey, SurveyObservation, Variable
 from libstat.forms import CreateSurveysForm
+from libstat.views import _surveys_redirect
 from libstat.survey_templates import survey_template
 
 
@@ -51,7 +52,8 @@ def libraries(request):
                     library_ids.append(field)
         if "create_surveys_btn" in form.data:
             _create_surveys(library_ids, sample_year)
-            return redirect(reverse("surveys"))
+            request.session["message"] = u"Skapade {} enkäter.".format(len(library_ids))
+            return _surveys_redirect(request)
         elif "save_selection_btn" in form.data:
             lib_selection, _ = LibrarySelection.objects.get_or_create(name="lib_selection")
             lib_selection.sigels = []

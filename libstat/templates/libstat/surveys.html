@@ -18,10 +18,10 @@
             </p>
             {% if message %}
                 <div class="row">
-                    <div class="col-md-12">
-                        <p>
-                            <span class="text-warning warnings right">{{ message }}</span>
-                        </p>
+                    <div class="col-md-6">
+                        <div class="alert alert-info" role="alert">
+                            {{ message }}
+                        </div>
                     </div>
                 </div>
             {% endif %}
@@ -116,7 +116,7 @@
                                     Publicerad
                                 </option>
                             </select>
-                            <input type="text" name="free-text" class="form-control" placeholder="Sökord">
+                            <!--input type="text" name="free-text" class="form-control" placeholder="Sökord"-->
                             <button type="submit" name="action" value="list"
                                     class="btn btn-primary">
                                 Lista enkäter
@@ -200,6 +200,7 @@
                 {% csrf_token %}
                 <input type="hidden" name="sample_year" value="{{ sample_year }}"/>
                 <input type="hidden" name="target_group" value="{{ target_group }}"/>
+                <input type="hidden" name="status" value="{{ status }}"/>
             {% endif %}
             <table class="table survey_responses">
                 <thead>
