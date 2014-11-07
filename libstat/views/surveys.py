@@ -154,7 +154,7 @@ def survey(request, survey_id):
         return request.method == "GET" and "p" in request.GET or request.method == "POST"
 
     def get_password():
-        return request.GET["p"] if request.method == "GET" else request.POST["password"]
+        return request.GET["p"] if request.method == "GET" else request.POST.get("password", None)
 
     def can_view_survey(survey):
         return request.user.is_authenticated() or request.session.get("password") == survey.id
@@ -186,6 +186,7 @@ def survey(request, survey_id):
     if has_password():
         if get_password() == survey.password:
             request.session["password"] = survey.id
+            request.session.set_expiry(0)
             return redirect(reverse("survey", args=(survey_id,)))
         else:
             context["wrong_password"] = True
