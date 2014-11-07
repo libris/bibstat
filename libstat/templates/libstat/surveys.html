@@ -230,7 +230,7 @@
                                 {{ sr.status|srs_label }}
                             </td>
                             <td>
-                                {% if not sr.latest_version_published %}
+                                {% if sr.is_published and not sr.latest_version_published %}
                                     <a class="label label-danger modified-after-publish" title="" data-placement="top"
                                        data-toggle="tooltip" href="#" data-original-title="Enkäten har ändrats efter publicering">
                                         {{ sr.published_at|utc_tz|date:"Y-m-d H:i" }}
