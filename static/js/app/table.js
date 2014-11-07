@@ -1,4 +1,4 @@
-define(['jquery'], function($) {
+define(['jquery', 'jquery.tablesorter'], function($) {
     return {
         'init': function() {
             window.ellipsis = function (text, max_chars) {
