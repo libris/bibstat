@@ -254,7 +254,7 @@
         $("#replaced_by").click(function(event) {
             event.preventDefault();
             var url = $(this).data("form"); // get form
-            $("#variableModal").load(url, function() { // load the url into the modal
+            $("#modal-variable").load(url, function() { // load the url into the modal
                 $(this).modal('show'); // display the modal on url load
             });
             return false; // prevent the click propagation
@@ -294,7 +294,7 @@
                         }
                     } else {
                         console.info("saved variable: ", data);
-                        $('#variableModal').modal('hide');
+                        $('#modal-variable').modal('hide');
                         window.location.reload(true);
                     }
                 },
