@@ -18,7 +18,8 @@ from libstat.utils import ISO8601_utc_format, SURVEY_RESPONSE_STATUSES, NOT_VIEW
 
 logger = logging.getLogger(__name__)
 
-from libstat.utils import SURVEY_TARGET_GROUPS, targetGroups, VARIABLE_TYPES, rdfVariableTypes
+from libstat.utils import (SURVEY_TARGET_GROUPS, targetGroups, PUBLIC_LIBRARY,
+                           VARIABLE_TYPES, rdfVariableTypes)
 
 
 class VariableQuerySet(QuerySet):
@@ -435,7 +436,7 @@ class SurveyBase(Document):
     survey_time_minutes = IntField()
     population_nation = LongField()
     population_0to14y = LongField()
-    target_group = StringField(required=True, choices=SURVEY_TARGET_GROUPS)
+    target_group = StringField(required=True, choices=SURVEY_TARGET_GROUPS, default=PUBLIC_LIBRARY[0])
     published_at = DateTimeField()
     published_by = ReferenceField(User)
     date_created = DateTimeField(required=True, default=datetime.utcnow)

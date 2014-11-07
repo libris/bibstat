@@ -43,7 +43,7 @@ class MongoTestCase(TestCase):
         return Library(name=name, sigel=sigel, bibdb_id=bibdb_id, city=city,
                        municipality_code=municipality_code).save()
 
-    def _dummy_survey(self, library_name="dummy_name", sample_year=2001, password=None, target_group="public",
+    def _dummy_survey(self, library_name="dummy_name", sample_year=2001, password=None, target_group="folkbib",
                       status="not_viewed", publish=False, library=None, website=None, created_by=None,
                       observations=[]):
         if not library:
@@ -57,7 +57,7 @@ class MongoTestCase(TestCase):
         return survey
 
     def _dummy_variable(self, key=None, description=u"dummy description", type="integer", is_public=True,
-                        target_groups=["public"], is_draft=False, replaced_by=None, save=True):
+                        target_groups=["folkbib"], is_draft=False, replaced_by=None, save=True):
         if not key:
             key = ''.join(random.choice(string.ascii_uppercase + string.digits) for _ in range(8))
         variable = Variable(key=key, description=description, type=type, is_public=is_public,
@@ -67,7 +67,7 @@ class MongoTestCase(TestCase):
             variable.reload()
         return variable
 
-    def _dummy_open_data(self, library_name=u"dummy_lib", library_id=u"123", sample_year=2013, target_group="public",
+    def _dummy_open_data(self, library_name=u"dummy_lib", library_id=u"123", sample_year=2013, target_group="folkbib",
                          variable=None, value=1, date_created=None, date_modified=None, save=True):
         if not variable:
             variable = self._dummy_variable()

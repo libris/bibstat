@@ -40,7 +40,7 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
         if not options["target_group"] or not options["file"]:
             self.stdout.write(
-                "Usage: python manage.py import_variables --file=</path/to/file> --target_group=<public|research|hospital|school>\n\n")
+                "Usage: python manage.py import_variables --file=</path/to/file> --target_group=<folkbib|specbib|sjukbib|skolbib>\n\n")
             return
 
         file = options["file"]

@@ -2,12 +2,23 @@
 from collections import OrderedDict
 import datetime
 
-ALL_TARGET_GROUPS_label = u"Samtliga bibliotekstyper"
-PUBLIC_LIBRARY = ("public", "Folkbibliotek")
-RESEARCH_LIBRARY = ("research", "Forskningsbibliotek")
-HOSPITAL_LIBRARY = ("hospital", "Sjukhusbibliotek")
-SCHOOL_LIBRARY = ("school", "Skolbibliotek")
-SURVEY_TARGET_GROUPS = (PUBLIC_LIBRARY, RESEARCH_LIBRARY, HOSPITAL_LIBRARY, SCHOOL_LIBRARY)
+ALL_TARGET_GROUPS_label = "Samtliga bibliotek"
+PUBLIC_LIBRARY = ('folkbib', u'Folkbibliotek')
+RESEARCH_LIBRARY = ('specbib', u'Specialbibliotek')
+HOSPITAL_LIBRARY = ('sjukbib', u'Sjukhusbibliotek')
+SCHOOL_LIBRARY = ('skolbib', u'Skolbibliotek')
+SURVEY_TARGET_GROUPS = (
+    ('natbib', u'Nationalbibliotek'),
+    ('univbib', u'Universitets/högskolebibliotek'),
+    ('busbib', u'Företagsbibliotek'),
+    ('musbib', u'Arkiv/museibibliotek'),
+    ('ovrbib', u'Övriga'),
+    PUBLIC_LIBRARY,
+    RESEARCH_LIBRARY,
+    HOSPITAL_LIBRARY,
+    SCHOOL_LIBRARY
+)
+
 targetGroups = dict(SURVEY_TARGET_GROUPS)
 
 NOT_VIEWED = (u"not_viewed", u"Ej öppnad")

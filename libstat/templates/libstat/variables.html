@@ -18,20 +18,20 @@
                 <br/>
                 <div class="btn-toolbar">
                     <div class="btn-group">
-                        <a role="button" class="btn btn-default {% if 'public' in target_groups %}active{% endif %}"
-                           href="{% url 'variables' %}?target_group=public">
+                        <a role="button" class="btn btn-default {% if 'folkbib' in target_groups %}active{% endif %}"
+                           href="{% url 'variables' %}?target_group=folkbib">
                             {% trans "Folkbibliotek" %}
                         </a>
-                        <a role="button" class="btn btn-default {% if 'research' in target_groups %}active{% endif %}"
-                           href="{% url 'variables' %}?target_group=research">
+                        <a role="button" class="btn btn-default {% if 'specbib' in target_groups %}active{% endif %}"
+                           href="{% url 'variables' %}?target_group=specbib">
                             {% trans "Forskningsbibliotek" %}
                         </a>
-                        <a role="button" class="btn btn-default {% if 'hospital' in target_groups %}active{% endif %}"
-                           href="{% url 'variables' %}?target_group=hospital">
+                        <a role="button" class="btn btn-default {% if 'sjukbib' in target_groups %}active{% endif %}"
+                           href="{% url 'variables' %}?target_group=sjukbib">
                             {% trans "Sjukhusbibliotek" %}
                         </a>
-                        <a role="button" class="btn btn-default {% if 'school' in target_groups %}active{% endif %}"
-                           href="{% url 'variables' %}?target_group=school">
+                        <a role="button" class="btn btn-default {% if 'skolbib' in target_groups %}active{% endif %}"
+                           href="{% url 'variables' %}?target_group=skolbib">
                             {% trans "Skolbibliotek" %}
                         </a>
                         <a role="button" class="btn btn-default {% if 'all' in target_groups %}active{% endif %}"

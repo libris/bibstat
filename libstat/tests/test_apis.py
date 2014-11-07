@@ -308,36 +308,36 @@ class SurveyableVariablesApiTest(MongoTestCase):
 
     def setUp(self):
         v = Variable(key=u"Folk12", description=u"Antal bemannade filialer", type="integer", is_public=True,
-                     target_groups=["public"])
+                     target_groups=["folkbib"])
         self.active_without_dates = v.save()
 
         v1 = Variable(key=u"Folk10", description=u"Antal bemannade servicesställen", type="integer", is_public=True,
-                      target_groups=["public"],
+                      target_groups=["folkbib"],
                       active_from=datetime(2010, 1, 1).date())
         self.active_with_from_date = v1.save()
 
         v3 = Variable(key=u"Folk31", description=u"Antal årsverken totalt", type="decimal", is_public=True,
-                      target_groups=["public"],
+                      target_groups=["folkbib"],
                       active_from=datetime.utcnow().date(), active_to=(datetime.utcnow() + timedelta(days=1)).date())
         self.active_with_date_range = v3.save()
 
         v2 = Variable(key=u"Folk35", description=u"Antal årsverken övrig personal", type="decimal", is_public=True,
-                      target_groups=["public"],
+                      target_groups=["folkbib"],
                       active_to=datetime(2014, 6, 1).date())
         self.discontinued = v2.save()
 
         v5 = Variable(key=u"Folk20", description=u"Text övriga utlåningsställen", type="string", is_public=False,
-                      target_groups=["public"],
+                      target_groups=["folkbib"],
                       active_from=(datetime.utcnow() + timedelta(days=90)).date())
         self.pending = v5.save()
 
         v4 = Variable(key=u"Folk69", description=u"Totalt nyförvärv AV-medier", type="integer", is_public=True,
-                      target_groups=["public"],
+                      target_groups=["folkbib"],
                       is_draft=True)
         self.draft = v4.save()
 
         v6 = Variable(key=u"Folk80", description=u"Nyförvärv musik under kalanderåret.", type="integer", is_public=True,
-                      target_groups=["public"],
+                      target_groups=["folkbib"],
                       replaced_by=self.draft)
         self.replaced = v6.save()
 

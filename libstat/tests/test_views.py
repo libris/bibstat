@@ -8,6 +8,7 @@ from mongoengine.django.auth import User
 from datetime import datetime
 from libstat.tests import MongoTestCase
 from libstat.models import Variable, Survey, SurveyObservation, OpenData
+from libstat.utils import SURVEY_TARGET_GROUPS
 
 
 class VariablesViewTest(MongoTestCase):
@@ -41,11 +42,11 @@ class VariablesViewTest(MongoTestCase):
         self.assertEquals(len(response.context["variables"]), 3)
 
     def test_should_filter_variables_by_target_group(self):
-        self._dummy_variable(key=u"key_1", target_groups=["hospital"])
-        self._dummy_variable(key=u"key_2", target_groups=["school"])
-        self._dummy_variable(key=u"key_3", target_groups=["hospital"])
+        self._dummy_variable(key=u"key_1", target_groups=["sjukbib"])
+        self._dummy_variable(key=u"key_2", target_groups=["skolbib"])
+        self._dummy_variable(key=u"key_3", target_groups=["sjukbib"])
 
-        response = self.client.get(u"{}?target_group=hospital".format(self.url))
+        response = self.client.get(u"{}?target_group=sjukbib".format(self.url))
 
         self.assertEquals(response.status_code, 200)
         self.assertEquals(len(response.context["variables"]), 2)
@@ -53,9 +54,10 @@ class VariablesViewTest(MongoTestCase):
         self.assertEquals(response.context["variables"][1].key, u"key_3")
 
     def test_should_filter_variables_by_target_group_all(self):
-        self._dummy_variable(key=u"key_1", target_groups=["hospital"])
-        self._dummy_variable(key=u"key_2", target_groups=["public", "research", "hospital", "school"])
-        self._dummy_variable(key=u"key_3", target_groups=["hospital"])
+        all_groups = [g[0] for g in SURVEY_TARGET_GROUPS]
+        self._dummy_variable(key=u"key_1", target_groups=["sjukbib"])
+        self._dummy_variable(key=u"key_2", target_groups=all_groups)
+        self._dummy_variable(key=u"key_3", target_groups=["sjukbib"])
 
         response = self.client.get(u"{}?target_group=all".format(self.url))
 
@@ -67,7 +69,7 @@ class VariablesViewTest(MongoTestCase):
         self._dummy_variable(key=u"key_1")
         self._dummy_variable(key=u"key_2")
 
-        response = self.client.get(u"{}?target_group=school&target_group=public".format(self.url))
+        response = self.client.get(u"{}?target_group=skolbib&target_group=folkbib".format(self.url))
 
         self.assertEquals(response.status_code, 200)
         self.assertEquals(len(response.context["variables"]), 2)
@@ -127,7 +129,7 @@ class CreateVariableViewTest(MongoTestCase):
                                      u"sub_category": u"Personal",
                                      u"type": u"integer",
                                      u"is_public": u"True",
-                                     u"target_groups": [u"public", u"research", u"school", u"hospital"],
+                                     u"target_groups": [u"folkbib", u"specbib", u"skolbib", u"sjukbib"],
                                      u"description": (u"Antal anställda manliga bibliotekarier den "
                                                       u"1 mars aktuellt mätår"),
                                      u"comment": u"Det här är ett utkast"}
@@ -145,7 +147,7 @@ class CreateVariableViewTest(MongoTestCase):
         self.assertEquals(result.sub_category, u"Personal")
         self.assertEquals(result.type, u"integer")
         self.assertEquals(result.is_public, True)
-        self.assertEquals(result.target_groups, [u"public", u"research", u"school", u"hospital"])
+        self.assertEquals(result.target_groups, [u"folkbib", u"specbib", u"skolbib", u"sjukbib"])
         self.assertEquals(result.description, u"Antal anställda manliga bibliotekarier den 1 mars aktuellt mätår")
         self.assertEquals(result.comment, u"Det här är ett utkast")
 
@@ -167,20 +169,20 @@ class EditVariableViewTest(MongoTestCase):
 
     def setUp(self):
         self.v1 = Variable(key=u"Folk10", description=u"Antal bemannade serviceställen", type="integer",
-                           is_public=True, target_groups=["public"])
+                           is_public=True, target_groups=["folkbib"])
         self.v1.save()
         self.v2 = Variable(key=u"Sjukhus102",
                            description=u"Bestånd av tillgängliga medier för personer med läsnedsättning",
-                           type="integer", is_public=True, target_groups=["hospital"])
+                           type="integer", is_public=True, target_groups=["sjukbib"])
         self.v2.save()
         self.v3 = Variable(key=u"Forsk23", description=u"Antal anställda personer manliga biblioteksassistenter.",
-                           type="integer", is_public=True, is_draft=True, target_groups=["research"])
+                           type="integer", is_public=True, is_draft=True, target_groups=["specbib"])
         self.v3.save()
 
         self.new_category = u"Organisation"
         self.new_sub_category = u"Bemannade serviceställen"
         self.new_type = u"string"
-        self.new_target_groups = [u"research"]
+        self.new_target_groups = [u"specbib"]
         self.new_description = u"Summering"
         self.new_comment = u"Inga kommentarer"
 
@@ -490,7 +492,7 @@ class EditVariableViewTest(MongoTestCase):
             key=key if key else unicode(uuid.uuid1()),
             description=description if description else u"description",
             type=type if type else "integer",
-            target_groups=target_groups if target_groups else ["public"],
+            target_groups=target_groups if target_groups else ["folkbib"],
             is_draft=is_draft
         )
 
@@ -502,7 +504,7 @@ class EditVariableViewTest(MongoTestCase):
         open_data = OpenData(
             library_name='test',
             sample_year='1234',
-            target_group='public',
+            target_group='folkbib',
             variable=variable.id
         )
 
@@ -511,7 +513,7 @@ class EditVariableViewTest(MongoTestCase):
 
     def new_survey_response(self):
         return Survey(
-            target_group='public',
+            target_group='folkbib',
             library_name='test',
             sample_year='1234'
         )
@@ -553,11 +555,11 @@ class SurveyViewTest(MongoTestCase):
         self.assertEquals(len(response.context["survey_responses"]), 1)
 
     def test_should_list_survey_responses_by_target_group(self):
-        self._dummy_survey(target_group="public", sample_year=2010)
-        self._dummy_survey(target_group="school", sample_year=2010)
-        self._dummy_survey(target_group="public", sample_year=2010)
+        self._dummy_survey(target_group="folkbib", sample_year=2010)
+        self._dummy_survey(target_group="skolbib", sample_year=2010)
+        self._dummy_survey(target_group="folkbib", sample_year=2010)
 
-        response = self.client.get("{}?action=list&target_group=public&sample_year=2010".format(reverse("surveys")))
+        response = self.client.get("{}?action=list&target_group=folkbib&sample_year=2010".format(reverse("surveys")))
 
         self.assertEquals(len(response.context["survey_responses"]), 2)
 
@@ -571,12 +573,12 @@ class SurveyViewTest(MongoTestCase):
         self.assertEquals(len(response.context["survey_responses"]), 1)
 
     def test_should_list_survey_responses_by_year_and_target_group(self):
-        self._dummy_survey(library=self._dummy_library(name="lib1"), target_group="public", sample_year=2012)
-        self._dummy_survey(library=self._dummy_library(name="lib2"), target_group="public", sample_year=2013)
-        self._dummy_survey(library=self._dummy_library(name="lib3"), target_group="school", sample_year=2013)
+        self._dummy_survey(library=self._dummy_library(name="lib1"), target_group="folkbib", sample_year=2012)
+        self._dummy_survey(library=self._dummy_library(name="lib2"), target_group="folkbib", sample_year=2013)
+        self._dummy_survey(library=self._dummy_library(name="lib3"), target_group="skolbib", sample_year=2013)
 
         response = self.client.get(
-            "{}?action=list&target_group=public&sample_year=2013".format(reverse("surveys")))
+            "{}?action=list&target_group=folkbib&sample_year=2013".format(reverse("surveys")))
 
         self.assertEquals(len(response.context["survey_responses"]), 1)
         self.assertEquals(response.context["survey_responses"][0].library_name, "lib2")
@@ -612,13 +614,13 @@ class PublishSurveyResponsesViewTest(MongoTestCase):
 
     def setUp(self):
         self.survey_response = Survey(library_name="KARLSTAD STADSBIBLIOTEK", sample_year=2013,
-                                      target_group="public", observations=[])
+                                      target_group="folkbib", observations=[])
         self.survey_response.save()
-        sr2 = Survey(library_name="NORRBOTTENS LÄNSBIBLIOTEK", sample_year=2012, target_group="public",
+        sr2 = Survey(library_name="NORRBOTTENS LÄNSBIBLIOTEK", sample_year=2012, target_group="folkbib",
                      observations=[])
         sr2.save()
         sr3 = Survey(library_name=u"Sjukhusbiblioteken i Dalarnas län", sample_year=2013,
-                     target_group="hospital", observations=[])
+                     target_group="sjukbib", observations=[])
         sr3.save()
 
         self.url = reverse("surveys_publish")
@@ -626,7 +628,7 @@ class PublishSurveyResponsesViewTest(MongoTestCase):
 
     def test_should_publish_selection(self):
         response = self.client.post(self.url, {u"sample_year": u"2013",
-                                               u"target_group": u"public",
+                                               u"target_group": u"folkbib",
                                                u"survey-response-ids": [u"{}".format(self.survey_response.id)]},
                                     follow=True)
         self.assertEquals(response.status_code, 200)
@@ -637,7 +639,7 @@ class PublishSurveyResponsesViewTest(MongoTestCase):
 
     def test_should_not_publish_unless_selected_ids(self):
         response = self.client.post(self.url, {u"sample_year": u"2013",
-                                               u"target_group": u"public",
+                                               u"target_group": u"folkbib",
                                                u"survey-response-ids": []},
                                     follow=True)
         self.assertEquals(response.status_code, 200)

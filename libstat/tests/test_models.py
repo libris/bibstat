@@ -17,18 +17,18 @@ class SurveyResponseTest(MongoTestCase):
         self.current_user = User.objects.filter(username="admin")[0]
 
         v1 = Variable(key=u"folk5", description=u"Antal bemannade serviceställen, sammanräknat", type="integer",
-                      is_public=True, target_groups=["public"])
+                      is_public=True, target_groups=["folkbib"])
         v1.save()
         v2 = Variable(key=u"folk6",
                       description=u"Är huvudbiblioteket i er kommun integrerat med ett skolbibliotek? 1=ja",
-                      type="boolean", is_public=True, target_groups=["public"])
+                      type="boolean", is_public=True, target_groups=["folkbib"])
         v2.save()
         v3 = Variable(key=u"folk8", description=u"Textkommentar", type="string", is_public=False,
-                      target_groups=["public"])
+                      target_groups=["folkbib"])
         v3.save()
 
         library = Library(bibdb_id=u"323", bibdb_sigel="Kld1", bibdb_name=u"Karlstad stadsbibliotek").save()
-        sr = Survey(library_name="KARLSTAD STADSBIBLIOTEK", sample_year=2013, target_group="public",
+        sr = Survey(library_name="KARLSTAD STADSBIBLIOTEK", sample_year=2013, target_group="folkbib",
                     observations=[], created_by=self.current_user, library=library)
         sr.observations.append(SurveyObservation(variable=v1, value=7, _source_key="folk5", _is_public=v1.is_public))
         sr.observations.append(
@@ -106,7 +106,7 @@ class SurveyResponseTest(MongoTestCase):
 
         open_data = data.get(0)
         self.assertEquals(open_data.library_name, "lib1_name")
-        self.assertEquals(open_data.target_group, "public")
+        self.assertEquals(open_data.target_group, "folkbib")
         self.assertEquals(open_data.value, "new_value")
         self.assertTrue(open_data.date_modified)
         self.assertTrue(open_data.date_created)
@@ -157,7 +157,7 @@ class SurveyResponseTest(MongoTestCase):
         self.assertEquals(versions[0].observation_by_key(u"folk5").value, 7)
 
     def test_should_not_store_version_when_creating_object(self):
-        sr = Survey(library_name=u"Some name", sample_year=2014, target_group=u"research", observations=[])
+        sr = Survey(library_name=u"Some name", sample_year=2014, target_group=u"specbib", observations=[])
         sr.save()
 
         versions = SurveyVersion.objects.filter(survey_response_id=self.survey_response.id)
@@ -296,14 +296,14 @@ class OpenDataTest(MongoTestCase):
 
     def setUp(self):
         v = Variable(key=u"folk5", description=u"Antal bemannade serviceställen, sammanräknat", type="integer",
-                     is_public=True, target_groups=["public"])
+                     is_public=True, target_groups=["folkbib"])
         v.save()
         publishing_date = datetime(2014, 06, 03, 15, 28, 31)
         d1 = OpenData(library_name=u"KARLSTAD STADSBIBLIOTEK", library_id=u"323", sample_year=2013,
-                      target_group="public", variable=v, value=6, date_created=publishing_date,
+                      target_group="folkbib", variable=v, value=6, date_created=publishing_date,
                       date_modified=publishing_date)
         d1.save()
-        d2 = OpenData(library_name=u"NORRBOTTENS LÄNSBIBLIOTEK", sample_year=2013, target_group="public", variable=v,
+        d2 = OpenData(library_name=u"NORRBOTTENS LÄNSBIBLIOTEK", sample_year=2013, target_group="folkbib", variable=v,
                       value=6, date_created=publishing_date, date_modified=publishing_date)
         d2.save()
 
@@ -343,7 +343,7 @@ class VariableQuerySetTest(MongoTestCase):
     def setUp(self):
         # Discontinued (today)
         v2 = Variable(key=u"Folk35", description=u"Antal årsverken övrig personal", type="decimal", is_public=False,
-                      target_groups=["public"])
+                      target_groups=["folkbib"])
         v2.question = u"Hur många årsverken utfördes av personal i folkbiblioteksverksamheten under 2012?"
         v2.question_part = u"Antal årsverken övrig personal (ej städpersonal)"
         v2.active_to = datetime.utcnow().date()
@@ -352,21 +352,21 @@ class VariableQuerySetTest(MongoTestCase):
 
         # Replaced
         v = Variable(key=u"Folk10", description=u"Antal bemannade servicesställen", type="integer", is_public=True,
-                     target_groups=["public"])
+                     target_groups=["folkbib"])
         v.replaced_by = self.v2
         v.save()
         self.v = Variable.objects.get(pk=v.id)
 
         # Active
         v3 = Variable(key=u"Folk31", description=u"Antal årsverken totalt", type="decimal", is_public=True,
-                      target_groups=["public"], id_draft=False)
+                      target_groups=["folkbib"], id_draft=False)
         v3.summary_of = [self.v2]
         v3.save()
         self.v3 = Variable.objects.get(pk=v3.id)
 
         # Draft
         v4 = Variable(key=u"Folk69", description=u"Totalt nyförvärv AV-medier", type="integer", is_public=True,
-                      target_groups=["public"], is_draft=True)
+                      target_groups=["folkbib"], is_draft=True)
         v4.question = u"Hur många nyförvärv av AV-media gjordes under 2012?"
         v4.save()
         self.v4 = Variable.objects.get(pk=v4.id)
@@ -396,13 +396,13 @@ class VariableTest(MongoTestCase):
 
     def setUp(self):
         v = Variable(key=u"Folk10", description=u"Antal bemannade servicesställen", type="integer", is_public=True,
-                     target_groups=["public"],
+                     target_groups=["folkbib"],
                      active_from=datetime(2010, 1, 1).date())
         v.save()
         self.v = Variable.objects.get(pk=v.id)
 
         v2 = Variable(key=u"Folk35", description=u"Antal årsverken övrig personal", type="decimal", is_public=True,
-                      target_groups=["public"],
+                      target_groups=["folkbib"],
                       active_to=datetime(2014, 6, 1).date())
         v2.question = u"Hur många årsverken utfördes av personal i folkbiblioteksverksamheten under 2012?"
         v2.question_part = u"Antal årsverken övrig personal (ej städpersonal)"
@@ -410,14 +410,14 @@ class VariableTest(MongoTestCase):
         self.v2 = Variable.objects.get(pk=v2.id)
 
         v3 = Variable(key=u"Folk31", description=u"Antal årsverken totalt", type="decimal", is_public=True,
-                      target_groups=["public"],
+                      target_groups=["folkbib"],
                       active_from=datetime.utcnow().date(), active_to=(datetime.utcnow() + timedelta(days=1)).date())
         v3.summary_of = [self.v2]
         v3.save()
         self.v3 = Variable.objects.get(pk=v3.id)
 
         v4 = Variable(key=u"Folk69", description=u"Totalt nyförvärv AV-medier", type="integer", is_public=True,
-                      target_groups=["public"], is_draft=True)
+                      target_groups=["folkbib"], is_draft=True)
         v4.question = u"Hur många nyförvärv av AV-media gjordes under 2012?"
         v4.save()
         self.v4 = Variable.objects.get(pk=v4.id)

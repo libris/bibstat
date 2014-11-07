@@ -27,7 +27,6 @@ def _create_surveys(library_ids, sample_year):
             library_name=library.name,
             library=library,
             sample_year=sample_year,
-            target_group="public",
             password=_generate_password(),
             observations=[])
         for section in template.sections:
