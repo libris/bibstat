@@ -4,7 +4,7 @@
 
 {% block content %}
     <div class="container">
-    
+
     <div class="panel panel-default">
         <div class="panel-heading">
             <h3 class="panel-title">Enkäter</h3>
@@ -20,7 +20,7 @@
                 <div class="row">
                     <div class="col-md-6">
                         <div class="alert alert-info" role="alert">
-                            {{ message }}
+                            {{ message|linebreaks }}
                         </div>
                     </div>
                 </div>
@@ -141,7 +141,7 @@
                                     Nytt utskick
                                 </a>
                                 <a href="#" class="btn btn-primary btn-toggle btn-survey disabled" data-toggle="modal"
-                                   data-target="#confirm-publish-modal">    
+                                   data-target="#confirm-publish-modal">
                                     Publicera
                                 </a>
                                 <a href="#" name="action" value="export"
@@ -181,7 +181,7 @@
                         <div class="modal-dialog">
                             <div class="modal-content">
                                 <div class="modal-body">
-                                    Är du säker på att du vill publicera de markerade enkäterna? 
+                                    Är du säker på att du vill publicera de markerade enkäterna?
                                 </div>
                                 <div class="modal-footer">
                                     <a href="#" class="btn btn-danger" data-dismiss="modal">Nej</a>

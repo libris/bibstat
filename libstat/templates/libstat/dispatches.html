@@ -10,6 +10,15 @@
             </div>
             <div class="panel-body">
                 <p>Här sparas alla utkast innan de skickas iväg.</p>
+                {% if message %}
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="alert alert-info" role="alert">
+                                {{ message|linebreaks }}
+                            </div>
+                        </div>
+                    </div>
+                {% endif %}
                 <div class="panel-dispatches">
                     <button class="btn btn-danger btn-toggle btn-delete disabled">{% trans "Ta bort" %}</button>
                     <button class="btn btn-primary btn-toggle btn-send disabled">{% trans "Skicka" %}</button>
