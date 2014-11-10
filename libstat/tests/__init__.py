@@ -38,10 +38,12 @@ class MongoTestCase(TestCase):
         url = reverse(action, kwargs=kwargs)
         return self.client.post(url, data=data)
 
-    def _dummy_library(self, name="dummy_name", sigel="dummy_sigel", bibdb_id="dummy_id", city="dummy_city",
-                       municipality_code="dummy_code"):
+    def _dummy_library(self, name="dummy_name", sigel=None, bibdb_id="dummy_id", city="dummy_city",
+                       municipality_code="dummy_code", library_type="folkbib"):
+        if not sigel:
+            sigel = Library._random_sigel()
         return Library(name=name, sigel=sigel, bibdb_id=bibdb_id, city=city,
-                       municipality_code=municipality_code).save()
+                       municipality_code=municipality_code, library_type=library_type).save()
 
     def _dummy_survey(self, library_name="dummy_name", sample_year=2001, password=None, target_group="folkbib",
                       status="not_viewed", publish=False, library=None, website=None, created_by=None,

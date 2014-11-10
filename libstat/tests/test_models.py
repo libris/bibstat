@@ -89,7 +89,7 @@ class SurveyResponseTest(MongoTestCase):
         variable = self._dummy_variable(key=u"key1", is_public=True)
         observation = SurveyObservation(variable=variable, value="old_value", _source_key=variable.key,
                                         _is_public=variable.is_public)
-        library = self._dummy_library(name="lib1_name", sigel="lib1_sigel")
+        library = self._dummy_library(name="lib1_name", sigel="lib1_sigel", library_type="folkbib")
         survey = self._dummy_survey(library=library, observations=[observation])
 
         survey.publish(user=self.current_user)
@@ -157,10 +157,10 @@ class SurveyResponseTest(MongoTestCase):
         self.assertEquals(versions[0].observation_by_key(u"folk5").value, 7)
 
     def test_should_not_store_version_when_creating_object(self):
-        sr = Survey(library_name=u"Some name", sample_year=2014, target_group=u"specbib", observations=[])
-        sr.save()
+        library = self._dummy_library()
+        survey = self._dummy_survey(library=library)
 
-        versions = SurveyVersion.objects.filter(survey_response_id=self.survey_response.id)
+        versions = SurveyVersion.objects.filter(survey_response_id=survey.id)
         self.assertEquals(len(versions), 0)
 
     def test_should_set_modified_date_and_by_when_updating_existing_object(self):

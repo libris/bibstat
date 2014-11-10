@@ -6,7 +6,7 @@ from django.core.urlresolvers import reverse
 from bibstat import settings
 
 from libstat.survey_templates import survey_template
-from libstat.utils import SURVEY_TARGET_GROUPS, survey_response_statuses, PUBLISHED
+from libstat.utils import SURVEY_TARGET_GROUPS, survey_response_statuses, PUBLISHED, targetGroups
 from libstat.utils import VARIABLE_TYPES
 from libstat.models import Variable, SurveyObservation, Library, LibrarySelection
 
@@ -255,5 +255,6 @@ class CreateSurveysForm(forms.Form):
                 "address": library.address,
                 "email": library.email,
                 "sigel": library.sigel,
+                "library_type": targetGroups[library.library_type] if library.library_type else "",
                 "checkbox_id": checkbox_id
             })

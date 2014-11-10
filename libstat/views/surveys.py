@@ -34,10 +34,10 @@ def surveys(request):
         if not sample_year:
             message = u"Du måste ange för vilket år du vill lista enkätsvar."
         else:
-            surveys = Survey.objects.by(
+            surveys = Survey.filter_by(
                 sample_year=sample_year,
                 target_group=target_group,
-                status=status).order_by("library")
+                status=status)
 
     context = {
         'sample_years': sample_years,

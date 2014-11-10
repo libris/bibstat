@@ -13,6 +13,7 @@ class TestLibraryImport(MongoTestCase):
             "country_code": "se",
             "sigel": "lib1_sigel",
             "name": "lib1",
+            "library_type": "sjukbib",
             "address":
             [
                 {
@@ -53,6 +54,7 @@ class TestLibraryImport(MongoTestCase):
         self.assertEquals(library.city, "lib1_city")
         self.assertEquals(library.address, "street1")
         self.assertEquals(library.email, "lib1@dom.top")
+        self.assertEquals(library.library_type, "sjukbib")
 
     def test_does_not_import_non_swedish_libraries(self):
         dict = self._dummy_dict

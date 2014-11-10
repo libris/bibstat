@@ -70,6 +70,7 @@ def _dict_to_library(dict):
     library, _ = Library.objects.get_or_create(sigel=dict["sigel"])
     library.sigel = dict["sigel"]
     library.name = dict["name"]
+    library.library_type = dict["library_type"] if dict["library_type"] else None
     location = next((a for a in dict["address"] if a["address_type"] == "gen"), None)
     library.address = location["street"] if location else ""
     library.city = location["city"] if location else ""

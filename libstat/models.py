@@ -374,7 +374,8 @@ class SurveyObservation(EmbeddedDocument):
 class Library(Document):
 
     # From: http://en.wikipedia.org/wiki/Random_password_generator#Python
-    def _random_sigel(self):
+    @classmethod
+    def _random_sigel(cls):
         alphabet = string.letters[0:52] + string.digits
         return str().join(random.SystemRandom().choice(alphabet) for _ in range(10))
 
@@ -385,6 +386,7 @@ class Library(Document):
     city = StringField()
     municipality_code = StringField()
     address = StringField()
+    library_type = StringField(choices=SURVEY_TARGET_GROUPS)
 
     meta = {
         'collection': 'libstat_libraries'
@@ -404,6 +406,7 @@ class LibraryCached(EmbeddedDocument):
     city = StringField()
     municipality_code = StringField()
     address = StringField()
+    library_type = StringField(choices=SURVEY_TARGET_GROUPS)
 
     def __init__(self, *args, **kwargs):
         library = kwargs.pop("library", None)
@@ -416,6 +419,7 @@ class LibraryCached(EmbeddedDocument):
             self.city = library.city
             self.municipality_code = library.municipality_code
             self.address = library.address
+            self.library_type = library.library_type
 
 
 class LibrarySelection(Document):
@@ -436,7 +440,6 @@ class SurveyBase(Document):
     survey_time_minutes = IntField()
     population_nation = LongField()
     population_0to14y = LongField()
-    target_group = StringField(required=True, choices=SURVEY_TARGET_GROUPS, default=PUBLIC_LIBRARY[0])
     published_at = DateTimeField()
     published_by = ReferenceField(User)
     date_created = DateTimeField(required=True, default=datetime.utcnow)
@@ -453,6 +456,27 @@ class SurveyBase(Document):
     meta = {
         'abstract': True,
     }
+
+    @classmethod
+    def filter_by(cls, target_group=None, status=None, sample_year=None):
+        result = []
+        for survey in cls.objects.all():
+            if target_group and not survey.target_group == target_group:
+                continue
+            if status and not survey.status == status:
+                continue
+            if sample_year and not str(survey.sample_year) == str(sample_year):
+                continue
+            result.append(survey)
+        return result
+
+    @property
+    def target_group(self):
+        return self.library.library_type
+
+    @target_group.setter
+    def target_group(self, value):
+        self.library.library_type = value
 
     @property
     def status(self):
@@ -501,10 +525,13 @@ class SurveyBase(Document):
     def __init__(self, *args, **kwargs):
         library = kwargs.pop("library", None)
         status = kwargs.pop("status", None)
+        target_group = kwargs.pop("target_group", None)
         super(SurveyBase, self).__init__(*args, **kwargs)
         self.library = library
         if status:
             self.status = status
+        if target_group:
+            self.target_group = target_group
 
 
 class Survey(SurveyBase):
@@ -564,12 +591,13 @@ class Survey(SurveyBase):
                 if (len(existing) == 0):
                     data_item = OpenData(library_name=self.library.name, sample_year=self.sample_year,
                                          variable=obs.variable,
-                                         target_group=self.target_group, date_created=publishing_date)
+                                         target_group=self.library.library_type, date_created=publishing_date)
                     if self.library and self.library.bibdb_id:
                         data_item.library_id = self.library.bibdb_id
                 else:
                     data_item = existing.get(0)
 
+                print(data_item.__dict__)
                 data_item.value = obs.value
                 data_item.date_modified = publishing_date
                 data_item.save()

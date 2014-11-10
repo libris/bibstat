@@ -387,12 +387,12 @@ class EditVariableViewTest(MongoTestCase):
         self.assertDoesNotExist(variable)
 
     def test_should_not_be_able_to_delete_non_draft_variable_when_referenced_in_survey_response(self):
-        variable = self.new_variable(is_draft=False)
+        variable = self._dummy_variable(is_draft=False)
 
-        survey_response = self.new_survey_response()
-        survey_response.observations = [SurveyObservation(variable=str(variable.id))]
-        survey_response.save()
-        survey_response.publish()
+        survey = self._dummy_survey()
+        survey.observations = [SurveyObservation(variable=str(variable.id))]
+        survey.save()
+        survey.publish()
 
         response = self.delete(variable)
 
@@ -555,9 +555,9 @@ class SurveyViewTest(MongoTestCase):
         self.assertEquals(len(response.context["survey_responses"]), 1)
 
     def test_should_list_survey_responses_by_target_group(self):
-        self._dummy_survey(target_group="folkbib", sample_year=2010)
-        self._dummy_survey(target_group="skolbib", sample_year=2010)
-        self._dummy_survey(target_group="folkbib", sample_year=2010)
+        self._dummy_survey(library=self._dummy_library(library_type="folkbib"), sample_year=2010)
+        self._dummy_survey(library=self._dummy_library(library_type="skolbib"), sample_year=2010)
+        self._dummy_survey(library=self._dummy_library(library_type="folkbib"), sample_year=2010)
 
         response = self.client.get("{}?action=list&target_group=folkbib&sample_year=2010".format(reverse("surveys")))
 
@@ -573,9 +573,9 @@ class SurveyViewTest(MongoTestCase):
         self.assertEquals(len(response.context["survey_responses"]), 1)
 
     def test_should_list_survey_responses_by_year_and_target_group(self):
-        self._dummy_survey(library=self._dummy_library(name="lib1"), target_group="folkbib", sample_year=2012)
-        self._dummy_survey(library=self._dummy_library(name="lib2"), target_group="folkbib", sample_year=2013)
-        self._dummy_survey(library=self._dummy_library(name="lib3"), target_group="skolbib", sample_year=2013)
+        self._dummy_survey(library=self._dummy_library(name="lib1", library_type="folkbib"), sample_year=2012)
+        self._dummy_survey(library=self._dummy_library(name="lib2", library_type="folkbib"), sample_year=2013)
+        self._dummy_survey(library=self._dummy_library(name="lib3", library_type="skolbib"), sample_year=2013)
 
         response = self.client.get(
             "{}?action=list&target_group=folkbib&sample_year=2013".format(reverse("surveys")))
@@ -613,14 +613,15 @@ class SurveyViewTest(MongoTestCase):
 class PublishSurveyResponsesViewTest(MongoTestCase):
 
     def setUp(self):
-        self.survey_response = Survey(library_name="KARLSTAD STADSBIBLIOTEK", sample_year=2013,
-                                      target_group="folkbib", observations=[])
+        self.survey_response = self._dummy_survey(library=self._dummy_library(name="KARLSTAD STADSBIBLIOTEK",
+                                                                              library_type="folkbib"),
+                                                  sample_year=2013, observations=[])
         self.survey_response.save()
-        sr2 = Survey(library_name="NORRBOTTENS LÄNSBIBLIOTEK", sample_year=2012, target_group="folkbib",
-                     observations=[])
+        sr2 = Survey(library=self._dummy_library(name="NORRBOTTENS LÄNSBIBLIOTEK", library_type="folkbib"),
+                     sample_year=2012, observations=[])
         sr2.save()
-        sr3 = Survey(library_name=u"Sjukhusbiblioteken i Dalarnas län", sample_year=2013,
-                     target_group="sjukbib", observations=[])
+        sr3 = Survey(library=self._dummy_library(name=u"Sjukhusbiblioteken i Dalarnas län", library_type="sjukbib"),
+                     sample_year=2013, observations=[])
         sr3.save()
 
         self.url = reverse("surveys_publish")
