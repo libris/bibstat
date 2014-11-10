@@ -50,7 +50,8 @@ def dispatches(request):
             } for dispatch in Dispatch.objects.all()
         ]
 
-        return render(request, 'libstat/dispatches.html', {"dispatches": dispatches})
+        message = request.session.pop("message", None)
+        return render(request, 'libstat/dispatches.html', {"dispatches": dispatches, "message": message})
 
 
 @permission_required('is_superuser', login_url='login')
@@ -66,15 +67,33 @@ def dispatches_delete(request):
 def dispatches_send(request):
     if request.method == "POST":
         dispatch_ids = request.POST.getlist("dispatch-ids", [])
-        dispatches = [dispatch for dispatch in Dispatch.objects.filter(id__in=dispatch_ids) if dispatch.survey.library.email]
+        dispatches = Dispatch.objects.filter(id__in=dispatch_ids)
+        dispatches_with_email = [dispatch for dispatch in dispatches if dispatch.survey.library.email]
 
         messages = [
             (dispatch.title, dispatch.message, settings.EMAIL_SENDER, [dispatch.survey.library.email])
-            for dispatch in dispatches
+            for dispatch in dispatches_with_email
         ]
 
         send_mass_mail(messages)
-        for dispatch in dispatches:
+        for dispatch in dispatches_with_email:
             dispatch.delete()
+
+        def get_message(total, sent):
+            message = ""
+            if sent > 0:
+                message = "Det har nu skickats iväg totalt {} {}.".\
+                    format(sent, "e-postmeddelande" if sent == 1 else "e-postmeddelanden")
+
+            failed = total - sent
+            if failed > 0:
+                if len(message) > 0:
+                    message = message + "\n"
+                message = message + "Det fanns {} utskick utan e-postadress; {} har inte skickats.".\
+                    format(failed, "detta" if failed == 1 else "dessa")
+
+            return message
+
+        request.session["message"] = get_message(len(dispatches), len(dispatches_with_email))
 
     return redirect(reverse("dispatches"))
