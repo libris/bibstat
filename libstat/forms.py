@@ -147,6 +147,9 @@ class SurveyForm(forms.Form):
 
         if "email" in cell.types:
             attrs["data-bv-emailaddress"] = ""
+            attrs["data-bv-regexp"] = ""
+            attrs["data-bv-regexp-regexp"] = ".+@.+\..+"
+            attrs["data-bv-regexp-message"] = "Vänligen mata in en giltig emailadress"
 
         if "text" in cell.types:
             attrs["data-bv-stringlength"] = ""
