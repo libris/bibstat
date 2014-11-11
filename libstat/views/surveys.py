@@ -24,20 +24,18 @@ def surveys(request):
     sample_years.sort()
     sample_years.reverse()
 
-    action = request.GET.get("action", "")
     target_group = request.GET.get("target_group", "")
-    sample_year = request.GET.get("sample_year", "")
+    sample_year = request.GET.get("sample_year", str(sample_years[0]) if sample_years else "")
     status = request.GET.get("status", "")
     message = request.session.pop("message", "")
 
-    if action == "list":
-        if not sample_year:
-            message = u"Du måste ange för vilket år du vill lista enkätsvar."
-        else:
-            surveys = Survey.filter_by(
-                sample_year=sample_year,
-                target_group=target_group,
-                status=status)
+    if not sample_year:
+        message = u"Du måste ange för vilket år du vill lista enkätsvar."
+    else:
+        surveys = Survey.filter_by(
+            sample_year=sample_year,
+            target_group=target_group,
+            status=status)
 
     context = {
         'sample_years': sample_years,
