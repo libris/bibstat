@@ -89,7 +89,7 @@
 
     <div class="row">
         <div class="col-xs-11 col-sm-10 col-md-7">
-            <h2 class="section-title">Innan du börjar fylla i enkäten</h2>
+            <h2 class="section-title">Innan du börjar fylla i enkäten...</h2>
             {% include "libstat/survey/help.html" %}
         </div>
         <div class="col-xs-1 pull-right">
@@ -100,9 +100,50 @@
         {% csrf_token %}
         {{ form.key }}
         {{ form.disabled_inputs }}
+        {{ form.selected_libraries }}
         {{ form.unknown_inputs }}
         {{ form.submit_action }}
         {{ form.read_only }}
+
+        <h2 class="section-title">Svarande organisation/bibliotek</h2>
+        <div class="panel panel-default inverse">
+            <div class="panel-body">
+                <table class="table">
+                    <thead>
+                    <tr>
+                        <th class="column"></th>
+                        <th class="column">Namn</th>
+                        <th class="column">Stad</th>
+                        <th class="column">Adress</th>
+                        <th class="column">Kommentar</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {% for library in form.libraries %}
+                        <tr>
+                            <td>
+                                {% with key=library.checkbox_id %}
+                                    {{ form|access:key }}
+                                {% endwith %}
+                            </td>
+                            <td>
+                                {{ library.name }}
+                            </td>
+                            <td>
+                                {{ library.city }}
+                            </td>
+                            <td>
+                                {{ library.address }}
+                            </td>
+                            <td>
+                                <i>{{ library.comment }}</i>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
 
         {% for section in form.sections %}
         <h2 class="section-title">{{ section.title }}</h2>

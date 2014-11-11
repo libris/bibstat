@@ -475,6 +475,7 @@ class SurveyBase(Document):
     observations = ListField(EmbeddedDocumentField(SurveyObservation))
     _status = StringField(choices=SURVEY_RESPONSE_STATUSES, default=NOT_VIEWED[0])
     _library = EmbeddedDocumentField(LibraryCached)
+    selected_libraries = ListField(StringField())
     library_name = StringField()
     sample_year = IntField()
     password = StringField()

@@ -123,6 +123,8 @@ def _save_survey_response_from_form(response, form):
                 observation.value_unknown = (field in unknown_inputs)
             else:
                 response.__dict__["_data"][field] = form.cleaned_data[field]
+
+        response.selected_libraries = form.cleaned_data["selected_libraries"].split(" ")
         response.save()
     else:
         raise Exception(form.errors)
