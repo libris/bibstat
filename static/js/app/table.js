@@ -18,6 +18,11 @@ define(['jquery', 'jquery.tablesorter'], function($) {
                     },
                     sortList: [[3, 0]]
                 });
+                $(".table.libraries").addClass("tablesorter").tablesorter({
+                    headers: {
+                        0: { sorter: false }
+                    }
+                });
             });
 
             $(".table .select-all").change(function () {
