@@ -8,13 +8,18 @@ define(['jquery', 'survey.sum', 'survey.cell', 'surveys.dispatch', 'bootstrap.va
             return survey.form().data('bootstrapValidator');
         },
         inputs: function () {
-            return survey.form('input').not('[type="hidden"]');
+            return survey.form("input:not([type='checkbox'])").not("[type='hidden']");
         },
         disabledInputs: function () {
             return survey.inputs().filter("[disabled]");
         },
         enabledInputs: function () {
             return survey.inputs().not('[disabled]');
+        },
+        selectedLibraries: function() {
+            return survey.form(".select-library:checked").map(function() {
+                return $(this).attr("name");
+            }).get().join(" ");
         },
         filledInputs: function () {
             return survey.enabledInputs().filter(function () {
@@ -240,6 +245,10 @@ define(['jquery', 'survey.sum', 'survey.cell', 'surveys.dispatch', 'bootstrap.va
                 $("#disabled_inputs").val(disabledInputIds);
 
                 survey.disabledInputs().prop("disabled", false);
+
+
+                $("#selected_libraries").val(survey.selectedLibraries());
+                console.log($("#selected_libraries").val());
                 
                 survey.form().attr("action", Urls.survey(survey.form("#id_key").val()));
                 survey.validator().defaultSubmit();
@@ -342,7 +351,7 @@ define(['jquery', 'survey.sum', 'survey.cell', 'surveys.dispatch', 'bootstrap.va
             $('.modified-after-publish').on("click", function(e) {
                 e.preventDefault();
             });
-            
+
             sum.init();
             initDropdown();
             initProgress();

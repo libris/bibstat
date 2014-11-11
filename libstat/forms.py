@@ -1,5 +1,6 @@
 # -*- coding: UTF-8 -*-
 import logging
+from sets import Set
 
 from django import forms
 from django.core.urlresolvers import reverse
@@ -8,7 +9,7 @@ from bibstat import settings
 from libstat.survey_templates import survey_template
 from libstat.utils import SURVEY_TARGET_GROUPS, survey_response_statuses, PUBLISHED, targetGroups, PRINCIPALS
 from libstat.utils import VARIABLE_TYPES
-from libstat.models import Variable, SurveyObservation, Library, LibrarySelection
+from libstat.models import Variable, SurveyObservation, Library, LibrarySelection, Survey
 
 logger = logging.getLogger(__name__)
 
@@ -147,6 +148,9 @@ class SurveyForm(forms.Form):
 
         if "email" in cell.types:
             attrs["data-bv-emailaddress"] = ""
+            attrs["data-bv-regexp"] = ""
+            attrs["data-bv-regexp-regexp"] = ".+@.+\..+"
+            attrs["data-bv-regexp-message"] = "Vänligen mata in en giltig emailadress"
 
         if "text" in cell.types:
             attrs["data-bv-stringlength"] = ""
@@ -170,6 +174,60 @@ class SurveyForm(forms.Form):
 
         return field
 
+    def _set_libraries(self, current_library, selected_libraries):
+        libraries = Library.objects.filter(municipality_code=current_library.municipality_code, sigel__ne=current_library.sigel)
+        surveys = Survey.objects.filter(
+            sample_year=self.sample_year,
+            _library__municipality_code=current_library.municipality_code,
+            _library__sigel__ne=current_library.sigel)
+
+        disabled_libraries = Set()
+        for survey in surveys:
+            for selected_library in survey.selected_libraries:
+                if selected_library != current_library:
+                    disabled_libraries.add(selected_library)
+
+        def set_library(self, library, current_library=False):
+            checkbox_id = str(library.sigel)
+
+            attrs = {
+                "value": checkbox_id,
+                "class": "select-library"
+            }
+
+            row = {
+                "name": library.name,
+                "city": library.city,
+                "address": library.address,
+                "sigel": library.sigel,
+                "checkbox_id": checkbox_id
+            }
+
+            if self.is_read_only:
+                attrs["disabled"] = "true"
+
+            if current_library:
+                attrs["disabled"] = "true"
+                attrs["checked"] = "true"
+                if library.sigel in disabled_libraries:
+                    row["comment"] = "Det finns en annan enkät som rapporterar för biblioteket."
+                else:
+                    row["comment"] = "Detta är det bibliotek som enkäten avser i första hand."
+            elif library.sigel in selected_libraries:
+                attrs["checked"] = "true"
+            elif library.sigel in disabled_libraries:
+                attrs["disabled"] = "true"
+                row["comment"] = "Detta bibliotek rapporteras redan för i en annan enkät."
+
+            self.fields[checkbox_id] = forms.BooleanField(required=False, widget=forms.CheckboxInput(attrs=attrs))
+            self.libraries.append(row)
+
+        self.libraries = []
+        set_library(self, current_library, current_library=True)
+        for library in libraries:
+            set_library(self, library)
+
+
     def __init__(self, *args, **kwargs):
         response = kwargs.pop('instance', None)
         authenticated = kwargs.pop('authenticated', False)
@@ -181,6 +239,8 @@ class SurveyForm(forms.Form):
                                                          widget=forms.HiddenInput(attrs={"id": "disabled_inputs"}))
         self.fields["unknown_inputs"] = forms.CharField(required=False,
                                                         widget=forms.HiddenInput(attrs={"id": "unknown_inputs"}))
+        self.fields["selected_libraries"] = forms.CharField(required=False,
+                                                        widget=forms.HiddenInput(attrs={"id": "selected_libraries"}))
         self.fields["submit_action"] = forms.CharField(required=False,
                                                        widget=forms.HiddenInput(attrs={"id": "submit_action"}))
         self.fields["read_only"] = forms.CharField(required=False,
@@ -212,6 +272,8 @@ class SurveyForm(forms.Form):
 
         self.url = settings.API_BASE_URL + reverse('survey', args=(response.pk,))
         self.url_with_password = "{}?p={}".format(self.url, self.password)
+
+        self._set_libraries(response.library, response.selected_libraries)
 
         for section in template.sections:
             for group in section.groups:
