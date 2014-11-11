@@ -107,17 +107,17 @@ def surveys_export(request):
 
 def _save_survey_response_from_form(response, form):
     if form.is_valid():
-        disabled_inputs = form.cleaned_data["disabled_inputs"].split(" ")
-        unknown_inputs = form.cleaned_data["unknown_inputs"].split(" ")
+        disabled_inputs = form.cleaned_data.pop("disabled_inputs").split(" ")
+        unknown_inputs = form.cleaned_data.pop("unknown_inputs").split(" ")
+        response.principal = form.cleaned_data.pop("principal")
+        submit_action = form.cleaned_data.pop("submit_action", None)
+        print(submit_action)
+        if submit_action == "submit" and response.status in ("not_viewed", "initiated"):
+            response.status = "submitted"
+
         for field in form.cleaned_data:
             observation = response.get_observation(field)
-            if field in ("disabled_inputs", "id_key"):
-                pass
-            elif field == "submit_action":
-                action = form.cleaned_data[field]
-                if action == "submit" and response.status == "initiated":
-                    response.status = "submitted"
-            elif observation:
+            if observation:
                 observation.value = form.cleaned_data[field]
                 observation.disabled = (field in disabled_inputs)
                 observation.value_unknown = (field in unknown_inputs)

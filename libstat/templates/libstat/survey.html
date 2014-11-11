@@ -4,6 +4,10 @@
 
 {% block content %}
 <style>
+    .principal {
+        margin-bottom: 15px;
+    }
+
     .section-title {
         color: rgb(242, 148, 0)
     }
@@ -116,6 +120,16 @@
                     </div>
                 </div>
                 <hr>
+                {% endif %}
+                {% if forloop.parentloop.first and forloop.first %}
+                <div class="row principal">
+                    <div class="col-sm-6">
+                        Ange organisationens huvudman
+                    </div>
+                    <div class="col-sm-6">
+                        {{ form.principal }}
+                    </div>
+                </div>
                 {% endif %}
                 {% if group.columns == 1 %}{% include "libstat/survey/col-1.html" %}{% endif %}
                 {% if group.columns == 2 %}{% include "libstat/survey/col-2.html" %}{% endif %}

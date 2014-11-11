@@ -29,6 +29,15 @@ PUBLISHED = (u"published", u"Publicerad")
 SURVEY_RESPONSE_STATUSES = (NOT_VIEWED, INITIATED, SUBMITTED, CONTROLLED, PUBLISHED)
 survey_response_statuses = OrderedDict(SURVEY_RESPONSE_STATUSES)
 
+PRINCIPALS = (
+    (u"stat", "Stat"),
+    (u"kommun", "Kommun"),
+    (u"landsting", "Landsting"),
+    (u"foretag", "Företag"),
+    (u"stiftelse", "Stiftelse")
+)
+principals = dict(PRINCIPALS)
+
 TYPE_STRING = (u"string", u"Text")
 TYPE_BOOLEAN = (u"boolean", u"Boolesk")
 TYPE_INTEGER = (u"integer", u"Integer")

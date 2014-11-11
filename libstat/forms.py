@@ -6,7 +6,7 @@ from django.core.urlresolvers import reverse
 from bibstat import settings
 
 from libstat.survey_templates import survey_template
-from libstat.utils import SURVEY_TARGET_GROUPS, survey_response_statuses, PUBLISHED, targetGroups
+from libstat.utils import SURVEY_TARGET_GROUPS, survey_response_statuses, PUBLISHED, targetGroups, PRINCIPALS
 from libstat.utils import VARIABLE_TYPES
 from libstat.models import Variable, SurveyObservation, Library, LibrarySelection
 
@@ -194,12 +194,16 @@ class SurveyForm(forms.Form):
                                                          widget=forms.HiddenInput(),
                                                          initial=survey_response_statuses[response.status])
 
+        self.fields["principal"] = forms.ChoiceField(required=False,
+                                                     choices=PRINCIPALS,
+                                                     initial=response.principal)
+
         self.library_name = response.library.name
         self.city = response.library.city
         self.sample_year = response.sample_year
         self.is_user_read_only = not response.status in (u"not_viewed", u"initiated")
         self.is_read_only = not authenticated and self.is_user_read_only
-        self.can_submit = not authenticated and response.status == "initiated"
+        self.can_submit = not authenticated and response.status in ("not_viewed", "initiated")
         self.password = response.password
         self.status = survey_response_statuses[response.status]
         self.statuses = [status for status in survey_response_statuses.values() if not status == PUBLISHED[1]]
@@ -224,6 +228,7 @@ class SurveyForm(forms.Form):
 
         if self.is_read_only:
             self.fields["read_only"].initial = "true"
+            self.fields["principal"].widget.attrs["disabled"] = ""  # selects can't have the readonly attribute
             for key, input in self.fields.iteritems():
                 input.widget.attrs["readonly"] = ""
 

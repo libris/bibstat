@@ -14,12 +14,11 @@ from django.conf import settings
 from datetime import datetime
 
 from libstat.utils import ISO8601_utc_format, SURVEY_RESPONSE_STATUSES, NOT_VIEWED, PUBLISHED
+from libstat.utils import SURVEY_TARGET_GROUPS, targetGroups, VARIABLE_TYPES, rdfVariableTypes, PRINCIPALS
 
 
 logger = logging.getLogger(__name__)
 
-from libstat.utils import (SURVEY_TARGET_GROUPS, targetGroups, PUBLIC_LIBRARY,
-                           VARIABLE_TYPES, rdfVariableTypes)
 
 
 class VariableQuerySet(QuerySet):
@@ -478,6 +477,7 @@ class SurveyBase(Document):
     library_name = StringField()
     sample_year = IntField()
     password = StringField()
+    principal = StringField(choices=PRINCIPALS)
 
     meta = {
         'abstract': True,

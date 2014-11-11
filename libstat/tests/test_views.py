@@ -538,14 +538,6 @@ class SurveyViewTest(MongoTestCase):
     def setUp(self):
         self.client.login(username="admin", password="admin")
 
-    def test_should_not_fetch_survey_responses_unless_list_action_provided(self):
-        self._dummy_survey()
-        self._dummy_survey()
-
-        response = self.client.get(reverse("surveys"))
-
-        self.assertEquals(len(response.context["survey_responses"]), 0)
-
     def test_should_list_survey_responses_by_year(self):
         self._dummy_survey(sample_year=2012)
         self._dummy_survey(sample_year=2013)
