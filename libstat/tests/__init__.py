@@ -59,11 +59,13 @@ class MongoTestCase(TestCase):
         return survey
 
     def _dummy_variable(self, key=None, description=u"dummy description", type="integer", is_public=True,
-                        target_groups=["folkbib"], is_draft=False, replaced_by=None, save=True):
+                        target_groups=["folkbib"], is_draft=False, replaced_by=None, save=True, question=None,
+                        category=None, sub_category=None):
         if not key:
             key = ''.join(random.choice(string.ascii_uppercase + string.digits) for _ in range(8))
-        variable = Variable(key=key, description=description, type=type, is_public=is_public,
-                            target_groups=target_groups, is_draft=is_draft, replaced_by=replaced_by)
+        variable = Variable(key=key, description=description, type=type, is_public=is_public, category=category,
+                            target_groups=target_groups, is_draft=is_draft, replaced_by=replaced_by, question=question,
+                            sub_category=sub_category)
         if save:
             variable.save()
             variable.reload()

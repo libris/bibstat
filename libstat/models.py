@@ -290,11 +290,6 @@ class VariableVersion(VariableBase):
 
 
 class Cell(EmbeddedDocument):
-
-    def __init__(self, *args, **kwargs):
-        super(Cell, self).__init__(*args, **kwargs)
-        self.explanation = Variable.objects.get(key=self.variable_key).description
-
     variable_key = StringField()
     required = BooleanField()
     previous_value = StringField()
@@ -302,17 +297,48 @@ class Cell(EmbeddedDocument):
     types = ListField(StringField())
     disabled = BooleanField()
 
+    @property
+    def variable(self):
+        return Variable.objects.get(key=self.variable_key)
+
+    @property
+    def explanation(self):
+        return self.variable.description
+
 
 class Row(EmbeddedDocument):
-    description = StringField()
     cells = ListField(EmbeddedDocumentField(Cell))
+
+    @property
+    def description(self):
+        for cell in self.cells:
+            sub_category = cell.variable.sub_category
+            return sub_category if sub_category else ""
 
 
 class Group(EmbeddedDocument):
-    description = StringField()
     rows = ListField(EmbeddedDocumentField(Row))
-    headers = ListField(StringField())
-    columns = IntField()
+
+    @property
+    def description(self):
+        for row in self.rows:
+            for cell in row.cells:
+                question = cell.variable.question
+                return question if question else ""
+
+    @property
+    def headers(self):
+        for row in self.rows:
+            headers = []
+            for cell in row.cells:
+                category = cell.variable.category
+                headers.append(category if category else "")
+            return headers
+
+    @property
+    def columns(self):
+        for row in self.rows:
+            return len(row.cells)
 
 
 class Section(EmbeddedDocument):
