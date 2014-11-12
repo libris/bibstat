@@ -210,18 +210,21 @@ class SurveyForm(forms.Form):
             if self.is_read_only:
                 attrs["disabled"] = "true"
 
+            if library.sigel in disabled_libraries:
+                attrs["disabled"] = "true"
+                row["comment"] = "Detta bibliotek rapporteras redan för i en annan enkät."
+                if current_library or library.sigel in selected_libraries:
+                    row["comment"] = "Rapporteringen för detta bibiliotek kolliderar med en annan enkät."
+                    self.duplicate_selection = True
+                    del attrs["disabled"]
+
             if current_library:
                 attrs["disabled"] = "true"
                 attrs["checked"] = "true"
-                if library.sigel in disabled_libraries:
-                    row["comment"] = "Det finns en annan enkät som rapporterar för biblioteket."
-                else:
+                if not library.sigel in disabled_libraries:
                     row["comment"] = "Detta är det bibliotek som enkäten avser i första hand."
             elif library.sigel in selected_libraries:
                 attrs["checked"] = "true"
-            elif library.sigel in disabled_libraries:
-                attrs["disabled"] = "true"
-                row["comment"] = "Detta bibliotek rapporteras redan för i en annan enkät."
 
             self.fields[checkbox_id] = forms.BooleanField(required=False, widget=forms.CheckboxInput(attrs=attrs))
             self.libraries.append(row)
