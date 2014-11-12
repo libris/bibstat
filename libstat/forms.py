@@ -214,7 +214,7 @@ class SurveyForm(forms.Form):
                 attrs["disabled"] = "true"
                 row["comment"] = "Detta bibliotek rapporteras redan för i en annan enkät."
                 if current_library or library.sigel in selected_libraries:
-                    row["comment"] = "Rapporteringen för detta bibiliotek kolliderar med en annan enkät."
+                    row["comment"] = "Rapporteringen för detta bibliotek kolliderar med en annan enkät."
                     self.duplicate_selection = True
                     del attrs["disabled"]
 
