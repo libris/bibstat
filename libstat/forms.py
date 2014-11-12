@@ -174,11 +174,16 @@ class SurveyForm(forms.Form):
         return field
 
     def _set_libraries(self, current_library, selected_libraries):
-        libraries = Library.objects.filter(municipality_code=current_library.municipality_code, sigel__ne=current_library.sigel)
-        surveys = Survey.objects.filter(
-            sample_year=self.sample_year,
-            _library__municipality_code=current_library.municipality_code,
-            _library__sigel__ne=current_library.sigel)
+        libraries = [] if not current_library.municipality_code \
+                    else Library.objects.filter(
+                        municipality_code=current_library.municipality_code,
+                        sigel__ne=current_library.sigel)
+
+        surveys = [] if not current_library.municipality_code \
+                  else Survey.objects.filter(
+                    sample_year=self.sample_year,
+                    _library__municipality_code=current_library.municipality_code,
+                    _library__sigel__ne=current_library.sigel)
 
         disabled_libraries = Set()
         for survey in surveys:
