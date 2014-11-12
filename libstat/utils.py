@@ -12,13 +12,15 @@ SURVEY_TARGET_GROUPS = (
     ('univbib', u'Universitets/högskolebibliotek'),
     ('busbib', u'Företagsbibliotek'),
     ('musbib', u'Arkiv/museibibliotek'),
+    ('friskol', u'Friskolebibliotek'),
+    ('gymbib', u'Gymnasiebibliotek'),
+    ('frisgym', u'Friskolegymnasiebibliotek'),
     ('ovrbib', u'Övriga'),
     PUBLIC_LIBRARY,
     RESEARCH_LIBRARY,
     HOSPITAL_LIBRARY,
     SCHOOL_LIBRARY
 )
-
 targetGroups = dict(SURVEY_TARGET_GROUPS)
 
 NOT_VIEWED = (u"not_viewed", u"Ej öppnad")
