@@ -123,11 +123,10 @@ class SurveyForm(forms.Form):
                  "id": cell.variable_key,
                  "name": cell.variable_key}
 
-        if "sum" in cell.types:
-            if cell.sum_of:
-                attrs["data-sum-of"] = " ".join(map(lambda s: s, cell.sum_of))
-                attrs["data-bv-notempty"] = ""
-                attrs["placeholder"] = "Obligatorisk"
+        if cell.sum_of:
+            attrs["data-sum-of"] = " ".join(map(lambda s: s, cell.sum_of))
+            attrs["data-bv-notempty"] = ""
+            attrs["placeholder"] = "Obligatorisk"
 
         if "required" in cell.types:
             attrs["data-bv-notempty"] = ""
