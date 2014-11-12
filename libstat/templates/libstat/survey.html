@@ -70,6 +70,12 @@
     .row-help {
         margin-bottom: 10px;
     }
+
+    .alert-navbar {
+        padding: 6px 12px;
+        margin-bottom: 0;
+        margin-top: 3px;
+    }
 </style>
 
 {% if user.is_authenticated %}
@@ -194,6 +200,15 @@
                     </div>
                 </div>
             </div>
+            {% if form.duplicate_selection %}
+                <div class="navbar-left">
+                    <div class="navbar-text">
+                        <div class="alert alert-danger alert-navbar">
+                            Valda bibliotek rapporteras för i flera enkäter. <a href="mailto:biblioteksstatistik@kb.se">Kontakta oss</a>.
+                        </div>
+                    </div>
+                </div>
+            {% endif %}
             <div class="navbar-right navbar-submit">
                 <div id="unsaved-changes-label" class="navbar-text"></div>
                 <a href="#" id="save-survey-btn" class="btn btn-primary navbar-btn">Spara</a>
