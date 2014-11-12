@@ -281,6 +281,8 @@ class SurveyForm(forms.Form):
         self.url_with_password = "{}?p={}".format(self.url, self.password)
 
         self._set_libraries(response.library, response.selected_libraries)
+        if self.duplicate_selection:
+            self.can_submit = False
 
         for section in template.sections:
             for group in section.groups:
