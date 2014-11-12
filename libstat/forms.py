@@ -174,7 +174,8 @@ class SurveyForm(forms.Form):
         return field
 
     def _set_libraries(self, current_library, selected_libraries):
-        libraries = Library.objects.filter(municipality_code=current_library.municipality_code, sigel__ne=current_library.sigel)
+        libraries = Library.objects.filter(
+            municipality_code=current_library.municipality_code, sigel__ne=current_library.sigel)
         surveys = Survey.objects.filter(
             sample_year=self.sample_year,
             _library__municipality_code=current_library.municipality_code,
@@ -226,7 +227,6 @@ class SurveyForm(forms.Form):
         for library in libraries:
             set_library(self, library)
 
-
     def __init__(self, *args, **kwargs):
         response = kwargs.pop('instance', None)
         authenticated = kwargs.pop('authenticated', False)
@@ -239,7 +239,7 @@ class SurveyForm(forms.Form):
         self.fields["unknown_inputs"] = forms.CharField(required=False,
                                                         widget=forms.HiddenInput(attrs={"id": "unknown_inputs"}))
         self.fields["selected_libraries"] = forms.CharField(required=False,
-                                                        widget=forms.HiddenInput(attrs={"id": "selected_libraries"}))
+                                                            widget=forms.HiddenInput(attrs={"id": "selected_libraries"}))
         self.fields["submit_action"] = forms.CharField(required=False,
                                                        widget=forms.HiddenInput(attrs={"id": "submit_action"}))
         self.fields["read_only"] = forms.CharField(required=False,
@@ -279,6 +279,8 @@ class SurveyForm(forms.Form):
                 for row in group.rows:
                     for cell in row.cells:
                         variable_key = cell.variable_key
+                        if len(Variable.objects.filter(key=variable_key)) == 0:
+                            raise Exception("Can't find variable with key '{}'".format(variable_key))
                         observation = response.get_observation(variable_key)
                         cell.disabled = observation.disabled
                         if not observation:

@@ -20,7 +20,6 @@ from libstat.utils import SURVEY_TARGET_GROUPS, targetGroups, VARIABLE_TYPES, rd
 logger = logging.getLogger(__name__)
 
 
-
 class VariableQuerySet(QuerySet):
     is_draft_not_set_query = Q(is_draft=None)
     is_not_draft_query = Q(is_draft=False)
@@ -346,16 +345,6 @@ class Section(EmbeddedDocument):
 
 
 class SurveyTemplate(Document):
-    key = StringField()
-    target_year = StringField()
-    organization_name = StringField()
-    municipality = StringField()
-    municipality_code = StringField()
-    head_authority = StringField()
-    respondent_name = StringField()
-    respondent_email = StringField()
-    respondent_phone = StringField()
-    website = StringField()
     sections = ListField(EmbeddedDocumentField(Section))
 
     def get_cell(self, variable_key):
