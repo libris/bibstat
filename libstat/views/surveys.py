@@ -180,14 +180,14 @@ def survey(request, survey_id):
 
     if can_view_survey(survey):
         if request.method == "POST":
-            form = SurveyForm(request.POST, instance=survey)
+            form = SurveyForm(request.POST, survey=survey)
             _save_survey_response_from_form(survey, form)
 
         if not request.user.is_authenticated() and survey.status == "not_viewed":
             survey.status = "initiated"
             survey.save()
 
-        context["form"] = SurveyForm(instance=survey, authenticated=request.user.is_authenticated())
+        context["form"] = SurveyForm(survey=survey, authenticated=request.user.is_authenticated())
         return render(request, 'libstat/survey.html', context)
 
     if has_password():
