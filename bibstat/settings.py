@@ -45,10 +45,10 @@ MONGODB_USER = 'bibstat'
 MONGODB_PASSWD = 'bibstat'
 
 # Email details
+EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+EMAIL_SENDER = 'biblioteksstatistik@kb.se'
 # EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 # EMAIL_HOST = 'smtp.kb.se'
-# EMAIL_SENDER = 'biblioteksstatistik@kb.se'
-EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 
 LOG_LEVEL = 'WARNING'
 
