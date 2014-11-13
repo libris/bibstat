@@ -174,12 +174,16 @@ class SurveyForm(forms.Form):
         return field
 
     def _set_libraries(self, current_library, selected_libraries):
-        libraries = Library.objects.filter(
-            municipality_code=current_library.municipality_code, sigel__ne=current_library.sigel)
-        surveys = Survey.objects.filter(
-            sample_year=self.sample_year,
-            _library__municipality_code=current_library.municipality_code,
-            _library__sigel__ne=current_library.sigel)
+        libraries = [] if not current_library.municipality_code \
+                    else Library.objects.filter(
+                        municipality_code=current_library.municipality_code,
+                        sigel__ne=current_library.sigel)
+
+        surveys = [] if not current_library.municipality_code \
+                  else Survey.objects.filter(
+                    sample_year=self.sample_year,
+                    _library__municipality_code=current_library.municipality_code,
+                    _library__sigel__ne=current_library.sigel)
 
         disabled_libraries = Set()
         for survey in surveys:
@@ -206,18 +210,21 @@ class SurveyForm(forms.Form):
             if self.is_read_only:
                 attrs["disabled"] = "true"
 
+            if library.sigel in disabled_libraries:
+                attrs["disabled"] = "true"
+                row["comment"] = "Detta bibliotek rapporteras redan för i en annan enkät."
+                if current_library or library.sigel in selected_libraries:
+                    row["comment"] = "Rapporteringen för detta bibliotek kolliderar med en annan enkät."
+                    self.duplicate_selection = True
+                    del attrs["disabled"]
+
             if current_library:
                 attrs["disabled"] = "true"
                 attrs["checked"] = "true"
-                if library.sigel in disabled_libraries:
-                    row["comment"] = "Det finns en annan enkät som rapporterar för biblioteket."
-                else:
+                if not library.sigel in disabled_libraries:
                     row["comment"] = "Detta är det bibliotek som enkäten avser i första hand."
             elif library.sigel in selected_libraries:
                 attrs["checked"] = "true"
-            elif library.sigel in disabled_libraries:
-                attrs["disabled"] = "true"
-                row["comment"] = "Detta bibliotek rapporteras redan för i en annan enkät."
 
             self.fields[checkbox_id] = forms.BooleanField(required=False, widget=forms.CheckboxInput(attrs=attrs))
             self.libraries.append(row)
@@ -273,6 +280,8 @@ class SurveyForm(forms.Form):
         self.url_with_password = "{}?p={}".format(self.url, self.password)
 
         self._set_libraries(response.library, response.selected_libraries)
+        if self.duplicate_selection:
+            self.can_submit = False
 
         for section in template.sections:
             for group in section.groups:
