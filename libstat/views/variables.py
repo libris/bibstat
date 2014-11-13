@@ -22,7 +22,8 @@ def variables(request):
     target_groups = request.GET.getlist("target_group", [])
     if target_groups:
         if target_groups == [u"all"]:
-            target_group_filter = [g[0] for g in SURVEY_TARGET_GROUPS]
+            #target_group_filter = [g[0] for g in SURVEY_TARGET_GROUPS]
+            target_group_filter = (u"sjukbib", u"skolbib", u"specbib", u"folkbib")
             variables = Variable.objects.filter(target_groups__all=target_group_filter)
         else:
             target_group_filter = target_groups
