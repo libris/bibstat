@@ -176,7 +176,7 @@ def _survey_template_2014():
                             Row(cells=[Cell(variable_key=u"Databas08", types=["integer"])]),
                             Row(cells=[Cell(variable_key=u"Databas09", types=["integer"])])]),
                         Group(rows=[
-                            Row(cells=[Cell(variable_key=u"Databaskom", types=["comment"])])])]),
+                            Row(cells=[Cell(variable_key=u"Databaskomm", types=["comment"])])])]),
             Section(title=u"Frågor om utlån, omlån och användning",
                     groups=[
                         Group(rows=[
