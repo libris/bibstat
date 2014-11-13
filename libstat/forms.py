@@ -173,7 +173,7 @@ class SurveyForm(forms.Form):
 
         return field
 
-    def _set_libraries(self, current_library, selected_libraries):
+    def _set_libraries(self, current_library, selected_libraries, authenticated):
         libraries = [] if not current_library.municipality_code \
                     else Library.objects.filter(
                         municipality_code=current_library.municipality_code,
@@ -220,11 +220,22 @@ class SurveyForm(forms.Form):
 
             if current_library:
                 attrs["disabled"] = "true"
-                attrs["checked"] = "true"
+                if not authenticated or library.sigel in selected_libraries:
+                    attrs["checked"] = "true"
+
                 if not library.sigel in disabled_libraries:
                     row["comment"] = "Detta är det bibliotek som enkäten avser i första hand."
             elif library.sigel in selected_libraries:
                 attrs["checked"] = "true"
+
+
+            if authenticated:
+                try:
+                    del attrs["disabled"]
+                except KeyError:
+                    pass
+
+            print(attrs)
 
             self.fields[checkbox_id] = forms.BooleanField(required=False, widget=forms.CheckboxInput(attrs=attrs))
             self.libraries.append(row)
@@ -279,7 +290,7 @@ class SurveyForm(forms.Form):
         self.url = settings.API_BASE_URL + reverse('survey', args=(survey.pk,))
         self.url_with_password = "{}?p={}".format(self.url, self.password)
 
-        self._set_libraries(survey.library, survey.selected_libraries)
+        self._set_libraries(survey.library, survey.selected_libraries, authenticated)
         if hasattr(self, 'duplicate_selection') and self.duplicate_selection:
             self.can_submit = False
 
