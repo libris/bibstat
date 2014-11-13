@@ -256,17 +256,17 @@ def _survey_template_2014():
                             Row(cells=[
                                 Cell(variable_key=u"Fjarr101", types=["integer"]),
                                 Cell(variable_key=u"Fjarr201", types=["integer"]),
-                                Cell(variable_key=u"397", types=["integer"],
+                                Cell(variable_key=u"Fjarr397", types=["integer"],
                                      sum_of=[u"Fjarr101", u"Fjarr201"])]),
                             Row(cells=[
                                 Cell(variable_key=u"Fjarr102", types=["integer"]),
                                 Cell(variable_key=u"Fjarr202", types=["integer"]),
-                                Cell(variable_key=u"398", types=["integer"],
+                                Cell(variable_key=u"Fjarr398", types=["integer"],
                                      sum_of=[u"Fjarr102", u"Fjarr202"])]),
                             Row(cells=[
                                 Cell(variable_key=u"Fjarr199", types=["integer", "required"]),
                                 Cell(variable_key=u"Fjarr299", types=["integer", "required"]),
-                                Cell(variable_key=u"399", types=["integer"],
+                                Cell(variable_key=u"Fjarr399", types=["integer"],
                                      sum_of=[u"Fjarr199", u"Fjarr299"])])]),
                         Group(rows=[
                             Row(cells=[Cell(variable_key=u"Bestandkomm", types=["comment"])])])]),
