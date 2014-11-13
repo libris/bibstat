@@ -36,13 +36,7 @@ def _create_surveys(library_ids, sample_year):
                     for cell in row.cells:
                         variable_key = cell.variable_key
                         if len(Variable.objects.filter(key=variable_key)) == 0:
-                            if settings.APP_EXECUTION_ENVIRONMENT == "dev_local":
-                                Variable.objects.get_or_create(key=variable_key,
-                                                               target_groups=["folkbib"],
-                                                               description="",
-                                                               type="string")[0].save()
-                            else:
-                                raise Exception("Can't find variable with key '{}'".format(variable_key))
+                            raise Exception("Can't find variable with key '{}'".format(variable_key))
                         survey.observations.append(
                             SurveyObservation(
                                 variable=Variable.objects.get(key=variable_key)))
