@@ -235,11 +235,11 @@ class SurveyForm(forms.Form):
             set_library(self, library)
 
     def __init__(self, *args, **kwargs):
-        response = kwargs.pop('instance', None)
+        survey = kwargs.pop('survey', None)
         authenticated = kwargs.pop('authenticated', False)
         super(SurveyForm, self).__init__(*args, **kwargs)
 
-        template = survey_template(response.sample_year, response)
+        template = survey_template(survey.sample_year, survey)
 
         self.fields["disabled_inputs"] = forms.CharField(required=False,
                                                          widget=forms.HiddenInput(attrs={"id": "disabled_inputs"}))
@@ -254,33 +254,33 @@ class SurveyForm(forms.Form):
 
         self.fields["key"] = forms.CharField(required=False,
                                              widget=forms.HiddenInput(),
-                                             initial=response.pk)
+                                             initial=survey.pk)
 
         self.fields["selected_status"] = forms.CharField(required=False,
                                                          widget=forms.HiddenInput(),
-                                                         initial=survey_response_statuses[response.status])
+                                                         initial=survey_response_statuses[survey.status])
 
         self.fields["principal"] = forms.ChoiceField(required=False,
                                                      choices=PRINCIPALS,
-                                                     initial=response.principal)
+                                                     initial=survey.principal)
 
-        self.library_name = response.library.name
-        self.city = response.library.city
-        self.sample_year = response.sample_year
-        self.is_user_read_only = not response.status in (u"not_viewed", u"initiated")
+        self.library_name = survey.library.name
+        self.city = survey.library.city
+        self.sample_year = survey.sample_year
+        self.is_user_read_only = not survey.status in (u"not_viewed", u"initiated")
         self.is_read_only = not authenticated and self.is_user_read_only
-        self.can_submit = not authenticated and response.status in ("not_viewed", "initiated")
-        self.password = response.password
-        self.status = survey_response_statuses[response.status]
+        self.can_submit = not authenticated and survey.status in ("not_viewed", "initiated")
+        self.password = survey.password
+        self.status = survey_response_statuses[survey.status]
         self.statuses = [status for status in survey_response_statuses.values() if not status == PUBLISHED[1]]
-        self.is_published = response.status == PUBLISHED[0]
+        self.is_published = survey.status == PUBLISHED[0]
         self.sections = template.sections
 
-        self.url = settings.API_BASE_URL + reverse('survey', args=(response.pk,))
+        self.url = settings.API_BASE_URL + reverse('survey', args=(survey.pk,))
         self.url_with_password = "{}?p={}".format(self.url, self.password)
 
-        self._set_libraries(response.library, response.selected_libraries)
-        if self.duplicate_selection:
+        self._set_libraries(survey.library, survey.selected_libraries)
+        if hasattr(self, 'duplicate_selection') and self.duplicate_selection:
             self.can_submit = False
 
         for section in template.sections:
@@ -290,11 +290,12 @@ class SurveyForm(forms.Form):
                         variable_key = cell.variable_key
                         if len(Variable.objects.filter(key=variable_key)) == 0:
                             raise Exception("Can't find variable with key '{}'".format(variable_key))
-                        observation = response.get_observation(variable_key)
+                        observation = survey.get_observation(variable_key)
+
                         cell.disabled = observation.disabled
                         if not observation:
                             variable = Variable.objects.get(key=variable_key)
-                            response.observations.append(SurveyObservation(variable=variable,
+                            survey.observations.append(SurveyObservation(variable=variable,
                                                                            _source_key=variable.key))
                         self.fields[variable_key] = self._cell_to_input_field(cell, observation)
 
