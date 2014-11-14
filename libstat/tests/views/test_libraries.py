@@ -1,5 +1,4 @@
 # -*- coding: UTF-8 -*-
-from django.core.urlresolvers import reverse
 
 from libstat.tests import MongoTestCase
 from libstat.views import _dict_to_library
@@ -14,6 +13,7 @@ class TestLibraryImport(MongoTestCase):
             "sigel": "lib1_sigel",
             "name": "lib1",
             "library_type": "sjukbib",
+            "municipality_code": "1793",
             "address":
             [
                 {
@@ -29,6 +29,10 @@ class TestLibraryImport(MongoTestCase):
             ],
             "contact":
             [
+                {
+                    "contact_type": "orgchef",
+                    "email": "dont@care.atall"
+                },
                 {
                     "contact_type": "statans",
                     "email": "lib1@dom.top"
@@ -54,6 +58,7 @@ class TestLibraryImport(MongoTestCase):
         self.assertEquals(library.city, "lib1_city")
         self.assertEquals(library.address, "street1")
         self.assertEquals(library.email, "lib1@dom.top")
+        self.assertEquals(library.municipality_code, "1793")
         self.assertEquals(library.library_type, "sjukbib")
 
     def test_does_not_import_non_swedish_libraries(self):
@@ -83,7 +88,7 @@ class TestLibraryRemoval(MongoTestCase):
         self._dummy_library(name="lib2")
         self._dummy_library(name="lib3")
 
-        self.client.get(reverse("remove_libraries"))
+        self._get("remove_libraries")
 
         self.assertEquals(len(Library.objects.all()), 0)
 
@@ -93,6 +98,6 @@ class TestLibraryRemoval(MongoTestCase):
         self._dummy_library(name="lib3")
 
         self._logout()
-        self.client.get(reverse("remove_libraries"))
+        self._get("remove_libraries")
 
         self.assertEquals(len(Library.objects.all()), 3)

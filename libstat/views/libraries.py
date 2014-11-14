@@ -72,9 +72,10 @@ def _dict_to_library(dict):
         return None
 
     library, _ = Library.objects.get_or_create(sigel=dict["sigel"])
-    library.sigel = dict["sigel"]
-    library.name = dict["name"]
-    library.library_type = dict["library_type"] if dict["library_type"] else None
+    library.sigel = dict.get("sigel")
+    library.name = dict.get("name")
+    library.municipality_code = dict.get("municipality_code")
+    library.library_type = dict.get("library_type") if dict.get("library_type") else None
     location = next((a for a in dict["address"] if a["address_type"] == "gen"), None)
     library.address = location["street"] if location else ""
     library.city = location["city"] if location else ""
