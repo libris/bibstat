@@ -8,7 +8,6 @@ from xlrd import open_workbook
 from xlrd.biffh import XLRDError
 from requests import get
 
-from libstat.utils import PUBLIC_LIBRARY, RESEARCH_LIBRARY, HOSPITAL_LIBRARY, SCHOOL_LIBRARY
 from libstat.utils import TYPE_BOOLEAN, TYPE_INTEGER, TYPE_LONG
 from libstat.models import Survey, SurveyObservation, Variable, Library
 
@@ -20,7 +19,7 @@ class Command(BaseCommand):
 
     option_list = BaseCommand.option_list + (
         make_option(u'--target_group', dest=u"target_group", type=u'choice',
-                    choices=[PUBLIC_LIBRARY[0], RESEARCH_LIBRARY[0], HOSPITAL_LIBRARY[0], SCHOOL_LIBRARY[0]],
+                    choices=["folkbib", "specbib", "sjukbib", "skolbib"],
                     help=u'Target group; public, research, hospital, school'),
         make_option('--file', dest="file", type='string',
                     help='File; Absolute path to source spreadsheet. I.e. /home/MyUser/documents/sourcefile.xlsx'),

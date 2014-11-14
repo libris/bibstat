@@ -1,20 +1,15 @@
 # -*- coding: UTF-8 -*-
-from collections import OrderedDict
 import datetime
 
 ALL_TARGET_GROUPS_label = "Samtliga bibliotek"
-PUBLIC_LIBRARY = ('folkbib', u'Folkbibliotek')
-RESEARCH_LIBRARY = ('specbib', u'Specialbibliotek')
-HOSPITAL_LIBRARY = ('sjukbib', u'Sjukhusbibliotek')
-SCHOOL_LIBRARY = ('skolbib', u'Skolbibliotek')
 SURVEY_TARGET_GROUPS = (
-    PUBLIC_LIBRARY,
-    RESEARCH_LIBRARY,
-    SCHOOL_LIBRARY,
+    ('folkbib', u'Folkbibliotek'),
+    ('specbib', u'Specialbibliotek'),
+    ('skolbib', u'Skolbibliotek'),
     ('friskol', u'Friskolebibliotek'),
     ('gymbib', u'Gymnasiebibliotek'),
     ('frisgym', u'Friskolegymnasiebibliotek'),
-    HOSPITAL_LIBRARY,
+    ('sjukbib', u'Sjukhusbibliotek'),
     ('natbib', u'Nationalbibliotek'),
     ('univbib', u'Universitets/högskolebibliotek'),
     ('busbib', u'Företagsbibliotek'),
@@ -22,23 +17,6 @@ SURVEY_TARGET_GROUPS = (
     ('ovrbib', u'Övriga')
 )
 targetGroups = dict(SURVEY_TARGET_GROUPS)
-
-NOT_VIEWED = (u"not_viewed", u"Ej öppnad")
-INITIATED = (u"initiated", u"Påbörjad")
-SUBMITTED = (u"submitted", u"Inskickad")
-CONTROLLED = (u"controlled", u"Kontrollerad")
-PUBLISHED = (u"published", u"Publicerad")
-SURVEY_RESPONSE_STATUSES = (NOT_VIEWED, INITIATED, SUBMITTED, CONTROLLED, PUBLISHED)
-survey_response_statuses = OrderedDict(SURVEY_RESPONSE_STATUSES)
-
-PRINCIPALS = (
-    (u"stat", "Stat"),
-    (u"kommun", "Kommun"),
-    (u"landsting", "Landsting"),
-    (u"foretag", "Företag"),
-    (u"stiftelse", "Stiftelse")
-)
-principals = dict(PRINCIPALS)
 
 TYPE_STRING = (u"string", u"Text")
 TYPE_BOOLEAN = (u"boolean", u"Boolesk")
@@ -102,7 +80,3 @@ def target_groups_label(value):
             if value in targetGroups:
                 display_names.append(targetGroups[value])
     return ", ".join(display_names)
-
-
-def survey_response_status_label(key):
-    return survey_response_statuses[key]

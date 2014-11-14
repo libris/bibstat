@@ -13,8 +13,8 @@ from django.conf import settings
 
 from datetime import datetime
 
-from libstat.utils import ISO8601_utc_format, SURVEY_RESPONSE_STATUSES, NOT_VIEWED, PUBLISHED
-from libstat.utils import SURVEY_TARGET_GROUPS, targetGroups, VARIABLE_TYPES, rdfVariableTypes, PRINCIPALS
+from libstat.utils import ISO8601_utc_format
+from libstat.utils import SURVEY_TARGET_GROUPS, targetGroups, VARIABLE_TYPES, rdfVariableTypes
 
 
 logger = logging.getLogger(__name__)
@@ -231,8 +231,8 @@ class Variable(VariableBase):
 
     def target_groups__descriptions(self):
         display_names = []
-        for tg in self.target_groups:
-            display_names.append(targetGroups[tg])
+        for target_group in SURVEY_TARGET_GROUPS:
+            display_names.append(target_group[1])
         return display_names
 
     def to_dict(self, id_prefix=""):
@@ -446,6 +446,22 @@ class LibrarySelection(Document):
 
 
 class SurveyBase(Document):
+    PRINCIPALS = (
+        (u"stat", "Stat"),
+        (u"kommun", "Kommun"),
+        (u"landsting", "Landsting"),
+        (u"foretag", "Företag"),
+        (u"stiftelse", "Stiftelse")
+    )
+
+    STATUSES = (
+        (u"not_viewed", u"Ej öppnad"),
+        (u"initiated", u"Påbörjad"),
+        (u"submitted", u"Inskickad"),
+        (u"controlled", u"Kontrollerad"),
+        (u"published", u"Publicerad")
+    )
+
     respondent_name = StringField()
     respondent_email = StringField()
     respondent_phone = StringField()
@@ -461,7 +477,7 @@ class SurveyBase(Document):
     date_modified = DateTimeField(required=True, default=datetime.utcnow)
     modified_by = ReferenceField(User)
     observations = ListField(EmbeddedDocumentField(SurveyObservation))
-    _status = StringField(choices=SURVEY_RESPONSE_STATUSES, default=NOT_VIEWED[0])
+    _status = StringField(choices=STATUSES, default="not_viewed")
     _library = EmbeddedDocumentField(LibraryCached)
     selected_libraries = ListField(StringField())
     library_name = StringField()
@@ -504,7 +520,7 @@ class SurveyBase(Document):
     def status(self, status):
         if status == "published" and not self._status == "published":
             raise Exception("Cannot set published status for survey '{}'.".format(self.pk))
-        if not status in [s[0] for s in SURVEY_RESPONSE_STATUSES]:
+        if not status in [s[0] for s in Survey.STATUSES]:
             raise KeyError("Invalid status '{}'".format(status))
         self._status = status
 
@@ -575,7 +591,7 @@ class Survey(SurveyBase):
     def store_version_and_update_date_modified(cls, sender, document, **kwargs):
         if document.id:
             if hasattr(document, "_action_publish"):
-                document._status = PUBLISHED[0]
+                document._status = "published"
             else:
                 changed_fields = document.__dict__["_changed_fields"] if "_changed_fields" in document.__dict__ else []
                 logger.info(
@@ -620,7 +636,7 @@ class Survey(SurveyBase):
                 data_item.date_modified = publishing_date
                 data_item.save()
 
-        self._status = PUBLISHED[0]
+        self._status = "published"
         self.published_at = publishing_date
         self.published_by = user
 

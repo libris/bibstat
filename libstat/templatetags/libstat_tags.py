@@ -4,9 +4,9 @@ from datetime import datetime
 import pytz
 import re
 from django import template
-from libstat.models import Dispatch
+from libstat.models import Dispatch, Survey
 
-from libstat.utils import target_groups_label, survey_response_status_label
+from libstat.utils import target_groups_label
 
 
 register = template.Library()
@@ -21,7 +21,7 @@ def tg_label(value):
 
 
 def srs_label(key):
-    return survey_response_status_label(key)
+    return next((status[1] for status in Survey.STATUSES if status[0] == key))
 
 
 def access(value, arg):

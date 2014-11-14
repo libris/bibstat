@@ -4,7 +4,6 @@ from django.core.management.base import CommandError
 
 from libstat.tests import MongoTestCase
 from libstat.models import Variable, Survey
-from libstat.utils import PUBLIC_LIBRARY, RESEARCH_LIBRARY, HOSPITAL_LIBRARY, SCHOOL_LIBRARY
 
 
 """
@@ -87,7 +86,7 @@ class ImportVariablesTest(MongoTestCase):
 
     def test_should_import_research_lib_variables(self):
         args = []
-        opts = {"file": "data/forsk_termer.xlsx", "target_group": RESEARCH_LIBRARY[0]}
+        opts = {"file": "data/forsk_termer.xlsx", "target_group": "specbib"}
         call_command('import_variables', *args, **opts)
 
         # Check that all variables have been imported
@@ -118,13 +117,13 @@ class ImportVariablesTest(MongoTestCase):
 
     def test_should_update_research_lib_variables(self):
         args = []
-        opts = {"file": "data/forsk_termer.xlsx", "target_group": RESEARCH_LIBRARY[0]}
+        opts = {"file": "data/forsk_termer.xlsx", "target_group": "specbib"}
         call_command('import_variables', *args, **opts)
 
         # Check that all variables have been imported
         self.assertEquals(len(Variable.objects.all()), 163)
         # Check target_group before
-        self.assertEquals(Variable.objects.filter(key="Forsk111")[0].target_groups, [RESEARCH_LIBRARY[0]])
+        self.assertEquals(Variable.objects.filter(key="Forsk111")[0].target_groups, ["specbib"])
 
         # Changing target group to avoid having to modify terms file
         args = []
@@ -208,23 +207,23 @@ class ImportVariablesTest(MongoTestCase):
 
     def test_should_update_school_lib_variables(self):
         args = []
-        opts = {"file": "data/skol_termer.xlsx", "target_group": SCHOOL_LIBRARY[0]}
+        opts = {"file": "data/skol_termer.xlsx", "target_group": "skolbib"}
         call_command('import_variables', *args, **opts)
 
         # Check that all variables have been imported
         self.assertEquals(len(Variable.objects.all()), 139)
         # Check target_group before
-        self.assertEquals(Variable.objects.filter(key="Skol5")[0].target_groups, [SCHOOL_LIBRARY[0]])
+        self.assertEquals(Variable.objects.filter(key="Skol5")[0].target_groups, ["skolbib"])
 
         # Changing target group to avoid having to modify terms file
         args = []
-        opts = {"file": "data/skol_termer.xlsx", "target_group": RESEARCH_LIBRARY[0]}
+        opts = {"file": "data/skol_termer.xlsx", "target_group": "specbib"}
         call_command('import_variables', *args, **opts)
 
         # Check that no new variables have been created
         self.assertEquals(len(Variable.objects.all()), 139)
         # Check target_group after
-        self.assertEquals(Variable.objects.filter(key="Skol5")[0].target_groups, [RESEARCH_LIBRARY[0]])
+        self.assertEquals(Variable.objects.filter(key="Skol5")[0].target_groups, ["specbib"])
 
 
 class ImportSurveyResponsesTest(MongoTestCase):

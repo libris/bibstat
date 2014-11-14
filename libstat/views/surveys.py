@@ -129,7 +129,7 @@ def surveys_overview(request, sample_year):
     surveys = Survey.objects.filter(sample_year=sample_year)
     context = {
         "sample_year": sample_year,
-        "statuses": utils.SURVEY_RESPONSE_STATUSES,
+        "statuses": Survey.STATUSES,
         "target_groups": utils.SURVEY_TARGET_GROUPS,
         "surveys": surveys
     }

@@ -4,8 +4,7 @@ from optparse import make_option
 from django.core.management.base import BaseCommand, CommandError
 from xlrd import open_workbook
 
-from libstat.utils import PUBLIC_LIBRARY, RESEARCH_LIBRARY, HOSPITAL_LIBRARY, SCHOOL_LIBRARY, \
-    DATA_IMPORT_nonMeasurementCategories
+from libstat.utils import DATA_IMPORT_nonMeasurementCategories
 from libstat.utils import TYPE_STRING, TYPE_BOOLEAN, TYPE_INTEGER, TYPE_LONG, TYPE_DECIMAL, TYPE_PERCENT
 from libstat.models import Variable
 
@@ -31,7 +30,7 @@ class Command(BaseCommand):
 
     option_list = BaseCommand.option_list + (
         make_option(u'--target_group', dest=u"target_group", type=u'choice',
-                    choices=[PUBLIC_LIBRARY[0], RESEARCH_LIBRARY[0], HOSPITAL_LIBRARY[0], SCHOOL_LIBRARY[0]],
+                    choices=["folkbib", "specbib", "sjukbib", "skolbib"],
                     help=u'Target group; public, research, hospital, school'),
         make_option('--file', dest="file", type='string',
                     help='File; Absolute path to source spreadsheet. I.e. /home/MyUser/documents/sourcefile.xlsx'),

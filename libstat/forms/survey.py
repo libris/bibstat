@@ -5,14 +5,12 @@ from django.core.urlresolvers import reverse
 from bibstat import settings
 from libstat.models import Library, Survey, Variable, SurveyObservation
 from libstat.survey_templates import survey_template
-from libstat.utils import survey_response_statuses, PRINCIPALS, PUBLISHED
 
 
 class LibrarySelection:
 
     def __init__(self, library):
         self.library = library
-
 
     def selectable_libraries(self):
         if not self.library.municipality_code:
@@ -22,7 +20,6 @@ class LibrarySelection:
             municipality_code=self.library.municipality_code,
             sigel__ne=self.library.sigel
         )
-
 
     def selected_sigels(self, sample_year):
         if not self.library.municipality_code:
@@ -141,7 +138,6 @@ class SurveyForm(forms.Form):
             elif library.sigel in selected_libraries:
                 attrs["checked"] = "true"
 
-
             if authenticated:
                 try:
                     del attrs["disabled"]
@@ -158,6 +154,9 @@ class SurveyForm(forms.Form):
         for library in selection.selectable_libraries():
             set_library(self, library)
 
+    def _status_label(self, key):
+        return next((status[1] for status in Survey.STATUSES if status[0] == key))
+
     def __init__(self, *args, **kwargs):
         survey = kwargs.pop('survey', None)
         authenticated = kwargs.pop('authenticated', False)
@@ -165,14 +164,19 @@ class SurveyForm(forms.Form):
 
         template = survey_template(survey.sample_year, survey)
 
-        self.fields["disabled_inputs"] = forms.CharField(required=False, widget=forms.HiddenInput(attrs={"id": "disabled_inputs"}))
-        self.fields["unknown_inputs"] = forms.CharField(required=False, widget=forms.HiddenInput(attrs={"id": "unknown_inputs"}))
-        self.fields["selected_libraries"] = forms.CharField(required=False, widget=forms.HiddenInput(attrs={"id": "selected_libraries"}))
-        self.fields["submit_action"] = forms.CharField(required=False, widget=forms.HiddenInput(attrs={"id": "submit_action"}))
+        self.fields["disabled_inputs"] = forms.CharField(
+            required=False, widget=forms.HiddenInput(attrs={"id": "disabled_inputs"}))
+        self.fields["unknown_inputs"] = forms.CharField(
+            required=False, widget=forms.HiddenInput(attrs={"id": "unknown_inputs"}))
+        self.fields["selected_libraries"] = forms.CharField(
+            required=False, widget=forms.HiddenInput(attrs={"id": "selected_libraries"}))
+        self.fields["submit_action"] = forms.CharField(
+            required=False, widget=forms.HiddenInput(attrs={"id": "submit_action"}))
         self.fields["read_only"] = forms.CharField(required=False, widget=forms.HiddenInput(attrs={"id": "read_only"}))
         self.fields["key"] = forms.CharField(required=False, widget=forms.HiddenInput(), initial=survey.pk)
-        self.fields["selected_status"] = forms.CharField(required=False, widget=forms.HiddenInput(), initial=survey_response_statuses[survey.status])
-        self.fields["principal"] = forms.ChoiceField(required=False, choices=PRINCIPALS, initial=survey.principal)
+        self.fields["selected_status"] = forms.CharField(
+            required=False, widget=forms.HiddenInput(), initial=self._status_label(survey.status))
+        self.fields["principal"] = forms.ChoiceField(required=False, choices=Survey.PRINCIPALS, initial=survey.principal)
 
         self.library_name = survey.library.name
         self.city = survey.library.city
@@ -182,9 +186,9 @@ class SurveyForm(forms.Form):
         self.is_read_only = not authenticated and self.is_user_read_only
         self.can_submit = not authenticated and survey.status in ("not_viewed", "initiated")
         self.password = survey.password
-        self.status = survey_response_statuses[survey.status]
-        self.statuses = [status for status in survey_response_statuses.values() if not status == PUBLISHED[1]]
-        self.is_published = survey.status == PUBLISHED[0]
+        self.status = self._status_label(survey.status)
+        self.statuses = [status[1] for status in Survey.STATUSES if not status[0] == "published"]
+        self.is_published = survey.status == "published"
         self.sections = template.sections
 
         self.url = settings.API_BASE_URL + reverse('survey', args=(survey.pk,))
@@ -207,7 +211,7 @@ class SurveyForm(forms.Form):
                         if not observation:
                             variable = Variable.objects.get(key=variable_key)
                             survey.observations.append(SurveyObservation(variable=variable,
-                                                                           _source_key=variable.key))
+                                                                         _source_key=variable.key))
                         self.fields[variable_key] = self._cell_to_input_field(cell, observation)
 
         if self.is_read_only:
