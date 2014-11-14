@@ -8,18 +8,18 @@ RESEARCH_LIBRARY = ('specbib', u'Specialbibliotek')
 HOSPITAL_LIBRARY = ('sjukbib', u'Sjukhusbibliotek')
 SCHOOL_LIBRARY = ('skolbib', u'Skolbibliotek')
 SURVEY_TARGET_GROUPS = (
+    PUBLIC_LIBRARY,
+    RESEARCH_LIBRARY,
+    SCHOOL_LIBRARY,
+    ('friskol', u'Friskolebibliotek'),
+    ('gymbib', u'Gymnasiebibliotek'),
+    ('frisgym', u'Friskolegymnasiebibliotek'),
+    HOSPITAL_LIBRARY,
     ('natbib', u'Nationalbibliotek'),
     ('univbib', u'Universitets/högskolebibliotek'),
     ('busbib', u'Företagsbibliotek'),
     ('musbib', u'Arkiv/museibibliotek'),
-    ('friskol', u'Friskolebibliotek'),
-    ('gymbib', u'Gymnasiebibliotek'),
-    ('frisgym', u'Friskolegymnasiebibliotek'),
-    ('ovrbib', u'Övriga'),
-    PUBLIC_LIBRARY,
-    RESEARCH_LIBRARY,
-    HOSPITAL_LIBRARY,
-    SCHOOL_LIBRARY
+    ('ovrbib', u'Övriga')
 )
 targetGroups = dict(SURVEY_TARGET_GROUPS)
 

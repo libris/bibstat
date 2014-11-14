@@ -48,6 +48,7 @@ def surveys(request):
         'municipality_codes': municipality_codes,
         'municipality_code': municipality_code,
         'survey_responses': surveys,
+        'target_groups': utils.SURVEY_TARGET_GROUPS,
         'target_group': target_group,
         'status': status,
         'bibdb_library_base_url': u"{}/library".format(settings.BIBDB_BASE_URL),

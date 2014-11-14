@@ -68,30 +68,14 @@
                                         {% endif %}>
                                     Alla bibliotekstyper
                                 </option>
-                                <option value="folkbib"
-                                        {% ifequal target_group "folkbib" %}
-                                        selected="selected"
-                                        {% endifequal %}>
-                                    Folkbibliotek
-                                </option>
-                                <option value="specbib"
-                                        {% ifequal target_group "specbib" %}
-                                        selected="selected"
-                                        {% endifequal %}>
-                                    Forskningsbibliotek
-                                </option>
-                                <option value="sjukbib"
-                                        {% ifequal target_group "sjukbib" %}
-                                        selected="selected"
-                                        {% endifequal %}>
-                                    Sjukhusbibliotek
-                                </option>
-                                <option value="skolbib"
-                                        {% ifequal target_group "skolbib" %}
-                                        selected="selected"
-                                        {% endifequal %}>
-                                    Skolbibliotek
-                                </option>
+                                {% for group in target_groups %}
+                                    <option value="{{ group.0 }}"
+                                            {% ifequal group.0 target_group %}
+                                            selected="selected"
+                                            {% endifequal %}>
+                                        {{ group.1 }}
+                                    </option>
+                                {% endfor %}
                             </select>
                             <select name="status" class="form-control" value="{{ status }}">
                                 <option value=""

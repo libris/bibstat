@@ -483,7 +483,7 @@ class SurveyBase(Document):
                 continue
             if sample_year and not str(survey.sample_year) == str(sample_year):
                 continue
-            if municipality_code and not survey.library.municipality_code == municipality_code:
+            if municipality_code and not survey.library.municipality_code[0] == municipality_code:
                 continue
             result.append(survey)
         return result
