@@ -2,7 +2,8 @@
     <div class="jumbotron">
         <p>
             Du ser nu {{ form.sample_year }} års enkät för <b>{{ form.library_name }}</b>
-            {% if form.city %}i <b>{{ form.city }}</b>{% endif %}.
+            {% if form.city %}i <b>{{ form.city }}</b>{% endif %}
+            {% if form.municipality_code %}med kommunkod <b>{{ form.municipality_code }}</b>{% endif %}.
 
             <br>Enkäten har status <b>{{ form.status|lower }}</b> och är
             <b>{% if form.is_user_read_only %} stängd {% else %} öppen {% endif %}

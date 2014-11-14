@@ -176,6 +176,7 @@ class SurveyForm(forms.Form):
 
         self.library_name = survey.library.name
         self.city = survey.library.city
+        self.municipality_code = survey.library.municipality_code
         self.sample_year = survey.sample_year
         self.is_user_read_only = not survey.status in (u"not_viewed", u"initiated")
         self.is_read_only = not authenticated and self.is_user_read_only
