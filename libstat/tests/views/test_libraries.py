@@ -1,7 +1,7 @@
 # -*- coding: UTF-8 -*-
 
 from libstat.tests import MongoTestCase
-from libstat.views import _dict_to_library
+from libstat.views.libraries import _dict_to_library
 from libstat.models import Library
 
 
