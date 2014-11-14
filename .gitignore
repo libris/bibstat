@@ -63,6 +63,7 @@ docs/_build/
 
 # MongoDB
 mongodb/
+dump/
 
 # Sublime text editor
 *.sublime*
