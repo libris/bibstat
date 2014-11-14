@@ -10,8 +10,8 @@ from excel_response import ExcelResponse
 
 from bibstat import settings
 from libstat import utils
+from libstat.forms.survey import SurveyForm
 from libstat.models import Survey, Dispatch
-from libstat.forms import SurveyForm
 
 
 logger = logging.getLogger(__name__)

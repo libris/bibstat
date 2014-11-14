@@ -10,7 +10,7 @@ from django.contrib.auth.decorators import permission_required
 from mongoengine.errors import NotUniqueError
 
 from libstat.models import Variable
-from libstat.forms import VariableForm
+from libstat.forms.variable import VariableForm
 from libstat.utils import SURVEY_TARGET_GROUPS
 
 
