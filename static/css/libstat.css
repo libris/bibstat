@@ -2,15 +2,6 @@
  * Customizations for libstat
  */
 
-.group-header {
-    margin-bottom: 8px;
-}
-
-.description-separator {
-    margin-top: 10px;
-    margin-bottom: 10px;
-}
-
 /* Top menu */
 .libstat .navbar-inverse li:hover {
     background-color: #333333;

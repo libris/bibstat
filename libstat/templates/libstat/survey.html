@@ -76,6 +76,15 @@
         margin-bottom: 0;
         margin-top: 3px;
     }
+
+    .group-header {
+        margin-bottom: 8px;
+    }
+
+    .description-separator {
+        margin-top: 10px;
+        margin-bottom: 10px;
+    }
 </style>
 
 {% if user.is_authenticated %}
@@ -162,7 +171,7 @@
             <div class="panel-body">
                 {% if group.description %}
                 <div class="row">
-                    <div class="col-sm-6">
+                    <div class="col-sm-7">
                         {% with description=group.description|split_into_number_and_body %}
                             <b>{{ description.0 }}</b>
                             {{ description.1 }}
@@ -173,10 +182,11 @@
                 {% endif %}
                 {% if forloop.parentloop.first and forloop.first %}
                 <div class="row principal">
-                    <div class="col-sm-6">
+                    <div class="col-sm-3">
                         Ange organisationens huvudman
+                        <hr class="description-separator">
                     </div>
-                    <div class="col-sm-6">
+                    <div class="col-sm-3">
                         {{ form.principal }}
                     </div>
                 </div>
