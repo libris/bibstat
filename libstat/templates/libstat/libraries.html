@@ -52,20 +52,20 @@
 							</td>
 							<td>
 								<a href="http://bibdb.libris.kb.se/library/{{ library.sigel }}">
-									{{ library.name }}
+									{{ library.name|default:"" }}
 								</a>
 							</td>
 							<td>
-								{{ library.municipality_code }}
+								{{ library.municipality_code|default:"" }}
 							</td>
 							<td>
-								{{ library.address }}
+								{{ library.address|default:"" }}
 							</td>
 							<td>
-								{{ library.library_type }}
+								{{ library.library_type|default:"" }}
 							</td>
 							<td>
-								{{ library.email }}
+								{{ library.email|default:"" }}
 							</td>
 						</tr>
 						{% endfor %}

@@ -71,15 +71,15 @@ def _dict_to_library(dict):
         return None
 
     library, _ = Library.objects.get_or_create(sigel=dict["sigel"])
-    library.sigel = dict.get("sigel")
-    library.name = dict.get("name")
-    library.municipality_code = dict.get("municipality_code")
+    library.sigel = dict.get("sigel") if dict.get("sigel") else None
+    library.name = dict.get("name") if dict.get("name") else None
+    library.municipality_code = dict.get("municipality_code") if dict.get("municipality_code") else None
     library.library_type = dict.get("library_type") if dict.get("library_type") else None
     location = next((a for a in dict["address"] if a["address_type"] == "gen"), None)
-    library.address = location["street"] if location else ""
-    library.city = location["city"] if location else ""
+    library.address = location["street"] if location and location["street"] else None
+    library.city = location["city"] if location and location["city"] else None
     library.email = next((c["email"] for c in dict["contact"]
-                          if "email" in c and c["contact_type"] == "statans"), "")
+                          if "email" in c and c["contact_type"] == "statans"), None)
 
     return library
 

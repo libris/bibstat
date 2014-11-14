@@ -46,6 +46,22 @@
                                     </option>
                                 {% endfor %}
                             </select>
+                            <select name="municipality_code" class="form-control" value={{ municipality_code }}>
+                                <option value=""
+                                        {% if not municipality_code %}
+                                        selected="selected"
+                                        {% endif %}>
+                                    Kommunkod
+                                </option>
+                                {% for code in municipality_codes %}
+                                    <option value="{{ code }}"
+                                            {% ifequal code|slugify municipality_code %}
+                                            selected="selected"
+                                            {% endifequal %}>
+                                        {{ code }}
+                                    </option>
+                                {% endfor %}
+                            </select>
                             <select name="target_group" class="form-control" value="{{ target_group }}">
                                 <option value=""
                                         {% if not target_group %}
@@ -227,7 +243,7 @@
                                        data-address="{% url 'survey' sr.id %}" data-url-base="{{ url_base }}"/>
                             </td>
                             <td>
-                                {{ sr.status|srs_label }}
+                                {{ sr.status|srs_label|default:"" }}
                             </td>
                             <td>
                                 {% if sr.is_published and not sr.latest_version_published %}
@@ -242,19 +258,19 @@
                                 {% endif %}
                             </td>
                             <td>
-                                {{ sr.library.municipality_code }}
+                                {{ sr.library.municipality_code|default:"" }}
                             </td>
                             <td>
                                 {% if sr.library and sr.library.sigel %}
                                     <a href="{{ bibdb_library_base_url }}/{{ sr.library.sigel }}">
-                                        {{ sr.library.name }}
+                                        {{ sr.library.name|default:"" }}
                                     </a>
                                 {% else %}
-                                    {{ sr.library.name }}
+                                    {{ sr.library.name|default:"" }}
                                 {% endif %}
                             </td>
                             <td>
-                                {{ sr.target_group|tg_label }}
+                                {{ sr.target_group|tg_label|default:"" }}
                             </td>
                             <td>
                                 <a title="Visa/redigera enkätsvar"

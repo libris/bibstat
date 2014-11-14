@@ -11,7 +11,7 @@ from excel_response import ExcelResponse
 from bibstat import settings
 from libstat import utils
 from libstat.forms.survey import SurveyForm
-from libstat.models import Survey, Dispatch
+from libstat.models import Survey, Dispatch, Library
 
 
 logger = logging.getLogger(__name__)
@@ -24,8 +24,12 @@ def surveys(request):
     sample_years.sort()
     sample_years.reverse()
 
+    municipality_codes = Library.objects.distinct("municipality_code")
+    municipality_codes.sort()
+
     target_group = request.GET.get("target_group", "")
     sample_year = request.GET.get("sample_year", str(sample_years[0]) if sample_years else "")
+    municipality_code = request.GET.get("municipality_code", "")
     status = request.GET.get("status", "")
     message = request.session.pop("message", "")
 
@@ -35,14 +39,17 @@ def surveys(request):
         surveys = Survey.filter_by(
             sample_year=sample_year,
             target_group=target_group,
-            status=status)
+            status=status,
+            municipality_code=municipality_code)
 
     context = {
         'sample_years': sample_years,
+        'sample_year': sample_year,
+        'municipality_codes': municipality_codes,
+        'municipality_code': municipality_code,
         'survey_responses': surveys,
         'target_group': target_group,
         'status': status,
-        'sample_year': sample_year,
         'bibdb_library_base_url': u"{}/library".format(settings.BIBDB_BASE_URL),
         'message': message,
         'url_base': settings.API_BASE_URL

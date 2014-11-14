@@ -474,7 +474,7 @@ class SurveyBase(Document):
     }
 
     @classmethod
-    def filter_by(cls, target_group=None, status=None, sample_year=None):
+    def filter_by(cls, target_group=None, status=None, sample_year=None, municipality_code=None):
         result = []
         for survey in cls.objects.all():
             if target_group and not survey.target_group == target_group:
@@ -482,6 +482,8 @@ class SurveyBase(Document):
             if status and not survey.status == status:
                 continue
             if sample_year and not str(survey.sample_year) == str(sample_year):
+                continue
+            if municipality_code and not survey.library.municipality_code == municipality_code:
                 continue
             result.append(survey)
         return result

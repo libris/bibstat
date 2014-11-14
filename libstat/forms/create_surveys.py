@@ -34,6 +34,6 @@ class CreateSurveysForm(forms.Form):
                 "email": library.email,
                 "sigel": library.sigel,
                 "municipality_code": library.municipality_code,
-                "library_type": targetGroups[library.library_type] if library.library_type else "",
+                "library_type": targetGroups.get(library.library_type),
                 "checkbox_id": checkbox_id
             })
