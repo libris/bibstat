@@ -240,20 +240,6 @@ class ReplaceableVariablesApiTest(MongoTestCase):
         self.url = reverse("replaceable_variables_api")
         self.client.login(username="admin", password="admin")
 
-        # v = Variable(key=u"Folk28",
-        #              description=u"Totalt antal anställda personer som är bibliotekarier och som är män 1 mars.",
-        #              type="integer", is_public=True, target_groups=["public"])
-        # self.active_public = v.save()
-        # v2 = Variable(key=u"Forsk21", description=u"Antal anställda manliga bibliotekarier och dokumentalister.",
-        #               type="integer", is_public=True, is_draft=True, target_groups=["research"])
-        # self.draft = v2.save()
-        # v3 = Variable(key=u"Sjukhus104",
-        #               description=u"Totalt antal fjärrutlån under kalenderåret - summering av de angivna delsummorna",
-        #               type="integer", is_public=True, replaced_by=v, target_groups=["hospital"])
-        # self.already_replaced = v3.save()
-        # v4 = Variable(key=u"Skol10", description=u"Postort", type="string", is_public=False, target_groups=["school"])
-        # self.active_private = v4.save()
-
     def test_view_requires_admin_login(self):
         self.client.logout()
         response = self.client.get(self.url)
@@ -302,75 +288,3 @@ class ReplaceableVariablesApiTest(MongoTestCase):
         self.assertEquals(data, [{"key": "Skol10",
                                   "id": str(var.id),
                                   "description": var.description}])
-
-
-class SurveyableVariablesApiTest(MongoTestCase):
-
-    def setUp(self):
-        v = Variable(key=u"Folk12", description=u"Antal bemannade filialer", type="integer", is_public=True,
-                     target_groups=["folkbib"])
-        self.active_without_dates = v.save()
-
-        v1 = Variable(key=u"Folk10", description=u"Antal bemannade servicesställen", type="integer", is_public=True,
-                      target_groups=["folkbib"],
-                      active_from=datetime(2010, 1, 1).date())
-        self.active_with_from_date = v1.save()
-
-        v3 = Variable(key=u"Folk31", description=u"Antal årsverken totalt", type="decimal", is_public=True,
-                      target_groups=["folkbib"],
-                      active_from=datetime.utcnow().date(), active_to=(datetime.utcnow() + timedelta(days=1)).date())
-        self.active_with_date_range = v3.save()
-
-        v2 = Variable(key=u"Folk35", description=u"Antal årsverken övrig personal", type="decimal", is_public=True,
-                      target_groups=["folkbib"],
-                      active_to=datetime(2014, 6, 1).date())
-        self.discontinued = v2.save()
-
-        v5 = Variable(key=u"Folk20", description=u"Text övriga utlåningsställen", type="string", is_public=False,
-                      target_groups=["folkbib"],
-                      active_from=(datetime.utcnow() + timedelta(days=90)).date())
-        self.pending = v5.save()
-
-        v4 = Variable(key=u"Folk69", description=u"Totalt nyförvärv AV-medier", type="integer", is_public=True,
-                      target_groups=["folkbib"],
-                      is_draft=True)
-        self.draft = v4.save()
-
-        v6 = Variable(key=u"Folk80", description=u"Nyförvärv musik under kalanderåret.", type="integer", is_public=True,
-                      target_groups=["folkbib"],
-                      replaced_by=self.draft)
-        self.replaced = v6.save()
-
-        self.url = reverse("surveyable_variables_api")
-        self.client.login(username="admin", password="admin")
-
-    def test_view_requires_admin_login(self):
-        self.client.logout()
-        response = self.client.get(self.url)
-        self.assertEquals(response.status_code, 302)
-
-        self.client.login(username="library_user", password="secret")
-        response = self.client.get(self.url)
-        self.assertEquals(response.status_code, 302)
-
-        self.client.logout()
-        self.client.login(username="admin", password="admin")
-        response = self.client.get(self.url)
-        self.assertEquals(response.status_code, 200)
-
-    def test_should_return_active_pending_and_draft_variables_as_json(self):
-        response = self.client.get(self.url)
-        self.assertEquals(response.status_code, 200)
-        data = json.loads(response.content)
-        self.assertEquals(data, [{"key": "Folk10", "id": str(self.active_with_from_date.id)},
-                                 {"key": "Folk12", "id": str(self.active_without_dates.id)},
-                                 {"key": "Folk20", "id": str(self.pending.id)},
-                                 {"key": "Folk31", "id": str(self.active_with_date_range.id)},
-                                 {"key": "Folk69", "id": str(self.draft.id)}])
-
-    def test_should_filter_surveyable_by_key(self):
-        response = self.client.get("{}?q=Folk1".format(self.url))
-        self.assertEquals(response.status_code, 200)
-        data = json.loads(response.content)
-        self.assertEquals(data, [{"key": "Folk10", "id": str(self.active_with_from_date.id)},
-                                 {"key": "Folk12", "id": str(self.active_without_dates.id)}])

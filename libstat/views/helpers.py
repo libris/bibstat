@@ -13,20 +13,6 @@ logger = logging.getLogger(__name__)
 
 
 @permission_required('is_superuser', login_url='index')
-def surveyable_variables_api(request):
-    """
-        Helper Json API method to populate search field for surveyable variable when constructing a Survey. (Ajax call)
-    """
-    query = request.REQUEST.get("q", None)
-    if query:
-        variables = Variable.objects.surveyable().filter(key__icontains=query)
-    else:
-        variables = Variable.objects.surveyable()
-    data = [{'key': v.key, 'id': str(v.id)} for v in variables]
-    return HttpResponse(json.dumps(data), content_type="application/json")
-
-
-@permission_required('is_superuser', login_url='index')
 def replaceable_variables_api(request):
     """
         Helper Json API method to populate search field for replaceable variables. (Ajax call)
