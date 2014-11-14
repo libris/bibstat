@@ -6,10 +6,9 @@ import string
 from django.core.urlresolvers import reverse
 from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import permission_required
-from bibstat import settings
 
 from libstat.models import Library, LibrarySelection, Survey, SurveyObservation, Variable
-from libstat.forms import CreateSurveysForm
+from libstat.forms.create_surveys import CreateSurveysForm
 from libstat.views import _surveys_redirect
 from libstat.survey_templates import survey_template
 
