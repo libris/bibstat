@@ -11,9 +11,9 @@
     <div class="row">
         <div class="col-sm-4">
             {{ row.description }}
-            {% if not forloop.last %}
-            <hr class="description-separator">
-            {% endif %}
+            {% if row.description|length > 70 and not forloop.last %}
+                <hr class="description-separator">
+            {% endif %} 
         </div>
 
         {% for cell in row.cells %}

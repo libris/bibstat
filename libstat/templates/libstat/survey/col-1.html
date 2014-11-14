@@ -12,10 +12,10 @@
     {% else %}
         <div class="row">
             <div class="col-sm-3">
-                {{ row.description }}
-                {% if not forloop.last %}
+            {{ row.description }}
+            {% if row.description|length > 70 and not forloop.last %}
                 <hr class="description-separator">
-                {% endif %}
+            {% endif %}
             </div>
 
             {% for cell in row.cells %}
