@@ -1,14 +1,5 @@
 {% load libstat_tags %}
 
-<div class="row">
-    <div class="col-sm-5"></div>
-    {% for header in group.headers %}
-        <div class="col-sm-7">
-            {{ header }}
-        </div>
-    {% endfor %}
-</div>
-
 {% for row in group.rows %}
     {% if row.cells and row.cells.0 and "comment" in row.cells.0.types %}
         <div class="row">
