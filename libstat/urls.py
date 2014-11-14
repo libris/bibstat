@@ -19,7 +19,7 @@ from libstat.views import (open_data,
                            create_variable,
                            edit_variable,
                            libraries,
-                           surveys_status,
+                           survey_status,
                            surveys_statuses,
                            import_libraries,
                            remove_libraries,
@@ -58,7 +58,7 @@ urlpatterns = patterns(
     url(r'^surveys/remove$', surveys_remove, name='surveys_remove'),
     url(r'^surveys/status$', surveys_statuses, name='surveys_statuses'),
     url(r'^surveys/overview/(?P<sample_year>\w+)$', surveys_overview, name='surveys_overview'),
-    url(r'^surveys/status/(?P<survey_id>\w+)$', surveys_status, name='surveys_status'),
+    url(r'^surveys/status/(?P<survey_id>\w+)$', survey_status, name='survey_status'),
     url(r'^surveys/(?P<survey_id>\w+)$', survey, name='survey'),
 
     # Dispatch

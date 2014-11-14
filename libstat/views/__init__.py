@@ -8,15 +8,15 @@ from helpers import (replaceable_variables_api,
                      surveyable_variables_api)
 from dispatches import dispatches, dispatches_delete, dispatches_send
 from index import index
-from surveys import (survey,
-                     surveys_status,
-                     surveys_statuses,
+from surveys import (surveys_statuses,
                      surveys_export,
                      surveys_publish,
                      surveys,
                      surveys_remove,
                      surveys_overview,
                      _surveys_redirect)
+from survey import (survey,
+                    survey_status)
 from libraries import (libraries,
                        import_libraries,
                        remove_libraries,
