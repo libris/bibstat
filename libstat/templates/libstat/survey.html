@@ -163,7 +163,10 @@
                 {% if group.description %}
                 <div class="row">
                     <div class="col-sm-6">
-                        <b>{{ group.description }}</b>
+                        {% with description=group.description|split_into_number_and_body %}
+                            <b>{{ description.0 }}</b>
+                            {{ description.1 }}
+                        {% endwith %}
                     </div>
                 </div>
                 <hr>

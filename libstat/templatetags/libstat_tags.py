@@ -2,6 +2,7 @@
 from datetime import datetime
 
 import pytz
+import re
 from django import template
 from libstat.models import Dispatch
 
@@ -38,10 +39,19 @@ def with_target_group(surveys, target_group):
 def dispatches_count():
     return Dispatch.objects.count()
 
+
+def split_into_number_and_body(description):
+    if re.compile("^[0-9]+\.").match(description):
+        return description.split(" ", 1)
+    else:
+        return ("", description)
+
+
 register.filter('utc_tz', utc_tz)
 register.filter('tg_label', tg_label)
 register.filter('srs_label', srs_label)
 register.filter('access', access)
 register.filter('with_status', with_status)
 register.filter('with_target_group', with_target_group)
+register.filter('split_into_number_and_body', split_into_number_and_body)
 register.simple_tag(dispatches_count)
