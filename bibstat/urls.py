@@ -11,7 +11,6 @@ from libstat.views.apis import (data_api,
                                 observation_api,
                                 open_data)
 from libstat.views.auth import login
-from libstat.views.helpers import replaceable_variables_api
 from libstat.views.dispatches import dispatches, dispatches_delete, dispatches_send
 from libstat.views.index import index
 from libstat.views.surveys import (surveys_statuses,
@@ -44,9 +43,6 @@ urlpatterns = patterns(
     # Auth
     url(r'^login', login, name='login'),
     url(r'^logout', logout, {'next_page': 'index'}, name='logout'),
-
-    # Helpers
-    url(r'^variables/replaceable$', replaceable_variables_api, name='replaceable_variables_api'),
 
     # Index
     url(r'^$', index, name='index'),
