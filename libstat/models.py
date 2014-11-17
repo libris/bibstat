@@ -461,6 +461,7 @@ class SurveyBase(Document):
         (u"controlled", u"Kontrollerad"),
         (u"published", u"Publicerad")
     )
+    _status_labels = dict(STATUSES)
 
     respondent_name = StringField()
     respondent_email = StringField()
@@ -488,6 +489,10 @@ class SurveyBase(Document):
     meta = {
         'abstract': True,
     }
+
+    @classmethod
+    def status_label(cls, status):
+        return cls._status_labels.get(status)
 
     @classmethod
     def filter_by(cls, target_group=None, status=None, sample_year=None, municipality_code=None):

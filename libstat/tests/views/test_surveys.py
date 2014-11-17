@@ -2,6 +2,7 @@
 from libstat.tests import MongoTestCase
 
 from libstat.models import Survey, Dispatch
+from libstat.views.surveys import _surveys_as_excel
 
 
 class TestSurveyAuthorization(MongoTestCase):
@@ -156,3 +157,31 @@ class TestSurveyStatus(MongoTestCase):
         self.assertEquals(survey2.reload().status, "initiated")
         self.assertEquals(survey3.reload().status, "controlled")
         self.assertEquals(survey4.reload().status, "controlled")
+
+
+class TestSurveysExport(MongoTestCase):
+
+    def setUp(self):
+        self._login()
+
+    def test_can_export_surveys_as_excel(self):
+        survey1 = self._dummy_survey()
+        survey2 = self._dummy_survey()
+
+        response = self._post(action="surveys_export",
+                              data={"survey-response-ids": [survey1.pk, survey2.pk]})
+
+        self.assertFalse(True)
+        self.assertEquals(response.status_code, 200)
+
+    def test_sets_correct_values_when_exporting_surveys_as_excel(self):
+        survey1 = self._dummy_survey(library=self._dummy_library(name="lib1_name"))
+        survey2 = self._dummy_survey(library=self._dummy_library(name="lib2_name"), status="controlled")
+
+        worksheet = _surveys_as_excel([survey1.pk, survey2.pk]).active
+
+        self.assertEquals(worksheet["A1"].value, "Bibliotek")
+        self.assertEquals(worksheet["F1"].value, "Kommunkod")
+        self.assertEquals(worksheet["A2"].value, "lib1_name")
+        self.assertEquals(worksheet["A3"].value, "lib2_name")
+        self.assertEquals(worksheet["D3"].value, "Kontrollerad")

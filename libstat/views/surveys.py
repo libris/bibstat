@@ -4,9 +4,10 @@ from time import strftime
 
 from django.core.urlresolvers import reverse
 from django.shortcuts import render
-from django.http import HttpResponseRedirect
+from django.http import HttpResponse, HttpResponseRedirect
 from django.contrib.auth.decorators import permission_required
-from excel_response import ExcelResponse
+from openpyxl import Workbook
+from openpyxl.writer.excel import save_virtual_workbook
 
 from bibstat import settings
 from libstat import utils
@@ -97,19 +98,59 @@ def surveys_publish(request):
     return _surveys_redirect(request)
 
 
+def _surveys_as_excel(survey_ids):
+    surveys = Survey.objects.filter(id__in=survey_ids).order_by('library_name')
+
+    variable_keys = []
+    for observation in surveys[0].observations:
+        variable_keys.append(unicode(observation.variable.key))
+
+    headers = [
+        "Bibliotek",
+        "Sigel",
+        "Bibliotekstyp",
+        "Status",
+        "Email",
+        "Kommunkod",
+        "Stad",
+        "Adress",
+        "Huvudman",
+    ] + variable_keys
+
+    workbook = Workbook(encoding="utf-8")
+    worksheet = workbook.active
+    worksheet.append(headers)
+
+    for survey in surveys:
+        row = [
+            survey.library.name,
+            survey.library.sigel,
+            survey.library.library_type,
+            Survey.status_label(survey.status),
+            survey.library.email,
+            survey.library.municipality_code,
+            survey.library.city,
+            survey.library.address,
+            survey.principal,
+
+        ]
+        for key in variable_keys:
+            row.append(survey.get_observation(key).value)
+        worksheet.append(row)
+
+    return workbook
+
+
 @permission_required('is_superuser', login_url='index')
 def surveys_export(request):
     if request.method == "POST":
-        survey_response_ids = request.POST.getlist("survey-response-ids", [])
-        responses = Survey.objects.filter(id__in=survey_response_ids).order_by('library_name')
-        filename = u"Exporterade enkätsvar ({})".format(strftime("%Y-%m-%d %H.%M.%S"))
+        survey_ids = request.POST.getlist("survey-response-ids", [])
+        filename = u"Exporterade enkätsvar ({}).xlsx".format(strftime("%Y-%m-%d %H.%M.%S"))
+        workbook = _surveys_as_excel(survey_ids)
 
-        rows = [[unicode(observation._source_key) for observation in responses[0].observations]]
-        for response in responses:
-            rows.append(
-                [observation.value if observation.value else "" for observation in response.observations])
-
-        return ExcelResponse(rows, filename)
+        response = HttpResponse(save_virtual_workbook(workbook), content_type='application/vnd.ms-excel')
+        response['Content-Disposition'] = u'attachment; filename="{}"'.format(filename)
+        return response
 
 
 @permission_required('is_superuser', login_url='index')
