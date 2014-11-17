@@ -45,6 +45,22 @@ class LibrarySelection:
 
         return False
 
+    def get_conflicting_surveys(self, survey):
+        if not self.library.municipality_code:
+            return []
+
+        other_surveys = Survey.objects.filter(
+            sample_year=survey.sample_year,
+            _library__municipality_code=self.library.municipality_code,
+            _library__sigel__ne=self.library.sigel
+        )
+
+        return [
+            other_survey for other_survey in other_surveys
+            if any(s1 in other_survey.selected_libraries for s1 in survey.selected_libraries)
+        ]
+
+
 class SurveyForm(forms.Form):
 
     def _cell_to_input_field(self, cell, observation):
