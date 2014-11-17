@@ -2,6 +2,10 @@
  * Customizations for libstat
  */
 
+.dispatch-label {
+    font-weight: normal !important; 
+}
+
 /* Top menu */
 .libstat .navbar-inverse li:hover {
     background-color: #333333;
