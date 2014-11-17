@@ -39,6 +39,12 @@ class LibrarySelection:
 
         return selected_sigels
 
+    def has_conflicts(self, survey):
+        for selected_sigel in self.selected_sigels(survey.sample_year):
+            if selected_sigel in survey.selected_libraries:
+                return True
+
+        return False
 
 class SurveyForm(forms.Form):
 
