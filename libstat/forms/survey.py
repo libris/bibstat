@@ -34,11 +34,16 @@ class LibrarySelection:
         selected_sigels = Set()
         for survey in surveys:
             for sigel in survey.selected_libraries:
-                if sigel != self.library.sigel:
-                    selected_sigels.add(sigel)
+                selected_sigels.add(sigel)
 
         return selected_sigels
 
+    def has_conflicts(self, survey):
+        for selected_sigel in self.selected_sigels(survey.sample_year):
+            if selected_sigel in survey.selected_libraries:
+                return True
+
+        return False
 
 class SurveyForm(forms.Form):
 
@@ -187,7 +192,7 @@ class SurveyForm(forms.Form):
         self.can_submit = not authenticated and survey.status in ("not_viewed", "initiated")
         self.password = survey.password
         self.status = self._status_label(survey.status)
-        self.statuses = [status[1] for status in Survey.STATUSES if not status[0] == "published"]
+        self.statuses = [status for status in Survey.STATUSES if not status[0] == "published"]
         self.is_published = survey.status == "published"
         self.sections = template.sections
 

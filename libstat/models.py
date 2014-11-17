@@ -526,7 +526,7 @@ class SurveyBase(Document):
         if status == "published" and not self._status == "published":
             raise Exception("Cannot set published status for survey '{}'.".format(self.pk))
         if not status in [s[0] for s in Survey.STATUSES]:
-            raise KeyError("Invalid status '{}'".format(status))
+            raise KeyError(u"Invalid status '{}'".format(status))
         self._status = status
 
     def observation_by_key(self, key):

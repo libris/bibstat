@@ -187,7 +187,7 @@ define(['jquery', 'survey.sum', 'survey.cell', 'surveys.dispatch', 'bootstrap.va
             $("#form-admin .dropdown-menu > li > a").click(function () {
                 var element = $(this);
 
-                $("#id_selected_status").val(element.text());
+                $("#id_selected_status").val(element.data('key'));
                 element.closest(".dropdown").children(".dropdown-toggle").html(element.text() + ' <span class="caret"></span>');
 
                 var item = element.closest("li");
