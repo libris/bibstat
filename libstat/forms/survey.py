@@ -165,8 +165,6 @@ class SurveyForm(forms.Form):
                 except KeyError:
                     pass
 
-            print(attrs)
-
             self.fields[checkbox_id] = forms.BooleanField(required=False, widget=forms.CheckboxInput(attrs=attrs))
             self.libraries.append(row)
 
