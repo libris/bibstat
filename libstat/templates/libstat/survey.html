@@ -4,18 +4,43 @@
 
 {% block content %}
 <style>
+    .group-description {
+        font-family: helvetica;
+        font-size: 15px;
+    }
+
+    .group-description-separator {
+        margin-top: 10px;
+        margin-bottom: 10px;
+        border-top: 2px solid;
+        border-color: rgb(227, 227, 227)  !important;
+        padding-top: 0;
+        margin-top: 16px;
+        margin-bottom: 16px;
+        border-top-style: dashed;
+    }
+
     .principal {
+        margin-bottom: 15px;
+    }
+
+    .principal-description {
         margin-bottom: 15px;
     }
 
     .section-title {
         color: rgb(242, 148, 0);
-        margin-top: 60px;
+        margin-top: 40px;
+        padding-left: 14px;
     }
 
     .section-comment {
         width: 100%;
         height: 100%;
+    }
+
+    .cell {
+        margin-top: 3px;
     }
 
     .cell .input-group input {
@@ -182,20 +207,19 @@
             <div class="panel-body">
                 {% if group.description %}
                 <div class="row">
-                    <div class="col-sm-7">
+                    <div class="col-sm-8 group-description">
                         {% with description=group.description|split_into_number_and_body %}
-                            <b>{{ description.0 }}</b>
+                            <b style="font-size: 17px;">{{ description.0 }}</b>
                             {{ description.1 }}
                         {% endwith %}
                     </div>
                 </div>
-                <hr>
+                <hr class="group-description-separator">
                 {% endif %}
                 {% if forloop.parentloop.first and forloop.first %}
                 <div class="row principal">
-                    <div class="col-sm-3">
+                    <div class="col-sm-4 principal-description">
                         Ange organisationens huvudman
-                        <hr class="description-separator">
                     </div>
                     <div class="col-sm-3">
                         {{ form.principal }}
