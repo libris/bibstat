@@ -35,11 +35,11 @@
                                 {{ form.status }} <span class="caret"></span>
                             </button>
                             <ul class="dropdown-menu" role="menu">
-                                {% for status in form.statuses %}
+                                {% for key, status in form.statuses %}
                                     {% if status == form.status %}
-                                        <li class="active"><a href="#">{{ status }}</a></li>
+                                        <li class="active"><a href="#" data-key="{{ key }}">{{ status }}</a></li>
                                     {% else %}
-                                        <li><a href="#">{{ status }}</a></li>
+                                        <li><a href="#" data-key="{{ key }}">{{ status }}</a></li>
                                     {% endif %}
                                 {% endfor %}
                             </ul>

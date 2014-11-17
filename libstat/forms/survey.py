@@ -193,7 +193,7 @@ class SurveyForm(forms.Form):
         self.can_submit = not authenticated and survey.status in ("not_viewed", "initiated")
         self.password = survey.password
         self.status = self._status_label(survey.status)
-        self.statuses = [status[1] for status in Survey.STATUSES if not status[0] == "published"]
+        self.statuses = [status for status in Survey.STATUSES if not status[0] == "published"]
         self.is_published = survey.status == "published"
         self.sections = template.sections
 
