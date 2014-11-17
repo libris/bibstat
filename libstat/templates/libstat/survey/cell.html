@@ -42,9 +42,9 @@
                 {% endwith %}
                 <button class="btn btn-default btn-value disabled">
                     {% if cell.previous_value %}
-                        ({{ cell.previous_value }})
+                        {{ cell.previous_value }}
                     {% else %}
-                        (&mdash;)
+                        &mdash;
                     {% endif %}
                 </button>
             </div>
