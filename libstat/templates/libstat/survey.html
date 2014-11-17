@@ -226,8 +226,9 @@
             <div class="navbar-right navbar-submit">
                 <div id="unsaved-changes-label" class="navbar-text"></div>
                 <a href="#" id="save-survey-btn" class="btn btn-primary navbar-btn">Spara</a>
-                <a href="#" id="submit-survey-btn" class="btn btn-success navbar-btn
-                {% if not form.can_submit %} disabled {% endif %}">Skicka</a>
+                {% if form.can_submit %}
+                    <a href="#" id="submit-survey-btn" class="btn btn-success navbar-btn">Skicka</a>
+                {% endif %}
             </div>
         </div>
 
