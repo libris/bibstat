@@ -272,7 +272,7 @@ class ImportSurveyResponsesTest(MongoTestCase):
         opts = {"file": "libstat/tests/data/Folk2012.xlsx", "target_group": "folkbib", "year": 2012}
         call_command('import_survey_responses', *args, **opts)
 
-        self.assertEquals(len(Survey.objects.all()), 288)
+        self.assertEquals(len(Survey.objects.all()), 8)
 
         sr = None
         for s in Survey.objects.all():
@@ -325,12 +325,3 @@ class ImportSurveyResponsesTest(MongoTestCase):
         folk8_obs = [obs for obs in sr2.observations if obs.variable.key == "Folk8"][0]
         self.assertTrue(isinstance(folk8_obs.value, bool))
         self.assertEquals(folk8_obs.value, True)
-
-    def test_import_survey_responses_with_library_lookup(self):
-        args = []
-        opts = {"file": "libstat/tests/data/Folk2012.xlsx",
-                "target_group": "folkbib", "year": 2012, "use_bibdb": "True"}
-        call_command('import_survey_responses', *args, **opts)
-
-        self.assertEquals(len(Survey.objects.all()), 288)
-        self.assertTrue(Survey.objects.filter(library_name=u"KARLSTADS STADSBIBLIOTEK")[0].library != None)

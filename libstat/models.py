@@ -625,18 +625,17 @@ class Survey(SurveyBase):
             if obs._is_public and obs.value is not None:
                 # TODO: Need to handle consequent publishes
                 data_item = None
-                existing = OpenData.objects.filter(library_name=self.library.name, sample_year=self.sample_year,
+                existing = OpenData.objects.filter(library_name=self._library.name, sample_year=self.sample_year,
                                                    variable=obs.variable)
                 if (len(existing) == 0):
-                    data_item = OpenData(library_name=self.library.name, sample_year=self.sample_year,
+                    data_item = OpenData(library_name=self._library.name, sample_year=self.sample_year,
                                          variable=obs.variable,
-                                         target_group=self.library.library_type, date_created=publishing_date)
-                    if self.library and self.library.bibdb_id:
-                        data_item.library_id = self.library.bibdb_id
+                                         target_group=self._library.library_type, date_created=publishing_date)
+                    if self._library and self._library.bibdb_id:
+                        data_item.library_id = self._library.bibdb_id
                 else:
                     data_item = existing.get(0)
 
-                print(data_item.__dict__)
                 data_item.value = obs.value
                 data_item.date_modified = publishing_date
                 data_item.save()
