@@ -127,6 +127,39 @@ class TestLibrarySelection_HasConflicts(MongoTestCase):
         selection = LibrarySelection(first_library)
         self.assertFalse(selection.has_conflicts(first_survey))
 
+class TestLibrarySelection_GetConflictingSurveys(MongoTestCase):
+    def test_should_return_survey_for_conflict_in_same_sample_year(self):
+        first_library = self._dummy_library(sigel="1")
+        second_library = self._dummy_library(sigel="3")
+
+        first_survey = self._dummy_survey(library=first_library, sample_year=2014, selected_libraries=["1", "2"])
+        second_survey = self._dummy_survey(library=second_library, sample_year=2014, selected_libraries=["2"])
+
+        conflicts = LibrarySelection(first_library).get_conflicting_surveys(first_survey)
+        self.assertListEqual(conflicts, [second_survey])
+
+    def test_should_return_two_surveys_for_conflicts_in_same_sample_year(self):
+        first_library = self._dummy_library(sigel="1")
+        second_library = self._dummy_library(sigel="2")
+        third_library = self._dummy_library(sigel="3")
+
+        first_survey = self._dummy_survey(library=first_library, sample_year=2014, selected_libraries=["1", "2"])
+        second_survey = self._dummy_survey(library=second_library, sample_year=2014, selected_libraries=["1"])
+        third_survey = self._dummy_survey(library=third_library, sample_year=2014, selected_libraries=["2"])
+
+        conflicts = LibrarySelection(first_library).get_conflicting_surveys(first_survey)
+        self.assertListEqual(conflicts, [second_survey, third_survey])
+
+    def test_should_return_empty_list_for_non_conflict_in_different_sample_years(self):
+        first_library = self._dummy_library(sigel="1")
+        second_library = self._dummy_library(sigel="3")
+
+        first_survey = self._dummy_survey(library=first_library, sample_year=2014, selected_libraries=["1", "2"])
+        second_survey = self._dummy_survey(library=second_library, sample_year=2015, selected_libraries=["2"])
+
+        conflicts = LibrarySelection(first_library).get_conflicting_surveys(first_survey)
+        self.assertListEqual(conflicts, [])
+
 class TestUserReadOnly(MongoTestCase):
     def test_form_should_not_be_user_read_only_when_survey_status_is_not_viewed(self):
         survey = self._dummy_survey(status=u"not_viewed")

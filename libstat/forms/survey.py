@@ -45,6 +45,22 @@ class LibrarySelection:
 
         return False
 
+    def get_conflicting_surveys(self, survey):
+        if not self.library.municipality_code:
+            return []
+
+        other_surveys = Survey.objects.filter(
+            sample_year=survey.sample_year,
+            _library__municipality_code=self.library.municipality_code,
+            _library__sigel__ne=self.library.sigel
+        )
+
+        return [
+            other_survey for other_survey in other_surveys
+            if any(s1 in other_survey.selected_libraries for s1 in survey.selected_libraries)
+        ]
+
+
 class SurveyForm(forms.Form):
 
     def _cell_to_input_field(self, cell, observation):
@@ -130,7 +146,7 @@ class SurveyForm(forms.Form):
                 row["comment"] = u"Detta bibliotek rapporteras redan för i en annan enkät."
                 if current_library or library.sigel in selected_libraries:
                     row["comment"] = u"Rapporteringen för detta bibliotek kolliderar med en annan enkät."
-                    self.duplicate_selection = True
+                    self.library_selection_conflict = True
                     del attrs["disabled"]
 
             if current_library:
@@ -200,7 +216,10 @@ class SurveyForm(forms.Form):
         self.url_with_password = "{}?p={}".format(self.url, self.password)
 
         self._set_libraries(survey.library, survey.selected_libraries, authenticated)
-        if hasattr(self, 'duplicate_selection') and self.duplicate_selection:
+        if hasattr(self, 'library_selection_conflict') and self.library_selection_conflict:
+            self.conflicting_surveys = LibrarySelection(survey.library).get_conflicting_surveys(survey)
+            for conflicting_survey in self.conflicting_surveys:
+                conflicting_survey.url = settings.API_BASE_URL + reverse('survey', args=(conflicting_survey.pk,))
             self.can_submit = False
 
         for section in template.sections:
