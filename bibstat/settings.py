@@ -125,7 +125,7 @@ STATICFILES_DIRS = (
     # TODO '/var/www/static/',
 )
 
-LOGIN_REDIRECT_URL = 'libstat.views.index'
+LOGIN_REDIRECT_URL = '/'
 
 """
     Logging
