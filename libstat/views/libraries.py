@@ -1,7 +1,5 @@
 # -*- coding: UTF-8 -*-
 import requests
-import random
-import string
 
 from django.core.urlresolvers import reverse
 from django.shortcuts import render, redirect
@@ -13,12 +11,6 @@ from libstat.views.surveys import _surveys_redirect
 from libstat.survey_templates import survey_template
 
 
-# From: http://en.wikipedia.org/wiki/Random_password_generator#Python
-def _generate_password():
-    alphabet = string.letters[0:52] + string.digits
-    return str().join(random.SystemRandom().choice(alphabet) for _ in range(10))
-
-
 def _create_surveys(library_ids, sample_year):
     for library_id in library_ids:
         library = Library.objects.get(pk=library_id)
@@ -27,7 +19,6 @@ def _create_surveys(library_ids, sample_year):
             library_name=library.name,
             library=library,
             sample_year=sample_year,
-            password=_generate_password(),
             observations=[])
         for section in template.sections:
             for group in section.groups:

@@ -494,6 +494,12 @@ class SurveyBase(Document):
     def status_label(cls, status):
         return cls._status_labels.get(status)
 
+    # From: http://en.wikipedia.org/wiki/Random_password_generator#Python
+    @classmethod
+    def _generate_password(cls):
+        alphabet = string.letters[0:52] + string.digits
+        return str().join(random.SystemRandom().choice(alphabet) for _ in range(10))
+
     @classmethod
     def filter_by(cls, target_group=None, status=None, sample_year=None, municipality_code=None):
         result = []
@@ -648,6 +654,11 @@ class Survey(SurveyBase):
         self._action_publish = True
 
         self.save()
+
+    def __init__(self, *args, **kwargs):
+        password = kwargs.pop("password", None)
+        super(Survey, self).__init__(*args, **kwargs)
+        self.password = password if password else self._generate_password()
 
 
 class SurveyVersion(SurveyBase):
