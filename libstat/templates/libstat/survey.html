@@ -89,6 +89,10 @@
     .row-description {
         padding-left: 10px;
     }
+
+    .navbar-alert {
+        margin-top: 0
+    }
 </style>
 
 {% if user.is_authenticated %}
@@ -219,15 +223,6 @@
                     </div>
                 </div>
             </div>
-            {% if form.duplicate_selection %}
-                <div class="navbar-left">
-                    <div class="navbar-text">
-                        <div class="alert alert-danger alert-navbar">
-                            Valda bibliotek rapporteras för i flera enkäter. <a href="mailto:biblioteksstatistik@kb.se">Kontakta oss</a>.
-                        </div>
-                    </div>
-                </div>
-            {% endif %}
             <div class="navbar-right navbar-submit">
                 <div id="unsaved-changes-label" class="navbar-text"></div>
                 <a href="#" id="save-survey-btn" class="btn btn-primary navbar-btn">Spara</a>
@@ -235,6 +230,20 @@
                 {% if not form.can_submit %} disabled {% endif %}">Skicka</a>
             </div>
         </div>
+
+        {% if form.duplicate_selection %}
+            <div class="container">
+                <div class="navbar-left">
+                    <div class="navbar-text navbar-alert">
+                        <div class="alert alert-danger alert-navbar">
+                            Enkäten kan inte skickas in för att de valda biblioteken rapporteras för i flera enkäter.
+                            <br>Du kan antingen avmarkera dessa bibliotek eller kontakta <a href="mailto:biblioteksstatistik@kb.se">biblioteksstatistik@kb.se</a>.
+                        </div>
+                    </div>
+                </div>
+            </div>
+        {% endif %}
+
     </div>
     {% endif %}
 </form>
