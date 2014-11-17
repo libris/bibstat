@@ -9,17 +9,6 @@
         font-size: 15px;
     }
 
-    .group-description-separator {
-        margin-top: 10px;
-        margin-bottom: 10px;
-        border-top: 2px solid;
-        border-color: rgb(227, 227, 227)  !important;
-        padding-top: 0;
-        margin-top: 16px;
-        margin-bottom: 16px;
-        border-top-style: dashed;
-    }
-
     .principal {
         margin-bottom: 15px;
     }
@@ -167,11 +156,10 @@
         {{ form.read_only }}
 
         <h2 class="section-title">Svarande organisation/bibliotek</h2>
-        <div class="panel panel-default inverse">
+        <div class="panel panel-default">
+            <div class="panel-heading">Välj de bibliotek för vilka värdena i denna enkät ska gälla.</div>
             <div class="panel-body">
-                <p>Välj de bibliotek för vilka värdena i denna enkät ska gälla.</p>
-
-                <table class="table">
+                <table class="table table-striped">
                     <thead>
                     <tr>
                         <th class="column"></th>
@@ -211,19 +199,20 @@
         {% for section in form.sections %}
         <h2 class="section-title">{{ section.title }}</h2>
         {% for group in section.groups %}
-        <div class="panel panel-default inverse">
-            <div class="panel-body">
-                {% if group.description %}
-                <div class="row">
-                    <div class="col-sm-8 group-description">
-                        {% with description=group.description|split_into_number_and_body %}
-                            <b style="font-size: 17px;">{{ description.0 }}</b>
-                            {{ description.1 }}
-                        {% endwith %}
+        <div class="panel panel-default">
+            {% if group.description %}
+                <div class="panel-heading">
+                    <div class="row">
+                        <div class="col-sm-8 group-description">
+                            {% with description=group.description|split_into_number_and_body %}
+                                <b>{{ description.0 }}</b>
+                                {{ description.1 }}
+                            {% endwith %}
+                        </div>
                     </div>
                 </div>
-                <hr class="group-description-separator">
-                {% endif %}
+            {% endif %}
+            <div class="panel-body">
                 {% if forloop.parentloop.first and forloop.first %}
                 <div class="row principal">
                     <div class="col-sm-4 principal-description">
