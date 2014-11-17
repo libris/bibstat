@@ -260,6 +260,11 @@ label.sub-label {
     width: 350px;
 }
 
+.jumbotron ul {
+    font-size: 21px;
+    font-weight: 200;
+}
+
 .surveys-actions {
     margin-top: 10px;
 }

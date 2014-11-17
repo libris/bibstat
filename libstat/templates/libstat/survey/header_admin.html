@@ -57,5 +57,20 @@
             <br>Alternativt kan lösenordet <b>{{ form.password }}</b> användas med adressen:
             <br><b>{{ form.url }}</b>
         </p>
+
+        {% if form.library_selection_conflict %}
+            <hr>
+            <p>De valda biblioteken rapporteras också för i följande enkäter.</p>
+            <ul>
+            {% for conflicting_survey in form.conflicting_surveys %}
+                <li>
+                    <a href="{{ conflicting_survey.url }}">
+                    {{ conflicting_survey.library.name }}
+                    {% if conflicting_survey.library.city %} i {{ conflicting_survey.library.city }} {% endif %}
+                    </a>
+                </li>
+            {% endfor %}
+            </ul>
+        {% endif %}
     </div>
 </div>

@@ -217,7 +217,9 @@ class SurveyForm(forms.Form):
 
         self._set_libraries(survey.library, survey.selected_libraries, authenticated)
         if hasattr(self, 'library_selection_conflict') and self.library_selection_conflict:
-            #self.conflicting_libraries = LibrarySelection(survey.library).get_conflicting_surveys(survey)
+            self.conflicting_surveys = LibrarySelection(survey.library).get_conflicting_surveys(survey)
+            for conflicting_survey in self.conflicting_surveys:
+                conflicting_survey.url = settings.API_BASE_URL + reverse('survey', args=(conflicting_survey.pk,))
             self.can_submit = False
 
         for section in template.sections:
