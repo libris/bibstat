@@ -7,33 +7,34 @@ from django.http import HttpResponseNotFound
 from django.contrib.auth.decorators import permission_required
 
 from libstat.models import Survey
-from libstat.forms.survey import SurveyForm
+from libstat.forms.survey import SurveyForm, LibrarySelection
 
 
 logger = logging.getLogger(__name__)
 
 
-def _save_survey_response_from_form(response, form):
+def _save_survey_response_from_form(survey, form):
     if form.is_valid():
         disabled_inputs = form.cleaned_data.pop("disabled_inputs").split(" ")
         unknown_inputs = form.cleaned_data.pop("unknown_inputs").split(" ")
-        response.principal = form.cleaned_data.pop("principal")
+        survey.principal = form.cleaned_data.pop("principal")
         submit_action = form.cleaned_data.pop("submit_action", None)
-        print(submit_action)
-        if submit_action == "submit" and response.status in ("not_viewed", "initiated"):
-            response.status = "submitted"
 
         for field in form.cleaned_data:
-            observation = response.get_observation(field)
+            observation = survey.get_observation(field)
             if observation:
                 observation.value = form.cleaned_data[field]
                 observation.disabled = (field in disabled_inputs)
                 observation.value_unknown = (field in unknown_inputs)
             else:
-                response.__dict__["_data"][field] = form.cleaned_data[field]
+                survey.__dict__["_data"][field] = form.cleaned_data[field]
 
-        response.selected_libraries = form.cleaned_data["selected_libraries"].split(" ")
-        response.save()
+        survey.selected_libraries = form.cleaned_data["selected_libraries"].split(" ")
+        if submit_action == "submit" and survey.status in ("not_viewed", "initiated"):
+            if not LibrarySelection(survey.library).has_conflicts(survey):
+                survey.status = "submitted"
+
+        survey.save()
     else:
         raise Exception(form.errors)
 

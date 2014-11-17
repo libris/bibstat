@@ -34,8 +34,7 @@ class LibrarySelection:
         selected_sigels = Set()
         for survey in surveys:
             for sigel in survey.selected_libraries:
-                if sigel != self.library.sigel:
-                    selected_sigels.add(sigel)
+                selected_sigels.add(sigel)
 
         return selected_sigels
 
