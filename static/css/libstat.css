@@ -260,7 +260,7 @@ label.sub-label {
     width: 350px;
 }
 
-.jumbotron ul {
+.jumbotron .jumbotron-list {
     font-size: 21px;
     font-weight: 200;
 }

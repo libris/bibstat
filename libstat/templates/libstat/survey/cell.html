@@ -7,19 +7,6 @@
                 {{ form|access:variable_key }}
             {% endwith %}
             <div class="input-group-btn">
-
-                {% if cell.explanation %}
-                    <a type="button" class="btn btn-default btn-help"
-                       href="#"
-                       title="Förklaring"
-                       tabindex="0"
-                       data-toggle="popover" data-placement="top"
-                       data-content="{{ cell.explanation }}"
-                       data-trigger="focus">
-                        <i class="fa fa-question"></i>
-                    </a>
-                {% endif %}
-
                 {% with variable=form|access:cell.variable_key %}
                     <button type="button"
                             class="btn btn-default btn-dropdown dropdown-toggle"
@@ -40,11 +27,24 @@
                         {% endif %}
                     </ul>
                 {% endwith %}
+
+                {% if cell.explanation %}
+                    <a type="button" class="btn btn-default btn-help"
+                       href="#"
+                       title="Förklaring"
+                       tabindex="0"
+                       data-toggle="popover" data-placement="top"
+                       data-content="{{ cell.explanation }}"
+                       data-trigger="focus">
+                        <i class="fa fa-question"></i>
+                    </a>
+                {% endif %}
+
                 <button class="btn btn-default btn-value disabled">
                     {% if cell.previous_value %}
-                        ({{ cell.previous_value }})
+                        {{ cell.previous_value }}
                     {% else %}
-                        (&mdash;)
+                        &mdash;
                     {% endif %}
                 </button>
             </div>

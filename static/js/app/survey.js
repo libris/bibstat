@@ -184,7 +184,8 @@ define(['jquery', 'survey.sum', 'survey.cell', 'surveys.dispatch', 'bootstrap.va
         });
 
         var initAdmin = function () {
-            $("#form-admin .dropdown-menu > li > a").click(function () {
+            $("#form-admin .dropdown-menu > li > a").click(function (e) {
+                e.preventDefault();
                 var element = $(this);
 
                 $("#id_selected_status").val(element.data('key'));

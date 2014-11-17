@@ -127,6 +127,16 @@ class TestLibrarySelection_HasConflicts(MongoTestCase):
         selection = LibrarySelection(first_library)
         self.assertFalse(selection.has_conflicts(first_survey))
 
+    def test_should_return_true_for_conflict_when_second_survey_reports_for_first_survey(self):
+        first_library = self._dummy_library(sigel="1")
+        second_library = self._dummy_library(sigel="2")
+
+        first_survey = self._dummy_survey(library=first_library, sample_year=2014, selected_libraries=[])
+        second_survey = self._dummy_survey(library=second_library, sample_year=2014, selected_libraries=["1", "2"])
+
+        selection = LibrarySelection(first_library)
+        self.assertTrue(selection.has_conflicts(first_survey))
+
 class TestLibrarySelection_GetConflictingSurveys(MongoTestCase):
     def test_should_return_survey_for_conflict_in_same_sample_year(self):
         first_library = self._dummy_library(sigel="1")
@@ -159,6 +169,16 @@ class TestLibrarySelection_GetConflictingSurveys(MongoTestCase):
 
         conflicts = LibrarySelection(first_library).get_conflicting_surveys(first_survey)
         self.assertListEqual(conflicts, [])
+
+    def test_should_return_second_survey_when_reporting_for_first_survey(self):
+        first_library = self._dummy_library(sigel="1")
+        second_library = self._dummy_library(sigel="2")
+
+        first_survey = self._dummy_survey(library=first_library, sample_year=2014, selected_libraries=[])
+        second_survey = self._dummy_survey(library=second_library, sample_year=2014, selected_libraries=["1", "2"])
+
+        conflicts = LibrarySelection(first_library).get_conflicting_surveys(first_survey)
+        self.assertListEqual(conflicts, [second_survey])
 
 class TestUserReadOnly(MongoTestCase):
     def test_form_should_not_be_user_read_only_when_survey_status_is_not_viewed(self):
