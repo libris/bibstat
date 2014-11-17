@@ -61,14 +61,12 @@
 
         {% if form.library_selection_conflict %}
             <hr>
-            <p>De valda biblioteken rapporteras också för i följande enkäter.</p>
+            <p>De valda biblioteken rapporteras också för i de följande enkäterna.</p>
             <ul>
-            {% for conflicting_survey in form.conflicting_surveys %}
+            {% for survey in form.conflicting_surveys %}
                 <li>
-                    <a href="{{ conflicting_survey.url }}">
-                    {{ conflicting_survey.library.name }}
-                    {% if conflicting_survey.library.city %} i {{ conflicting_survey.library.city }} {% endif %}
-                    </a>
+                    <a href="{{ survey.url }}">{{ survey.library.name }} {% if survey.library.city %} i {{ survey.library.city }}{% endif %}</a>
+                    ({% for library in survey.conflicting_libraries %}{{ library.name }}{% if not forloop.last %}, {% endif %}{% endfor %})
                 </li>
             {% endfor %}
             </ul>

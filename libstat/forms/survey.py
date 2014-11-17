@@ -40,7 +40,7 @@ class LibrarySelection:
 
     def has_conflicts(self, survey):
         for selected_sigel in self.selected_sigels(survey.sample_year):
-            if selected_sigel in survey.selected_libraries:
+            if selected_sigel in survey.selected_libraries or selected_sigel == self.library.sigel:
                 return True
 
         return False
@@ -57,9 +57,9 @@ class LibrarySelection:
 
         return [
             other_survey for other_survey in other_surveys
-            if any(s1 in other_survey.selected_libraries for s1 in survey.selected_libraries)
+            if any(sigel in other_survey.selected_libraries for sigel in survey.selected_libraries)
+            or self.library.sigel in other_survey.selected_libraries
         ]
-
 
 class SurveyForm(forms.Form):
 
@@ -118,9 +118,9 @@ class SurveyForm(forms.Form):
 
         return field
 
-    def _set_libraries(self, current_library, selected_libraries, authenticated):
+    def _set_libraries(self, current_library, this_surveys_selected_sigels, authenticated):
         selection = LibrarySelection(current_library)
-        selected_sigels = selection.selected_sigels(self.sample_year)
+        other_surveys_selected_sigels = selection.selected_sigels(self.sample_year)
 
         def set_library(self, library, current_library=False):
             checkbox_id = str(library.sigel)
@@ -141,22 +141,22 @@ class SurveyForm(forms.Form):
             if self.is_read_only:
                 attrs["disabled"] = "true"
 
-            if library.sigel in selected_sigels:
+            if library.sigel in other_surveys_selected_sigels:
                 attrs["disabled"] = "true"
                 row["comment"] = u"Detta bibliotek rapporteras redan för i en annan enkät."
-                if current_library or library.sigel in selected_libraries:
+                if current_library or library.sigel in this_surveys_selected_sigels:
                     row["comment"] = u"Rapporteringen för detta bibliotek kolliderar med en annan enkät."
                     self.library_selection_conflict = True
                     del attrs["disabled"]
 
             if current_library:
                 attrs["disabled"] = "true"
-                if not authenticated or library.sigel in selected_libraries:
+                if not authenticated or library.sigel in this_surveys_selected_sigels:
                     attrs["checked"] = "true"
 
-                if not library.sigel in selected_sigels:
+                if not library.sigel in other_surveys_selected_sigels:
                     row["comment"] = u"Detta är det bibliotek som enkäten avser i första hand."
-            elif library.sigel in selected_libraries:
+            elif library.sigel in this_surveys_selected_sigels:
                 attrs["checked"] = "true"
 
             if authenticated:
@@ -177,6 +177,10 @@ class SurveyForm(forms.Form):
 
     def _status_label(self, key):
         return next((status[1] for status in Survey.STATUSES if status[0] == key))
+
+    def _conflicting_libraries(self, first_selection, second_selection):
+        intersection = Set(first_selection).intersection(Set(second_selection))
+        return Library.objects.filter(sigel__in=intersection)
 
     def __init__(self, *args, **kwargs):
         survey = kwargs.pop('survey', None)
@@ -217,9 +221,15 @@ class SurveyForm(forms.Form):
 
         self._set_libraries(survey.library, survey.selected_libraries, authenticated)
         if hasattr(self, 'library_selection_conflict') and self.library_selection_conflict:
-            self.conflicting_surveys = LibrarySelection(survey.library).get_conflicting_surveys(survey)
+            selection = LibrarySelection(survey.library)
+
+            self.conflicting_surveys = selection.get_conflicting_surveys(survey)
             for conflicting_survey in self.conflicting_surveys:
                 conflicting_survey.url = settings.API_BASE_URL + reverse('survey', args=(conflicting_survey.pk,))
+                conflicting_survey.conflicting_libraries = self._conflicting_libraries(
+                    survey.selected_libraries + [survey.library.sigel],
+                    conflicting_survey.selected_libraries)
+
             self.can_submit = False
 
         for section in template.sections:
