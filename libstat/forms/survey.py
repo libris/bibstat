@@ -146,7 +146,7 @@ class SurveyForm(forms.Form):
                 row["comment"] = u"Detta bibliotek rapporteras redan för i en annan enkät."
                 if current_library or library.sigel in selected_libraries:
                     row["comment"] = u"Rapporteringen för detta bibliotek kolliderar med en annan enkät."
-                    self.duplicate_selection = True
+                    self.library_selection_conflict = True
                     del attrs["disabled"]
 
             if current_library:
@@ -216,7 +216,8 @@ class SurveyForm(forms.Form):
         self.url_with_password = "{}?p={}".format(self.url, self.password)
 
         self._set_libraries(survey.library, survey.selected_libraries, authenticated)
-        if hasattr(self, 'duplicate_selection') and self.duplicate_selection:
+        if hasattr(self, 'library_selection_conflict') and self.library_selection_conflict:
+            #self.conflicting_libraries = LibrarySelection(survey.library).get_conflicting_surveys(survey)
             self.can_submit = False
 
         for section in template.sections:
