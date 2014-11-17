@@ -65,7 +65,7 @@
             <p>De valda biblioteken rapporteras också för i de följande enkäterna.</p>
             <ul>
             {% for survey in form.conflicting_surveys %}
-                <li>
+                <li class="jumbotron-list">
                     <a href="{{ survey.url }}">{{ survey.library.name }} {% if survey.library.city %} i {{ survey.library.city }}{% endif %}</a>
                     ({% for library in survey.conflicting_libraries %}{{ library.name }}{% if not forloop.last %}, {% endif %}{% endfor %})
                 </li>
