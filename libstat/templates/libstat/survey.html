@@ -4,6 +4,12 @@
 
 {% block content %}
 <style>
+    .final-words {
+        background-color: rgb(242, 148, 0) !important; 
+        font-size: 30px;
+        color: white;
+    }
+
     .popover{
         max-width: none;
         width: 500px;
@@ -264,6 +270,11 @@
         </div>
         {% endfor %}
         {% endfor %}
+        <div class="panel panel-default">
+            <div class="panel-body group-body final-words">
+                Stort tack för att du besvarade alla frågorna!
+            </div>
+        </div>
         {% if not form.is_read_only %}
         <div class="navbar navbar-default navbar-fixed-bottom" role="navigation">
             <div class="container">
