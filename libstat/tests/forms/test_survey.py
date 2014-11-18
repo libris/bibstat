@@ -55,7 +55,7 @@ class TestLibrarySelection_SelectedSigels(MongoTestCase):
 
         self.assertSetEqual(selection.selected_sigels(2014), {"2"})
 
-    def test_should_exclude_librarys_own_sigel_when_selected_in_second_survey(self):
+    def test_should_include_librarys_own_sigel_when_selected_in_second_survey(self):
         library = self._dummy_library(sigel="1")
         second_library = self._dummy_library(sigel="2")
 
@@ -63,7 +63,7 @@ class TestLibrarySelection_SelectedSigels(MongoTestCase):
         self._dummy_survey(library=second_library, sample_year=2014, selected_libraries=["1", "2"])
         selection = LibrarySelection(library)
 
-        self.assertSetEqual(selection.selected_sigels(2014), {"2"})
+        self.assertSetEqual(selection.selected_sigels(2014), {"1", "2"})
 
     def test_should_exclude_selected_sigel_for_another_sample_year(self):
         library = self._dummy_library(sigel="1")
