@@ -1,6 +1,7 @@
 # -*- coding: UTF-8 -*-
 from optparse import make_option
 import re
+import logging
 
 from django.core.management.base import BaseCommand, CommandError
 from xlrd import open_workbook
@@ -8,6 +9,9 @@ from xlrd.biffh import XLRDError
 
 from libstat.utils import TYPE_BOOLEAN, TYPE_INTEGER, TYPE_LONG
 from libstat.models import Survey, SurveyObservation, Variable, LibraryCached
+
+
+logger = logging.getLogger(__name__)
 
 
 class Command(BaseCommand):
@@ -85,7 +89,7 @@ class Command(BaseCommand):
 
             num_imported_surveys += 1
 
-        self.stdout.write(u"...{} surveys imported".format(num_imported_surveys))
+        logger.info(u"...{} surveys imported".format(num_imported_surveys))
 
     def handle(self, *args, **options):
         def _get_work_sheet(file_name, year):
@@ -103,7 +107,7 @@ class Command(BaseCommand):
         target_group = options.get(u"target_group")
 
         if not file_name or not target_group or not year:
-            self.stdout.write(self.help_text)
+            logger.info(self.help_text)
             return
 
         if not _valid_year(year):

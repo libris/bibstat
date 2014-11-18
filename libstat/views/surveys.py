@@ -91,9 +91,8 @@ def surveys_publish(request):
             for sr in s_responses:
                 try:
                     sr.publish(user=request.user)
-                except Exception as e:
+                except Exception:
                     logger.error(u"Error when publishing survey response {}:".format(sr.id))
-                    print e
 
     return _surveys_redirect(request)
 

@@ -462,7 +462,6 @@ class EditVariableViewTest(MongoTestCase):
         self.assertIs(len(replacement.replaces), 0)
 
     def post(self, action, variable):
-        print "POSTING: ", variable.active_to
         url = reverse("edit_variable", kwargs={"variable_id": str(variable.id)})
         return self.client.post(url, {
             u"active_from": variable.active_from.date() if variable.active_from else "",

@@ -1,4 +1,6 @@
 # -*- coding: UTF-8 -*-
+import logging
+
 from optparse import make_option
 
 from django.core.management.base import BaseCommand, CommandError
@@ -7,6 +9,9 @@ from xlrd import open_workbook
 from libstat.utils import DATA_IMPORT_nonMeasurementCategories
 from libstat.utils import TYPE_STRING, TYPE_BOOLEAN, TYPE_INTEGER, TYPE_LONG, TYPE_DECIMAL, TYPE_PERCENT
 from libstat.models import Variable
+
+
+logger = logging.getLogger(__name__)
 
 
 class Command(BaseCommand):
@@ -38,14 +43,14 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
         if not options["target_group"] or not options["file"]:
-            self.stdout.write(
-                "Usage: python manage.py import_variables --file=</path/to/file> --target_group=<folkbib|specbib|sjukbib|skolbib>\n\n")
+            logger.info(("Usage: python manage.py import_variables --file=</path/to/file>"
+                         "--target_group=<folkbib|specbib|sjukbib|skolbib>\n\n"))
             return
 
         file = options["file"]
         target_group = options["target_group"]
 
-        self.stdout.write(u"Importing {} variables from: {}...".format(target_group, file))
+        logger.info(u"Importing {} variables from: {}...".format(target_group, file))
 
         book = open_workbook(file)
         work_sheet = book.sheet_by_index(0)
@@ -82,7 +87,6 @@ class Command(BaseCommand):
                                   type=variable_type, is_public=is_public, target_groups=[target_group], )
                 object.save()
                 imported_variables += 1
-                #self.stdout.write(u"IMPORTED: key={}, is_public={}".format(object.key, object.is_public))
             else:
                 object = existing_vars[0]
                 object.description = description
@@ -93,8 +97,6 @@ class Command(BaseCommand):
                 object.target_groups = [target_group]
                 object.save()
                 updated_variables += 1
-                #self.stdout.write(u"UPDATED: key={}, is_public={}".format(object.key, object.is_public))
 
-        self.stdout.write(
-            u"...{} {} variables imported, {} updated.".format(imported_variables, target_group, updated_variables))
-            
+        logger.info(u"...{} {} variables imported, {} updated.".format(imported_variables,
+                                                                       target_group, updated_variables))

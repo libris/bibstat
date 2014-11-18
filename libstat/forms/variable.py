@@ -94,7 +94,6 @@ class VariableForm(forms.Form):
         variable.description = self.cleaned_data['description']
         variable.comment = self.cleaned_data['comment']
         if activate:
-            print "Activating"
             variable.is_draft = False
 
         to_replace = self.cleaned_data['replaces'].split(", ") if self.cleaned_data['replaces'] else []
