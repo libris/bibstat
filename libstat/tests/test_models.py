@@ -29,7 +29,7 @@ class SurveyResponseTest(MongoTestCase):
 
         library = Library(bibdb_id=u"323", bibdb_sigel="Kld1", bibdb_name=u"Karlstad stadsbibliotek").save()
         sr = Survey(library_name="KARLSTAD STADSBIBLIOTEK", sample_year=2013, target_group="folkbib",
-                    observations=[], created_by=self.current_user, library=library)
+                    observations=[], library=library)
         sr.observations.append(SurveyObservation(variable=v1, value=7, _source_key="folk5", _is_public=v1.is_public))
         sr.observations.append(
             SurveyObservation(variable=v2, value=None, _source_key="folk6", _is_public=v2.is_public))
@@ -83,7 +83,6 @@ class SurveyResponseTest(MongoTestCase):
         self.assertTrue(open_data.date_created)
         self.assertEquals(open_data.date_created, open_data.date_modified)
         self.assertEquals(open_data.date_created, survey.published_at)
-        self.assertEquals(survey.published_by, self.current_user)
 
     def test_should_overwrite_value_and_date_modified_for_existing_openData(self):
         variable = self._dummy_variable(key=u"key1", is_public=True)
@@ -117,24 +116,24 @@ class SurveyResponseTest(MongoTestCase):
 
     def test_should_store_version_when_updating_existing_object(self):
         library = self._dummy_library(name="lib1_old_name", city="lib1_old_city", sigel="lib1_sigel")
-        survey = self._dummy_survey(website="old_website", library=library)
+        survey = self._dummy_survey(status="initiated", library=library)
 
         library.name = "lib1_new_name"
         library.city = "lib1_new_city"
         survey.library = library.save()
-        survey.website = "new_website"
+        survey.status = "controlled"
         survey = survey.save()
 
         self.assertEquals(survey.library.name, "lib1_new_name")
         self.assertEquals(survey.library.city, "lib1_new_city")
-        self.assertEquals(survey.website, "new_website")
+        self.assertEquals(survey.status, "controlled")
 
         versions = SurveyVersion.objects.filter(survey_response_id=survey.id)
         self.assertEquals(len(versions), 1)
         self.assertEquals(versions[0].survey_response_id, survey.id)
         self.assertEquals(versions[0].library.name, "lib1_old_name")
         self.assertEquals(versions[0].library.city, "lib1_old_city")
-        self.assertEquals(versions[0].website, "old_website")
+        self.assertEquals(versions[0].status, "initiated")
 
     def test_should_store_one_version_for_each_change(self):
         self.survey_response.library.bibdb_id = u"321"
@@ -182,7 +181,6 @@ class SurveyResponseTest(MongoTestCase):
 
     def test_should_set_modified_date_when_creating_object(self):
         self.assertEquals(self.survey_response.date_modified, self.survey_response.date_created)
-        self.assertEquals(self.survey_response.modified_by, self.current_user)
 
     def test_should_flag_new_object_as_not_published(self):
         self.assertFalse(self.survey_response.is_published)
@@ -194,7 +192,6 @@ class SurveyResponseTest(MongoTestCase):
         survey.publish(user=self.current_user)
 
         self.assertNotEquals(survey.published_at, None)
-        self.assertEquals(survey.published_by, self.current_user)
         self.assertEquals(survey.date_modified, date_modified)
 
     def test_should_flag_as_published_when_publishing(self):
@@ -283,7 +280,7 @@ class SurveyLibraryCachingTest(MongoTestCase):
 
     def test_should_use_new_library_when_published_then_library_update_then_reopen(self):
         library = self._dummy_library(name="lib1_name", sigel="lib1_sigel")
-        survey = self._dummy_survey(website="abcd", library=library)
+        survey = self._dummy_survey(library=library)
         survey.publish()
         library.name = "new_name"
         library.save()

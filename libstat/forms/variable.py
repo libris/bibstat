@@ -99,8 +99,6 @@ class VariableForm(forms.Form):
         to_replace = self.cleaned_data['replaces'].split(", ") if self.cleaned_data['replaces'] else []
         modified_siblings = variable.replace_siblings(to_replace, switchover_date=variable.active_from)
 
-        variable.modified_by = user
-
         if commit:
             variable.save_updated_self_and_modified_replaced(modified_siblings)
 

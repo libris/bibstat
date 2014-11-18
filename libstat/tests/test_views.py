@@ -208,7 +208,6 @@ class EditVariableViewTest(MongoTestCase):
         self.assertEquals(result.target_groups, self.new_target_groups)
         self.assertEquals(result.description, self.new_description)
         self.assertEquals(result.comment, self.new_comment)
-        self.assertEquals(result.modified_by, self.current_user)
 
     def test_should_return_validation_errors_when_omitting_mandatory_fields(self):
         response = self.client.post(self.url, {})
@@ -627,7 +626,6 @@ class PublishSurveyResponsesViewTest(MongoTestCase):
 
         survey_response = Survey.objects.get(pk=self.survey_response.id)
         self.assertTrue(survey_response.published_at is not None)
-        self.assertEquals(survey_response.published_by, User.objects.filter(username="admin")[0])
 
     def test_should_not_publish_unless_selected_ids(self):
         response = self.client.post(self.url, {u"sample_year": u"2013",
@@ -637,4 +635,3 @@ class PublishSurveyResponsesViewTest(MongoTestCase):
         self.assertEquals(response.status_code, 200)
         survey_response = Survey.objects.get(pk=self.survey_response.id)
         self.assertEquals(survey_response.published_at, None)
-        self.assertEquals(survey_response.published_by, None)

@@ -61,7 +61,6 @@ class VariableBase(Document):
     summary_of = ListField()
 
     date_modified = DateTimeField()
-    modified_by = ReferenceField(User)
     is_draft = BooleanField()
 
     # Only date-part of these fields is relevant,
@@ -470,20 +469,9 @@ class SurveyBase(Document):
     )
     _status_labels = dict(STATUSES)
 
-    respondent_name = StringField()
-    respondent_email = StringField()
-    respondent_phone = StringField()
-    website = StringField()
-    survey_time_hours = IntField()
-    survey_time_minutes = IntField()
-    population_nation = LongField()
-    population_0to14y = LongField()
     published_at = DateTimeField()
-    published_by = ReferenceField(User)
     date_created = DateTimeField(required=True, default=datetime.utcnow)
-    created_by = ReferenceField(User)
     date_modified = DateTimeField(required=True, default=datetime.utcnow)
-    modified_by = ReferenceField(User)
     observations = ListField(EmbeddedDocumentField(SurveyObservation))
     _status = StringField(choices=STATUSES, default="not_viewed")
     _library = EmbeddedDocumentField(LibraryCached)
@@ -623,10 +611,8 @@ class Survey(SurveyBase):
                     v.survey_response_id = document.id
                     v.save()
                 document.date_modified = datetime.utcnow()
-                # field modified_by is set in form
         else:
             document.date_modified = document.date_created
-            document.modified_by = document.created_by
 
     def publish(self, user=None):
         # TODO: Publishing date as a parameter to enable setting correct date for old data?
@@ -655,7 +641,6 @@ class Survey(SurveyBase):
 
         self._status = "published"
         self.published_at = publishing_date
-        self.published_by = user
 
         # Custom attribute to handle pre-save actions
         self._action_publish = True
