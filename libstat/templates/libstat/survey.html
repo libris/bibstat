@@ -4,6 +4,33 @@
 
 {% block content %}
 <style>
+    .panel-body {
+        background-color: rgb(255, 209, 142);
+    }
+
+    .panel-heading {
+        background-color: rgb(242, 148, 0) !important;
+        color: white !important;
+        border-color: rgb(219, 136, 4) !important;
+    }
+
+    .panel-footer {
+        background-color: rgb(242, 148, 0) !important;
+        color: white !important;
+    }
+
+    .panel {
+        border-color: rgb(219, 136, 4) !important;
+    }
+
+    hr {
+        border-color: rgb(219, 136, 4) !important;
+    }
+
+    th {
+        border-bottom-color: rgb(219, 136, 4) !important;
+    }
+
     .group-description {
         font-family: helvetica;
         font-size: 15px;
@@ -18,7 +45,8 @@
     }
 
     .section-title {
-        color: rgb(242, 148, 0);
+        color: rgb(0, 158, 224);
+        font-weight: bold;
         margin-top: 40px;
         padding-left: 14px;
     }
@@ -159,7 +187,7 @@
         <div class="panel panel-default">
             <div class="panel-heading">Välj de bibliotek för vilka värdena i denna enkät ska gälla.</div>
             <div class="panel-body">
-                <table class="table table-striped">
+                <table class="table">
                     <thead>
                     <tr>
                         <th class="column"></th>
@@ -201,7 +229,7 @@
         {% for group in section.groups %}
         <div class="panel panel-default">
             {% if group.description %}
-                <div class="panel-heading">
+                <div class="panel-heading group-heading">
                     <div class="row">
                         <div class="col-sm-8 group-description">
                             {% with description=group.description|split_into_number_and_body %}
@@ -212,7 +240,7 @@
                     </div>
                 </div>
             {% endif %}
-            <div class="panel-body">
+            <div class="panel-body group-body">
                 {% if forloop.parentloop.first and forloop.first %}
                 <div class="row principal">
                     <div class="col-sm-4 principal-description">
