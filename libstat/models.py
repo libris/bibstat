@@ -347,13 +347,20 @@ class Section(EmbeddedDocument):
 class SurveyTemplate(Document):
     sections = ListField(EmbeddedDocumentField(Section))
 
-    def get_cell(self, variable_key):
+    @property
+    def cells(self):
+        cells = []
         for section in self.sections:
             for group in section.groups:
                 for row in group.rows:
                     for cell in row.cells:
-                        if cell.variable_key == variable_key:
-                            return cell
+                        cells.append(cell)
+        return cells
+
+    def get_cell(self, variable_key):
+        for cell in self.cells:
+            if cell.variable_key == variable_key:
+                return cell
         return None
 
 

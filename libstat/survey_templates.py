@@ -466,6 +466,10 @@ def _survey_template_2014():
                             Row(cells=[Cell(variable_key=u"Alltkomm", types=["comment"])])])])])
 
 
+def has_template(year):
+    return year == 2014
+
+
 def survey_template(year, response=None):
     if year == 2014:
         return _survey_template_2014()

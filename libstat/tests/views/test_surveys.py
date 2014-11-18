@@ -171,7 +171,6 @@ class TestSurveysExport(MongoTestCase):
         response = self._post(action="surveys_export",
                               data={"survey-response-ids": [survey1.pk, survey2.pk]})
 
-        self.assertFalse(True)
         self.assertEquals(response.status_code, 200)
 
     def test_sets_correct_values_when_exporting_surveys_as_excel(self):

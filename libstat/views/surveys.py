@@ -12,7 +12,7 @@ from openpyxl.writer.excel import save_virtual_workbook
 from bibstat import settings
 from libstat import utils
 from libstat.models import Survey, Dispatch, Library
-
+from libstat.survey_templates import has_template, survey_template
 
 logger = logging.getLogger(__name__)
 
@@ -99,11 +99,20 @@ def surveys_publish(request):
 
 
 def _surveys_as_excel(survey_ids):
+    def variable_keys_in(survey):
+        variable_keys = []
+        if has_template(survey.sample_year):
+            template = survey_template(survey.sample_year)
+            for cell in template.cells:
+                variable_keys.append(cell.variable_key)
+        else:
+            for observation in surveys[0].observations:
+                variable_keys.append(unicode(observation.variable.key))
+        return variable_keys
+
     surveys = Survey.objects.filter(id__in=survey_ids).order_by('library_name')
 
-    variable_keys = []
-    for observation in surveys[0].observations:
-        variable_keys.append(unicode(observation.variable.key))
+    variable_keys = variable_keys_in(surveys[0])
 
     headers = [
         "Bibliotek",
