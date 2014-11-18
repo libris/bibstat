@@ -113,7 +113,7 @@
         border-bottom-style: dashed;
         border-right-style: dashed;
         border-top-style: dashed;
-        opacity: 0.5;
+        opacity: 0.9 !important;
         font-style: italic;
     }
 </style>
@@ -275,18 +275,19 @@
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-body">
-                <p>
-                    Är du säker på att du vill skicka in din enkät?
-                </p>
+                <p><b>Är du säker på att du vill skicka in din enkät?</b></p>
 
                 <p>
-                    När du väl skickat in din enkät kommer vi börja behandla dina inskickade svar och du kommer
-                    då inte längre kunna göra några ändringar.
+                    När du skickat in din enkät kommer vi börja behandla värdena.
+                    <br>Du kommer då inte längre kunna göra några ändringar i enkäten.
+                    <br>
+                    <br>Du kommer alltid kunna återvända till enkäten för att se de inlämnade värdena.
+                    <br>Detta gör du genom att gå in på samma enkätadress som du använde tidigare.
                 </p>
             </div>
             <div class="modal-footer">
-                <a href="#" class="btn btn-danger" data-dismiss="modal">Nej</a>
-                <a href="#" id="confirm-submit-survey-btn" class="btn btn-success">Ja</a>
+                <a href="#" class="btn btn-danger" data-dismiss="modal">Avbryt</a>
+                <a href="#" id="confirm-submit-survey-btn" class="btn btn-success">Skicka</a>
             </div>
         </div>
     </div>
