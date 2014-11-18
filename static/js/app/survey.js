@@ -35,6 +35,9 @@ define(['jquery', 'survey.sum', 'survey.cell', 'surveys.dispatch', 'bootstrap.va
             return survey.enabledInputs().filter(function () {
                 return this.value && $(this).closest('.form-group').hasClass('has-success');
             });
+        },
+        requiredInputs: function () {
+            return survey.enabledInputs().filter("[data-bv-notempty]");
         }
     };
 
@@ -157,8 +160,24 @@ define(['jquery', 'survey.sum', 'survey.cell', 'surveys.dispatch', 'bootstrap.va
         var correct = survey.correctInputs().length;
         var percent = (correct / total) * 100;
 
-        survey.form('.answers-text').text('Du har svarat på ' + correct + ' av ' + total + ' frågor totalt');
-        survey.form('.answers-progress .progress-bar-success').css('width', percent + '%');
+        var requiredPercent = Math.ceil((survey.requiredInputs().length / total) * 100);
+        var boostedPercent = Math.ceil(1.15 * percent);
+
+        var setText = function(text) { survey.form('.answers-text').text(text); };
+        var setPercent = function(percent) {survey.form('.answers-progress .progress-bar-success').css('width', percent + "%"); };
+        var setPercentAndText = function(percent) {
+            setText("Du har hittills fyllt i " + percent + "% av hela enkäten");
+            setPercent(percent);
+        };
+
+        if(correct == 0) {
+            setText("Du har inte börjat fylla i enkäten än...");
+            setPercent(0);
+        } else if(boostedPercent <= requiredPercent) {
+            setPercentAndText(Math.min(boostedPercent, requiredPercent));
+        } else {
+            setPercentAndText(Math.max(Math.ceil(percent), requiredPercent));
+        }
     };
     var initProgress = function () {
         $.each(survey.inputs(), function () {
