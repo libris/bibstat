@@ -683,6 +683,10 @@ class Dispatch(Document):
     message = StringField()
     survey = ReferenceField(Survey)
 
+    meta = {
+        'collection': 'libstat_dispatches'
+    }
+
 
 class OpenData(Document):
     library_name = StringField(required=True, unique_with=['sample_year', 'variable'])
