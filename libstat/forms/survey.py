@@ -89,13 +89,6 @@ class SurveyForm(forms.Form):
             attrs["data-bv-greaterthan"] = ""
             attrs["data-bv-greaterthan-value"] = "0"
             attrs["data-bv-greaterthan-inclusive"] = ""
-
-        if "email" in cell.types:
-            attrs["data-bv-emailaddress"] = ""
-            attrs["data-bv-regexp"] = ""
-            attrs["data-bv-regexp-regexp"] = ".+@.+\..+"
-            attrs["data-bv-regexp-message"] = "Vänligen mata in en giltig emailadress"
-
         if "text" in cell.types:
             attrs["data-bv-stringlength"] = ""
             attrs["data-bv-stringlength-min"] = "0"
@@ -107,8 +100,6 @@ class SurveyForm(forms.Form):
             field = forms.CharField(required=False, widget=forms.Textarea(attrs=attrs))
         elif "integer" in cell.types:
             field = forms.IntegerField(required=False, widget=forms.TextInput(attrs=attrs))
-        elif "email" in cell.types:
-            field = forms.EmailField(required=False, widget=forms.TextInput(attrs=attrs))
         elif "numeric" in cell.types:
             field = forms.FloatField(required=False, widget=forms.TextInput(attrs=attrs))
         else:

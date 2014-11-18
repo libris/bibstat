@@ -20,7 +20,7 @@ def _survey_template_2014():
                     groups=[
                         Group(rows=[
                             Row(cells=[Cell(variable_key=u"Namn01", types=["text"])]),
-                            Row(cells=[Cell(variable_key=u"Epost01", types=['email', 'required'])]),
+                            Row(cells=[Cell(variable_key=u"Epost01", types=["text", "required"])]),
                             Row(cells=[Cell(variable_key=u"Tele01", types=["text"])]),
                             Row(cells=[Cell(variable_key=u"Plan01", types=["text"])])]),
                         Group(rows=[
