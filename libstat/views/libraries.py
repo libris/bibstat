@@ -12,30 +12,30 @@ from libstat.survey_templates import survey_template
 
 
 def _create_surveys(library_ids, sample_year):
-    def survey_exists(sigel, sample_year):
-        return Survey.objects.filter(_library__sigel=sigel,sample_year=sample_year).first() is not None
+    template_cells = survey_template(sample_year).cells
+
+    variables = {}  # Fetch variables once for IO-performance
+    for variable in Variable.objects.all():
+        variables[variable.key] = variable
+
+    existing_surveys = {}
+    for survey in Survey.objects.all():
+        existing_surveys[(survey.library.sigel, survey.sample_year)] = True
 
     created = 0
-    for library_id in library_ids:
-        library = Library.objects.get(pk=library_id)
-        if survey_exists(library.sigel, sample_year):
+    for library in Library.objects.filter(pk__in=library_ids):
+        if (library.sigel, sample_year) in existing_surveys:
             continue
 
-        template = survey_template(sample_year)
         survey = Survey(
             library=library,
             sample_year=sample_year,
             observations=[])
-        for section in template.sections:
-            for group in section.groups:
-                for row in group.rows:
-                    for cell in row.cells:
-                        variable_key = cell.variable_key
-                        if len(Variable.objects.filter(key=variable_key)) == 0:
-                            raise Exception("Can't find variable with key '{}'".format(variable_key))
-                        survey.observations.append(
-                            SurveyObservation(
-                                variable=Variable.objects.get(key=variable_key)))
+        for cell in template_cells:
+            variable_key = cell.variable_key
+            if not variable_key in variables:
+                raise Exception("Can't find variable with key '{}'".format(variable_key))
+            survey.observations.append(SurveyObservation(variable=variables[variable_key]))
         survey.save()
         created += 1
 
@@ -57,7 +57,8 @@ def libraries(request):
 
             message = u"Skapade {} stycken nya enkäter för de markerade biblioteken.".format(created)
             if created < len(library_ids):
-                message += u"\nFör {} stycken av biblioteken fanns redan enkäter skapade.".format(len(library_ids) - created);
+                message += u"\nFör {} stycken av biblioteken fanns redan enkäter skapade.".format(
+                    len(library_ids) - created)
             request.session["message"] = message
 
             return _surveys_redirect(request)
