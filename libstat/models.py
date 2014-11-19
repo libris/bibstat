@@ -532,11 +532,12 @@ class SurveyBase(Document):
     def status(self, status):
         if not status in [s[0] for s in Survey.STATUSES]:
             raise KeyError(u"Invalid status '{}'".format(status))
-        elif status == "published" and not self._status == "published":
-            raise Exception("Cannot set published status for survey '{}'.".format(self.pk))
-        elif status != "published" and self._status == "published":
-            self.unpublish()
-        self._status = status
+        elif status == "published":
+            self.publish()
+        elif status != "published":
+            if self._status == "published":
+                self.unpublish()
+            self._status = status
 
     def get_observation(self, key):
         hits = [obs for obs in self.observations if obs.variable.key == key]

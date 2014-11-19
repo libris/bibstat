@@ -15,9 +15,7 @@ from libstat.views.dispatches import dispatches, dispatches_delete, dispatches_s
 from libstat.views.index import index
 from libstat.views.surveys import (surveys_statuses,
                                    surveys_export,
-                                   surveys_publish,
                                    surveys,
-                                   surveys_remove,
                                    surveys_overview)
 from libstat.views.survey import (survey,
                                   survey_status)
@@ -50,8 +48,6 @@ urlpatterns = patterns(
     # Survey
     url(r'^surveys$', surveys, name='surveys'),
     url(r'^surveys/export$', surveys_export, name='surveys_export'),
-    url(r'^surveys/publish$', surveys_publish, name='surveys_publish'),
-    url(r'^surveys/remove$', surveys_remove, name='surveys_remove'),
     url(r'^surveys/status$', surveys_statuses, name='surveys_statuses'),
     url(r'^surveys/overview/(?P<sample_year>\w+)$', surveys_overview, name='surveys_overview'),
     url(r'^surveys/status/(?P<survey_id>\w+)$', survey_status, name='survey_status'),

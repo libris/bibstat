@@ -54,6 +54,7 @@ def surveys(request):
         'target_group': target_group,
         'free_text': free_text,
         'status': status,
+        'statuses': Survey.STATUSES,
         'bibdb_library_base_url': u"{}/library".format(settings.BIBDB_BASE_URL),
         'message': message,
         'url_base': settings.API_BASE_URL
@@ -73,32 +74,6 @@ def _surveys_redirect(request):
     return HttpResponseRedirect(u"{}{}".format(
         reverse("surveys"),
         u"?action=list&target_group={}&sample_year={}&status={}".format(target_group, sample_year, status)))
-
-
-@permission_required('is_superuser', login_url='index')
-def surveys_publish(request):
-    MAX_PUBLISH_LIMIT = 500
-
-    if request.method == "POST":
-        survey_response_ids = request.POST.getlist("survey-response-ids", [])
-
-        logger.info(u"Publish requested for {} survey response ids".format(len(survey_response_ids)))
-
-        if len(survey_response_ids) > MAX_PUBLISH_LIMIT:
-            survey_response_ids = survey_response_ids[:MAX_PUBLISH_LIMIT]
-            logger.warning(
-                u"That seems like an awful lot of objects to handle in one transaction, limiting to first {}".format(
-                    MAX_PUBLISH_LIMIT))
-
-        if len(survey_response_ids) > 0:
-            s_responses = Survey.objects.filter(id__in=survey_response_ids)
-            for sr in s_responses:
-                try:
-                    sr.publish()
-                except Exception:
-                    logger.error(u"Error when publishing survey response {}:".format(sr.id))
-
-    return _surveys_redirect(request)
 
 
 def _surveys_as_excel(survey_ids):
@@ -163,18 +138,6 @@ def surveys_export(request):
         response = HttpResponse(save_virtual_workbook(workbook), content_type='application/vnd.ms-excel')
         response['Content-Disposition'] = u'attachment; filename="{}"'.format(filename)
         return response
-
-
-@permission_required('is_superuser', login_url='index')
-def surveys_remove(request):
-    if request.method == "POST":
-        survey_response_ids = request.POST.getlist("survey-response-ids", [])
-        surveys = Survey.objects.filter(id__in=survey_response_ids)
-        for survey in surveys:
-            Dispatch.objects.filter(survey=survey).delete()
-            survey.delete()
-        request.session["message"] = u"Tog bort {} enkäter.".format(len(surveys))
-    return _surveys_redirect(request)
 
 
 @permission_required('is_superuser', login_url='index')

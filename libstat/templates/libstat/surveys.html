@@ -82,38 +82,16 @@
                                         {% if not status %}
                                         selected="selected"
                                         {% endif %}>
-                                    Alla status
+                                    Alla statusar
                                 </option>
-                                <option value="not_viewed"
-                                        {% ifequal status "not_viewed" %}
+                                {% for status_choice in statuses %}
+                                <option value="{{ status_choice.0 }}"
+                                        {% ifequal status status_choice.0 %}
                                         selected="selected"
                                         {% endifequal %}>
-                                    Ej öppnad
+                                    {{ status_choice.1 }}
                                 </option>
-                                <option value="initiated"
-                                        {% ifequal status "initiated" %}
-                                        selected="selected"
-                                        {% endifequal %}>
-                                    Påbörjad
-                                </option>
-                                <option value="submitted"
-                                        {% ifequal status "submitted" %}
-                                        selected="selected"
-                                        {% endifequal %}>
-                                    Inskickad
-                                </option>
-                                <option value="controlled"
-                                        {% ifequal status "controlled" %}
-                                        selected="selected"
-                                        {% endifequal %}>
-                                    Kontrollerad
-                                </option>
-                                <option value="published"
-                                        {% ifequal status "published" %}
-                                        selected="selected"
-                                        {% endifequal %}>
-                                    Publicerad
-                                </option>
+                                {% endfor %}
                             </select>
                             <input type="text" name="free-text" value="{{ free_text }}" class="form-control" placeholder="Sökord">
                             <button type="submit" name="action" value="list"
@@ -128,20 +106,12 @@
                     <div class="row surveys-actions">
                         <div class="col-md-12">
                             <div class="form-group">
-                                <a href="#" class="btn btn-danger btn-toggle btn-survey disabled" data-toggle="modal"
-                                   data-target="#confirm-remove-modal">
-                                    Ta bort
-                                </a>
                                 <a href="#" class="btn btn-primary btn-toggle btn-survey disabled" data-toggle="modal"
                                    data-target="#change-status-modal">
                                     Ändra status
                                 </a>
                                 <a href="#" class="btn btn-primary btn-toggle btn-survey btn-dispatch disabled">
                                     Nytt utskick
-                                </a>
-                                <a href="#" class="btn btn-primary btn-toggle btn-survey disabled" data-toggle="modal"
-                                   data-target="#confirm-publish-modal">
-                                    Publicera
                                 </a>
                                 <a href="#" name="action" value="export"
                                         class="btn btn-primary btn-toggle btn-survey btn-export disabled">
@@ -156,35 +126,6 @@
                                     <a class="btn btn-label" href="{% url 'surveys_overview' sample_year %}">
                                         Visa översikt av insamlingen {{ sample_year }}
                                     </a>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="modal fade" id="confirm-remove-modal" tabindex="-1" role="dialog"
-                         aria-hidden="true">
-                        <div class="modal-dialog">
-                            <div class="modal-content">
-                                <div class="modal-body">
-                                    Är du säker på att du vill ta bort de markerade enkäterna? Denna åtgärd kan inte
-                                    ångras.
-                                </div>
-                                <div class="modal-footer">
-                                    <a href="#" class="btn btn-danger" data-dismiss="modal">Nej</a>
-                                    <button class="btn btn-success btn-remove">Ja</button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="modal fade" id="confirm-publish-modal" tabindex="-1" role="dialog"
-                         aria-hidden="true">
-                        <div class="modal-dialog">
-                            <div class="modal-content">
-                                <div class="modal-body">
-                                    Är du säker på att du vill publicera de markerade enkäterna?
-                                </div>
-                                <div class="modal-footer">
-                                    <a href="#" class="btn btn-danger" data-dismiss="modal">Nej</a>
-                                    <button class="btn btn-success btn-publish">Ja</button>
                                 </div>
                             </div>
                         </div>
@@ -285,21 +226,11 @@
                                         Välj vilken status de markerade enkäterna ska få.
                                     </p>
                                     <select name="new_status" class="form-control">
-                                        <option value="" selected="selected">
-                                            Status
-                                        </option>
-                                        <option value="not_viewed">
-                                            Ej öppnad
-                                        </option>
-                                        <option value="initiated">
-                                            Påbörjad
-                                        </option>
-                                        <option value="submitted">
-                                            Inskickad
-                                        </option>
-                                        <option value="controlled">
-                                            Kontrollerad
-                                        </option>
+                                        {% for status in statuses %}
+                                            <option value="{{ status.0 }}">
+                                                {{ status.1 }}
+                                            </option>
+                                        {% endfor %}
                                     </select>
                                 </div>
                                 <div class="modal-footer">
