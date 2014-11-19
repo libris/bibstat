@@ -90,7 +90,7 @@ def surveys_publish(request):
             s_responses = Survey.objects.filter(id__in=survey_response_ids)
             for sr in s_responses:
                 try:
-                    sr.publish(user=request.user)
+                    sr.publish()
                 except Exception:
                     logger.error(u"Error when publishing survey response {}:".format(sr.id))
 

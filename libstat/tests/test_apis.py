@@ -1,11 +1,10 @@
 # -*- coding: UTF-8 -*-
 import json
-from datetime import datetime, timedelta
+from datetime import datetime
 
 from django.core.urlresolvers import reverse
 from django.conf import settings
 
-from libstat.models import Variable
 from libstat.tests import MongoTestCase
 from libstat.views.apis import data_context, term_context
 
@@ -24,9 +23,9 @@ class OpenDataApiTest(MongoTestCase):
         self.assertEquals(data[u"@context"], data_context)
 
     def test_should_not_filter_by_date_unless_requested(self):
-        self._dummy_open_data(library_id="1")
-        self._dummy_open_data(library_id="2")
-        self._dummy_open_data(library_id="3")
+        self._dummy_open_data()
+        self._dummy_open_data()
+        self._dummy_open_data()
 
         response = self.client.get(reverse("data_api"))
         data = json.loads(response.content)
@@ -34,17 +33,17 @@ class OpenDataApiTest(MongoTestCase):
         self.assertEquals(len(data[u"observations"]), 3)
 
     def test_should_filter_data_by_from_date(self):
-        self._dummy_open_data(library_id="11070", date_modified=datetime(2014, 06, 05, 11, 14, 01))
+        self._dummy_open_data(sigel="sigel_1", date_modified=datetime(2014, 06, 05, 11, 14, 01))
 
         response = self.client.get(u"{}?from_date=2014-06-04".format(reverse("data_api")))
         data = json.loads(response.content)
 
         self.assertEquals(len(data[u"observations"]), 1)
         self.assertEquals(data[u"observations"][0][u"library"][u"@id"],
-                          u"{}/library/11070".format(settings.BIBDB_BASE_URL))
+                          u"{}/library/sigel_1".format(settings.BIBDB_BASE_URL))
 
     def test_should_filter_data_by_to_date(self):
-        self._dummy_open_data(library_id="81", date_modified=datetime(2014, 06, 02, 11, 14, 01))
+        self._dummy_open_data(sigel="81", date_modified=datetime(2014, 06, 02, 11, 14, 01))
 
         response = self.client.get(u"{}?to_date=2014-06-03".format(reverse("data_api")))
         data = json.loads(response.content)
@@ -54,7 +53,7 @@ class OpenDataApiTest(MongoTestCase):
                           u"{}/library/81".format(settings.BIBDB_BASE_URL))
 
     def test_should_filter_data_by_date_range(self):
-        self._dummy_open_data(library_id="323", date_modified=datetime(2014, 06, 03, 11, 14, 01))
+        self._dummy_open_data(sigel="323", date_modified=datetime(2014, 06, 03, 11, 14, 01))
 
         response = self.client.get(
             u"{}?from_date=2014-06-02T15:28:31.000&to_date=2014-06-04T11:14:00.000".format(reverse("data_api")))
@@ -65,9 +64,9 @@ class OpenDataApiTest(MongoTestCase):
                           u"{}/library/323".format(settings.BIBDB_BASE_URL))
 
     def test_should_limit_results(self):
-        self._dummy_open_data(library_id="1")
-        self._dummy_open_data(library_id="2")
-        self._dummy_open_data(library_id="3")
+        self._dummy_open_data()
+        self._dummy_open_data()
+        self._dummy_open_data()
 
         response = self.client.get(u"{}?limit=2".format(reverse("data_api")))
         data = json.loads(response.content)
@@ -75,9 +74,9 @@ class OpenDataApiTest(MongoTestCase):
         self.assertEquals(len(data[u"observations"]), 2)
 
     def test_should_limit_results_with_offset(self):
-        self._dummy_open_data(library_id="1")
-        self._dummy_open_data(library_id="2")
-        self._dummy_open_data(library_id="3")
+        self._dummy_open_data()
+        self._dummy_open_data()
+        self._dummy_open_data()
 
         response = self.client.get(u"{}?limit=2&offset=2".format(reverse("data_api")))
         data = json.loads(response.content)
@@ -128,7 +127,8 @@ class ObservationApiTest(MongoTestCase):
         self.assertEqual(data[u"@id"], str(obs.id))
         self.assertEqual(data[u"@type"], u"Observation")
         self.assertEqual(data[u"folk5"], obs.value)
-        self.assertEqual(data[u"library"], {u"@id": u"{}/library/{}".format(settings.BIBDB_BASE_URL, obs.library_id)})
+        self.assertEqual(data[u"library"][u"@id"], u"{}/library/{}".format(settings.BIBDB_BASE_URL, obs.sigel))
+        self.assertEqual(data[u"library"][u"name"], obs.library_name)
         self.assertEqual(data[u"sampleYear"], obs.sample_year)
         self.assertEqual(data[u"published"], obs.date_created_str())
         self.assertEqual(data[u"modified"], obs.date_modified_str())

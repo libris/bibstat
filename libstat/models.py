@@ -607,30 +607,30 @@ class Survey(SurveyBase):
         else:
             document.date_modified = document.date_created
 
-    def publish(self, user=None):
-        # TODO: Publishing date as a parameter to enable setting correct date for old data?
+    def publish(self):
         logger.debug(u"Publishing SurveyResponse {}".format(self.id))
         publishing_date = datetime.utcnow()
 
-        for obs in self.observations:
-            # Only publish public observations that have a value
-            if obs._is_public and obs.value is not None:
-                # TODO: Need to handle consequent publishes
-                data_item = None
-                existing = OpenData.objects.filter(library_name=self._library.name, sample_year=self.sample_year,
-                                                   variable=obs.variable)
-                if (len(existing) == 0):
-                    data_item = OpenData(library_name=self._library.name, sample_year=self.sample_year,
-                                         variable=obs.variable,
-                                         target_group=self._library.library_type, date_created=publishing_date)
-                    if self._library and self._library.bibdb_id:
-                        data_item.library_id = self._library.bibdb_id
-                else:
-                    data_item = existing.get(0)
+        existing_open_data = OpenData.objects.filter(source_survey=self.pk)
 
-                data_item.value = obs.value
-                data_item.date_modified = publishing_date
-                data_item.save()
+        for obs in self.observations:
+            if not obs._is_public or obs.value is None:
+                continue
+
+            # TODO: Need to handle consequent publishes
+            data_item = None
+            existing = OpenData.objects.filter(library_name=self._library.name, sample_year=self.sample_year,
+                                               variable=obs.variable)
+            if (len(existing) == 0):
+                data_item = OpenData(library_name=self._library.name, sample_year=self.sample_year,
+                                     variable=obs.variable, sigel=self._library.sigel,
+                                     target_group=self._library.library_type, date_created=publishing_date)
+            else:
+                data_item = existing.get(0)
+
+            data_item.value = obs.value
+            data_item.date_modified = publishing_date
+            data_item.save()
 
         self._status = "published"
         self.published_at = publishing_date
@@ -667,8 +667,9 @@ class Dispatch(Document):
 
 
 class OpenData(Document):
-    library_name = StringField(required=True, unique_with=['sample_year', 'variable'])
-    library_id = StringField()  # TODO
+    source_survey = ReferenceField(Survey)
+    library_name = StringField(required=True)
+    sigel = StringField()
     sample_year = IntField(required=True)
     target_group = StringField(required=True, choices=SURVEY_TARGET_GROUPS)
     variable = ReferenceField(Variable, required=True)
@@ -688,21 +689,19 @@ class OpenData(Document):
         return self.date_modified.strftime(ISO8601_utc_format)
 
     def to_dict(self):
-        _dict = {
+        return {
             u"@id": str(self.id),
             u"@type": u"Observation",
-            u"library": {u"@id": u"{}/library/{}".format(settings.BIBDB_BASE_URL, self.library_name)},
+            u"library": {
+                u"@id": u"{}/library/{}".format(settings.BIBDB_BASE_URL, self.sigel) if self.sigel else "",
+                u"name": self.library_name
+            },
             u"sampleYear": self.sample_year,
             u"targetGroup": targetGroups[self.target_group],
             self.variable.key: self.value,
             u"published": self.date_created_str(),
             u"modified": self.date_modified_str()
         }
-        if self.library_id:
-            _dict[u"library"] = {u"@id": u"{}/library/{}".format(settings.BIBDB_BASE_URL, self.library_id)}
-        else:
-            _dict[u"library"] = {u"name": self.library_name}
-        return _dict
 
     def __unicode__(self):
         return u"{} {} {} {} {}".format(self.library_name, self.sample_year, self.target_group, self.variable.key,

@@ -400,7 +400,7 @@ class EditVariableViewTest(MongoTestCase):
 
     def test_should_not_be_able_to_delete_non_draft_variable_when_referenced_in_open_data(self):
         variable = self.new_variable(is_draft=False)
-        self.new_open_data(variable).save()
+        self._dummy_open_data(variable=variable)
 
         response = self.delete(variable)
 
