@@ -194,17 +194,10 @@ def surveys_overview(request, sample_year):
 def surveys_statuses(request):
     status = request.POST.get("new_status", "")
     survey_response_ids = request.POST.getlist("survey-response-ids", [])
-    published_surveys = []
     for survey in Survey.objects.filter(id__in=survey_response_ids):
-        if survey.is_published:
-            published_surveys.append(survey)
-        else:
-            survey.status = status
-            survey.save()
-    message = u"Ändrade status på {} enkäter.".format(len(survey_response_ids) - len(published_surveys))
-    if published_surveys:
-        message = u"{} OBS! Kunde inte ändra status på {} enkäter eftersom de redan är publicerade.".format(
-            message, len(published_surveys))
+        survey.status = status
+        survey.save()
+    message = u"Ändrade status på {} enkäter.".format(len(survey_response_ids))
 
     request.session["message"] = message
     return _surveys_redirect(request)

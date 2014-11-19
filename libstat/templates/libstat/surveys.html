@@ -236,6 +236,11 @@
                                        data-toggle="tooltip" href="#" data-original-title="Enkäten har ändrats efter publicering">
                                         {{ sr.published_at|utc_tz|date:"Y-m-d H:i" }}
                                     </a>
+                                {% elif not sr.is_published and sr.published_at %}
+                                    <a class="label label-danger modified-after-publish" title="" data-placement="top"
+                                       data-toggle="tooltip" href="#" data-original-title="Enkätens publicering har återkallats. Inget data i enkäten är synlig för allmänheten. Publicera enkäten igen för att synliggöra datan för allmänheten.">
+                                        {{ sr.published_at|utc_tz|date:"Y-m-d H:i" }}
+                                    </a>
                                 {% else %}
                                     <span>
                                         {{ sr.published_at|utc_tz|date:"Y-m-d H:i" }}
