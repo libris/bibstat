@@ -492,7 +492,7 @@ class SurveyBase(Document):
         return str().join(random.SystemRandom().choice(alphabet) for _ in range(10))
 
     @classmethod
-    def filter_by(cls, target_group=None, status=None, sample_year=None, municipality_code=None):
+    def filter_by(cls, target_group=None, status=None, sample_year=None, municipality_code=None, free_text=None):
         result = []
         for survey in cls.objects.all():
             if target_group and not survey.target_group == target_group:
@@ -503,6 +503,16 @@ class SurveyBase(Document):
                 continue
             if municipality_code and not survey.library.municipality_code[0] == municipality_code:
                 continue
+            if free_text:
+                free_text = free_text.strip().lower()
+
+                library_email = free_text in survey.library.email.lower()
+                library_name = free_text in survey.library.name.lower()
+                library_municipality_code = free_text in survey.library.municipality_code.lower()
+
+                if not (library_email or library_name or library_municipality_code):
+                    continue
+
             result.append(survey)
         return result
 
