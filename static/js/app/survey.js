@@ -235,6 +235,7 @@ define(['jquery', 'survey.sum', 'survey.cell', 'surveys.dispatch', 'bootstrap.va
 
             survey.form().bootstrapValidator({
                 excluded: ['.disable-validation', ':disabled', ':hidden', ':not(:visible)'],
+                trigger: 'keyup change paste',
                 feedbackIcons: {
                     valid: 'fa fa-check',
                     invalid: 'fa fa-ban',
