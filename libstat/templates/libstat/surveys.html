@@ -213,6 +213,7 @@
                     <th class="column sample_year">Kommunkod</th>
                     <th class="column library">Bibliotek</th>
                     <th class="column target_group">Bibliotekstyp</th>
+                    <th class="column target_group">Email</th>
                     <th class="column actions"></th>
                 </tr>
                 </thead>
@@ -254,6 +255,9 @@
                             </td>
                             <td>
                                 {{ sr.target_group|tg_label|default:"" }}
+                            </td>
+                            <td>
+                                {{ sr.library.email|default:"" }}
                             </td>
                             <td>
                                 <a title="Visa/redigera enkätsvar"
