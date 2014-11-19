@@ -70,11 +70,12 @@ define(['jquery', 'jquery.textrange'], function ($) {
         });
     };
 
-    var init = function (library, address, closeCallback) {
+    var init = function (library, address, city, closeCallback) {
         $('.dispatch-example-footer').html("Detta är ett exempelutskick för " + library + ".");
         $('.btn-library').data('value', library);
         $('.btn-address-password').data('value', address + "?p=" + 'VRhNVva5AR');
         $('.btn-address').data('value', address);
+        $('.btn-city').data('value', city);
         $('.btn-password').data('value', 'VRhNVva5AR');
 
         $('.dispatch-message').change();
@@ -85,9 +86,9 @@ define(['jquery', 'jquery.textrange'], function ($) {
     };
 
     return {
-        'init': function (library, address, closeCallback) {
+        'init': function (library, address, city, closeCallback) {
             initOnce();
-            init(library, address, closeCallback);
+            init(library, address, city, closeCallback);
         }
     }
 });

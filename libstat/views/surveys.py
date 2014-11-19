@@ -32,6 +32,7 @@ def surveys(request):
     municipality_code = request.GET.get("municipality_code", "")
     status = request.GET.get("status", "")
     message = request.session.pop("message", "")
+    free_text = request.GET.get("free-text", "").strip()
 
     if not sample_year:
         message = u"Du måste ange för vilket år du vill lista enkätsvar."
@@ -40,7 +41,8 @@ def surveys(request):
             sample_year=sample_year,
             target_group=target_group,
             status=status,
-            municipality_code=municipality_code)
+            municipality_code=municipality_code,
+            free_text=free_text)
 
     context = {
         'sample_years': sample_years,
@@ -50,11 +52,13 @@ def surveys(request):
         'survey_responses': surveys,
         'target_groups': utils.SURVEY_TARGET_GROUPS,
         'target_group': target_group,
+        'free_text': free_text,
         'status': status,
         'bibdb_library_base_url': u"{}/library".format(settings.BIBDB_BASE_URL),
         'message': message,
         'url_base': settings.API_BASE_URL
     }
+
     return render(request, 'libstat/surveys.html', context)
 
 

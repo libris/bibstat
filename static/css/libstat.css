@@ -276,3 +276,7 @@ label.sub-label {
 .btn-label:active {
     box-shadow: none;
 }
+
+.fa.fa-inline {
+    margin-right: 0.25em;
+}

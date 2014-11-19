@@ -235,6 +235,7 @@ define(['jquery', 'survey.sum', 'survey.cell', 'surveys.dispatch', 'bootstrap.va
 
             survey.form().bootstrapValidator({
                 excluded: ['.disable-validation', ':disabled', ':hidden', ':not(:visible)'],
+                trigger: 'keyup change paste',
                 feedbackIcons: {
                     valid: 'fa fa-check',
                     invalid: 'fa fa-ban',
@@ -298,9 +299,10 @@ define(['jquery', 'survey.sum', 'survey.cell', 'surveys.dispatch', 'bootstrap.va
                 var checked = $(".select-one:checked").first();
                 var library = checked.data('library');
                 var address = checked.data('url-base') + checked.data('address');
+                var city = checked.data('city');
 
                 submitTo('dispatches');
-                dispatch.init(library, address, function(unsavedChanges) {
+                dispatch.init(library, address, city, function(unsavedChanges) {
                     $('.btn-dispatch').text(unsavedChanges
                             ? "Nytt utskick*"
                             : "Nytt utskick"
