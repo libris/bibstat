@@ -55,12 +55,9 @@ def libraries(request):
         if "create_surveys_btn" in form.data:
             created = _create_surveys(library_ids, sample_year)
 
-            message = u""
-            if created > 0:
-                message = u"Skapade {} stycken nya enkäter för de markerade biblioteken.".format(created)
+            message = u"Skapade {} stycken nya enkäter för de markerade biblioteken.".format(created)
             if created < len(library_ids):
-                if len(message) > 0: message += u"\n"
-                message += u"För {} stycken av biblioteken fanns redan enkäter skapade.".format(len(library_ids) - created);
+                message += u"\nFör {} stycken av biblioteken fanns redan enkäter skapade.".format(len(library_ids) - created);
             request.session["message"] = message
 
             return _surveys_redirect(request)
