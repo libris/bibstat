@@ -61,6 +61,7 @@ class LibrarySelection:
             or self.library.sigel in other_survey.selected_libraries
         ]
 
+
 class SurveyForm(forms.Form):
 
     def _cell_to_input_field(self, cell, observation):
@@ -190,7 +191,8 @@ class SurveyForm(forms.Form):
         self.fields["key"] = forms.CharField(required=False, widget=forms.HiddenInput(), initial=survey.pk)
         self.fields["selected_status"] = forms.CharField(
             required=False, widget=forms.HiddenInput(), initial=self._status_label(survey.status))
-        self.fields["principal"] = forms.ChoiceField(required=False, choices=Survey.PRINCIPALS, initial=survey.principal)
+        self.fields["principal"] = forms.ChoiceField(
+            required=False, choices=Survey.PRINCIPALS, initial=survey.principal)
 
         self.library_name = survey.library.name
         self.city = survey.library.city
@@ -201,7 +203,7 @@ class SurveyForm(forms.Form):
         self.can_submit = not authenticated and survey.status in ("not_viewed", "initiated")
         self.password = survey.password
         self.status = self._status_label(survey.status)
-        self.statuses = [status for status in Survey.STATUSES if not status[0] == "published"]
+        self.statuses = Survey.STATUSES
         self.is_published = survey.status == "published"
         self.sections = template.sections
 

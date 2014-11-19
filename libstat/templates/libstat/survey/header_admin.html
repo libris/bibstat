@@ -20,36 +20,36 @@
             {% endif %}
         </p>
 
-        {% if not form.is_published %}
-            <form id="form-admin" class="form" action="{% url 'survey_status' form.key.value %}"
-                  method="post">
-                {% csrf_token %}
-                {{ form.selected_status }}
+        <form id="form-admin" class="form" action="{% url 'survey_status' form.key.value %}"
+              method="post">
+            {% csrf_token %}
+            {{ form.selected_status }}
 
-                <div class="form-group">
-                    <div class="input-group">
-                        <label>Ändra status</label>
+            <div class="form-group">
+                <div class="input-group">
+                    <label>Ändra status</label>
 
-                        <div class="dropdown">
-                            <button class="btn btn-default dropdown-toggle" type="button"
-                                    data-toggle="dropdown">
-                                {{ form.status }} <span class="caret"></span>
-                            </button>
-                            <ul class="dropdown-menu" role="menu">
-                                {% for key, status in form.statuses %}
-                                    {% if status == form.status %}
-                                        <li class="active"><a href="#" data-key="{{ key }}">{{ status }}</a></li>
-                                    {% else %}
-                                        <li><a href="#" data-key="{{ key }}">{{ status }}</a></li>
-                                    {% endif %}
-                                {% endfor %}
-                            </ul>
-                            <button type="submit" class="btn btn-primary">Ändra</button>
-                        </div>
+                    <div class="dropdown">
+                        <button class="btn btn-default dropdown-toggle" type="button"
+                                data-toggle="dropdown">
+                            {{ form.status }} <span class="caret"></span>
+                        </button>
+                        <ul class="dropdown-menu" role="menu">
+                            {% for key, status in form.statuses %}
+                                {% if status == form.status %}
+                                    <li class="active"><a href="#" data-key="{{ key }}">{{ status }}</a></li>
+                                {% elif key == "published" and not form.is_published %}
+                                    <!-- DO NOTHING -->
+                                {% else %}
+                                    <li><a href="#" data-key="{{ key }}">{{ status }}</a></li>
+                                {% endif %}
+                            {% endfor %}
+                        </ul>
+                        <button type="submit" class="btn btn-primary">Ändra</button>
                     </div>
                 </div>
-            </form>
-        {% endif %}
+            </div>
+        </form>
 
         <hr>
         <p>
