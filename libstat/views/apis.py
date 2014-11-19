@@ -165,7 +165,8 @@ def data_api(request):
 
     observations = []
     for item in objects:
-        observations.append(item.to_dict())
+        if item.is_active:
+            observations.append(item.to_dict())
 
     data = dict(data_set, observations=observations)
     if len(observations) >= limit:

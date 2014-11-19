@@ -520,10 +520,12 @@ class SurveyBase(Document):
 
     @status.setter
     def status(self, status):
-        if status == "published" and not self._status == "published":
-            raise Exception("Cannot set published status for survey '{}'.".format(self.pk))
         if not status in [s[0] for s in Survey.STATUSES]:
             raise KeyError(u"Invalid status '{}'".format(status))
+        elif status == "published" and not self._status == "published":
+            raise Exception("Cannot set published status for survey '{}'.".format(self.pk))
+        elif status != "published" and self._status == "published":
+            self.unpublish()
         self._status = status
 
     def get_observation(self, key):
@@ -535,7 +537,7 @@ class SurveyBase(Document):
 
     @property
     def is_published(self):
-        return self.status == "published"
+        return self._status == "published"
 
     @property
     def latest_version_published(self):
@@ -608,37 +610,51 @@ class Survey(SurveyBase):
             document.date_modified = document.date_created
 
     def publish(self):
-        logger.debug(u"Publishing SurveyResponse {}".format(self.id))
+        def update_existing_open_data(self, publishing_date):
+            for observation in self.observations:
+                for open_data in OpenData.objects.filter(source_survey=self.pk, variable=observation.variable):
+                    if observation.value != open_data.value:
+                        open_data.value = observation.value
+                        open_data.date_modified = publishing_date
+                    open_data.is_active = True
+                    open_data.save()
+
+        def create_new_open_data(self, publishing_date):
+            existing_open_data_variables = [open_data.variable for open_data in
+                                            OpenData.objects.filter(source_survey=self.pk)]
+
+            observations = [observation for observation in self.observations if
+                            observation._is_public and
+                            observation.value is not None and
+                            not observation.variable in existing_open_data_variables]
+
+            for observation in observations:
+                OpenData(source_survey=self,
+                         sample_year=self.sample_year,
+                         library_name=self._library.name,
+                         sigel=self._library.sigel,
+                         value=observation.value,
+                         variable=observation.variable,
+                         target_group=self._library.library_type,
+                         date_created=publishing_date,
+                         date_modified=publishing_date,
+                         ).save()
+
         publishing_date = datetime.utcnow()
 
-        existing_open_data = OpenData.objects.filter(source_survey=self.pk)
+        update_existing_open_data(self, publishing_date)
 
-        for obs in self.observations:
-            if not obs._is_public or obs.value is None:
-                continue
-
-            # TODO: Need to handle consequent publishes
-            data_item = None
-            existing = OpenData.objects.filter(library_name=self._library.name, sample_year=self.sample_year,
-                                               variable=obs.variable)
-            if (len(existing) == 0):
-                data_item = OpenData(library_name=self._library.name, sample_year=self.sample_year,
-                                     variable=obs.variable, sigel=self._library.sigel,
-                                     target_group=self._library.library_type, date_created=publishing_date)
-            else:
-                data_item = existing.get(0)
-
-            data_item.value = obs.value
-            data_item.date_modified = publishing_date
-            data_item.save()
+        create_new_open_data(self, publishing_date)
 
         self._status = "published"
         self.published_at = publishing_date
-
-        # Custom attribute to handle pre-save actions
         self._action_publish = True
-
         self.save()
+
+    def unpublish(self):
+        for open_data in OpenData.objects.filter(source_survey=self.pk):
+            open_data.is_active = False
+            open_data.save()
 
     def __init__(self, *args, **kwargs):
         password = kwargs.pop("password", None)
@@ -667,6 +683,7 @@ class Dispatch(Document):
 
 
 class OpenData(Document):
+    is_active = BooleanField(required=True, default=True)
     source_survey = ReferenceField(Survey)
     library_name = StringField(required=True)
     sigel = StringField()

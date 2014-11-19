@@ -1,6 +1,8 @@
 # -*- coding: UTF-8 -*-
 import random
 import string
+import json
+
 from datetime import datetime
 
 from django.test.utils import setup_test_environment
@@ -9,7 +11,7 @@ from django.test import TestCase
 from django.conf import settings
 from django.core.urlresolvers import reverse
 
-from libstat.models import Variable, OpenData, Survey, Library
+from libstat.models import Variable, OpenData, Survey, Library, SurveyObservation
 
 
 class MongoEngineTestRunner(DiscoverRunner):
@@ -31,12 +33,13 @@ class MongoTestCase(TestCase):
         self.client.logout()
 
     def _get(self, action=None, kwargs=None):
-        url = reverse(action, kwargs=kwargs)
-        return self.client.get(url)
+        return self.client.get(reverse(action, kwargs=kwargs))
+
+    def _get_json(self, action=None, kwargs=None):
+        return json.loads(self._get(action, kwargs).content)
 
     def _post(self, action=None, kwargs=None, data=None):
-        url = reverse(action, kwargs=kwargs)
-        return self.client.post(url, data=data)
+        return self.client.post(reverse(action, kwargs=kwargs), data=data)
 
     def _dummy_library(self, name="dummy_name", sigel=None, bibdb_id="dummy_id", city="dummy_city",
                        municipality_code="dummy_code", library_type="folkbib"):
@@ -44,19 +47,6 @@ class MongoTestCase(TestCase):
             sigel = Library._random_sigel()
         return Library(name=name, sigel=sigel, bibdb_id=bibdb_id, city=city,
                        municipality_code=municipality_code, library_type=library_type).save()
-
-    def _dummy_survey(self, sample_year=2001, password=None, target_group="folkbib",
-                      status="not_viewed", publish=False, library=None,
-                      observations=[], selected_libraries=[]):
-        if not library:
-            library = self._dummy_library()
-        survey = Survey(library=library, sample_year=sample_year,
-                        target_group=target_group, password=password, status=status,
-                        observations=observations, selected_libraries=selected_libraries).save()
-        if publish:
-            survey.publish()
-            survey.reload()
-        return survey
 
     def _dummy_variable(self, key=None, description=u"dummy description", type="integer", is_public=True,
                         target_groups=["folkbib"], is_draft=False, replaced_by=None, save=True, question=None,
@@ -71,8 +61,28 @@ class MongoTestCase(TestCase):
             variable.reload()
         return variable
 
+    def _dummy_observation(self, variable=None, value="dummy_value", disabled=False, value_unknown=False,
+                           _is_public=True):
+        if not variable:
+            variable = self._dummy_variable()
+        return SurveyObservation(variable=variable, value=value, disabled=disabled, value_unknown=value_unknown,
+                                 _is_public=_is_public)
+
+    def _dummy_survey(self, sample_year=2001, password=None, target_group="folkbib",
+                      status="not_viewed", publish=False, library=None,
+                      observations=[], selected_libraries=[]):
+        if not library:
+            library = self._dummy_library()
+        survey = Survey(library=library, sample_year=sample_year,
+                        target_group=target_group, password=password, status=status,
+                        observations=observations, selected_libraries=selected_libraries).save()
+        if publish:
+            survey.publish()
+            survey.reload()
+        return survey
+
     def _dummy_open_data(self, library_name=u"dummy_lib", sigel="dummy_sigel", sample_year=2013,
-                         target_group="folkbib",
+                         target_group="folkbib", is_active=True,
                          variable=None, value=1, date_created=None, date_modified=None, save=True):
         if not variable:
             variable = self._dummy_variable()
@@ -81,7 +91,7 @@ class MongoTestCase(TestCase):
             date_created = datetime(2014, 05, 27, 8, 00, 00)
         if not date_modified:
             date_modified = datetime(2014, 06, 02, 17, 57, 16)
-        open_data = OpenData(library_name=library_name, sigel=sigel, sample_year=sample_year,
+        open_data = OpenData(library_name=library_name, sigel=sigel, sample_year=sample_year, is_active=is_active,
                              target_group=target_group, variable=variable, value=value, date_created=date_created,
                              date_modified=date_modified)
         if save:

@@ -98,6 +98,14 @@ class OpenDataApiTest(MongoTestCase):
         data = json.loads(response.content)
         self.assertEquals(len(data[u"observations"]), 0)
 
+    def test_should_only_return_active_open_data_entries(self):
+        self._dummy_open_data(is_active=True)
+        self._dummy_open_data(is_active=False)
+
+        response = self._get_json("data_api")
+
+        self.assertEquals(len(response[u"observations"]), 1)
+
 
 class ObservationApiTest(MongoTestCase):
 
