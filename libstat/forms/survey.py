@@ -233,8 +233,7 @@ class SurveyForm(forms.Form):
                         cell.disabled = observation.disabled
                         if not observation:
                             variable = Variable.objects.get(key=variable_key)
-                            survey.observations.append(SurveyObservation(variable=variable,
-                                                                         _source_key=variable.key))
+                            survey.observations.append(SurveyObservation(variable=variable))
                         self.fields[variable_key] = self._cell_to_input_field(cell, observation)
 
         if self.is_read_only:

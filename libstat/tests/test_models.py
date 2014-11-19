@@ -30,11 +30,11 @@ class SurveyResponseTest(MongoTestCase):
         library = Library(bibdb_id=u"323", bibdb_sigel="Kld1", bibdb_name=u"Karlstad stadsbibliotek").save()
         sr = Survey(library_name="KARLSTAD STADSBIBLIOTEK", sample_year=2013, target_group="folkbib",
                     observations=[], library=library)
-        sr.observations.append(SurveyObservation(variable=v1, value=7, _source_key="folk5", _is_public=v1.is_public))
+        sr.observations.append(SurveyObservation(variable=v1, value=7, _is_public=v1.is_public))
         sr.observations.append(
-            SurveyObservation(variable=v2, value=None, _source_key="folk6", _is_public=v2.is_public))
+            SurveyObservation(variable=v2, value=None, _is_public=v2.is_public))
         sr.observations.append(
-            SurveyObservation(variable=v3, value=u"Här är en kommentar", _source_key="folk8", _is_public=v3.is_public))
+            SurveyObservation(variable=v3, value=u"Här är en kommentar", _is_public=v3.is_public))
         self.survey_response = sr.save()
 
     def test_can_not_update_status_to_invalid_value(self):
@@ -67,8 +67,7 @@ class SurveyResponseTest(MongoTestCase):
 
     def test_should_export_public_non_null_observations_to_openData(self):
         variable = self._dummy_variable(key=u"key1", is_public=True)
-        observation = SurveyObservation(variable=variable, value="val1", _source_key=variable.key,
-                                        _is_public=variable.is_public)
+        observation = SurveyObservation(variable=variable, value="val1", _is_public=variable.is_public)
         library = self._dummy_library(name="lib1_name", sigel="lib1_sigel")
         survey = self._dummy_survey(library=library, observations=[observation])
 
@@ -86,8 +85,7 @@ class SurveyResponseTest(MongoTestCase):
 
     def test_should_overwrite_value_and_date_modified_for_existing_openData(self):
         variable = self._dummy_variable(key=u"key1", is_public=True)
-        observation = SurveyObservation(variable=variable, value="old_value", _source_key=variable.key,
-                                        _is_public=variable.is_public)
+        observation = SurveyObservation(variable=variable, value="old_value", _is_public=variable.is_public)
         library = self._dummy_library(name="lib1_name", sigel="lib1_sigel", library_type="folkbib")
         survey = self._dummy_survey(library=library, observations=[observation])
 

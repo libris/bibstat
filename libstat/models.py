@@ -376,8 +376,6 @@ class SurveyObservation(EmbeddedDocument):
     variable = ReferenceField(Variable, required=True)
     # Need to allow None/null values to indicate invalid or missing responses in old data
     value = DynamicField()
-    # Storing variable key on observation to avoid having to fetch variables all the time.
-    _source_key = StringField()
     disabled = BooleanField()
     value_unknown = BooleanField()
     # Public API Optimization and traceability (was this field public at the time of the survey?)
@@ -392,8 +390,8 @@ class SurveyObservation(EmbeddedDocument):
 
 
 class Library(Document):
-
     # From: http://en.wikipedia.org/wiki/Random_password_generator#Python
+
     @classmethod
     def _random_sigel(cls):
         alphabet = string.letters[0:52] + string.digits
@@ -530,13 +528,12 @@ class SurveyBase(Document):
             raise KeyError(u"Invalid status '{}'".format(status))
         self._status = status
 
-    def observation_by_key(self, key):
-        hits = [obs for obs in self.observations if obs._source_key == key]
-        return hits[0] if len(hits) > 0 else None
-
     def get_observation(self, key):
         hits = [obs for obs in self.observations if obs.variable.key == key]
         return hits[0] if len(hits) > 0 else None
+
+    def observation_by_key(self, key):
+        return self.get_observation(key)
 
     @property
     def is_published(self):

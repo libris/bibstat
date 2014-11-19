@@ -82,8 +82,7 @@ class Command(BaseCommand):
             survey = Survey(sample_year=year, library=LibraryCached(name=library_name, library_type=target_group))
             for col, variable in variable_keys:
                 survey.observations.append(
-                    SurveyObservation(variable=variable, value=_parse_value(row[col]),
-                                      _source_key=variable.key, _is_public=variable.is_public))
+                    SurveyObservation(variable=variable, value=_parse_value(row[col]), _is_public=variable.is_public))
 
             survey.save().publish()
 
