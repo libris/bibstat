@@ -1,8 +1,7 @@
 # -*- coding: UTF-8 -*-
 from libstat.tests import MongoTestCase
 
-from libstat.models import Survey, Dispatch
-from libstat.views.surveys import _surveys_as_excel
+from libstat.views.surveys import _surveys_as_excel, _dict_to_library
 
 
 class TestSurveyAuthorization(MongoTestCase):
@@ -131,3 +130,60 @@ class TestSurveysExport(MongoTestCase):
         self.assertEquals(worksheet["A2"].value, "lib1_name")
         self.assertEquals(worksheet["A3"].value, "lib2_name")
         self.assertEquals(worksheet["D3"].value, "Kontrollerad")
+
+
+class TestLibraryImport(MongoTestCase):
+
+    def setUp(self):
+        self._dummy_dict = {
+            "country_code": "se",
+            "sigel": "lib1_sigel",
+            "name": "lib1",
+            "library_type": "sjukbib",
+            "municipality_code": "1793",
+            "address":
+            [
+                {
+                    "address_type": "gen",
+                    "city": "lib1_city",
+                    "street": "street1"
+                },
+                {
+                    "address_type": "ill",
+                    "city": "ill_lib1_city",
+                    "street": "ill_street1"
+                }
+            ],
+            "contact":
+            [
+                {
+                    "contact_type": "orgchef",
+                    "email": "dont@care.atall"
+                },
+                {
+                    "contact_type": "statans",
+                    "email": "lib1@dom.top"
+                }
+            ]
+        }
+
+    def test_creates_library_from_dict(self):
+        dict = self._dummy_dict
+
+        library = _dict_to_library(dict)
+
+        self.assertEquals(library.sigel, "lib1_sigel")
+        self.assertEquals(library.name, "lib1")
+        self.assertEquals(library.city, "lib1_city")
+        self.assertEquals(library.address, "street1")
+        self.assertEquals(library.email, "lib1@dom.top")
+        self.assertEquals(library.municipality_code, "1793")
+        self.assertEquals(library.library_type, "sjukbib")
+
+    def test_does_not_import_non_swedish_libraries(self):
+        dict = self._dummy_dict
+        dict["country_code"] = "dk"
+
+        library = _dict_to_library(dict)
+
+        self.assertEquals(library, None)

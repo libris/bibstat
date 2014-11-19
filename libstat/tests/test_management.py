@@ -321,7 +321,7 @@ class ImportSurveyResponsesTest(MongoTestCase):
         self.assertFalse(folk201_obs._is_public)
 
         # Check parsing of bool value when 1/1.0/True
-        sr2 = Survey.objects.filter(_library__name=u"GISLAVEDS BIBLIOTEK")[0]
+        sr2 = Survey.objects.filter(library__name=u"GISLAVEDS BIBLIOTEK")[0]
         folk8_obs = [obs for obs in sr2.observations if obs.variable.key == "Folk8"][0]
         self.assertTrue(isinstance(folk8_obs.value, bool))
         self.assertEquals(folk8_obs.value, True)

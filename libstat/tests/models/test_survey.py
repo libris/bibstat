@@ -94,9 +94,8 @@ class SurveyModelTest(MongoTestCase):
         library = self._dummy_library(name="lib1_old_name", city="lib1_old_city", sigel="lib1_sigel")
         survey = self._dummy_survey(status="initiated", library=library)
 
-        library.name = "lib1_new_name"
-        library.city = "lib1_new_city"
-        survey.library = library.save()
+        survey.library.name = "lib1_new_name"
+        survey.library.city = "lib1_new_city"
         survey.status = "controlled"
         survey = survey.save()
 

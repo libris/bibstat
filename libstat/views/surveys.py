@@ -1,9 +1,10 @@
 # -*- coding: utf-8 -*-
 import logging
+import requests
 from time import strftime
 
 from django.core.urlresolvers import reverse
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from django.http import HttpResponse, HttpResponseRedirect
 from django.contrib.auth.decorators import permission_required
 from openpyxl import Workbook
@@ -11,8 +12,9 @@ from openpyxl.writer.excel import save_virtual_workbook
 
 from bibstat import settings
 from libstat import utils
-from libstat.models import Survey, Dispatch, Library
+from libstat.models import Survey, Library, SurveyObservation, Variable
 from libstat.survey_templates import has_template, survey_template
+
 
 logger = logging.getLogger(__name__)
 
@@ -24,7 +26,7 @@ def surveys(request):
     sample_years.sort()
     sample_years.reverse()
 
-    municipality_codes = Library.objects.distinct("municipality_code")
+    municipality_codes = []  # Library.objects.distinct("municipality_code")
     municipality_codes.sort()
 
     target_group = request.GET.get("target_group", "")
@@ -37,7 +39,7 @@ def surveys(request):
     if not sample_year:
         message = u"Du måste ange för vilket år du vill lista enkätsvar."
     else:
-        surveys = Survey.filter_by(
+        surveys = Survey.objects.by(
             sample_year=sample_year,
             target_group=target_group,
             status=status,
@@ -88,7 +90,7 @@ def _surveys_as_excel(survey_ids):
                 variable_keys.append(unicode(observation.variable.key))
         return variable_keys
 
-    surveys = Survey.objects.filter(id__in=survey_ids).order_by('_library__name')
+    surveys = Survey.objects.filter(id__in=survey_ids).order_by('library__name')
 
     variable_keys = variable_keys_in(surveys[0])
 
@@ -164,3 +166,74 @@ def surveys_statuses(request):
 
     request.session["message"] = message
     return _surveys_redirect(request)
+
+
+def _create_surveys(libraries, sample_year):
+    template_cells = survey_template(sample_year).cells
+
+    variables = {}  # Fetch variables once for IO-performance
+    for variable in Variable.objects.all():
+        variables[variable.key] = variable
+
+    existing_surveys = {}
+    for survey in Survey.objects.all():
+        existing_surveys[(survey.library.sigel, survey.sample_year)] = True
+
+    created = 0
+    for library in libraries:
+        if (library.sigel, sample_year) in existing_surveys:
+            continue
+
+        survey = Survey(
+            library=library,
+            sample_year=sample_year,
+            observations=[])
+        for cell in template_cells:
+            variable_key = cell.variable_key
+            if not variable_key in variables:
+                raise Exception("Can't find variable with key '{}'".format(variable_key))
+            survey.observations.append(SurveyObservation(variable=variables[variable_key]))
+        survey.save()
+        created += 1
+
+    return created
+
+
+def _dict_to_library(dict):
+    if not dict["country_code"] == "se":
+        return None
+
+    library = Library()
+    library.sigel = dict.get("sigel") if dict.get("sigel") else None
+    library.name = dict.get("name") if dict.get("name") else None
+    library.municipality_code = dict.get("municipality_code") if dict.get("municipality_code") else None
+    library.library_type = dict.get("library_type") if dict.get("library_type") else None
+    location = next((a for a in dict["address"] if a["address_type"] == "gen"), None)
+    library.address = location["street"] if location and location["street"] else None
+    library.city = location["city"] if location and location["city"] else None
+    library.email = next((c["email"] for c in dict["contact"]
+                          if "email" in c and c["contact_type"] == "statans"), None)
+
+    return library
+
+
+def _get_libraries_from_bibdb():
+    libraries = []
+    # bibdb api paginated by 200 and had ca. 2800 responses when this was written
+    for start_index in range(0, 6000, 200):
+        response = requests.get(
+            url="http://bibdb.libris.kb.se/api/lib?dump=true&start=%d" % start_index,
+            headers={"APIKEY_AUTH_HEADER": "bibstataccess"})
+
+        for lib_data in response.json()["libraries"]:
+            library = _dict_to_library(lib_data)
+            if library:
+                libraries.append(library)
+    return libraries
+
+
+@permission_required('is_superuser', login_url='index')
+def import_and_create(request):
+    libraries = _get_libraries_from_bibdb()
+    _create_surveys(libraries, 2014)
+    return redirect(reverse('surveys'))

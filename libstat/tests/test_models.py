@@ -6,63 +6,6 @@ from libstat.models import *
 from bson.objectid import ObjectId
 
 
-class SurveyLibraryCachingTest(MongoTestCase):
-
-    def test_should_always_use_cached_library_and_not_actual_library(self):
-        library = self._dummy_library(name="lib1_name", sigel="lib1_sigel")
-        survey = self._dummy_survey(library=library)
-        self.assertNotEquals(library, survey.library)
-
-    def test_should_use_cached_library_when_actual_library_is_removed_and_survey_is_not_published(self):
-        library = self._dummy_library(name="lib1_name", sigel="lib1_sigel")
-        survey = self._dummy_survey(library=library)
-        Library.objects.all().delete()
-        self.assertEquals(survey.library.name, "lib1_name")
-
-    def test_should_update_cached_library_to_match_actual_library_when_it_is_updated_and_survey_is_not_published(self):
-        library = self._dummy_library(name="lib1_name", sigel="lib1_sigel")
-        survey = self._dummy_survey(library=library)
-        library.name = "new_name"
-        library.save()
-
-        self.assertEquals(survey.library.name, "new_name")
-
-    def test_should_use_new_library_if_it_has_the_same_sigel_as_the_old_library_and_survey_is_not_published(self):
-        library = self._dummy_library(name="lib1_name", sigel="lib1_sigel")
-        survey = self._dummy_survey(library=library)
-        Library.objects.all().delete()
-        self._dummy_library(name="new_name", sigel="lib1_sigel")
-
-        self.assertEquals(survey.library.name, "new_name")
-
-    def test_should_use_cached_library_when_actual_library_is_removed_and_survey_is_published(self):
-        library = self._dummy_library(name="lib1_name", sigel="lib1_sigel")
-        survey = self._dummy_survey(library=library)
-        survey.publish()
-        Library.objects.all().delete()
-
-        self.assertEquals(survey.library.name, "lib1_name")
-
-    def test_should_use_cached_library_when_actual_library_is_updated_after_publishing_survey(self):
-        library = self._dummy_library(name="lib1_name", sigel="lib1_sigel")
-        survey = self._dummy_survey(library=library)
-        survey.publish()
-        library.name = "new_name"
-        library.save()
-
-        self.assertEquals(survey.library.name, "lib1_name")
-
-    def test_should_use_new_library_when_published_then_library_update_then_reopen(self):
-        library = self._dummy_library(name="lib1_name", sigel="lib1_sigel")
-        survey = self._dummy_survey(library=library)
-        survey.publish()
-        library.name = "new_name"
-        library.save()
-        survey.status = "not_viewed"
-
-        self.assertEquals(survey.library.name, "new_name")
-
-
 class OpenDataTest(MongoTestCase):
 
     def setUp(self):

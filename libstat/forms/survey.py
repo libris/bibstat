@@ -3,7 +3,7 @@ from sets import Set
 from django import forms
 from django.core.urlresolvers import reverse
 from bibstat import settings
-from libstat.models import Library, Survey, Variable, SurveyObservation
+from libstat.models import Survey, Variable, SurveyObservation
 from libstat.survey_templates import survey_template
 
 
@@ -16,10 +16,10 @@ class LibrarySelection:
         if not self.library.municipality_code:
             return []
 
-        return Library.objects.filter(
-            municipality_code=self.library.municipality_code,
-            sigel__ne=self.library.sigel
-        )
+        return [survey.library for survey in Survey.objects.filter(
+            library__municipality_code=self.library.municipality_code,
+            library__sigel__ne=self.library.sigel
+        )]
 
     def selected_sigels(self, sample_year):
         if not self.library.municipality_code:
@@ -27,8 +27,8 @@ class LibrarySelection:
 
         surveys = Survey.objects.filter(
             sample_year=sample_year,
-            _library__municipality_code=self.library.municipality_code,
-            _library__sigel__ne=self.library.sigel
+            library__municipality_code=self.library.municipality_code,
+            library__sigel__ne=self.library.sigel
         )
 
         selected_sigels = Set()
@@ -51,8 +51,8 @@ class LibrarySelection:
 
         other_surveys = Survey.objects.filter(
             sample_year=survey.sample_year,
-            _library__municipality_code=self.library.municipality_code,
-            _library__sigel__ne=self.library.sigel
+            library__municipality_code=self.library.municipality_code,
+            library__sigel__ne=self.library.sigel
         )
 
         return [
@@ -170,7 +170,7 @@ class SurveyForm(forms.Form):
 
     def _conflicting_libraries(self, first_selection, second_selection):
         intersection = Set(first_selection).intersection(Set(second_selection))
-        return Library.objects.filter(sigel__in=intersection)
+        return [survey.library for survey in Survey.objects.filter(library__sigel__in=intersection)]
 
     def __init__(self, *args, **kwargs):
         survey = kwargs.pop('survey', None)

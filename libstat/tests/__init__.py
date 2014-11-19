@@ -46,7 +46,7 @@ class MongoTestCase(TestCase):
         if not sigel:
             sigel = Library._random_sigel()
         return Library(name=name, sigel=sigel, bibdb_id=bibdb_id, city=city,
-                       municipality_code=municipality_code, library_type=library_type).save()
+                       municipality_code=municipality_code, library_type=library_type)
 
     def _dummy_variable(self, key=None, description=u"dummy description", type="integer", is_public=True,
                         target_groups=["folkbib"], is_draft=False, replaced_by=None, save=True, question=None,

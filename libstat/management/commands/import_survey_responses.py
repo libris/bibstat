@@ -8,7 +8,7 @@ from xlrd import open_workbook
 from xlrd.biffh import XLRDError
 
 from libstat.utils import TYPE_BOOLEAN, TYPE_INTEGER, TYPE_LONG
-from libstat.models import Survey, SurveyObservation, Variable, LibraryCached
+from libstat.models import Survey, SurveyObservation, Variable, Library
 
 
 logger = logging.getLogger(__name__)
@@ -76,10 +76,10 @@ class Command(BaseCommand):
             else:
                 continue
 
-            if Survey.objects.filter(_library__name=library_name, sample_year=year):
+            if Survey.objects.filter(library__name=library_name, sample_year=year):
                 continue
 
-            survey = Survey(sample_year=year, library=LibraryCached(name=library_name, library_type=target_group))
+            survey = Survey(sample_year=year, library=Library(name=library_name, library_type=target_group))
             for col, variable in variable_keys:
                 survey.observations.append(
                     SurveyObservation(variable=variable, value=_parse_value(row[col]), _is_public=variable.is_public))

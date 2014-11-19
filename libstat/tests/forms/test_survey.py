@@ -6,13 +6,13 @@ from libstat.tests import MongoTestCase
 
 
 class TestLibrarySelection_SelectableLibraries(MongoTestCase):
+
     def test_should_return_an_empty_list_for_no_municipality_code(self):
         library = self._dummy_library(municipality_code=None)
         selection = LibrarySelection(library)
         self._dummy_library()
 
         self.assertItemsEqual(selection.selectable_libraries(), [])
-
 
     def test_should_exclude_second_library_with_different_municipality_code(self):
         library = self._dummy_library(municipality_code="1")
@@ -21,14 +21,15 @@ class TestLibrarySelection_SelectableLibraries(MongoTestCase):
 
         self.assertItemsEqual(selection.selectable_libraries(), [])
 
-
     def test_should_include_second_library_with_same_municipality_code(self):
         library = self._dummy_library(municipality_code="1")
         second = self._dummy_library(municipality_code="1")
-        selection = LibrarySelection(library)
+        self._dummy_survey(library=library)
+        self._dummy_survey(library=second)
+        selectables = LibrarySelection(library).selectable_libraries()
 
-        self.assertItemsEqual(selection.selectable_libraries(), [second])
-
+        self.assertEqual(len(selectables), 1)
+        self.assertEqual(selectables[0], second)
 
     def test_should_exclude_second_library_with_same_sigel(self):
         library = self._dummy_library(sigel="1")
@@ -37,7 +38,9 @@ class TestLibrarySelection_SelectableLibraries(MongoTestCase):
 
         self.assertItemsEqual(selection.selectable_libraries(), [])
 
+
 class TestLibrarySelection_SelectedSigels(MongoTestCase):
+
     def test_should_return_an_empty_set_for_no_municipality_code(self):
         library = self._dummy_library(municipality_code=None)
         selection = LibrarySelection(library)
@@ -95,7 +98,9 @@ class TestLibrarySelection_SelectedSigels(MongoTestCase):
 
         self.assertSetEqual(selection.selected_sigels(2014), {"2"})
 
+
 class TestLibrarySelection_HasConflicts(MongoTestCase):
+
     def test_should_return_true_for_conflict_in_same_sample_year(self):
         first_library = self._dummy_library(sigel="1")
         second_library = self._dummy_library(sigel="2")
@@ -105,7 +110,6 @@ class TestLibrarySelection_HasConflicts(MongoTestCase):
 
         selection = LibrarySelection(first_library)
         self.assertTrue(selection.has_conflicts(first_survey))
-
 
     def test_should_return_false_for_non_conflict_in_different_sample_years(self):
         first_library = self._dummy_library(sigel="1")
@@ -137,7 +141,9 @@ class TestLibrarySelection_HasConflicts(MongoTestCase):
         selection = LibrarySelection(first_library)
         self.assertTrue(selection.has_conflicts(first_survey))
 
+
 class TestLibrarySelection_GetConflictingSurveys(MongoTestCase):
+
     def test_should_return_survey_for_conflict_in_same_sample_year(self):
         first_library = self._dummy_library(sigel="1")
         second_library = self._dummy_library(sigel="3")
@@ -180,7 +186,9 @@ class TestLibrarySelection_GetConflictingSurveys(MongoTestCase):
         conflicts = LibrarySelection(first_library).get_conflicting_surveys(first_survey)
         self.assertListEqual(conflicts, [second_survey])
 
+
 class TestUserReadOnly(MongoTestCase):
+
     def test_form_should_not_be_user_read_only_when_survey_status_is_not_viewed(self):
         survey = self._dummy_survey(status=u"not_viewed")
         form = SurveyForm(survey=survey)
@@ -214,6 +222,7 @@ class TestUserReadOnly(MongoTestCase):
 
 
 class TestReadOnly(MongoTestCase):
+
     def test_form_should_not_be_read_only_when_authenticated(self):
         survey = self._dummy_survey(status=u"submitted")
         form = SurveyForm(survey=survey, authenticated=True)
@@ -225,4 +234,3 @@ class TestReadOnly(MongoTestCase):
         form = SurveyForm(survey=survey, authenticated=False)
 
         self.assertTrue(form.is_read_only)
-

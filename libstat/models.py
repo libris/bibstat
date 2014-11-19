@@ -365,11 +365,31 @@ class SurveyTemplate(Document):
 
 class SurveyResponseQuerySet(QuerySet):
 
-    def by(self, sample_year=None, target_group=None, status=None):
-        target_group_query = Q(target_group=target_group) if target_group else Q()
+    # if target_group and not survey.target_group == target_group:
+    #     continue
+    # if status and not survey.status == status:
+    #     continue
+    # if sample_year and not str(survey.sample_year) == str(sample_year):
+    #     continue
+    # if municipality_code and not survey.library.municipality_code[0] == municipality_code:
+    #     continue
+    # if free_text:
+    #     free_text = free_text.strip().lower()
+
+    #     library_email = free_text in survey.library.email.lower() if survey.library.email else False
+    #     library_name = free_text in survey.library.name.lower() if survey.library.name else False
+    #     library_municipality_code = free_text in survey.library.municipality_code.lower() if survey.library.municipality_code else False
+
+    #     if not (library_email or library_name or library_municipality_code):
+    #         continue
+
+    def by(self, sample_year=None, target_group=None, status=None, municipality_code=None, free_text=None):
+        target_group_query = Q(library__library_type=target_group) if target_group else Q()
         sample_year_query = Q(sample_year=sample_year) if sample_year else Q()
         status_query = Q(_status=status) if status else Q()
-        return self.filter(target_group_query & sample_year_query & status_query)
+        municipality_code_query = (Q(library__municipality_code=municipality_code)
+                                   if municipality_code else Q())
+        return self.filter(target_group_query & sample_year_query & status_query & municipality_code_query).exclude("observations")
 
 
 class SurveyObservation(EmbeddedDocument):
@@ -388,7 +408,7 @@ class SurveyObservation(EmbeddedDocument):
         return self._instance.id
 
 
-class Library(Document):
+class Library(EmbeddedDocument):
     # From: http://en.wikipedia.org/wiki/Random_password_generator#Python
 
     @classmethod
@@ -471,11 +491,14 @@ class SurveyBase(Document):
     date_modified = DateTimeField(required=True, default=datetime.utcnow)
     observations = ListField(EmbeddedDocumentField(SurveyObservation))
     _status = StringField(choices=STATUSES, default="not_viewed")
-    _library = EmbeddedDocumentField(LibraryCached)
+    library = EmbeddedDocumentField(Library)
     selected_libraries = ListField(StringField())
     sample_year = IntField()
     password = StringField()
     principal = StringField(choices=PRINCIPALS)
+
+    _municipality_code = StringField()
+    _library_type = StringField()
 
     meta = {
         'abstract': True,
@@ -508,21 +531,14 @@ class SurveyBase(Document):
 
                 library_email = free_text in survey.library.email.lower() if survey.library.email else False
                 library_name = free_text in survey.library.name.lower() if survey.library.name else False
-                library_municipality_code = free_text in survey.library.municipality_code.lower() if survey.library.municipality_code else False
+                library_municipality_code = free_text in survey.library.municipality_code.lower(
+                ) if survey.library.municipality_code else False
 
                 if not (library_email or library_name or library_municipality_code):
                     continue
 
             result.append(survey)
         return result
-
-    @property
-    def target_group(self):
-        return self.library.library_type
-
-    @target_group.setter
-    def target_group(self, value):
-        self.library.library_type = value
 
     @property
     def status(self):
@@ -554,15 +570,6 @@ class SurveyBase(Document):
     def latest_version_published(self):
         return self.published_at is not None and self.published_at >= self.date_modified
 
-    @property
-    def library(self):
-        return self._library
-
-    @library.setter
-    def library(self, library):
-        if library:
-            self._library = LibraryCached(library=library)
-
     def target_group__desc(self):
         return targetGroups[self.target_group]
 
@@ -570,11 +577,9 @@ class SurveyBase(Document):
         return u"{} {} {}".format(self.target_group, self.library.name, self.sample_year)
 
     def __init__(self, *args, **kwargs):
-        library = kwargs.pop("library", None)
         status = kwargs.pop("status", None)
         target_group = kwargs.pop("target_group", None)
         super(SurveyBase, self).__init__(*args, **kwargs)
-        self.library = library
         if status:
             self.status = status
         if target_group:
@@ -585,19 +590,12 @@ class Survey(SurveyBase):
     meta = {
         'collection': 'libstat_surveys',
         'queryset_class': SurveyResponseQuerySet,
+        'indexes': [
+            {
+                "fields": ["library.municipality_code", "library.library_type", "sample_year", "_status"]
+            }
+        ]
     }
-
-    @property
-    def library(self):
-        libraries = Library.objects.filter(sigel=self._library.sigel)
-        if not self.is_published and len(libraries) != 0:
-            self.library = libraries[0]
-        return self._library
-
-    @library.setter
-    def library(self, library):
-        if library:
-            self._library = LibraryCached(library=library)
 
     @classmethod
     def store_version_and_update_date_modified(cls, sender, document, **kwargs):
@@ -643,11 +641,11 @@ class Survey(SurveyBase):
             for observation in observations:
                 OpenData(source_survey=self,
                          sample_year=self.sample_year,
-                         library_name=self._library.name,
-                         sigel=self._library.sigel,
+                         library_name=self.library.name,
+                         sigel=self.library.sigel,
                          value=observation.value,
                          variable=observation.variable,
-                         target_group=self._library.library_type,
+                         target_group=self.library.library_type,
                          date_created=publishing_date,
                          date_modified=publishing_date,
                          ).save()

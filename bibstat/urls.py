@@ -16,12 +16,10 @@ from libstat.views.index import index
 from libstat.views.surveys import (surveys_statuses,
                                    surveys_export,
                                    surveys,
-                                   surveys_overview)
+                                   surveys_overview,
+                                   import_and_create)
 from libstat.views.survey import (survey,
                                   survey_status)
-from libstat.views.libraries import (libraries,
-                                     import_libraries,
-                                     remove_libraries)
 from libstat.views.variables import (variables,
                                      edit_variable,
                                      create_variable)
@@ -48,6 +46,7 @@ urlpatterns = patterns(
     # Survey
     url(r'^surveys$', surveys, name='surveys'),
     url(r'^surveys/export$', surveys_export, name='surveys_export'),
+    url(r'^surveys/import_and_create$', import_and_create, name='surveys_import_and_create'),
     url(r'^surveys/status$', surveys_statuses, name='surveys_statuses'),
     url(r'^surveys/overview/(?P<sample_year>\w+)$', surveys_overview, name='surveys_overview'),
     url(r'^surveys/status/(?P<survey_id>\w+)$', survey_status, name='survey_status'),
@@ -62,11 +61,6 @@ urlpatterns = patterns(
     url(r'^variables$', variables, name='variables'),
     url(r'^variables/new$', create_variable, name='create_variable'),
     url(r'^variables/(?P<variable_id>\w+)$', edit_variable, name='edit_variable'),
-
-    # Libraries
-    url(r'^libraries$', libraries, name='libraries'),
-    url(r'^libraries/import$', import_libraries, name='import_libraries'),
-    url(r'^libraries/remove$', remove_libraries, name='remove_libraries'),
 
     # Other
     url(r'^.well-known/void$', RedirectView.as_view(url=reverse_lazy('open_data'),
