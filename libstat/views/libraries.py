@@ -12,8 +12,15 @@ from libstat.survey_templates import survey_template
 
 
 def _create_surveys(library_ids, sample_year):
+    def survey_exists(sigel, sample_year):
+        return Survey.objects.filter(_library__sigel=sigel,sample_year=sample_year).first() is not None
+
+    created = 0
     for library_id in library_ids:
         library = Library.objects.get(pk=library_id)
+        if survey_exists(library.sigel, sample_year):
+            continue
+
         template = survey_template(sample_year)
         survey = Survey(
             library=library,
@@ -30,6 +37,9 @@ def _create_surveys(library_ids, sample_year):
                             SurveyObservation(
                                 variable=Variable.objects.get(key=variable_key)))
         survey.save()
+        created += 1
+
+    return created
 
 
 @permission_required('is_superuser', login_url='index')
@@ -43,8 +53,13 @@ def libraries(request):
                 if form.cleaned_data[field]:
                     library_ids.append(field)
         if "create_surveys_btn" in form.data:
-            _create_surveys(library_ids, sample_year)
-            request.session["message"] = u"Skapade {} enkäter.".format(len(library_ids))
+            created = _create_surveys(library_ids, sample_year)
+
+            message = u"Skapade {} stycken nya enkäter för de markerade biblioteken.".format(created)
+            if created < len(library_ids):
+                message += u"\nFör {} stycken av biblioteken fanns redan enkäter skapade.".format(len(library_ids) - created);
+            request.session["message"] = message
+
             return _surveys_redirect(request)
         elif "save_selection_btn" in form.data:
             lib_selection, _ = LibrarySelection.objects.get_or_create(name="lib_selection")

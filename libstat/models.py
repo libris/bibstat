@@ -506,9 +506,9 @@ class SurveyBase(Document):
             if free_text:
                 free_text = free_text.strip().lower()
 
-                library_email = free_text in survey.library.email.lower()
-                library_name = free_text in survey.library.name.lower()
-                library_municipality_code = free_text in survey.library.municipality_code.lower()
+                library_email = free_text in survey.library.email.lower() if survey.library.email else False
+                library_name = free_text in survey.library.name.lower() if survey.library.name else False
+                library_municipality_code = free_text in survey.library.municipality_code.lower() if survey.library.municipality_code else False
 
                 if not (library_email or library_name or library_municipality_code):
                     continue
