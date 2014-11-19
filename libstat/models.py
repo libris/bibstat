@@ -636,6 +636,7 @@ class Survey(SurveyBase):
             observations = [observation for observation in self.observations if
                             observation._is_public and
                             observation.value is not None and
+                            observation.value != "" and
                             not observation.variable in existing_open_data_variables]
 
             for observation in observations:
