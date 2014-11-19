@@ -224,7 +224,8 @@
                             <td>
                                 <input title="Välj" class="select-one" name="survey-response-ids"
                                        type="checkbox" value="{{ sr.id }}" data-library="{{ sr.library.name }}"
-                                       data-address="{% url 'survey' sr.id %}" data-url-base="{{ url_base }}"/>
+                                       data-address="{% url 'survey' sr.id %}" data-url-base="{{ url_base }}"
+                                        data-city="{{ sr.library.city }}"/>
                             </td>
                             <td>
                                 {{ sr.status|srs_label|default:"" }}
@@ -345,6 +346,8 @@
                                 <div class="btn-group">
                                     <button type="button"
                                             class="btn btn-default btn-insert btn-library">Bibliotek</button>
+                                    <button type="button"
+                                            class="btn btn-default btn-insert btn-city">Ort</button>
                                     <button type="button"
                                             class="btn btn-default btn-insert btn-address-password">Enkätadress (med lösenord)</button>
                                     <button type="button"
