@@ -28,7 +28,7 @@ class SurveyResponseTest(MongoTestCase):
         v3.save()
 
         library = Library(bibdb_id=u"323", bibdb_sigel="Kld1", bibdb_name=u"Karlstad stadsbibliotek").save()
-        sr = Survey(library_name="KARLSTAD STADSBIBLIOTEK", sample_year=2013, target_group="folkbib",
+        sr = Survey(sample_year=2013, target_group="folkbib",
                     observations=[], library=library)
         sr.observations.append(SurveyObservation(variable=v1, value=7, _is_public=v1.is_public))
         sr.observations.append(
@@ -161,7 +161,7 @@ class SurveyResponseTest(MongoTestCase):
         self.assertEquals(len(versions), 0)
 
     def test_should_set_modified_date_and_by_when_updating_existing_object(self):
-        self.survey_response.library_name = u"Stadsbiblioteket i Karlstad"
+        self.survey_response.library.name = u"Stadsbiblioteket i Karlstad"
         self.survey_response.save()
 
         versions = SurveyVersion.objects.filter(survey_response_id=self.survey_response.id)
@@ -171,7 +171,7 @@ class SurveyResponseTest(MongoTestCase):
         self.assertTrue(sr.date_modified > versions[0].date_modified)
 
     def test_should_flag_as_not_published_when_updating_existing_object(self):
-        self.survey_response.library_name = u"Stadsbiblioteket i Karlstad"
+        self.survey_response.library.name = u"Stadsbiblioteket i Karlstad"
         self.survey_response.save()
 
         sr = Survey.objects.get(pk=self.survey_response.id)

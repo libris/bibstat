@@ -374,7 +374,6 @@ class SurveyResponseQuerySet(QuerySet):
 
 class SurveyObservation(EmbeddedDocument):
     variable = ReferenceField(Variable, required=True)
-    # Need to allow None/null values to indicate invalid or missing responses in old data
     value = DynamicField()
     disabled = BooleanField()
     value_unknown = BooleanField()
@@ -474,7 +473,6 @@ class SurveyBase(Document):
     _status = StringField(choices=STATUSES, default="not_viewed")
     _library = EmbeddedDocumentField(LibraryCached)
     selected_libraries = ListField(StringField())
-    library_name = StringField()
     sample_year = IntField()
     password = StringField()
     principal = StringField(choices=PRINCIPALS)
@@ -551,13 +549,12 @@ class SurveyBase(Document):
     def library(self, library):
         if library:
             self._library = LibraryCached(library=library)
-            self.library_name = self._library.name
 
     def target_group__desc(self):
         return targetGroups[self.target_group]
 
     def __unicode__(self):
-        return u"{} {} {}".format(self.target_group, self.library_name, self.sample_year)
+        return u"{} {} {}".format(self.target_group, self.library.name, self.sample_year)
 
     def __init__(self, *args, **kwargs):
         library = kwargs.pop("library", None)
@@ -588,7 +585,6 @@ class Survey(SurveyBase):
     def library(self, library):
         if library:
             self._library = LibraryCached(library=library)
-            self.library_name = self._library.name
 
     @classmethod
     def store_version_and_update_date_modified(cls, sender, document, **kwargs):

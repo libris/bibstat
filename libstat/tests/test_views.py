@@ -571,7 +571,7 @@ class SurveyViewTest(MongoTestCase):
             "{}?action=list&target_group=folkbib&sample_year=2013".format(reverse("surveys")))
 
         self.assertEquals(len(response.context["survey_responses"]), 1)
-        self.assertEquals(response.context["survey_responses"][0].library_name, "lib2")
+        self.assertEquals(response.context["survey_responses"][0].library.name, "lib2")
 
     def test_each_survey_response_should_have_checkbox_for_actions(self):
         survey = self._dummy_survey(sample_year=2013)

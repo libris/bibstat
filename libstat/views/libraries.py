@@ -16,7 +16,6 @@ def _create_surveys(library_ids, sample_year):
         library = Library.objects.get(pk=library_id)
         template = survey_template(sample_year)
         survey = Survey(
-            library_name=library.name,
             library=library,
             sample_year=sample_year,
             observations=[])

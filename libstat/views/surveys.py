@@ -109,7 +109,7 @@ def _surveys_as_excel(survey_ids):
                 variable_keys.append(unicode(observation.variable.key))
         return variable_keys
 
-    surveys = Survey.objects.filter(id__in=survey_ids).order_by('library_name')
+    surveys = Survey.objects.filter(id__in=survey_ids).order_by('_library__name')
 
     variable_keys = variable_keys_in(surveys[0])
 

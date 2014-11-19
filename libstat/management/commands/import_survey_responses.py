@@ -76,7 +76,7 @@ class Command(BaseCommand):
             else:
                 continue
 
-            if Survey.objects.filter(library_name=library_name, sample_year=year):
+            if Survey.objects.filter(_library__name=library_name, sample_year=year):
                 continue
 
             survey = Survey(sample_year=year, library=LibraryCached(name=library_name, library_type=target_group))

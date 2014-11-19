@@ -45,12 +45,12 @@ class MongoTestCase(TestCase):
         return Library(name=name, sigel=sigel, bibdb_id=bibdb_id, city=city,
                        municipality_code=municipality_code, library_type=library_type).save()
 
-    def _dummy_survey(self, library_name="dummy_name", sample_year=2001, password=None, target_group="folkbib",
+    def _dummy_survey(self, sample_year=2001, password=None, target_group="folkbib",
                       status="not_viewed", publish=False, library=None,
                       observations=[], selected_libraries=[]):
         if not library:
             library = self._dummy_library()
-        survey = Survey(library_name=library_name, library=library, sample_year=sample_year,
+        survey = Survey(library=library, sample_year=sample_year,
                         target_group=target_group, password=password, status=status,
                         observations=observations, selected_libraries=selected_libraries).save()
         if publish:
