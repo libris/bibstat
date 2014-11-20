@@ -34,7 +34,7 @@ def surveys(request):
     municipality_code = request.GET.get("municipality_code", "")
     status = request.GET.get("status", "")
     message = request.session.pop("message", "")
-    free_text = request.GET.get("free-text", "").strip()
+    free_text = request.GET.get("free_text", "").strip()
 
     if not sample_year:
         message = u"Du måste ange för vilket år du vill lista enkätsvar."

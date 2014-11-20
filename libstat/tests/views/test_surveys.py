@@ -1,4 +1,7 @@
 # -*- coding: UTF-8 -*-
+
+from django.core.urlresolvers import reverse
+
 from libstat.tests import MongoTestCase
 
 from libstat.views.surveys import _surveys_as_excel, _dict_to_library
@@ -10,7 +13,7 @@ class TestSurveyAuthorization(MongoTestCase):
         self._login()
         survey = self._dummy_survey()
 
-        response = self._get("survey", {"survey_id": survey.pk})
+        response = self._get("survey", kwargs={"survey_id": survey.pk})
 
         self.assertEquals(response.status_code, 200)
         self.assertTrue("form" in response.context)
@@ -29,7 +32,7 @@ class TestSurveyAuthorization(MongoTestCase):
     def test_can_not_view_survey_if_not_logged_in_and_have_incorrect_password(self):
         survey = self._dummy_survey()
 
-        response = self._get("survey", {"survey_id": survey.pk})
+        response = self._get("survey", kwargs={"survey_id": survey.pk})
 
         self.assertEquals(response.status_code, 200)
         self.assertFalse("form" in response.context)
@@ -37,7 +40,7 @@ class TestSurveyAuthorization(MongoTestCase):
     def test_can_enter_password_if_not_logged_in(self):
         survey = self._dummy_survey()
 
-        response = self._get("survey", {"survey_id": survey.pk})
+        response = self._get("survey", kwargs={"survey_id": survey.pk})
 
         self.assertContains(response,
                             u"<button type='submit' class='btn btn-primary'>Visa enkäten</button>",
@@ -187,3 +190,107 @@ class TestLibraryImport(MongoTestCase):
         library = _dict_to_library(dict)
 
         self.assertEquals(library, None)
+
+
+class SurveyViewTest(MongoTestCase):
+
+    def setUp(self):
+        self.client.login(username="admin", password="admin")
+
+    def test_should_list_survey_responses_by_year(self):
+        self._dummy_survey(sample_year=2012)
+        self._dummy_survey(sample_year=2013)
+
+        response = self._get("surveys", params={"action": "list", "sample_year": "2012"})
+
+        self.assertEquals(len(response.context["survey_responses"]), 1)
+
+    def test_should_list_survey_responses_by_target_group(self):
+        self._dummy_survey(library=self._dummy_library(library_type="folkbib"), sample_year=2010)
+        self._dummy_survey(library=self._dummy_library(library_type="skolbib"), sample_year=2010)
+        self._dummy_survey(library=self._dummy_library(library_type="folkbib"), sample_year=2010)
+
+        response = self._get("surveys", params={"action": "list", "target_group": "folkbib", "sample_year": "2010"})
+
+        self.assertEquals(len(response.context["survey_responses"]), 2)
+
+    def test_should_list_survey_responses_by_status(self):
+        self._dummy_survey(status="not_viewed", sample_year=2010)
+        self._dummy_survey(status="submitted", sample_year=2010)
+        self._dummy_survey(status="initiated", sample_year=2010).publish()
+
+        response = self._get("surveys", params={"action": "list", "status": "submitted", "sample_year": "2010"})
+
+        self.assertEquals(len(response.context["survey_responses"]), 1)
+
+    def test_should_list_survey_responses_by_municipality_code(self):
+        self._dummy_survey(library=self._dummy_library(municipality_code="1234"))
+        self._dummy_survey(library=self._dummy_library(municipality_code="5678"))
+        self._dummy_survey(library=self._dummy_library(municipality_code="1234"))
+
+        response = self._get("surveys", params={"action": "list", "municipality_code": "1234"})
+
+        self.assertEquals(len(response.context["survey_responses"]), 2)
+
+    def test_should_list_surveys_when_searching_with_free_text_on_partial_municipality_code(self):
+        self._dummy_survey(library=self._dummy_library(municipality_code="1234"))
+        self._dummy_survey(library=self._dummy_library(municipality_code="5678"))
+        self._dummy_survey(library=self._dummy_library(municipality_code="1234"))
+
+        response = self._get("surveys", params={"action": "list", "free_text": "23"})
+
+        self.assertEquals(len(response.context["survey_responses"]), 2)
+
+    def test_should_list_surveys_when_searching_with_free_text_on_partial_library_name(self):
+        self._dummy_survey(library=self._dummy_library(name="abcdef"))
+        self._dummy_survey(library=self._dummy_library(name="ghijkl"))
+        self._dummy_survey(library=self._dummy_library(name="abcdef"))
+
+        response = self._get("surveys", params={"action": "list", "free_text": "  cde "})
+
+        self.assertEquals(len(response.context["survey_responses"]), 2)
+
+    def test_should_list_surveys_when_searching_with_free_text_on_partial_email(self):
+        self._dummy_survey(library=self._dummy_library(name="some@dude.com"))
+        self._dummy_survey(library=self._dummy_library(name="another@DuDe.se"))
+        self._dummy_survey(library=self._dummy_library(name="third@person.info"))
+
+        response = self._get("surveys", params={"action": "list", "free_text": " @dUdE  "})
+
+        self.assertEquals(len(response.context["survey_responses"]), 2)
+
+    def test_should_list_survey_responses_by_year_and_target_group(self):
+        self._dummy_survey(library=self._dummy_library(name="lib1", library_type="folkbib"), sample_year=2012)
+        self._dummy_survey(library=self._dummy_library(name="lib2", library_type="folkbib"), sample_year=2013)
+        self._dummy_survey(library=self._dummy_library(name="lib3", library_type="skolbib"), sample_year=2013)
+
+        response = self._get("surveys", params={"action": "list", "target_group": "folkbib", "sample_year": "2013"})
+
+        self.assertEquals(len(response.context["survey_responses"]), 1)
+        self.assertEquals(response.context["survey_responses"][0].library.name, "lib2")
+
+    def test_each_survey_response_should_have_checkbox_for_actions(self):
+        survey = self._dummy_survey(sample_year=2013)
+
+        response = self._get("surveys", params={"action": "list", "sample_year": "2013"})
+
+        self.assertContains(response, 'value="{}"'.format(survey.id))
+
+    def test_each_survey_response_should_have_a_link_to_details_view(self):
+        survey = self._dummy_survey(sample_year=2013)
+
+        response = self._get("surveys", params={"action": "list", "sample_year": "2013"})
+
+        self.assertContains(response, u'<a href="{}" title="Visa/redigera enkätsvar">Visa/redigera</a>'
+                            .format(reverse("survey", kwargs={"survey_id": str(survey.id)})),
+                            count=1, status_code=200, html=True)
+
+    def test_each_survey_response_should_have_a_link_to_bibdb(self):
+        library = self._dummy_library(name="lib1", sigel="lib1_sigel")
+        self._dummy_survey(sample_year=2013, library=library)
+
+        response = self._get("surveys", params={"action": "list", "sample_year": "2013"})
+
+        self.assertContains(response, "<a href='http://bibdb.libris.kb.se/library/{}'>{}</a>"
+                            .format(library.sigel, library.name),
+                            count=1, status_code=200, html=True)

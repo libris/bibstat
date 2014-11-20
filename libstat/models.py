@@ -365,31 +365,23 @@ class SurveyTemplate(Document):
 
 class SurveyResponseQuerySet(QuerySet):
 
-    # if target_group and not survey.target_group == target_group:
-    #     continue
-    # if status and not survey.status == status:
-    #     continue
-    # if sample_year and not str(survey.sample_year) == str(sample_year):
-    #     continue
-    # if municipality_code and not survey.library.municipality_code[0] == municipality_code:
-    #     continue
-    # if free_text:
-    #     free_text = free_text.strip().lower()
-
-    #     library_email = free_text in survey.library.email.lower() if survey.library.email else False
-    #     library_name = free_text in survey.library.name.lower() if survey.library.name else False
-    #     library_municipality_code = free_text in survey.library.municipality_code.lower() if survey.library.municipality_code else False
-
-    #     if not (library_email or library_name or library_municipality_code):
-    #         continue
-
     def by(self, sample_year=None, target_group=None, status=None, municipality_code=None, free_text=None):
         target_group_query = Q(library__library_type=target_group) if target_group else Q()
         sample_year_query = Q(sample_year=sample_year) if sample_year else Q()
         status_query = Q(_status=status) if status else Q()
         municipality_code_query = (Q(library__municipality_code=municipality_code)
                                    if municipality_code else Q())
-        return self.filter(target_group_query & sample_year_query & status_query & municipality_code_query).exclude("observations")
+
+        free_text_query = Q()
+        if free_text:
+            free_text = free_text.strip().lower()
+            free_text_municipality_code_query = Q(library__municipality_code__icontains=free_text)
+            free_text_email_query = Q(library__email__icontains=free_text)
+            free_text_library_name_query = Q(library__name__icontains=free_text)
+            free_text_query = free_text_municipality_code_query | free_text_email_query | free_text_library_name_query
+
+        return self.filter(target_group_query & sample_year_query & status_query &
+                           municipality_code_query & free_text_query).exclude("observations")
 
 
 class SurveyObservation(EmbeddedDocument):

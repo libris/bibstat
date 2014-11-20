@@ -32,8 +32,13 @@ class MongoTestCase(TestCase):
     def _logout(self):
         self.client.logout()
 
-    def _get(self, action=None, kwargs=None):
-        return self.client.get(reverse(action, kwargs=kwargs))
+    def _get(self, action=None, kwargs=None, params={}):
+        url = reverse(action, kwargs=kwargs)
+        if params:
+            url += "?"
+            for key, value in params.iteritems():
+                url = "{}{}={}&".format(url, key, value)
+        return self.client.get(url)
 
     def _get_json(self, action=None, kwargs=None):
         return json.loads(self._get(action, kwargs).content)
