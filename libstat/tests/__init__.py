@@ -74,12 +74,12 @@ class MongoTestCase(TestCase):
                                  _is_public=_is_public)
 
     def _dummy_survey(self, sample_year=2001, password=None, target_group="folkbib",
-                      status="not_viewed", publish=False, library=None,
+                      status="not_viewed", publish=False, library=None, is_active=True,
                       observations=[], selected_libraries=[]):
         if not library:
             library = self._dummy_library()
         survey = Survey(library=library, sample_year=sample_year,
-                        target_group=target_group, password=password, status=status,
+                        target_group=target_group, password=password, status=status, is_active=is_active,
                         observations=observations, selected_libraries=selected_libraries).save()
         if publish:
             survey.publish()

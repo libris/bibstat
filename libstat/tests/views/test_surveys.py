@@ -85,6 +85,21 @@ class TestSurveyAuthorization(MongoTestCase):
         self.assertContains(response,
                             u'<div class="navbar navbar-inverse navbar-static-top" role="navigation">')
 
+    def test_can_see_inactive_survey_if_admin(self):
+        self._login()
+        survey = self._dummy_survey(is_active=False)
+
+        response = self._get(action="survey", kwargs={"survey_id": survey.pk})
+
+        self.assertEquals(response.status_code, 200)
+
+    def test_can_not_see_inactive_survey_if_not_admin(self):
+        survey = self._dummy_survey(is_active=False)
+
+        response = self._get(action="survey", kwargs={"survey_id": survey.pk})
+
+        self.assertEquals(response.status_code, 404)
+
 
 class TestSurveyStatus(MongoTestCase):
 
@@ -192,10 +207,10 @@ class TestLibraryImport(MongoTestCase):
         self.assertEquals(library, None)
 
 
-class SurveyViewTest(MongoTestCase):
+class TestSurveyView(MongoTestCase):
 
     def setUp(self):
-        self.client.login(username="admin", password="admin")
+        self._login()
 
     def test_should_list_survey_responses_by_year(self):
         self._dummy_survey(sample_year=2012)
@@ -294,3 +309,53 @@ class SurveyViewTest(MongoTestCase):
         self.assertContains(response, "<a href='http://bibdb.libris.kb.se/library/{}'>{}</a>"
                             .format(library.sigel, library.name),
                             count=1, status_code=200, html=True)
+
+
+class TestSurveyState(MongoTestCase):
+
+    def setUp(self):
+        self._login()
+
+    def test_returns_active_surveys(self):
+        self._dummy_survey(is_active=True, sample_year=2014)
+        self._dummy_survey(is_active=False, sample_year=2014)
+        self._dummy_survey(is_active=True, sample_year=2014)
+
+        response = self._get("surveys_active", params={"action": "list", "sample_year": "2014"})
+
+        self.assertEquals(len(response.context["survey_responses"]), 2)
+
+    def test_returns_inactive_surveys(self):
+        self._dummy_survey(is_active=True, sample_year=2014)
+        self._dummy_survey(is_active=False, sample_year=2014)
+        self._dummy_survey(is_active=True, sample_year=2014)
+
+        response = self._get("surveys_inactive", params={"action": "list", "sample_year": "2014"})
+
+        self.assertEquals(len(response.context["survey_responses"]), 1)
+
+    def test_can_inactivate_surveys(self):
+        survey1 = self._dummy_survey(is_active=True)
+        survey2 = self._dummy_survey(is_active=False)
+        survey3 = self._dummy_survey(is_active=True)
+        self._post("surveys_inactivate", data={"survey-response-ids": [survey1.pk, survey3.pk]})
+
+        survey1.reload()
+        survey2.reload()
+        survey3.reload()
+        self.assertFalse(survey1.is_active)
+        self.assertFalse(survey2.is_active)
+        self.assertFalse(survey3.is_active)
+
+    def test_can_activate_surveys(self):
+        survey1 = self._dummy_survey(is_active=True)
+        survey2 = self._dummy_survey(is_active=False)
+        survey3 = self._dummy_survey(is_active=False)
+        self._post("surveys_activate", data={"survey-response-ids": [survey2.pk]})
+
+        survey1.reload()
+        survey2.reload()
+        survey3.reload()
+        self.assertTrue(survey1.is_active)
+        self.assertTrue(survey2.is_active)
+        self.assertFalse(survey3.is_active)

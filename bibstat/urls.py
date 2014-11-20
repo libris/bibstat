@@ -16,6 +16,10 @@ from libstat.views.index import index
 from libstat.views.surveys import (surveys_statuses,
                                    surveys_export,
                                    surveys,
+                                   surveys_active,
+                                   surveys_inactive,
+                                   surveys_activate,
+                                   surveys_inactivate,
                                    surveys_overview,
                                    import_and_create)
 from libstat.views.survey import (survey,
@@ -44,7 +48,11 @@ urlpatterns = patterns(
     url(r'^$', index, name='index'),
 
     # Survey
-    url(r'^surveys$', surveys, name='surveys'),
+    url(r'^surveys$', surveys_active, name='surveys'),
+    url(r'^surveys/active$', surveys_active, name='surveys_active'),
+    url(r'^surveys/inactive$', surveys_inactive, name='surveys_inactive'),
+    url(r'^surveys/activate$', surveys_activate, name='surveys_activate'),
+    url(r'^surveys/inactivate$', surveys_inactivate, name='surveys_inactivate'),
     url(r'^surveys/export$', surveys_export, name='surveys_export'),
     url(r'^surveys/import_and_create$', import_and_create, name='surveys_import_and_create'),
     url(r'^surveys/status$', surveys_statuses, name='surveys_statuses'),

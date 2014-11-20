@@ -20,7 +20,9 @@ logger = logging.getLogger(__name__)
 
 
 @permission_required('is_superuser', login_url='index')
-def surveys(request):
+def surveys(request, *args, **kwargs):
+    surveys_state = kwargs.pop("surveys_state", "active")
+
     sample_years = Survey.objects.distinct("sample_year")
     sample_years.sort()
     sample_years.reverse()
@@ -44,9 +46,11 @@ def surveys(request):
             target_group=target_group,
             status=status,
             municipality_code=municipality_code,
-            free_text=free_text)
+            free_text=free_text,
+            is_active=surveys_state == "active")
 
     context = {
+        'current_url': request.get_full_path,
         'sample_year': sample_year,
         'sample_years': sample_years,
         'municipality_code': municipality_code,
@@ -56,6 +60,9 @@ def surveys(request):
         'status': status,
         'statuses': Survey.STATUSES,
         'free_text': free_text,
+        'surveys_state': surveys_state,
+        'num_active_surveys': Survey.objects.filter(is_active=True).count(),
+        'num_inactive_surveys': Survey.objects.filter(is_active=False).count(),
         'survey_responses': surveys,
         'message': message,
         'url_base': settings.API_BASE_URL,
@@ -64,6 +71,38 @@ def surveys(request):
     }
 
     return render(request, 'libstat/surveys.html', context)
+
+
+@permission_required('is_superuser', login_url='index')
+def surveys_active(request):
+    return surveys(request, surveys_state="active")
+
+
+@permission_required('is_superuser', login_url='index')
+def surveys_inactive(request):
+    return surveys(request, surveys_state="inactive")
+
+
+@permission_required('is_superuser', login_url='index')
+def surveys_activate(request):
+    if request.method == "POST":
+        survey_ids = request.POST.getlist("survey-response-ids", [])
+        for survey in Survey.objects.filter(pk__in=survey_ids):
+            survey.is_active = True
+            survey.save()
+        request.session["message"] = "Aktiverade {} st enkäter.".format(len(survey_ids))
+        return surveys(request, surveys_state="active")
+
+
+@permission_required('is_superuser', login_url='index')
+def surveys_inactivate(request):
+    if request.method == "POST":
+        survey_ids = request.POST.getlist("survey-response-ids", [])
+        for survey in Survey.objects.filter(pk__in=survey_ids):
+            survey.is_active = False
+            survey.save()
+        request.session["message"] = "Inaktiverade {} st enkäter.".format(len(survey_ids))
+        return surveys(request, surveys_state="inactive")
 
 
 def _surveys_redirect(request):

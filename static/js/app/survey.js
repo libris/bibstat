@@ -291,6 +291,8 @@ define(['jquery', 'survey.sum', 'survey.cell', 'surveys.dispatch', 'bootstrap.va
 
             $(".btn-export").click(function (e) { e.preventDefault(); submitTo('surveys_export', true); });
             $(".btn-change-status").click(function (e) { e.preventDefault(); submitTo('surveys_statuses', true); });
+            $(".btn-activate-surveys").click(function (e) { e.preventDefault(); submitTo('surveys_activate', true); });
+            $(".btn-inactivate-surveys").click(function (e) { e.preventDefault(); submitTo('surveys_inactivate', true); });
             $(".btn-dispatch").click(function (e) {
                 e.preventDefault();
 

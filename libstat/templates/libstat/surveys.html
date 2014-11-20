@@ -119,6 +119,19 @@
                                         class="btn btn-primary btn-toggle btn-survey btn-export disabled">
                                     Exportera
                                 </a>
+                                {% if surveys_state == 'inactive' %}
+                                <a href="#" name="action" value="export"
+                                        class="btn btn-primary btn-toggle btn-survey disabled" data-toggle="modal"
+                                        data-target="#activate-surveys-modal">
+                                    Aktivera
+                                </a>
+                                {% else %}
+                                <a href="#" name="action" value="export"
+                                        class="btn btn-primary btn-toggle btn-survey disabled" data-toggle="modal"
+                                        data-target="#inactivate-surveys-modal">
+                                    Inaktivera
+                                </a>
+                                {% endif %}                               
                             </div>
                             <div class="pull-right">
                                 <div class="btn-group">
@@ -132,10 +145,17 @@
                             </div>
                         </div>
                     </div>
-                    <hr>
                 {% endif %}
             </form>
         </div>
+        <ul class="nav nav-tabs">
+            <li role="presentation" {% if surveys_state == "active" %} class="active" {% endif %} style="margin-left:15px;">
+                <a href="{% url 'surveys_active' %}">Aktiva <span class="badge">{{ num_active_surveys }}</span></a>
+            </li>
+            <li role="presentation" {% if surveys_state == "inactive" %} class="active" {% endif %}>
+                <a href="{% url 'surveys_inactive' %}">Inaktiva <span class="badge">{{ num_inactive_surveys }}</span></a>
+            </li>
+        </ul>        
         <form id="form-surveys" action="" method="POST" role="form"
               class="form-inline publish-survey-responses-form">
             {% if survey_responses %}
@@ -221,27 +241,57 @@
             </table>
             <div class="modal fade" id="change-status-modal" tabindex="-1" role="dialog"
                          aria-hidden="true">
-                        <div class="modal-dialog">
-                            <div class="modal-content">
-                                <div class="modal-body">
-                                    <p>
-                                        Välj vilken status de markerade enkäterna ska få.
-                                    </p>
-                                    <select name="new_status" class="form-control">
-                                        {% for status in statuses %}
-                                            <option value="{{ status.0 }}">
-                                                {{ status.1 }}
-                                            </option>
-                                        {% endfor %}
-                                    </select>
-                                </div>
-                                <div class="modal-footer">
-                                    <a href="#" class="btn btn-danger" data-dismiss="modal">Avbryt</a>
-                                    <button class="btn btn-success btn-change-status">Ändra status</button>
-                                </div>
-                            </div>
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-body">
+                            <p>
+                                Välj vilken status de markerade enkäterna ska få.
+                            </p>
+                            <select name="new_status" class="form-control">
+                                {% for status in statuses %}
+                                    <option value="{{ status.0 }}">
+                                        {{ status.1 }}
+                                    </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="modal-footer">
+                            <a href="#" class="btn btn-danger" data-dismiss="modal">Avbryt</a>
+                            <button class="btn btn-success btn-change-status">Ändra status</button>
                         </div>
                     </div>
+                </div>
+            </div>
+            <div class="modal fade" id="activate-surveys-modal" tabindex="-1" role="dialog" aria-hidden="true">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-body">
+                            <p>
+                                Vill du aktivera de markerade enkäterna?
+                            </p>
+                        </div>
+                        <div class="modal-footer">
+                            <a href="#" class="btn btn-danger" data-dismiss="modal">Avbryt</a>
+                            <button class="btn btn-success btn-activate-surveys">Aktivera</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal fade" id="inactivate-surveys-modal" tabindex="-1" role="dialog" aria-hidden="true">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-body">
+                            <p>
+                                Vill du inaktivera de markerade enkäterna?
+                            </p>
+                        </div>
+                        <div class="modal-footer">
+                            <a href="#" class="btn btn-danger" data-dismiss="modal">Avbryt</a>
+                            <button class="btn btn-success btn-inactivate-surveys">Inaktivera</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </form>
 
         <!-- Dispatch Modal -->

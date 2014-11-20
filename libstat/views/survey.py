@@ -55,6 +55,9 @@ def survey(request, survey_id):
     except Survey.DoesNotExist:
         return HttpResponseNotFound()
 
+    if not survey.is_active and not request.user.is_authenticated():
+        return HttpResponseNotFound()
+
     context = {
         'survey_id': survey_id,
     }
