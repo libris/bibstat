@@ -387,8 +387,12 @@
                     </p>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-default" data-dismiss="modal">Avbryt</button>
-                    <a href="{% url 'surveys_import_and_create' %}" class="btn btn-primary">Uppdatera</a>
+                    <form method="POST" action="{% url 'surveys_import_and_create' %}">
+                        {% csrf_token %}
+                        <input type="text" name="sample_year" value="{{ sample_year }}" hidden>
+                        <button type="button" class="btn btn-default" data-dismiss="modal">Avbryt</button>
+                        <button type="submit" class="btn btn-primary">Uppdatera</button>
+                    </form>
                 </div>
             </div>
         </div>

@@ -1,0 +1,62 @@
+{% extends "libstat/base.html" %}
+{% load i18n %}
+{% load libstat_tags %}
+
+{% block content %}
+<div class="container">
+
+    <div class="panel panel-default">
+        <div class="panel-heading">
+            <h3 class="panel-title">Administrera</h3>
+        </div>
+        <div class="panel-body">
+            <p>
+                Här kan du skapa en ny omgång av insamlingen av den officiella biblioteksstatistiken.
+            </p>
+            <p>
+                Välj för vilket år du vill skapa en ny omgång:
+            </p>
+            <form action="{% url 'create_new_collection' %}" method="POST">
+                {% csrf_token %}
+                <select name="year">
+                    {% for year in possible_year_choices %}
+                        <option value="{{ year }}">{{ year }}</option>
+                    {% endfor %}
+                </select>
+                <a href="#" class="btn btn-primary btn-toggle" data-toggle="modal" data-target="#confirm-creation-modal">
+                    Skapa
+                </a>
+                <div class="modal fade" id="confirm-creation-modal" tabindex="-1" role="dialog" aria-hidden="true">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-body">
+                                <p>
+                                    Är du säker på att du vill skapa en ny insamlingsomgång för det valda året?
+                                </p>
+                                <p>
+                                    Denna åtgärd kommer att hämta information om alla svenska bibliotek från Biblioteksdatabasen och skapa en enkät för varje bibliotek.
+                                </p>
+                                <p>
+                                    Dessa enkäter kommer inte vara synliga för någon annan än administratörer här i Biblioteksstatistiken förrän du väljer att manuellt öppna insamlingen för biblioteken.
+                                </p>
+                                <p>
+                                    Innan insamlingen öppnas har du möjlighet att välja vilka bibliotek som ska få vara en del av insamlingen och kontrollera att alla uppgifter stämmer. De enkäter som inte ska skickas ut till bibliotek kommer fortfarande att existera här i Bibliotekstatistiken, men de kommer vara <i>inaktiva</i> och osynliga för alla andra än administratörer.
+                                </p>
+                                <p>
+                                    Importen av biblioteksinformation och skapandet av enkäter kan ta några minuter att genomföra.
+                                </p>
+                            </div>
+                            <div class="modal-footer">
+                                <a href="#" class="btn btn-danger" data-dismiss="modal">Avbryt</a>
+                                <button class="btn btn-success">Skapa</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+
+{% endblock %}

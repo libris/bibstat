@@ -61,8 +61,8 @@ def surveys(request, *args, **kwargs):
         'statuses': Survey.STATUSES,
         'free_text': free_text,
         'surveys_state': surveys_state,
-        'num_active_surveys': Survey.objects.filter(is_active=True).count(),
-        'num_inactive_surveys': Survey.objects.filter(is_active=False).count(),
+        'num_active_surveys': Survey.objects.filter(is_active=True, sample_year=sample_year).count(),
+        'num_inactive_surveys': Survey.objects.filter(is_active=False, sample_year=sample_year).count(),
         'survey_responses': surveys,
         'message': message,
         'url_base': settings.API_BASE_URL,
@@ -274,8 +274,14 @@ def _get_libraries_from_bibdb():
     return libraries
 
 
+def _create_new_collection(year):
+    libraries = _get_libraries_from_bibdb()
+    _create_surveys(libraries, year)
+
+
 @permission_required('is_superuser', login_url='index')
 def import_and_create(request):
-    libraries = _get_libraries_from_bibdb()
-    _create_surveys(libraries, 2014)
+    sample_year = request.POST.get("sample_year")
+    sample_year = int(sample_year)
+    _create_new_collection(sample_year)
     return redirect(reverse('surveys'))

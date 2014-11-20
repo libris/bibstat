@@ -11,11 +11,11 @@ from libstat.views.apis import (data_api,
                                 observation_api,
                                 open_data)
 from libstat.views.auth import login
+from libstat.views.administration import administration, create_new_collection
 from libstat.views.dispatches import dispatches, dispatches_delete, dispatches_send
 from libstat.views.index import index
 from libstat.views.surveys import (surveys_statuses,
                                    surveys_export,
-                                   surveys,
                                    surveys_active,
                                    surveys_inactive,
                                    surveys_activate,
@@ -46,6 +46,10 @@ urlpatterns = patterns(
 
     # Index
     url(r'^$', index, name='index'),
+
+    # Administration
+    url(r'^administration/create_new_collection', create_new_collection, name='create_new_collection'),
+    url(r'^administration', administration, name='administration'),
 
     # Survey
     url(r'^surveys$', surveys_active, name='surveys'),
