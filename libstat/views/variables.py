@@ -32,7 +32,8 @@ def variables(request):
         variables = Variable.objects.all()
     context = {
         'variables': variables,
-        'target_groups': target_groups
+        'target_groups': target_groups,
+        'nav_variables_css': 'active'
     }
     return render(request, 'libstat/variables.html', context)
 

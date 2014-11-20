@@ -51,8 +51,13 @@ def dispatches(request):
             } for dispatch in Dispatch.objects.all()
         ]
 
-        message = request.session.pop("message", None)
-        return render(request, 'libstat/dispatches.html', {"dispatches": dispatches, "message": message})
+        context = {
+            "dispatches": dispatches,
+            "message": request.session.pop("message", None),
+            "nav_dispatches_css": "active"
+        }
+
+        return render(request, 'libstat/dispatches.html', context)
 
 
 @permission_required('is_superuser', login_url='login')

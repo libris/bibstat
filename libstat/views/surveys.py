@@ -59,7 +59,8 @@ def surveys(request):
         'statuses': Survey.STATUSES,
         'bibdb_library_base_url': u"{}/library".format(settings.BIBDB_BASE_URL),
         'message': message,
-        'url_base': settings.API_BASE_URL
+        'url_base': settings.API_BASE_URL,
+        'nav_surveys_css': 'active'
     }
 
     return render(request, 'libstat/surveys.html', context)
