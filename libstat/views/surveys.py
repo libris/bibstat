@@ -217,24 +217,26 @@ def _create_surveys(libraries, sample_year):
 
     existing_surveys = {}
     for survey in Survey.objects.all():
-        existing_surveys[(survey.library.sigel, survey.sample_year)] = True
+        existing_surveys[(survey.library.sigel, survey.sample_year)] = survey
 
     created = 0
     for library in libraries:
         if (library.sigel, sample_year) in existing_surveys:
-            continue
+            survey = existing_surveys[(library.sigel, sample_year)]
+            survey.library = library
+        else:
+            survey = Survey(
+                library=library,
+                sample_year=sample_year,
+                observations=[])
+            for cell in template_cells:
+                variable_key = cell.variable_key
+                if not variable_key in variables:
+                    raise Exception("Can't find variable with key '{}'".format(variable_key))
+                survey.observations.append(SurveyObservation(variable=variables[variable_key]))
+            created += 1
 
-        survey = Survey(
-            library=library,
-            sample_year=sample_year,
-            observations=[])
-        for cell in template_cells:
-            variable_key = cell.variable_key
-            if not variable_key in variables:
-                raise Exception("Can't find variable with key '{}'".format(variable_key))
-            survey.observations.append(SurveyObservation(variable=variables[variable_key]))
         survey.save()
-        created += 1
 
     return created
 

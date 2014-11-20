@@ -4,9 +4,10 @@ from libstat.models import Section, Group, Cell, Row, SurveyTemplate
 
 def _default_template_from_survey_response(response):
     rows = []
-    for observation in response.observations:
-        variable = observation.variable
-        rows.append(Row(cells=[Cell(variable_key=variable.key, types=["text"])]))
+    if response:
+        for observation in response.observations:
+            variable = observation.variable
+            rows.append(Row(cells=[Cell(variable_key=variable.key, types=["text"])]))
 
     return SurveyTemplate(sections=[
         Section(title="",

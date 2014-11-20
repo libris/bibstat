@@ -4,7 +4,8 @@ from django.core.urlresolvers import reverse
 
 from libstat.tests import MongoTestCase
 
-from libstat.views.surveys import _surveys_as_excel, _dict_to_library
+from libstat.models import Survey
+from libstat.views.surveys import _surveys_as_excel, _dict_to_library, _create_surveys
 
 
 class TestSurveyAuthorization(MongoTestCase):
@@ -205,6 +206,32 @@ class TestLibraryImport(MongoTestCase):
         library = _dict_to_library(dict)
 
         self.assertEquals(library, None)
+
+    def test_updates_existing_surveys_with_new_library_data(self):
+        original_library1 = self._dummy_library(sigel="sigel1", name="old_name1")
+        original_library2 = self._dummy_library(sigel="sigel2", name="old_name2")
+        survey1 = self._dummy_survey(library=original_library1, sample_year=2014)
+        survey2 = self._dummy_survey(library=original_library2, sample_year=2014)
+
+        new_library = self._dummy_library(sigel="sigel1", name="new_name")
+
+        _create_surveys([new_library], 2014)
+
+        survey1.reload()
+        survey2.reload()
+        self.assertEquals(Survey.objects.count(), 2)
+        self.assertEquals(survey1.library.name, "new_name")
+        self.assertEquals(survey2.library.name, "old_name2")
+
+    def test_creates_new_surveys_with_new_libraries(self):
+        self._dummy_survey(library=self._dummy_library(sigel="sigel1"), sample_year=2013)
+        self._dummy_survey(library=self._dummy_library(sigel="sigel2"), sample_year=2013)
+
+        new_library = self._dummy_library(sigel="sigel3")
+
+        _create_surveys([new_library], 2013)
+
+        self.assertEquals(Survey.objects.count(), 3)
 
 
 class TestSurveyView(MongoTestCase):
