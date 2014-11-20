@@ -21,12 +21,11 @@ logger = logging.getLogger(__name__)
 
 @permission_required('is_superuser', login_url='index')
 def surveys(request):
-    surveys = []
     sample_years = Survey.objects.distinct("sample_year")
     sample_years.sort()
     sample_years.reverse()
 
-    municipality_codes = []  # Library.objects.distinct("municipality_code")
+    municipality_codes = Survey.objects.distinct("library.municipality_code")
     municipality_codes.sort()
 
     target_group = request.GET.get("target_group", "")
@@ -36,6 +35,7 @@ def surveys(request):
     message = request.session.pop("message", "")
     free_text = request.GET.get("free_text", "").strip()
 
+    surveys = []
     if not sample_year:
         message = u"Du måste ange för vilket år du vill lista enkätsvar."
     else:
@@ -47,19 +47,19 @@ def surveys(request):
             free_text=free_text)
 
     context = {
-        'sample_years': sample_years,
         'sample_year': sample_year,
-        'municipality_codes': municipality_codes,
+        'sample_years': sample_years,
         'municipality_code': municipality_code,
-        'survey_responses': surveys,
-        'target_groups': utils.SURVEY_TARGET_GROUPS,
+        'municipality_codes': municipality_codes,
         'target_group': target_group,
-        'free_text': free_text,
+        'target_groups': utils.SURVEY_TARGET_GROUPS,
         'status': status,
         'statuses': Survey.STATUSES,
-        'bibdb_library_base_url': u"{}/library".format(settings.BIBDB_BASE_URL),
+        'free_text': free_text,
+        'survey_responses': surveys,
         'message': message,
         'url_base': settings.API_BASE_URL,
+        'bibdb_library_base_url': u"{}/library".format(settings.BIBDB_BASE_URL),
         'nav_surveys_css': 'active'
     }
 
@@ -149,7 +149,7 @@ def surveys_overview(request, sample_year):
     context = {
         "sample_year": sample_year,
         "statuses": Survey.STATUSES,
-        "target_groups": utils.SURVEY_TARGET_GROUPS,
+        "library_types": utils.SURVEY_TARGET_GROUPS,
         "surveys": surveys
     }
 

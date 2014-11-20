@@ -374,7 +374,7 @@ class SurveyResponseQuerySet(QuerySet):
 
         free_text_query = Q()
         if free_text:
-            free_text = free_text.strip().lower()
+            free_text = free_text.strip()
             free_text_municipality_code_query = Q(library__municipality_code__icontains=free_text)
             free_text_email_query = Q(library__email__icontains=free_text)
             free_text_library_name_query = Q(library__name__icontains=free_text)

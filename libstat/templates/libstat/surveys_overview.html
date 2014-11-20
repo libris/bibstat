@@ -21,13 +21,13 @@
 						</tr>
 					</thead>
 					<tbody>
-						{% for target_group in target_groups %}
+						{% for library_type in library_types %}
 							<tr>
-								<td><b>{{ target_group.1 }}</b></td>
+								<td><b>{{ library_type.1 }}</b></td>
 								{% for status in statuses %}
-									<td>{{ surveys|with_status:status.0|with_target_group:target_group.0|length }}</td>
+									<td>{{ surveys|with_status:status.0|with_library_type:library_type.0|length }}</td>
 								{% endfor %}
-								<td><b>{{ surveys|with_target_group:target_group.0|length }}</b></td>
+								<td><b>{{ surveys|with_library_type:library_type.0|length }}</b></td>
 							</tr>
 						{% endfor %}
 						<tr>
