@@ -28,14 +28,6 @@ def access(value, arg):
     return value[arg]
 
 
-def with_status(surveys, status):
-    return [survey for survey in surveys if survey.status == status]
-
-
-def with_library_type(surveys, library_type):
-    return [survey for survey in surveys if survey.library.library_type == library_type]
-
-
 def dispatches_count():
     return Dispatch.objects.count()
 
@@ -51,7 +43,5 @@ register.filter('utc_tz', utc_tz)
 register.filter('tg_label', tg_label)
 register.filter('srs_label', srs_label)
 register.filter('access', access)
-register.filter('with_status', with_status)
-register.filter('with_library_type', with_library_type)
 register.filter('split_into_number_and_body', split_into_number_and_body)
 register.simple_tag(dispatches_count)

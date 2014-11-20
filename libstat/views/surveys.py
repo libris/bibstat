@@ -186,12 +186,29 @@ def surveys_export(request):
 
 @permission_required('is_superuser', login_url='index')
 def surveys_overview(request, sample_year):
-    surveys = Survey.objects.filter(sample_year=sample_year)
+    table = [[""]]
+    for status in Survey.STATUSES:
+        table[0].append(status[1])
+    table[0].append("Total")
+
+    for library_type in utils.SURVEY_TARGET_GROUPS:
+        row = [library_type[1]]
+        for status in Survey.STATUSES:
+            row.append(Survey.objects.filter(is_active=True, sample_year=sample_year, _status=status[0],
+                                             library__library_type=library_type[0]).count())
+        row.append(Survey.objects.filter(is_active=True, sample_year=sample_year,
+                                         library__library_type=library_type[0]).count())
+        table.append(row)
+
+    row = ["Total"]
+    for status in Survey.STATUSES:
+        row.append(Survey.objects.filter(is_active=True, sample_year=sample_year, _status=status[0]).count())
+    row.append(Survey.objects.filter(is_active=True, sample_year=sample_year).count())
+    table.append(row)
+
     context = {
         "sample_year": sample_year,
-        "statuses": Survey.STATUSES,
-        "library_types": utils.SURVEY_TARGET_GROUPS,
-        "surveys": surveys
+        "table": table
     }
 
     return render(request, "libstat/surveys_overview.html", context)
