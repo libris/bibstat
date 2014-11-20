@@ -11,11 +11,13 @@
         </div>
         <div class="panel-body">
             Här listas alla enkäter som finns i biblioteksstatistiken.
+            {% if survey_responses %}
             <span class="pull-right">
                 <div class="form-group">
-                    <a href="#" class="btn btn-primary" data-toggle="modal" data-target="#modal-import">Importera bibliotek från bibdb och skapa enkäter</a>
+                    <a href="#" class="btn btn-primary" data-toggle="modal" data-target="#modal-import">Uppdatera information om alla bibliotek</a>
                 </div>
             </span>
+            {% endif %}
             <br><br>
             <b>Filtrera enkäter</b>
             {% if message %}
@@ -368,14 +370,25 @@
             <div class="modal-content">
                 <div class="modal-header">
                     <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
-                    <h4 class="modal-title">Bekräfta importering</h4>
+                    <h4 class="modal-title">Bekräfta uppdatering</h4>
                 </div>
                 <div class="modal-body">
-                    <p>Denna åtgärd importerar information om alla bibliotek från biblioteksdatabasen.<br>Uppdateringen kan ta några minuter att genomföra.</p>
+                    <p>
+                        Denna åtgärd hämtar information om alla bibliotek från Biblioteksdatabasen och uppdaterar eventuella förändringar hos biblioteken här i Biblioteksstatistiken för det valda året (vilket nu är <b>{{ sample_year }}</b>).
+                        <br>
+                        <br>
+                        Inga enkäter kommer försvinna och inga inlämnade enkätsvar kommer förändras. Aktiva enkäter förblir aktiva och vice versa för inaktiva enkäter, detsamma gäller även för enkäternas status. Det enda som kan ändras är information som berör biblioteken direkt - såsom bibliotekets namn, adress, bibliotekstyp, email-adress till statistikansvarig etc.
+                        <br>
+                        <br>
+                        Om det hittas bibliotek i Biblioteksdatabasen som inte har en enkät här i Biblioteksstatistiken så kommer det att automatiskt genereras nya enkäter för dessa bibliotek som hamnar under listan "Aktiva".
+                        <br>
+                        <br>
+                        Uppdateringen kan ta några minuter att genomföra.
+                    </p>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-default" data-dismiss="modal">Avbryt</button>
-                    <a href="{% url 'surveys_import_and_create' %}" class="btn btn-primary">Importera och skapa</a>
+                    <a href="{% url 'surveys_import_and_create' %}" class="btn btn-primary">Uppdatera</a>
                 </div>
             </div>
         </div>
