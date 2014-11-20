@@ -61,13 +61,15 @@ def surveys(request, *args, **kwargs):
         'statuses': Survey.STATUSES,
         'free_text': free_text,
         'surveys_state': surveys_state,
-        'num_active_surveys': Survey.objects.filter(is_active=True, sample_year=sample_year).count(),
-        'num_inactive_surveys': Survey.objects.filter(is_active=False, sample_year=sample_year).count(),
         'survey_responses': surveys,
         'message': message,
         'url_base': settings.API_BASE_URL,
         'bibdb_library_base_url': u"{}/library".format(settings.BIBDB_BASE_URL),
-        'nav_surveys_css': 'active'
+        'nav_surveys_css': 'active',
+        'num_active_surveys': (Survey.objects.filter(is_active=True, sample_year=sample_year).count()
+                               if sample_year else 0),
+        'num_inactive_surveys': (Survey.objects.filter(is_active=False, sample_year=sample_year).count()
+                                 if sample_year else 0)
     }
 
     return render(request, 'libstat/surveys.html', context)

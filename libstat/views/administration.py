@@ -25,11 +25,6 @@ def administration(request):
 
 @permission_required('is_superuser', login_url='index')
 def create_new_collection(request):
-    print("ABCABC")
-    print("ABCABC")
-    print("ABCABC")
-    print("ABCABC")
-    print("ABCABC")
     year = request.POST.get("year")
     if year:
         _create_new_collection(year)
