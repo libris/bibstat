@@ -66,35 +66,25 @@
                 </ul>
                 <ul class="nav navbar-nav navbar-right">
                     {% if user.is_authenticated %}
-                        {% if user.is_superuser %}
-                            <li class="dropdown">
-                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">
-                                    {% trans "Administrera" %}
-                                    <i class="caret"></i>
-                                </a>
-                                <ul class="dropdown-menu">
-                                    <li>
-                                        <a href="{% url 'variables' %}">
-                                            {% trans "Termer" %}
-                                        </a>
-                                    </li>
-                                    <li>
-                                        <a href="{% url 'surveys' %}">
-                                            {% trans "Enkäter" %}
-                                        </a>
-                                    </li>
-                                    <li>
-                                        <a href="{% url 'dispatches' %}">
-                                            {% trans "Utkorg" %}
-                                            <span class="badge">{% dispatches_count %}</span>
-                                        </a>
-                                    </li>
-                                </ul>
-                            </li>
-                        {% endif %}
-                        <li class="navbar-text">
-                            {% trans "Inloggad som" %} {{ user.username }}
+
+                        <li class="{{ nav_variables_css }}">
+                            <a href="{% url 'variables' %}">
+                                {% trans "Termer" %}
+                            </a>
                         </li>
+                        <li class="{{ nav_surveys_css }}">
+                            <a href="{% url 'surveys' %}">
+                                {% trans "Enkäter" %}
+                            </a>
+                        </li>
+                        <li class="{{ nav_dispatches_css }}">
+                            <a href="{% url 'dispatches' %}">
+                                {% trans "Utkorg" %}
+                                <span class="badge">{% dispatches_count %}</span>
+                            </a>
+                        </li>
+
+
                         <li>
                             <a href="{% url 'logout' %}">
                                 {% trans "Logga ut" %}
