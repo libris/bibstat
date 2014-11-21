@@ -14,7 +14,7 @@ define(['jquery', 'jquery.tablesorter'], function($) {
                 $(".table.survey_responses").addClass("tablesorter").tablesorter({
                     headers: {
                         0: { sorter: false },
-                        6: { sorter: false}
+                        7: { sorter: false}
                     },
                     sortList: [[3, 0]]
                 });

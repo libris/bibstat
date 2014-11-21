@@ -11,9 +11,9 @@ SURVEY_TARGET_GROUPS = (
     ('frisgym', u'Friskolegymnasiebibliotek'),
     ('sjukbib', u'Sjukhusbibliotek'),
     ('natbib', u'Nationalbibliotek'),
-    ('univbib', u'Universitets/högskolebibliotek'),
+    ('univbib', u'Universitets / högskolebibliotek'),
     ('busbib', u'Företagsbibliotek'),
-    ('musbib', u'Arkiv/museibibliotek'),
+    ('musbib', u'Arkiv / museibibliotek'),
     ('ovrbib', u'Övriga')
 )
 targetGroups = dict(SURVEY_TARGET_GROUPS)

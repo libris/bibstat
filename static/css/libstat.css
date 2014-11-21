@@ -2,6 +2,10 @@
  * Customizations for libstat
  */
 
+.no-sort-carets {
+    background-image: inherit !important;
+}
+
 .dispatch-label {
     font-weight: normal !important; 
 }
