@@ -242,6 +242,15 @@ class TestLibraryImport(MongoTestCase):
 
         self.assertEquals(len(Survey.objects.all()[0].observations), 1)
 
+    def test_can_create_surveys_for_multiple_years(self):
+        library = self._dummy_library(sigel="sigel1")
+        self._dummy_variable(key=survey_template(2014).cells[0].variable_key)
+
+        _create_surveys([library], 2014, ignore_missing_variables=True)
+        _create_surveys([library], 2015, ignore_missing_variables=True)
+
+        self.assertEquals(Survey.objects.count(), 2)
+
 
 class TestSurveyView(MongoTestCase):
 
