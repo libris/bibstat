@@ -5,19 +5,13 @@ from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import permission_required
 
 from libstat.views.surveys import _create_new_collection
+from libstat.survey_templates import available_years
 
 
 @permission_required('is_superuser', login_url='index')
 def administration(request):
     context = {
-        "possible_year_choices": [
-            2014,
-            2015,
-            2016,
-            2017,
-            2018,
-            2019
-        ]
+        "possible_year_choices": available_years()
     }
 
     return render(request, 'libstat/administration.html', context)

@@ -454,13 +454,17 @@ _survey_template_2014 = SurveyTemplate(
                         Row(cells=[Cell(variable_key=u"Alltkomm", types=["comment"])])])])])
 
 
-survey_templates = {
+_survey_templates = {
     2014: _survey_template_2014
 }
 
 
+def available_years():
+    return _survey_templates.keys()
+
+
 def has_template(year):
-    return year in survey_templates
+    return year in _survey_templates
 
 
 def _default_template_from_survey_response(response):
@@ -476,7 +480,7 @@ def _default_template_from_survey_response(response):
 
 
 def survey_template(year, response=None):
-    if year in survey_templates:
-        return survey_templates[year]
+    if year in _survey_templates:
+        return _survey_templates[year]
 
     return _default_template_from_survey_response(response)
