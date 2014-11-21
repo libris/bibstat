@@ -6,13 +6,18 @@ from django.contrib.auth.decorators import permission_required
 
 from libstat.models import Survey
 from libstat.views.surveys import _create_new_collection
-from libstat.survey_templates import available_years
 
 
 @permission_required('is_superuser', login_url='index')
 def administration(request):
     context = {
-        "possible_year_choices": available_years(),
+        "possible_year_choices": [
+            2014,
+            2015,
+            2016,
+            2017,
+            2018
+        ],
         "message": request.session.pop("message", None)
     }
 

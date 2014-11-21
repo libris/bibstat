@@ -459,10 +459,6 @@ _survey_templates = {
 }
 
 
-def available_years():
-    return _survey_templates.keys()
-
-
 def has_template(year):
     return year in _survey_templates
 
@@ -481,7 +477,7 @@ def _default_template_from_survey_response(response):
 
 def survey_template(year, response=None):
     year = int(year)
-    if year in _survey_templates:
-        return _survey_templates[year]
+    if year >= 2014:
+        return _survey_templates[2014]
 
     return _default_template_from_survey_response(response)
