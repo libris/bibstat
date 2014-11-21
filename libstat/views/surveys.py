@@ -93,7 +93,7 @@ def surveys_activate(request):
             survey.is_active = True
             survey.save()
         request.session["message"] = "Aktiverade {} st enkäter.".format(len(survey_ids))
-        return surveys(request, surveys_state="active")
+        return redirect(reverse("surveys_inactive"))
 
 
 @permission_required('is_superuser', login_url='index')
@@ -104,7 +104,7 @@ def surveys_inactivate(request):
             survey.is_active = False
             survey.save()
         request.session["message"] = "Inaktiverade {} st enkäter.".format(len(survey_ids))
-        return surveys(request, surveys_state="inactive")
+        return redirect(reverse("surveys_active"))
 
 
 def _surveys_redirect(request):

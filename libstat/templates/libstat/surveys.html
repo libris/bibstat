@@ -141,7 +141,7 @@
                             <div class="pull-right">
                                 <div class="btn-group">
                                     <div class="btn btn-label disabled">
-                                        Antal sökträffar: {{ survey_responses|length }}
+                                        <span id="checked-surveys">0</span> av {{ survey_responses|length }} enkäter är markerade
                                     </div>
                                     <a class="btn btn-label" href="{% url 'surveys_overview' sample_year %}">
                                         Visa översikt av insamlingen {{ sample_year }}
