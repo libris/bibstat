@@ -13,8 +13,7 @@ from libstat.survey_templates import available_years
 def administration(request):
     context = {
         "possible_year_choices": available_years(),
-        "message": request.session.pop("message", None),
-        "nav_administration_css": "active"
+        "message": request.session.pop("message", None)
     }
 
     return render(request, 'libstat/administration.html', context)
