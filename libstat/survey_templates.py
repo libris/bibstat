@@ -480,6 +480,7 @@ def _default_template_from_survey_response(response):
 
 
 def survey_template(year, response=None):
+    year = int(year)
     if year in _survey_templates:
         return _survey_templates[year]
 

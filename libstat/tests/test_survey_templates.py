@@ -2,6 +2,7 @@
 from libstat.tests import MongoTestCase
 
 from libstat.models import Cell, Row, Group
+from libstat.survey_templates import survey_template, _survey_template_2014
 
 
 class TestSurveyTemplate(MongoTestCase):
@@ -45,3 +46,8 @@ class TestSurveyTemplate(MongoTestCase):
         cell = Cell(variable_key=self._dummy_variable(key="var1_key", description="var1_sample_description").key)
 
         self.assertEquals(cell.explanation, "var1_sample_description")
+
+    def test_returns_template_for_2014(self):
+        template = survey_template(2014)
+
+        self.assertEquals(template, _survey_template_2014)

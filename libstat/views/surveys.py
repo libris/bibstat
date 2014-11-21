@@ -227,7 +227,7 @@ def surveys_statuses(request):
     return _surveys_redirect(request)
 
 
-def _create_surveys(libraries, sample_year):
+def _create_surveys(libraries, sample_year, ignore_missing_variables=False):
     template_cells = survey_template(sample_year).cells
 
     variables = {}  # Fetch variables once for IO-performance
@@ -251,6 +251,8 @@ def _create_surveys(libraries, sample_year):
             for cell in template_cells:
                 variable_key = cell.variable_key
                 if not variable_key in variables:
+                    if ignore_missing_variables:
+                        continue
                     raise Exception("Can't find variable with key '{}'".format(variable_key))
                 survey.observations.append(SurveyObservation(variable=variables[variable_key]))
             created += 1

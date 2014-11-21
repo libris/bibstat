@@ -6,6 +6,7 @@ from libstat.tests import MongoTestCase
 
 from libstat.models import Survey
 from libstat.views.surveys import _surveys_as_excel, _dict_to_library, _create_surveys
+from libstat.survey_templates import survey_template
 
 
 class TestSurveyAuthorization(MongoTestCase):
@@ -232,6 +233,14 @@ class TestLibraryImport(MongoTestCase):
         _create_surveys([new_library], 2013)
 
         self.assertEquals(Survey.objects.count(), 3)
+
+    def test_creates_new_surveys_from_2014_template(self):
+        library = self._dummy_library(sigel="sigel1")
+        self._dummy_variable(key=survey_template(2014).cells[0].variable_key)
+
+        _create_surveys([library], 2014, ignore_missing_variables=True)
+
+        self.assertEquals(len(Survey.objects.all()[0].observations), 1)
 
 
 class TestSurveyView(MongoTestCase):
