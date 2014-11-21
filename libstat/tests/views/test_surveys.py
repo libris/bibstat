@@ -395,3 +395,21 @@ class TestSurveyState(MongoTestCase):
         self.assertTrue(survey1.is_active)
         self.assertTrue(survey2.is_active)
         self.assertFalse(survey3.is_active)
+
+
+class TestSurveysOverview(MongoTestCase):
+
+    def test_can_view_overview_when_logged_in(self):
+        self._login()
+        self._dummy_survey()
+
+        response = self._get("surveys_overview", kwargs={"sample_year": 2014})
+
+        self.assertEquals(response.status_code, 200)
+
+    def test_can_not_view_overview_when_not_logged_in(self):
+        self._dummy_survey()
+
+        response = self._get("surveys_overview", kwargs={"sample_year": 2014})
+
+        self.assertEquals(response.status_code, 302)
