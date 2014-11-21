@@ -237,13 +237,13 @@ def _create_surveys(libraries, sample_year, ignore_missing_variables=False):
         variables[variable.key] = variable
 
     existing_surveys = {}
-    for survey in Survey.objects.filter(sample_year=sample_year):
-        existing_surveys[(survey.library.sigel, survey.sample_year)] = survey
+    for survey in Survey.objects.filter(sample_year=int(sample_year)):
+        existing_surveys[survey.library.sigel] = survey
 
     created = 0
     for library in libraries:
-        if (library.sigel, sample_year) in existing_surveys:
-            survey = existing_surveys[(library.sigel, sample_year)]
+        if library.sigel in existing_surveys:
+            survey = existing_surveys[library.sigel]
             survey.library = library
         else:
             survey = Survey(

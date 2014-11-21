@@ -26,11 +26,11 @@ def administration(request):
 
 @permission_required('is_superuser', login_url='index')
 def create_new_collection(request):
-    year = request.POST.get("year")
+    sample_year = request.POST.get("year")
 
-    if int(year) in [int(year) for year in Survey.objects.distinct("sample_year")]:
-        request.session["message"] = "Kan inte skapa en ny omgång för {}, den omgången finns redan".format(year)
+    if int(sample_year) in [int(year) for year in Survey.objects.distinct("sample_year")]:
+        request.session["message"] = "Kan inte skapa en ny omgång för {}, den omgången finns redan".format(sample_year)
         return redirect(reverse("administration"))
-    elif year:
-        _create_new_collection(int(year))
+    elif sample_year:
+        _create_new_collection(int(sample_year))
         return redirect(reverse('surveys'))
