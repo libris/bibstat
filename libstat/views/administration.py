@@ -28,5 +28,5 @@ def create_new_collection(request):
         request.session["message"] = "Kan inte skapa en ny omgång för {}, den omgången finns redan".format(year)
         return redirect(reverse("administration"))
     elif year:
-        _create_new_collection(year)
-    return redirect(reverse('surveys'))
+        _create_new_collection(int(year))
+        return redirect(reverse('surveys'))
