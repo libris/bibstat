@@ -190,7 +190,7 @@ class SurveyForm(forms.Form):
         self.fields["read_only"] = forms.CharField(required=False, widget=forms.HiddenInput(attrs={"id": "read_only"}))
         self.fields["key"] = forms.CharField(required=False, widget=forms.HiddenInput(), initial=survey.pk)
         self.fields["selected_status"] = forms.CharField(
-            required=False, widget=forms.HiddenInput(), initial=self._status_label(survey.status))
+            required=False, widget=forms.HiddenInput(), initial=survey.status)
         self.fields["principal"] = forms.ChoiceField(
             required=False, choices=Survey.PRINCIPALS, initial=survey.principal)
 
