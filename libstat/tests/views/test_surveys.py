@@ -327,25 +327,6 @@ class TestSurveyView(MongoTestCase):
 
         self.assertContains(response, 'value="{}"'.format(survey.id))
 
-    def test_each_survey_response_should_have_a_link_to_details_view(self):
-        survey = self._dummy_survey(sample_year=2013)
-
-        response = self._get("surveys", params={"action": "list", "sample_year": "2013"})
-
-        self.assertContains(response, u'<a href="{}" title="Visa/redigera enkätsvar">Visa/redigera</a>'
-                            .format(reverse("survey", kwargs={"survey_id": str(survey.id)})),
-                            count=1, status_code=200, html=True)
-
-    def test_each_survey_response_should_have_a_link_to_bibdb(self):
-        library = self._dummy_library(name="lib1", sigel="lib1_sigel")
-        self._dummy_survey(sample_year=2013, library=library)
-
-        response = self._get("surveys", params={"action": "list", "sample_year": "2013"})
-
-        self.assertContains(response, "<a href='http://bibdb.libris.kb.se/library/{}'>{}</a>"
-                            .format(library.sigel, library.name),
-                            count=1, status_code=200, html=True)
-
 
 class TestSurveyState(MongoTestCase):
 
