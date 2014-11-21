@@ -10,6 +10,7 @@ from libstat.views.surveys import _create_new_collection
 @permission_required('is_superuser', login_url='index')
 def administration(request):
     context = {
+        "nav_administration_css": "active",
         "possible_year_choices": [
             2014,
             2015,
