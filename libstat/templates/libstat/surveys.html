@@ -196,8 +196,10 @@
                                         data-city="{{ sr.library.city }}"/>
                             </td>
                             <td>
-                                <a href="{% url 'survey' sr.id %}">
-                                    {{ sr.library.name }}
+                                <a title="" class="survey-popover" data-placement="top"
+                                       data-toggle="tooltip" href="{% url 'survey' sr.id %}" 
+                                       data-original-title="Öppna bibliotekets enkät">
+                                        {{ sr.library.name }}
                                 </a>
                             </td>
                             <td>
@@ -214,12 +216,12 @@
                             </td>
                             <td>
                                 {% if sr.is_published and not sr.latest_version_published %}
-                                    <a class="label label-danger modified-after-publish" title="" data-placement="top"
+                                    <a class="label label-danger survey-popover modified-after-publish" title="" data-placement="top"
                                        data-toggle="tooltip" href="#" data-original-title="Enkäten har ändrats efter publicering">
                                         {{ sr.published_at|utc_tz|date:"Y-m-d H:i" }}
                                     </a>
                                 {% elif not sr.is_published and sr.published_at %}
-                                    <a class="label label-danger modified-after-publish" title="" data-placement="top"
+                                    <a class="label label-danger survey-popover modified-after-publish" title="" data-placement="top"
                                        data-toggle="tooltip" href="#" data-original-title="Enkätens publicering har återkallats. Inget data i enkäten är synlig för allmänheten. Publicera enkäten igen för att synliggöra datan för allmänheten.">
                                         {{ sr.published_at|utc_tz|date:"Y-m-d H:i" }}
                                     </a>
@@ -231,7 +233,9 @@
                             </td>
                             <td>
                                 {% if sr.library and sr.library.sigel %}
-                                    <a href="{{ bibdb_library_base_url }}/{{ sr.library.sigel }}">
+                                    <a title="" class="survey-popover" data-placement="top" data-toggle="tooltip" 
+                                       href="{{ bibdb_library_base_url }}/{{ sr.library.sigel }}" 
+                                       data-original-title="Visa biblioteket i Biblioteksdatabasen">
                                         <i class="fa fa-external-link"></i>
                                     </a>
                                 {% endif %}

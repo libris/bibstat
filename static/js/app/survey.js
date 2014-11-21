@@ -368,8 +368,9 @@ define(['jquery', 'survey.sum', 'survey.cell', 'surveys.dispatch', 'bootstrap.va
             }).on('hide.bs.collapse', function() {
                 setIcon($(this).attr('id'), 'collapse');
             });
+            
+            $('.survey-popover').tooltip();
 
-            $('.modified-after-publish').tooltip();
             $('.modified-after-publish').on("click", function(e) {
                 e.preventDefault();
             });
