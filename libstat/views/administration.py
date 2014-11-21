@@ -11,7 +11,8 @@ from libstat.survey_templates import available_years
 @permission_required('is_superuser', login_url='index')
 def administration(request):
     context = {
-        "possible_year_choices": available_years()
+        "possible_year_choices": available_years(),
+        "nav_administration_css": "active"
     }
 
     return render(request, 'libstat/administration.html', context)
