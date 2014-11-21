@@ -284,3 +284,14 @@ label.sub-label {
 .fa.fa-inline {
     margin-right: 0.25em;
 }
+
+.panel-heading-page .panel-title {
+    margin-right: 5px;
+    font-weight: bold;
+    font-size: 20px;
+}
+
+.panel-heading-page .panel-subtitle {
+    font-style: italic;
+    color: rgb(151, 151, 151);
+}
