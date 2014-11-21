@@ -10,6 +10,15 @@
             <h3 class="panel-title">Administrera</h3>
         </div>
         <div class="panel-body">
+            {% if message %}
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="alert alert-info" role="alert">
+                            {{ message|linebreaks }}
+                        </div>
+                    </div>
+                </div>
+            {% endif %}
             <p>
                 Här kan du skapa en ny omgång av insamlingen av den officiella biblioteksstatistiken.
             </p>
