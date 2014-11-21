@@ -38,8 +38,10 @@ def surveys(request, *args, **kwargs):
     free_text = request.GET.get("free_text", "").strip()
 
     surveys = []
-    if not sample_year:
-        message = u"Du måste ange för vilket år du vill lista enkätsvar."
+    if Survey.objects.count() == 0:
+        message = u"Det finns inga enkäter inlagda i systemet"
+    elif not sample_year:
+        message = u"Du måste ange för vilket år du vill lista enkätsvar"
     else:
         surveys = Survey.objects.by(
             sample_year=sample_year,
@@ -92,7 +94,7 @@ def surveys_activate(request):
         for survey in Survey.objects.filter(pk__in=survey_ids):
             survey.is_active = True
             survey.save()
-        request.session["message"] = "Aktiverade {} st enkäter.".format(len(survey_ids))
+        request.session["message"] = "Aktiverade {} st enkäter".format(len(survey_ids))
         return redirect(reverse("surveys_inactive"))
 
 
@@ -103,7 +105,7 @@ def surveys_inactivate(request):
         for survey in Survey.objects.filter(pk__in=survey_ids):
             survey.is_active = False
             survey.save()
-        request.session["message"] = "Inaktiverade {} st enkäter.".format(len(survey_ids))
+        request.session["message"] = "Inaktiverade {} st enkäter".format(len(survey_ids))
         return redirect(reverse("surveys_active"))
 
 
@@ -221,7 +223,7 @@ def surveys_statuses(request):
     for survey in Survey.objects.filter(id__in=survey_response_ids):
         survey.status = status
         survey.save()
-    message = u"Ändrade status på {} enkäter.".format(len(survey_response_ids))
+    message = u"Ändrade status på {} enkäter".format(len(survey_response_ids))
 
     request.session["message"] = message
     return _surveys_redirect(request)
