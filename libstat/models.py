@@ -14,6 +14,7 @@ from datetime import datetime
 
 from libstat.utils import ISO8601_utc_format
 from libstat.utils import SURVEY_TARGET_GROUPS, targetGroups, VARIABLE_TYPES, rdfVariableTypes
+from data.municipalities import MUNICIPALITIES
 
 
 logger = logging.getLogger(__name__)
@@ -376,11 +377,15 @@ class SurveyResponseQuerySet(QuerySet):
 
         free_text_query = Q()
         if free_text:
-            free_text = free_text.strip()
+            free_text = free_text.strip().lower()
+            municipality_codes = [m[1] for m in MUNICIPALITIES if free_text in m[0].lower()]
+
             free_text_municipality_code_query = Q(library__municipality_code__icontains=free_text)
+            free_text_municipality_name_query = Q(library__municipality_code__in=municipality_codes)
             free_text_email_query = Q(library__email__icontains=free_text)
             free_text_library_name_query = Q(library__name__icontains=free_text)
-            free_text_query = free_text_municipality_code_query | free_text_email_query | free_text_library_name_query
+            free_text_query = (free_text_municipality_code_query | free_text_email_query | free_text_library_name_query
+                               | free_text_municipality_name_query)
 
         return self.filter(target_group_query & sample_year_query & status_query &
                            municipality_code_query & free_text_query & is_active_query).exclude("observations")

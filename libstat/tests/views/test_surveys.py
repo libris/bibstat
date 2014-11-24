@@ -301,6 +301,15 @@ class TestSurveyView(MongoTestCase):
 
         self.assertEquals(len(response.context["survey_responses"]), 2)
 
+    def test_should_list_surveys_when_searching_with_free_text_on_partial_municipality_name(self):
+        self._dummy_survey(library=self._dummy_library(municipality_code="0126"))
+        self._dummy_survey(library=self._dummy_library(municipality_code="0300"))
+        self._dummy_survey(library=self._dummy_library(municipality_code="0126"))
+
+        response = self._get("surveys", params={"action": "list", "free_text": " ING  "})
+
+        self.assertEquals(len(response.context["survey_responses"]), 2)
+
     def test_should_list_surveys_when_searching_with_free_text_on_partial_library_name(self):
         self._dummy_survey(library=self._dummy_library(name="abcdef"))
         self._dummy_survey(library=self._dummy_library(name="ghijkl"))
