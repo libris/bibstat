@@ -1,9 +1,11 @@
+{% load libstat_tags %}
+
 <div class="container">
     <div class="jumbotron">
         <p>
-            Du ser nu {{ form.sample_year }} års enkät för <b>{{ form.library_name }}</b>.
+            Du ser nu {{ form.sample_year }} års enkät för <b>{{ form.library_name }} ({{ form.library_sigel }})</b>.
             {% if form.city %}
-                <br>Biblioteket finns i <b>{{ form.city }}</b>{% if form.municipality_code %}, som har kommunkoden <b>{{ form.municipality_code }}</b>{% endif %}.
+                <br>Biblioteket finns i <b>{{ form.city }}</b>{% if form.municipality_code %}, som finns i <b>{{ form.municipality_code|municipality_name }}</b> med kommunkod <b>{{ form.municipality_code }}</b>{% endif %}.
             {% endif %}
 
             <br><br>Enkäten har status <b>{{ form.status|lower }}</b> och är

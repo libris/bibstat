@@ -196,6 +196,7 @@ class SurveyForm(forms.Form):
 
         self.intro_text = Variable.objects.get(key=template.intro_text_variable_key).description
         self.library_name = survey.library.name
+        self.library_sigel = survey.library.sigel
         self.city = survey.library.city
         self.municipality_code = survey.library.municipality_code
         self.sample_year = survey.sample_year
