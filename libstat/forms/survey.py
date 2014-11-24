@@ -194,7 +194,8 @@ class SurveyForm(forms.Form):
         self.fields["principal"] = forms.ChoiceField(
             required=False, choices=Survey.PRINCIPALS, initial=survey.principal)
 
-        self.intro_text = Variable.objects.get(key=template.intro_text_variable_key).description
+        intro_variable = Variable.objects.filter(key=template.intro_text_variable_key)
+        self.intro_text = intro_variable[0].description if intro_variable.count() != 0 else ""
         self.library_name = survey.library.name
         self.library_sigel = survey.library.sigel
         self.city = survey.library.city
