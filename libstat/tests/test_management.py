@@ -29,7 +29,7 @@ class ImportVariablesTest(MongoTestCase):
 
     def test_should_import_public_lib_variables(self):
         args = []
-        opts = {"file": "data/folk_termer.xlsx", "target_group": "folkbib"}
+        opts = {"file": "data/variables/folk_termer.xlsx", "target_group": "folkbib"}
         call_command('import_variables', *args, **opts)
 
         # Check that all variables have been imported
@@ -66,7 +66,7 @@ class ImportVariablesTest(MongoTestCase):
 
     def test_should_update_public_lib_variables(self):
         args = []
-        opts = {"file": "data/folk_termer.xlsx", "target_group": "folkbib"}
+        opts = {"file": "data/variables/folk_termer.xlsx", "target_group": "folkbib"}
         call_command('import_variables', *args, **opts)
 
         # Check that all variables have been imported
@@ -76,7 +76,7 @@ class ImportVariablesTest(MongoTestCase):
 
         # Changing target group to avoid having to modify terms file
         args = []
-        opts = {"file": "data/folk_termer.xlsx", "target_group": "skolbib"}
+        opts = {"file": "data/variables/folk_termer.xlsx", "target_group": "skolbib"}
         call_command('import_variables', *args, **opts)
 
         # Check that no new variables have been created
@@ -86,7 +86,7 @@ class ImportVariablesTest(MongoTestCase):
 
     def test_should_import_research_lib_variables(self):
         args = []
-        opts = {"file": "data/forsk_termer.xlsx", "target_group": "specbib"}
+        opts = {"file": "data/variables/forsk_termer.xlsx", "target_group": "specbib"}
         call_command('import_variables', *args, **opts)
 
         # Check that all variables have been imported
@@ -117,7 +117,7 @@ class ImportVariablesTest(MongoTestCase):
 
     def test_should_update_research_lib_variables(self):
         args = []
-        opts = {"file": "data/forsk_termer.xlsx", "target_group": "specbib"}
+        opts = {"file": "data/variables/forsk_termer.xlsx", "target_group": "specbib"}
         call_command('import_variables', *args, **opts)
 
         # Check that all variables have been imported
@@ -127,7 +127,7 @@ class ImportVariablesTest(MongoTestCase):
 
         # Changing target group to avoid having to modify terms file
         args = []
-        opts = {"file": "data/forsk_termer.xlsx", "target_group": "sjukbib"}
+        opts = {"file": "data/variables/forsk_termer.xlsx", "target_group": "sjukbib"}
         call_command('import_variables', *args, **opts)
 
         # Check that no new variables have been created
@@ -137,7 +137,7 @@ class ImportVariablesTest(MongoTestCase):
 
     def test_should_import_hospital_lib_variables(self):
         args = []
-        opts = {"file": "data/sjukhus_termer.xlsx", "target_group": "sjukbib"}
+        opts = {"file": "data/variables/sjukhus_termer.xlsx", "target_group": "sjukbib"}
         call_command('import_variables', *args, **opts)
 
         # Check that all variables have been imported
@@ -159,7 +159,7 @@ class ImportVariablesTest(MongoTestCase):
 
     def test_should_update_hospital_lib_variables(self):
         args = []
-        opts = {"file": "data/sjukhus_termer.xlsx", "target_group": "sjukbib"}
+        opts = {"file": "data/variables/sjukhus_termer.xlsx", "target_group": "sjukbib"}
         call_command('import_variables', *args, **opts)
 
         # Check that all variables have been imported
@@ -169,7 +169,7 @@ class ImportVariablesTest(MongoTestCase):
 
         # Changing target group to avoid having to modify terms file
         args = []
-        opts = {"file": "data/sjukhus_termer.xlsx", "target_group": "sjukbib"}
+        opts = {"file": "data/variables/sjukhus_termer.xlsx", "target_group": "sjukbib"}
         call_command('import_variables', *args, **opts)
 
         # Check that no new variables have been created
@@ -179,7 +179,7 @@ class ImportVariablesTest(MongoTestCase):
 
     def test_should_import_school_lib_variables(self):
         args = []
-        opts = {"file": "data/skol_termer.xlsx", "target_group": "skolbib"}
+        opts = {"file": "data/variables/skol_termer.xlsx", "target_group": "skolbib"}
         call_command('import_variables', *args, **opts)
 
         # Check that all variables have been imported
@@ -207,7 +207,7 @@ class ImportVariablesTest(MongoTestCase):
 
     def test_should_update_school_lib_variables(self):
         args = []
-        opts = {"file": "data/skol_termer.xlsx", "target_group": "skolbib"}
+        opts = {"file": "data/variables/skol_termer.xlsx", "target_group": "skolbib"}
         call_command('import_variables', *args, **opts)
 
         # Check that all variables have been imported
@@ -217,7 +217,7 @@ class ImportVariablesTest(MongoTestCase):
 
         # Changing target group to avoid having to modify terms file
         args = []
-        opts = {"file": "data/skol_termer.xlsx", "target_group": "specbib"}
+        opts = {"file": "data/variables/skol_termer.xlsx", "target_group": "specbib"}
         call_command('import_variables', *args, **opts)
 
         # Check that no new variables have been created
@@ -230,7 +230,7 @@ class ImportSurveyResponsesTest(MongoTestCase):
 
     def setUp(self):
         args = []
-        opts = {"file": "data/folk_termer.xlsx", "target_group": "folkbib"}
+        opts = {"file": "data/variables/folk_termer.xlsx", "target_group": "folkbib"}
         call_command('import_variables', *args, **opts)
 
         # Check that all variables have been imported
