@@ -14,11 +14,21 @@
                     Här finns samtliga publiceringar som gjorts under de senaste elva åren.
                 {% endblocktrans %}
             </p>
-
             <p>
                 <a class="btn btn-primary btn-lg" role="button"
                    href="http://www.kb.se/bibliotek/Statistik-kvalitet/biblioteksstatistik/">
                     {% trans "Läs mer" %} &raquo;
+                </a>
+            </p>
+            <p>
+                {% blocktrans %}
+                    Vi informerar kontinuerligt om publicering av insamlad data, samt korrigeringar och uppdateringar av insamlad data.
+                {% endblocktrans %}
+            </p>
+            <p>
+                <a class="btn btn-primary btn-lg" role="button"
+                        href="{% url 'articles' %}">
+                    {% trans "Info om publiceringar" %} &raquo;
                 </a>
             </p>
         </div>

@@ -2,6 +2,25 @@
  * Customizations for libstat
  */
 
+.article .title {
+    font-family: helvetica;
+    font-weight: bold;
+    font-size: 20px;
+    margin-bottom: 10px;
+}
+
+.article .date_published {
+    font-style: italic;
+}
+
+.article {
+    border-left-width: 10px;
+    border-left-style: solid;
+    border-left-color: black;
+    padding-left: 10px;
+    margin-bottom: 30px;
+}
+
 .no-sort-carets {
     background-image: inherit !important;
 }

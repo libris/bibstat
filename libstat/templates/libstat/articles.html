@@ -1,0 +1,37 @@
+{% extends "libstat/base.html" %}
+{% load i18n %}
+{% load libstat_tags %}
+
+
+
+{% block content %}
+<div class="container">
+    <div class="panel panel-default">
+        <div class="panel-heading panel-heading-page">
+            <span class="panel-title">Publiceringar</span>
+            <span class="panel-subtitle">Här visas information om de publiceringar och korrigeringar som berör biblioteksstatistiken.</span>
+        </div>
+        <div class="panel-body">
+        	{% for article in articles %}
+        		<div class="article">
+	            	<div class="row title">
+	            		<div class="col-md-6">
+	            			{{ article.title }}
+	            		</div>
+	            	</div>
+	        		<div class="row content">
+	            		<div class="col-md-6">
+	            			{{ article.content|linebreaks }}
+	        			</div>
+	        		</div>
+	        		<div class="row date_published">
+	            		<div class="col-md-6">
+	        				Publicerad: {{ article.date_published }}
+	        			</div>
+	        		</div>
+	        	</div>
+        	{% endfor %}
+        </div>
+    </div>
+</div>	
+{% endblock %}

@@ -20,6 +20,17 @@ from data.municipalities import MUNICIPALITIES
 logger = logging.getLogger(__name__)
 
 
+class Article(Document):
+    title = StringField()
+    content = StringField()
+    date_published = DateTimeField(default=datetime.utcnow())
+
+    meta = {
+        'collection': 'libstat_articles',
+        'ordering': ['date_published']
+    }
+
+
 class VariableQuerySet(QuerySet):
     is_draft_not_set_query = Q(is_draft=None)
     is_not_draft_query = Q(is_draft=False)
