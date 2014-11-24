@@ -6,7 +6,6 @@ import random
 from mongoengine import *
 from mongoengine import signals
 from mongoengine.queryset import Q
-from mongoengine.django.auth import User
 from mongoengine.errors import DoesNotExist
 from mongoengine.queryset.queryset import QuerySet
 from django.conf import settings
@@ -344,6 +343,7 @@ class Section(EmbeddedDocument):
 
 
 class SurveyTemplate(Document):
+    intro_text_variable_key = StringField()
     sections = ListField(EmbeddedDocumentField(Section))
 
     @property

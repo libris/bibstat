@@ -194,6 +194,7 @@ class SurveyForm(forms.Form):
         self.fields["principal"] = forms.ChoiceField(
             required=False, choices=Survey.PRINCIPALS, initial=survey.principal)
 
+        self.intro_text = Variable.objects.get(key=template.intro_text_variable_key).description
         self.library_name = survey.library.name
         self.city = survey.library.city
         self.municipality_code = survey.library.municipality_code
