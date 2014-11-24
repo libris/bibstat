@@ -49,12 +49,12 @@
                                         {% endif %}>
                                     Alla kommuner/län
                                 </option>
-                                {% for code in municipality_codes %}
-                                    <option value="{{ code }}"
-                                            {% ifequal code|slugify municipality_code %}
+                                {% for municipality in municipality_codes %}
+                                    <option value="{{ municipality.1 }}"
+                                            {% ifequal municipality.1|slugify municipality_code %}
                                             selected="selected"
                                             {% endifequal %}>
-                                        {{ code|municipality_name|default:"" }} ({{ code }})
+                                        {{ municipality.0 }} ({{ municipality.1 }})
                                     </option>
                                 {% endfor %}
                             </select>

@@ -14,7 +14,7 @@ from bibstat import settings
 from libstat import utils
 from libstat.models import Survey, Library, SurveyObservation, Variable
 from libstat.survey_templates import has_template, survey_template
-
+from data.municipalities import municipalities
 
 logger = logging.getLogger(__name__)
 
@@ -28,6 +28,7 @@ def surveys(request, *args, **kwargs):
     sample_years.reverse()
 
     municipality_codes = Survey.objects.distinct("library.municipality_code")
+    municipality_codes = [(municipalities[code], code) for code in municipality_codes]
     municipality_codes.sort()
 
     target_group = request.GET.get("target_group", "")
