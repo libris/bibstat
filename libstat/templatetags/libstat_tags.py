@@ -7,7 +7,7 @@ from django import template
 from libstat.models import Dispatch, Survey
 
 from libstat.utils import target_groups_label
-
+from data.municipalities import municipalities
 
 register = template.Library()
 
@@ -39,9 +39,14 @@ def split_into_number_and_body(description):
         return ("", description)
 
 
+def municipality_name(municipality_code):
+    return municipalities.get(municipality_code, None)
+
+
 register.filter('utc_tz', utc_tz)
 register.filter('tg_label', tg_label)
 register.filter('srs_label', srs_label)
 register.filter('access', access)
+register.filter('municipality_name', municipality_name)
 register.filter('split_into_number_and_body', split_into_number_and_body)
 register.simple_tag(dispatches_count)

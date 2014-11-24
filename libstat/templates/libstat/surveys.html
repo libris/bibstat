@@ -55,14 +55,14 @@
                                         {% if not municipality_code %}
                                         selected="selected"
                                         {% endif %}>
-                                    Alla kommunkoder
+                                    Alla kommuner/län
                                 </option>
                                 {% for code in municipality_codes %}
                                     <option value="{{ code }}"
                                             {% ifequal code|slugify municipality_code %}
                                             selected="selected"
                                             {% endifequal %}>
-                                        {{ code }}
+                                        {{ code|municipality_name|default:"" }} ({{ code }})
                                     </option>
                                 {% endfor %}
                             </select>
@@ -177,12 +177,13 @@
                         <input title="Markera alla" class="select-all"
                                type="checkbox" value="all"/>
                     </th>
-                    <th class="column library">Bibliotek</th>
-                    <th class="column sample_year">Kommunkod</th>
-                    <th class="column target_group">Bibliotekstyp</th>
-                    <th class="column email">Email</th>                    
-                    <th class="column status">Status</th>
-                    <th class="column published">Publicerad</th>
+                    <th class="column">Bibliotek</th>
+                    <th class="column">Kommun</th>
+                    <th class="column">Kod</th>
+                    <th class="column">Bibliotekstyp</th>
+                    <th class="column">Email</th>                    
+                    <th class="column">Status</th>
+                    <th class="column">Publicerad</th>
                     <th class="no-sort-carets"></th>
                 </tr>
                 </thead>
@@ -202,6 +203,9 @@
                                        data-original-title="Öppna bibliotekets enkät">
                                         {{ sr.library.name }}
                                 </a>
+                            </td>
+                            <td nowrap>
+                                {{ sr.library.municipality_code|municipality_name|default:"" }}
                             </td>
                             <td>
                                 {{ sr.library.municipality_code|default:"" }}
