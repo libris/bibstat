@@ -12,15 +12,7 @@
             <span class="pull-right" style="margin-top: 4px;"><a href="{% url 'administration' %}" >Skapa ny omgång</a></span>
         </div>
         <div class="panel-body">
-            {% if survey_responses %}
-            <span class="pull-right">
-                <div class="form-group">
-                    <a href="#" class="btn btn-primary" data-toggle="modal" data-target="#modal-import">Uppdatera information om alla bibliotek</a>
-                </div>
-            </span>
-            {% endif %}
-            <br><br>
-            <b>Filtrera enkäter</b>
+            <p><b>Välj de enkäter som ska visas:</b></p>
             {% if message %}
                 <div class="row">
                     <div class="col-md-6">
@@ -87,7 +79,7 @@
                                         {% if not status %}
                                         selected="selected"
                                         {% endif %}>
-                                    Alla statusar
+                                    Alla status
                                 </option>
                                 {% for status_choice in statuses %}
                                 <option value="{{ status_choice.0 }}"
@@ -101,7 +93,7 @@
                             <input type="text" name="free_text" value="{{ free_text }}" class="form-control" placeholder="Sökord">
                             <button type="submit" name="action" value="list"
                                     class="btn btn-primary">
-                                Lista enkäter
+                                Visa
                             </button>
                         </div>
                     </div>
@@ -109,10 +101,8 @@
                 <hr>
                 {% if survey_responses %}
                     <div class="row surveys-actions">
-                        <div class="col-md-12">
-                            <p>
-                                <b>För de markerade enkäterna:</b>
-                            </p>
+                        <div class="col-md-6">
+                            <p><b>För de markerade enkäterna:</b></p>
                             <div class="form-group">
                                 <a href="#" class="btn btn-primary btn-toggle btn-survey disabled" data-toggle="modal"
                                    data-target="#change-status-modal">
@@ -139,14 +129,19 @@
                                 </a>
                                 {% endif %}                               
                             </div>
-                            <div class="pull-right">
-                                <div class="btn-group">
-                                    <div class="btn btn-label disabled">
-                                        <span id="checked-surveys">0</span> av {{ survey_responses|length }} enkäter är markerade
-                                    </div>
-                                    <a class="btn btn-label" href="{% url 'surveys_overview' sample_year %}">
-                                        Visa översikt av insamlingen {{ sample_year }}
-                                    </a>
+                        </div>
+
+                        <div class="col-md-6">
+                            <p><b>För alla enkäter under {{ sample_year }} års omgång:</b></p>
+                            <a href="#" class="btn btn-primary" data-toggle="modal" data-target="#modal-import">Uppdatera biblioteksinformation</a>
+                            <a class="btn btn-primary" href="{% url 'surveys_overview' sample_year %}">Visa översikt av insamlingen</a>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="btn-group">
+                                <div class="btn btn-label disabled" style="padding-left: 0px;">
+                                    <span id="checked-surveys">0</span> av {{ survey_responses|length }} enkäter är markerade
                                 </div>
                             </div>
                         </div>
@@ -156,7 +151,7 @@
         </div>
         <ul class="nav nav-tabs">
             <li role="presentation" {% if surveys_state == "active" %} class="active" {% endif %} style="margin-left:15px;">
-                <a href="{% url 'surveys_active' %}">Aktiva <span class="badge">{{ num_active_surveys }}</span></a>
+                <a href="{% url 'surveys_active' %}">Aktiva <span class="badge">{{ survey_responses|length }}</span></a>
             </li>
             <li role="presentation" {% if surveys_state == "inactive" %} class="active" {% endif %}>
                 <a href="{% url 'surveys_inactive' %}">Inaktiva <span class="badge">{{ num_inactive_surveys }}</span></a>
