@@ -485,6 +485,7 @@ class SurveyBase(Document):
     date_modified = DateTimeField(required=True, default=datetime.utcnow)
     observations = ListField(EmbeddedDocumentField(SurveyObservation))
     _status = StringField(choices=STATUSES, default="not_viewed")
+    notes = StringField()
     library = EmbeddedDocumentField(Library)
     selected_libraries = ListField(StringField())
     sample_year = IntField()

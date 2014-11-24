@@ -91,9 +91,17 @@ def survey(request, survey_id):
 @permission_required('is_superuser', login_url='index')
 def survey_status(request, survey_id):
     if request.method == "POST":
-        status = request.POST[u'selected_status']
         survey = Survey.objects.get(pk=survey_id)
-        survey.status = status
+        survey.status = request.POST[u'selected_status']
+        survey.save()
+
+    return redirect(reverse('survey', args=(survey_id,)))
+
+@permission_required('is_superuser', login_url='index')
+def survey_notes(request, survey_id):
+    if request.method == "POST":
+        survey = Survey.objects.get(pk=survey_id)
+        survey.notes = request.POST[u'notes']
         survey.save()
 
     return redirect(reverse('survey', args=(survey_id,)))

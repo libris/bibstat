@@ -295,3 +295,7 @@ label.sub-label {
     font-style: italic;
     color: rgb(151, 151, 151);
 }
+
+.textarea-vertical {
+    resize: vertical;
+}
