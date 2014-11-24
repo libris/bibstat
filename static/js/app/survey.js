@@ -10,6 +10,9 @@ define(['jquery', 'survey.sum', 'survey.cell', 'surveys.dispatch', 'bootstrap.va
         inputs: function () {
             return survey.form("input:not([type='checkbox'])").not("[type='hidden']");
         },
+        changeableInputs: function() {
+            return survey.form("input:not([type='checkbox']),textarea").not("[type='hidden']").not('.form-excluded')
+        },
         disabledInputs: function () {
             return survey.inputs().filter("[disabled]");
         },
@@ -346,7 +349,7 @@ define(['jquery', 'survey.sum', 'survey.cell', 'surveys.dispatch', 'bootstrap.va
                 survey.validator().validate();
             });
 
-            cell.onChange(survey.form("input,textarea").not("[type='hidden']"), function () {
+            cell.onChange(survey.changeableInputs(), function () {
                 showChangesNotSaved();
             });
 

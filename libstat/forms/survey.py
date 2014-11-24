@@ -204,6 +204,8 @@ class SurveyForm(forms.Form):
         self.can_submit = not authenticated and survey.status in ("not_viewed", "initiated")
         self.password = survey.password
         self.status = self._status_label(survey.status)
+        self.notes = survey.notes
+        self.notes_rows = min(max(5, survey.notes.count('\n')) + 1, 10)
         self.statuses = Survey.STATUSES
         self.is_published = survey.status == "published"
         self.sections = template.sections

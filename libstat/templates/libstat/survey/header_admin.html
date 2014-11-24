@@ -60,6 +60,17 @@
             <br><b>{{ form.url }}</b>
         </p>
 
+        <hr>
+        <p>Rutan nedan är för information som endast administratörer kan visa och redigera.</p>
+        <form class="form" method="post" action="{% url 'survey_notes' form.key.value %}">
+            {% csrf_token %}
+
+            <div class="form-group">
+                <textarea name="notes" class="form-control form-excluded textarea-vertical" rows="{{ form.notes_rows }}">{{ form.notes }}</textarea>
+            </div>
+            <button type="submit" class="btn btn-primary">Spara</button>
+        </form>
+
         {% if form.library_selection_conflict %}
             <hr>
             <p>De valda biblioteken rapporteras också för i de följande enkäterna.</p>
