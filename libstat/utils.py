@@ -3,18 +3,25 @@ import datetime
 
 ALL_TARGET_GROUPS_label = "Samtliga bibliotek"
 SURVEY_TARGET_GROUPS = (
-    ('folkbib', u'Folkbibliotek'),
-    ('specbib', u'Specialbibliotek'),
-    ('skolbib', u'Skolbibliotek'),
-    ('friskol', u'Friskolebibliotek'),
-    ('gymbib', u'Gymnasiebibliotek'),
-    ('frisgym', u'Friskolegymnasiebibliotek'),
-    ('sjukbib', u'Sjukhusbibliotek'),
-    ('natbib', u'Nationalbibliotek'),
-    ('univbib', u'Universitets / högskolebibliotek'),
-    ('busbib', u'Företagsbibliotek'),
-    ('musbib', u'Arkiv / museibibliotek'),
-    ('ovrbib', u'Övriga')
+    (u'natbib', u'Nationalbibliotek'),
+    (u'folkbib', u'Folkbibliotek'),
+    (u'specbib', u'Specialbibliotek'),
+    (u'sjukbib', u'Sjukhusbibliotek'),
+    (u'myndbib', u'Myndighetsbibliotek'),
+    (u'busbib', u'Företagsbibliotek'),
+    (u'musbib', u'Arkiv/museibibliotek'),
+    (u'muskom', u'Kommunalt museibibliotek'),
+    (u'muslan', u'Länsmuseibibliotek'),
+    (u'musstat', u'Statligt museibibliotek'),
+    (u'skolbib', u'Skolbibliotek'),
+    (u'friskol', u'Friskolebibliotek'),
+    (u'gymbib', u'Gymnasiebibliotek'),
+    (u'frisgym', u'Friskolegymnasiebibliotek'),
+    (u'statskol', u'Statligt skolbibliotek'),
+    (u'vuxbib', u'Bibliotek på komvux/lärcentra'),
+    (u'univbib', u'Universitets/högskolebibliotek'),
+    (u'folkhogbib', u'Folkhögskolebibliotek'),
+    (u'ovrbib', u'Övriga'),
 )
 targetGroups = dict(SURVEY_TARGET_GROUPS)
 
