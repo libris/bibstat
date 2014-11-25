@@ -225,7 +225,7 @@
                                 <td nowrap>
                                     {{ sr.status|srs_label|default:"" }}
                                 </td>
-                                <td>
+                                <td nowrap>
                                     {% if sr.is_published and not sr.latest_version_published %}
                                         <a class="label label-danger survey-popover modified-after-publish" title=""
                                            data-placement="top"
