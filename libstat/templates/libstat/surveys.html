@@ -160,7 +160,7 @@
                     <li role="presentation" {% if surveys_state == "active" %} class="active" {% endif %}
                         style="margin-left:15px;">
                         <a id="surveys_active" href="#">Aktiva <span
-                                class="badge">{{ survey_responses|length }}</span></a>
+                                class="badge">{{ num_active_surveys }}</span></a>
                     </li>
                     <li role="presentation" {% if surveys_state == "inactive" %} class="active" {% endif %}>
                         <a id="surveys_inactive" href="#">Inaktiva <span
