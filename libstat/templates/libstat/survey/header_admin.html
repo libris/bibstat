@@ -50,13 +50,20 @@
         </form>
 
         {% if form.is_published %}
-            <p>
-                För att återkalla publiceringen, ändra status till något annat än publicerad.
-                {% if not form.latest_version_published %}
-                    <br>För att publicera de senaste ändringarna, ändra enkätens status till publicerad.
-                {% endif %}
-            </p>
+            <p>Instruktioner rörande publicering av data i enkäten.</p>
+            <ul class="jumbotron-list">
+                <li>För att återkalla publiceringen, ändra status till något annat än publicerad.</li>
+                    <li>För att publicera de senaste ändringarna, ändra enkätens status till publicerad.</li>
+                    <ul>
+                        {% if form.latest_version_published %}
+                            <li><b>Enkäten har inte ändrats</b> sedan senaste publiceringen.</li>
+                        {% else %}
+                            <li><b>Enkäten har ändrats</b> sedan senaste publiceringen.</li>
+                        {% endif %}
+                    </ul>
+            </ul>
         {% endif %}
+
         <hr>
         <p>
             Respondenten kan komma åt enkäten på följande adress.
