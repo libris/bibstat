@@ -101,7 +101,7 @@
                 <hr>
                 {% if survey_responses %}
                     <div class="row surveys-actions">
-                        <div class="col-md-6">
+                        <div class="col-md-7">
                             <p><b>För de markerade enkäterna:</b></p>
                             <div class="form-group">
                                 <a href="#" class="btn btn-primary btn-toggle btn-survey disabled" data-toggle="modal"
@@ -131,7 +131,7 @@
                             </div>
                         </div>
 
-                        <div class="col-md-6">
+                        <div class="col-md-5">
                             <p><b>För alla enkäter under {{ sample_year }} års omgång:</b></p>
                             <a href="#" class="btn btn-primary" data-toggle="modal" data-target="#modal-import">Uppdatera biblioteksinformation</a>
                             <a class="btn btn-primary" href="{% url 'surveys_overview' sample_year %}">Visa översikt av insamlingen</a>
