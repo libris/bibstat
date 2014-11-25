@@ -29,3 +29,12 @@ def article(request, article_id=None):
             "form": ArticleForm(article=article)
         }
         return render(request, 'libstat/article.html', context)
+
+
+@permission_required('is_superuser', login_url='index')
+def articles_delete(request, article_id=None):
+    if request.method == "GET":
+        article = Article.objects.get(pk=article_id) if article_id else None
+        if article:
+            article.delete()
+        return redirect(reverse("articles"))

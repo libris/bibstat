@@ -12,7 +12,7 @@ from libstat.views.apis import (data_api,
                                 open_data)
 from libstat.views.auth import login
 from libstat.views.administration import administration, create_new_collection
-from libstat.views.articles import article, articles
+from libstat.views.articles import article, articles, articles_delete
 from libstat.views.dispatches import dispatches, dispatches_delete, dispatches_send
 from libstat.views.index import index
 from libstat.views.surveys import (surveys_statuses,
@@ -53,6 +53,7 @@ urlpatterns = patterns(
     url(r'^article/(?P<article_id>\w+)$', article, name='article'),
     url(r'^article$', article, name='article'),
     url(r'^articles$', articles, name='articles'),
+    url(r'^articles/delete/(?P<article_id>\w+)$', articles_delete, name='articles_delete'),
 
     # Administration
     url(r'^administration/create_new_collection$', create_new_collection, name='create_new_collection'),
