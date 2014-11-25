@@ -151,7 +151,7 @@
         </div>
         <ul class="nav nav-tabs">
             <li role="presentation" {% if surveys_state == "active" %} class="active" {% endif %} style="margin-left:15px;">
-                <a href="{% url 'surveys_active' %}">Aktiva <span class="badge">{{ survey_responses|length }}</span></a>
+                <a href="{% url 'surveys_active' %}">Aktiva <span class="badge">{{ num_active_surveys }}</span></a>
             </li>
             <li role="presentation" {% if surveys_state == "inactive" %} class="active" {% endif %}>
                 <a href="{% url 'surveys_inactive' %}">Inaktiva <span class="badge">{{ num_inactive_surveys }}</span></a>
