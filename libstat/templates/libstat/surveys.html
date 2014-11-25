@@ -250,9 +250,7 @@
                 <div class="modal-dialog">
                     <div class="modal-content">
                         <div class="modal-body">
-                            <p>
-                                Välj vilken status de markerade enkäterna ska få.
-                            </p>
+                            <p style="marign-bottom: 15px;">Välj den status som ska sättas för de markerade enkäterna.</p>
                             <select name="new_status" class="form-control">
                                 {% for status in statuses %}
                                     <option value="{{ status.0 }}">
@@ -260,6 +258,11 @@
                                     </option>
                                 {% endfor %}
                             </select>
+                            <hr>
+                            <p style="margin-top: 15px;">
+                                För att återkalla publiceringar, ändra status till något annat än publicerad.
+                                <br>För att publicera de senaste ändringarna, ändra enkäternas status till publicerad.
+                            </p>
                         </div>
                         <div class="modal-footer">
                             <a href="#" class="btn btn-danger" data-dismiss="modal">Avbryt</a>

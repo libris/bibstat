@@ -210,6 +210,7 @@ class SurveyForm(forms.Form):
         self.notes_rows = min(max(5, survey.notes.count('\n') if survey.notes else 0) + 1, 10)
         self.statuses = Survey.STATUSES
         self.is_published = survey.status == "published"
+        self.latest_version_published = survey.latest_version_published
         self.sections = template.sections
 
         self.url = settings.API_BASE_URL + reverse('survey', args=(survey.pk,))

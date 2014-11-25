@@ -13,10 +13,8 @@
             </b> för respondenten.
 
             {% if form.is_published %}
-                <br>Enkätens innehåll har publicerats, men du kan fortfarande kontrollera, 
-                <br>korrigera och spara enkäten. För att dessa ändringar ska vara synliga 
-                <br>för allmänheten måste du publicera enkäten igen. Den tidigare
-                <br>publicerade datan kommer då ersättas av den nya.
+                <br>Innehållet i enkäten har publicerats, men du kan fortfarande kontrollera,
+                <br>korrigera och spara enkäten utan att det påverkar den publicerade datan.
             {% else %}
                 <br>Här kan du kontrollera, korrigera, spara och ändra status på enkäten.
             {% endif %}
@@ -51,6 +49,14 @@
             </div>
         </form>
 
+        {% if form.is_published %}
+            <p>
+                För att återkalla publiceringen, ändra status till något annat än publicerad.
+                {% if not form.latest_version_published %}
+                    <br>För att publicera de senaste ändringarna, ändra enkätens status till publicerad.
+                {% endif %}
+            </p>
+        {% endif %}
         <hr>
         <p>
             Respondenten kan komma åt enkäten på följande adress.
