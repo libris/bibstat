@@ -3,6 +3,7 @@ from sets import Set
 from django import forms
 from django.core.urlresolvers import reverse
 from bibstat import settings
+from data.principals import get_library_types_with_same_principal
 from libstat.models import Survey, Variable, SurveyObservation
 from libstat.survey_templates import survey_template
 
@@ -18,6 +19,7 @@ class LibrarySelection:
 
         return [survey.library for survey in Survey.objects.filter(
             library__municipality_code=self.library.municipality_code,
+            library__library_type__in=get_library_types_with_same_principal(self.library),
             library__sigel__ne=self.library.sigel
         )]
 
@@ -28,6 +30,7 @@ class LibrarySelection:
         surveys = Survey.objects.filter(
             sample_year=sample_year,
             library__municipality_code=self.library.municipality_code,
+            library__library_type__in=get_library_types_with_same_principal(self.library),
             library__sigel__ne=self.library.sigel
         )
 
@@ -52,6 +55,7 @@ class LibrarySelection:
         other_surveys = Survey.objects.filter(
             sample_year=survey.sample_year,
             library__municipality_code=self.library.municipality_code,
+            library__library_type__in=get_library_types_with_same_principal(self.library),
             library__sigel__ne=self.library.sigel
         )
 
