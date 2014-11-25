@@ -43,13 +43,21 @@ def surveys(request, *args, **kwargs):
     elif not sample_year:
         message = u"Du måste ange för vilket år du vill lista enkätsvar"
     else:
-        surveys = Survey.objects.by(
+        active_surveys = Survey.objects.by(
             sample_year=sample_year,
             target_group=target_group,
             status=status,
             municipality_code=municipality_code,
             free_text=free_text,
-            is_active=surveys_state == "active")
+            is_active=True)
+        inactive_surveys = Survey.objects.by(
+            sample_year=sample_year,
+            target_group=target_group,
+            status=status,
+            municipality_code=municipality_code,
+            free_text=free_text,
+            is_active=False)
+        surveys = active_surveys if surveys_state == "active" else inactive_surveys
 
     context = {
         'current_url': request.get_full_path,
@@ -68,10 +76,8 @@ def surveys(request, *args, **kwargs):
         'url_base': settings.API_BASE_URL,
         'bibdb_library_base_url': u"{}/library".format(settings.BIBDB_BASE_URL),
         'nav_surveys_css': 'active',
-        'num_active_surveys': (Survey.objects.filter(is_active=True, sample_year=sample_year).count()
-                               if sample_year else 0),
-        'num_inactive_surveys': (Survey.objects.filter(is_active=False, sample_year=sample_year).count()
-                                 if sample_year else 0)
+        'num_active_surveys': active_surveys.count(),
+        'num_inactive_surveys': inactive_surveys.count()
     }
 
     return render(request, 'libstat/surveys.html', context)
