@@ -21,6 +21,10 @@
     margin-bottom: 30px;
 }
 
+.article:last-of-type {
+    margin-bottom: 0;
+}
+
 .no-sort-carets {
     background-image: inherit !important;
 }
