@@ -52,14 +52,6 @@
         font-size: 15px;
     }
 
-    .principal {
-        margin-bottom: 15px;
-    }
-
-    .principal-description {
-        margin-bottom: 15px;
-    }
-
     .section-title {
         color: rgb(0, 158, 224);
         font-weight: bold;
@@ -269,16 +261,6 @@
                 </div>
             {% endif %}
             <div class="panel-body group-body">
-                {% if forloop.parentloop.first and forloop.first %}
-                <div class="row principal">
-                    <div class="col-sm-4 principal-description">
-                        Ange organisationens huvudman
-                    </div>
-                    <div class="col-sm-3">
-                        {{ form.principal }}
-                    </div>
-                </div>
-                {% endif %}
                 {% if group.columns == 1 %}{% include "libstat/survey/col-1.html" %}{% endif %}
                 {% if group.columns == 2 %}{% include "libstat/survey/col-2.html" %}{% endif %}
                 {% if group.columns == 3 %}{% include "libstat/survey/col-3.html" %}{% endif %}
