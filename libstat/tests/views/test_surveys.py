@@ -356,7 +356,8 @@ class TestSurveyState(MongoTestCase):
         self._dummy_survey(is_active=False, sample_year=2014)
         self._dummy_survey(is_active=True, sample_year=2014)
 
-        response = self._get("surveys_active", params={"action": "list", "sample_year": "2014"})
+        response = self._get("surveys", params={"action": "list", "sample_year": "2014",
+                                                "surveys_state": "active"})
 
         self.assertEquals(len(response.context["survey_responses"]), 2)
 
@@ -365,7 +366,8 @@ class TestSurveyState(MongoTestCase):
         self._dummy_survey(is_active=False, sample_year=2014)
         self._dummy_survey(is_active=True, sample_year=2014)
 
-        response = self._get("surveys_inactive", params={"action": "list", "sample_year": "2014"})
+        response = self._get("surveys", params={"action": "list", "sample_year": "2014",
+                                                         "surveys_state": "inactive"})
 
         self.assertEquals(len(response.context["survey_responses"]), 1)
 

@@ -15,10 +15,9 @@ from libstat.views.administration import administration, create_new_collection
 from libstat.views.articles import article, articles, articles_delete
 from libstat.views.dispatches import dispatches, dispatches_delete, dispatches_send
 from libstat.views.index import index
-from libstat.views.surveys import (surveys_statuses,
+from libstat.views.surveys import (surveys,
+                                   surveys_statuses,
                                    surveys_export,
-                                   surveys_active,
-                                   surveys_inactive,
                                    surveys_activate,
                                    surveys_inactivate,
                                    surveys_overview,
@@ -60,9 +59,7 @@ urlpatterns = patterns(
     url(r'^administration$', administration, name='administration'),
 
     # Survey
-    url(r'^surveys$', surveys_active, name='surveys'),
-    url(r'^surveys/active$', surveys_active, name='surveys_active'),
-    url(r'^surveys/inactive$', surveys_inactive, name='surveys_inactive'),
+    url(r'^surveys$', surveys, name='surveys'),
     url(r'^surveys/activate$', surveys_activate, name='surveys_activate'),
     url(r'^surveys/inactivate$', surveys_inactivate, name='surveys_inactivate'),
     url(r'^surveys/export$', surveys_export, name='surveys_export'),

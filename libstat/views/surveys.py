@@ -21,8 +21,6 @@ logger = logging.getLogger(__name__)
 
 @permission_required('is_superuser', login_url='index')
 def surveys(request, *args, **kwargs):
-    surveys_state = kwargs.pop("surveys_state", "active")
-
     sample_years = Survey.objects.distinct("sample_year")
     sample_years.sort()
     sample_years.reverse()
@@ -37,6 +35,7 @@ def surveys(request, *args, **kwargs):
     status = request.GET.get("status", "")
     message = request.session.pop("message", "")
     free_text = request.GET.get("free_text", "").strip()
+    surveys_state = request.GET.get("surveys_state", "active")
 
     surveys = []
     if Survey.objects.count() == 0:
@@ -79,16 +78,6 @@ def surveys(request, *args, **kwargs):
 
 
 @permission_required('is_superuser', login_url='index')
-def surveys_active(request):
-    return surveys(request, surveys_state="active")
-
-
-@permission_required('is_superuser', login_url='index')
-def surveys_inactive(request):
-    return surveys(request, surveys_state="inactive")
-
-
-@permission_required('is_superuser', login_url='index')
 def surveys_activate(request):
     if request.method == "POST":
         survey_ids = request.POST.getlist("survey-response-ids", [])
@@ -96,7 +85,7 @@ def surveys_activate(request):
             survey.is_active = True
             survey.save()
         request.session["message"] = "Aktiverade {} st enkäter".format(len(survey_ids))
-        return redirect(reverse("surveys_inactive"))
+        return redirect("{}?surveys_state=inactive".format(reverse("surveys")))
 
 
 @permission_required('is_superuser', login_url='index')
@@ -107,7 +96,7 @@ def surveys_inactivate(request):
             survey.is_active = False
             survey.save()
         request.session["message"] = "Inaktiverade {} st enkäter".format(len(survey_ids))
-        return redirect(reverse("surveys_active"))
+        return redirect("{}?surveys_state=active".format(reverse("surveys")))
 
 
 def _surveys_redirect(request):
@@ -140,16 +129,16 @@ def _surveys_as_excel(survey_ids):
     variable_keys = variable_keys_in(surveys[0])
 
     headers = [
-        "Bibliotek",
-        "Sigel",
-        "Bibliotekstyp",
-        "Status",
-        "Email",
-        "Kommunkod",
-        "Stad",
-        "Adress",
-        "Huvudman",
-    ] + variable_keys
+                  "Bibliotek",
+                  "Sigel",
+                  "Bibliotekstyp",
+                  "Status",
+                  "Email",
+                  "Kommunkod",
+                  "Stad",
+                  "Adress",
+                  "Huvudman",
+              ] + variable_keys
 
     workbook = Workbook(encoding="utf-8")
     worksheet = workbook.active

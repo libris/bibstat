@@ -292,6 +292,20 @@ define(['jquery', 'survey.sum', 'survey.cell', 'surveys.dispatch', 'bootstrap.va
                 return element;
             };
 
+            $("#surveys_active").click(function (e) {
+                e.preventDefault();
+                if($("#surveys_state").val() != "active") {
+                    $("#surveys_state").val("active");
+                    $("#surveys_filter_form").submit();
+                }
+            });
+            $("#surveys_inactive").click(function (e) {
+                e.preventDefault();
+                if($("#surveys_state").val() != "inactive") {
+                    $("#surveys_state").val("inactive");
+                    $("#surveys_filter_form").submit();
+                }
+            });
             $(".btn-export").click(function (e) { e.preventDefault(); submitTo('surveys_export', true); });
             $(".btn-change-status").click(function (e) { e.preventDefault(); submitTo('surveys_statuses', true); });
             $(".btn-activate-surveys").click(function (e) { e.preventDefault(); submitTo('surveys_activate', true); });

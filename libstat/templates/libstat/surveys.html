@@ -5,389 +5,418 @@
 {% block content %}
     <div class="container">
 
-    <div class="panel panel-default">
-        <div class="panel-heading panel-heading-page">
-            <span class="panel-title">Enkäter</span>
-            <span class="panel-subtitle">Lista med de enkäter som finns i biblioteksstatistiken.</span>
-            <span class="pull-right" style="margin-top: 4px;"><a href="{% url 'administration' %}" >Skapa ny omgång</a></span>
-        </div>
-        <div class="panel-body">
-            <p><b>Välj de enkäter som ska visas:</b></p>
-            {% if message %}
-                <div class="row">
-                    <div class="col-md-6">
-                        <div class="alert alert-info" role="alert">
-                            {{ message|linebreaks }}
-                        </div>
-                    </div>
-                </div>
-            {% endif %}
-            <form action="" method="GET" role="form" class="form-inline">
-            {% csrf_token %}
-                <div class="row">
-                    <div class="col-md-12">
-                        <div class="form-group">
-                            <select name="sample_year" class="form-control" value={{ sample_year }}>
-                                {% if not sample_years %}
-                                    <option value="" selected="selected">
-                                        Välj år
-                                    </option>
-                                {% endif %}
-                                {% for year in sample_years %}
-                                    <option value="{{ year }}"
-                                            {% ifequal year|slugify sample_year %}
-                                            selected="selected"
-                                            {% endifequal %}>
-                                        {{ year }}
-                                    </option>
-                                {% endfor %}
-                            </select>
-                            <select name="municipality_code" class="form-control" value={{ municipality_code }}>
-                                <option value=""
-                                        {% if not municipality_code %}
-                                        selected="selected"
-                                        {% endif %}>
-                                    Alla kommuner/län
-                                </option>
-                                {% for municipality in municipality_codes %}
-                                    <option value="{{ municipality.1 }}"
-                                            {% ifequal municipality.1|slugify municipality_code %}
-                                            selected="selected"
-                                            {% endifequal %}>
-                                        {{ municipality.0 }} ({{ municipality.1 }})
-                                    </option>
-                                {% endfor %}
-                            </select>
-                            <select name="target_group" class="form-control" value="{{ target_group }}">
-                                <option value=""
-                                        {% if not target_group %}
-                                        selected="selected"
-                                        {% endif %}>
-                                    Alla bibliotekstyper
-                                </option>
-                                {% for group in target_groups %}
-                                    <option value="{{ group.0 }}"
-                                            {% ifequal group.0 target_group %}
-                                            selected="selected"
-                                            {% endifequal %}>
-                                        {{ group.1 }}
-                                    </option>
-                                {% endfor %}
-                            </select>
-                            <select name="status" class="form-control" value="{{ status }}">
-                                <option value=""
-                                        {% if not status %}
-                                        selected="selected"
-                                        {% endif %}>
-                                    Alla status
-                                </option>
-                                {% for status_choice in statuses %}
-                                <option value="{{ status_choice.0 }}"
-                                        {% ifequal status status_choice.0 %}
-                                        selected="selected"
-                                        {% endifequal %}>
-                                    {{ status_choice.1 }}
-                                </option>
-                                {% endfor %}
-                            </select>
-                            <input type="text" name="free_text" value="{{ free_text }}" class="form-control" placeholder="Sökord">
-                            <button type="submit" name="action" value="list"
-                                    class="btn btn-primary">
-                                Visa
-                            </button>
-                        </div>
-                    </div>
-                </div>
-                <hr>
-                {% if survey_responses %}
-                    <div class="row surveys-actions">
-                        <div class="col-md-7">
-                            <p><b>För de markerade enkäterna:</b></p>
-                            <div class="form-group">
-                                <a href="#" class="btn btn-primary btn-toggle btn-survey disabled" data-toggle="modal"
-                                   data-target="#change-status-modal">
-                                    Ändra status
-                                </a>
-                                <a href="#" class="btn btn-primary btn-toggle btn-survey btn-dispatch disabled">
-                                    Nytt utskick
-                                </a>
-                                <a href="#" name="action" value="export"
-                                        class="btn btn-primary btn-toggle btn-survey btn-export disabled">
-                                    Exportera
-                                </a>
-                                {% if surveys_state == 'inactive' %}
-                                <a href="#" name="action" value="export"
-                                        class="btn btn-primary btn-toggle btn-survey disabled" data-toggle="modal"
-                                        data-target="#activate-surveys-modal">
-                                    Aktivera
-                                </a>
-                                {% else %}
-                                <a href="#" name="action" value="export"
-                                        class="btn btn-primary btn-toggle btn-survey disabled" data-toggle="modal"
-                                        data-target="#inactivate-surveys-modal">
-                                    Inaktivera
-                                </a>
-                                {% endif %}                               
-                            </div>
-                        </div>
-
-                        <div class="col-md-5">
-                            <p><b>För alla enkäter under {{ sample_year }} års omgång:</b></p>
-                            <a href="#" class="btn btn-primary" data-toggle="modal" data-target="#modal-import">Uppdatera biblioteksinformation</a>
-                            <a class="btn btn-primary" href="{% url 'surveys_overview' sample_year %}">Visa översikt av insamlingen</a>
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="col-md-12">
-                            <div class="btn-group">
-                                <div class="btn btn-label disabled" style="padding-left: 0px;">
-                                    <span id="checked-surveys">0</span> av {{ survey_responses|length }} enkäter är markerade
+        <div class="panel panel-default">
+            <div class="panel-heading panel-heading-page">
+                <span class="panel-title">Enkäter</span>
+                <span class="panel-subtitle">Lista med de enkäter som finns i biblioteksstatistiken.</span>
+                <span class="pull-right" style="margin-top: 4px;"><a href="{% url 'administration' %}">Skapa ny
+                    omgång</a></span>
+            </div>
+            <form id="surveys_filter_form" action="" method="GET" role="form" class="form-inline">
+                {% csrf_token %}
+                <div class="panel-body">
+                    <p><b>Välj de enkäter som ska visas:</b></p>
+                    {% if message %}
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="alert alert-info" role="alert">
+                                    {{ message|linebreaks }}
                                 </div>
                             </div>
                         </div>
+                    {% endif %}
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="form-group">
+                                <select name="sample_year" class="form-control" value={{ sample_year }}>
+                                    {% if not sample_years %}
+                                        <option value="" selected="selected">
+                                            Välj år
+                                        </option>
+                                    {% endif %}
+                                    {% for year in sample_years %}
+                                        <option value="{{ year }}"
+                                                {% ifequal year|slugify sample_year %}
+                                                selected="selected"
+                                                {% endifequal %}>
+                                            {{ year }}
+                                        </option>
+                                    {% endfor %}
+                                </select>
+                                <select name="municipality_code" class="form-control" value={{ municipality_code }}>
+                                    <option value=""
+                                            {% if not municipality_code %}
+                                            selected="selected"
+                                            {% endif %}>
+                                        Alla kommuner/län
+                                    </option>
+                                    {% for municipality in municipality_codes %}
+                                        <option value="{{ municipality.1 }}"
+                                                {% ifequal municipality.1|slugify municipality_code %}
+                                                selected="selected"
+                                                {% endifequal %}>
+                                            {{ municipality.0 }} ({{ municipality.1 }})
+                                        </option>
+                                    {% endfor %}
+                                </select>
+                                <select name="target_group" class="form-control" value="{{ target_group }}">
+                                    <option value=""
+                                            {% if not target_group %}
+                                            selected="selected"
+                                            {% endif %}>
+                                        Alla bibliotekstyper
+                                    </option>
+                                    {% for group in target_groups %}
+                                        <option value="{{ group.0 }}"
+                                                {% ifequal group.0 target_group %}
+                                                selected="selected"
+                                                {% endifequal %}>
+                                            {{ group.1 }}
+                                        </option>
+                                    {% endfor %}
+                                </select>
+                                <select name="status" class="form-control" value="{{ status }}">
+                                    <option value=""
+                                            {% if not status %}
+                                            selected="selected"
+                                            {% endif %}>
+                                        Alla status
+                                    </option>
+                                    {% for status_choice in statuses %}
+                                        <option value="{{ status_choice.0 }}"
+                                                {% ifequal status status_choice.0 %}
+                                                selected="selected"
+                                                {% endifequal %}>
+                                            {{ status_choice.1 }}
+                                        </option>
+                                    {% endfor %}
+                                </select>
+                                <input type="text" name="free_text" value="{{ free_text }}" class="form-control"
+                                       placeholder="Sökord">
+                                <button type="submit" name="action" value="list"
+                                        class="btn btn-primary">
+                                    Visa
+                                </button>
+                            </div>
+                        </div>
                     </div>
-                {% endif %}
+                    <hr>
+                    {% if survey_responses %}
+                        <div class="row surveys-actions">
+                            <div class="col-md-7">
+                                <p><b>För de markerade enkäterna:</b></p>
+
+                                <div class="form-group">
+                                    <a href="#" class="btn btn-primary btn-toggle btn-survey disabled"
+                                       data-toggle="modal"
+                                       data-target="#change-status-modal">
+                                        Ändra status
+                                    </a>
+                                    <a href="#" class="btn btn-primary btn-toggle btn-survey btn-dispatch disabled">
+                                        Nytt utskick
+                                    </a>
+                                    <a href="#" name="action" value="export"
+                                       class="btn btn-primary btn-toggle btn-survey btn-export disabled">
+                                        Exportera
+                                    </a>
+                                    {% if surveys_state == 'inactive' %}
+                                        <a href="#" name="action" value="export"
+                                           class="btn btn-primary btn-toggle btn-survey disabled" data-toggle="modal"
+                                           data-target="#activate-surveys-modal">
+                                            Aktivera
+                                        </a>
+                                    {% else %}
+                                        <a href="#" name="action" value="export"
+                                           class="btn btn-primary btn-toggle btn-survey disabled" data-toggle="modal"
+                                           data-target="#inactivate-surveys-modal">
+                                            Inaktivera
+                                        </a>
+                                    {% endif %}
+                                </div>
+                            </div>
+
+                            <div class="col-md-5">
+                                <p><b>För alla enkäter under {{ sample_year }} års omgång:</b></p>
+                                <a href="#" class="btn btn-primary" data-toggle="modal" data-target="#modal-import">Uppdatera
+                                    biblioteksinformation</a>
+                                <a class="btn btn-primary" href="{% url 'surveys_overview' sample_year %}">Visa översikt
+                                    av insamlingen</a>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-12">
+                                <div class="btn-group">
+                                    <div class="btn btn-label disabled" style="padding-left: 0px;">
+                                        <span id="checked-surveys">0</span> av {{ survey_responses|length }} enkäter är
+                                        markerade
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    {% endif %}
+                </div>
+                <ul class="nav nav-tabs">
+                    <input type="hidden" name="surveys_state" id="surveys_state" value="{{ surveys_state }}">
+                    <li role="presentation" {% if surveys_state == "active" %} class="active" {% endif %}
+                        style="margin-left:15px;">
+                        <a id="surveys_active" href="#">Aktiva <span
+                                class="badge">{{ survey_responses|length }}</span></a>
+                    </li>
+                    <li role="presentation" {% if surveys_state == "inactive" %} class="active" {% endif %}>
+                        <a id="surveys_inactive" href="#">Inaktiva <span
+                                class="badge">{{ num_inactive_surveys }}</span></a>
+                    </li>
+                </ul>
             </form>
-        </div>
-        <ul class="nav nav-tabs">
-            <li role="presentation" {% if surveys_state == "active" %} class="active" {% endif %} style="margin-left:15px;">
-                <a href="{% url 'surveys_active' %}">Aktiva <span class="badge">{{ num_active_surveys }}</span></a>
-            </li>
-            <li role="presentation" {% if surveys_state == "inactive" %} class="active" {% endif %}>
-                <a href="{% url 'surveys_inactive' %}">Inaktiva <span class="badge">{{ num_inactive_surveys }}</span></a>
-            </li>
-        </ul>        
-        <form id="form-surveys" action="" method="POST" role="form"
-              class="form-inline publish-survey-responses-form">
-            {% if survey_responses %}
-                {% csrf_token %}
-                <input type="hidden" name="sample_year" value="{{ sample_year }}"/>
-                <input type="hidden" name="target_group" value="{{ target_group }}"/>
-                <input type="hidden" name="status" value="{{ status }}"/>
-            {% endif %}
-            <table class="table survey_responses">
-                <thead>
-                <tr>
-                    <th class="column selection no-sort-carets">
-                        <input title="Markera alla" class="select-all"
-                               type="checkbox" value="all"/>
-                    </th>
-                    <th class="column">Bibliotek</th>
-                    <th class="column">Kommun</th>
-                    <th class="column">Kod</th>
-                    <th class="column">Bibliotekstyp</th>
-                    <th class="column">Email</th>                    
-                    <th class="column">Status</th>
-                    <th class="column">Publicerad</th>
-                    <th class="no-sort-carets"></th>
-                </tr>
-                </thead>
-                <tbody>
+            <form id="form-surveys" action="" method="POST" role="form"
+                  class="form-inline publish-survey-responses-form">
                 {% if survey_responses %}
-                    {% for sr in survey_responses %}
-                        <tr>
-                            <td>
-                                <input title="Välj" class="select-one" name="survey-response-ids"
-                                       type="checkbox" value="{{ sr.id }}" data-library="{{ sr.library.name }}"
-                                       data-address="{% url 'survey' sr.id %}" data-url-base="{{ url_base }}"
-                                        data-city="{{ sr.library.city }}"/>
-                            </td>
-                            <td>
-                                <a title="" class="survey-popover" data-placement="top"
-                                       data-toggle="tooltip" href="{% url 'survey' sr.id %}" 
+                    {% csrf_token %}
+                    <input type="hidden" name="sample_year" value="{{ sample_year }}"/>
+                    <input type="hidden" name="target_group" value="{{ target_group }}"/>
+                    <input type="hidden" name="status" value="{{ status }}"/>
+                {% endif %}
+                <table class="table survey_responses">
+                    <thead>
+                    <tr>
+                        <th class="column selection no-sort-carets">
+                            <input title="Markera alla" class="select-all"
+                                   type="checkbox" value="all"/>
+                        </th>
+                        <th class="column">Bibliotek</th>
+                        <th class="column">Kommun</th>
+                        <th class="column">Kod</th>
+                        <th class="column">Bibliotekstyp</th>
+                        <th class="column">Email</th>
+                        <th class="column">Status</th>
+                        <th class="column">Publicerad</th>
+                        <th class="no-sort-carets"></th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {% if survey_responses %}
+                        {% for sr in survey_responses %}
+                            <tr>
+                                <td>
+                                    <input title="Välj" class="select-one" name="survey-response-ids"
+                                           type="checkbox" value="{{ sr.id }}" data-library="{{ sr.library.name }}"
+                                           data-address="{% url 'survey' sr.id %}" data-url-base="{{ url_base }}"
+                                           data-city="{{ sr.library.city }}"/>
+                                </td>
+                                <td>
+                                    <a title="" class="survey-popover" data-placement="top"
+                                       data-toggle="tooltip" href="{% url 'survey' sr.id %}"
                                        data-original-title="Öppna bibliotekets enkät">
                                         {{ sr.library.name }}
-                                </a>
-                            </td>
-                            <td nowrap>
-                                {{ sr.library.municipality_code|municipality_name|default:"" }}
-                            </td>
-                            <td>
-                                {{ sr.library.municipality_code|default:"" }}
-                            </td>
-                            <td>
-                                {{ sr.library.library_type|tg_label|default:"" }}
-                            </td>
-                            <td>
-                                {{ sr.library.email|default:"" }}
-                            </td>
-                            <td nowrap>
-                                {{ sr.status|srs_label|default:"" }}
-                            </td>
-                            <td nowrap>
-                                {% if sr.is_published and not sr.latest_version_published %}
-                                    <a class="label label-danger survey-popover modified-after-publish" title="" data-placement="top"
-                                       data-toggle="tooltip" href="#" data-original-title="Enkäten har ändrats efter publicering">
-                                        {{ sr.published_at|utc_tz|date:"Y-m-d H:i" }}
                                     </a>
-                                {% elif not sr.is_published and sr.published_at %}
-                                    <a class="label label-danger survey-popover modified-after-publish" title="" data-placement="top"
-                                       data-toggle="tooltip" href="#" data-original-title="Enkätens publicering har återkallats. Inget data i enkäten är synlig för allmänheten. Publicera enkäten igen för att synliggöra datan för allmänheten.">
-                                        {{ sr.published_at|utc_tz|date:"Y-m-d H:i" }}
-                                    </a>
-                                {% else %}
-                                    <span>
+                                </td>
+                                <td nowrap>
+                                    {{ sr.library.municipality_code|municipality_name|default:"" }}
+                                </td>
+                                <td>
+                                    {{ sr.library.municipality_code|default:"" }}
+                                </td>
+                                <td>
+                                    {{ sr.library.library_type|tg_label|default:"" }}
+                                </td>
+                                <td>
+                                    {{ sr.library.email|default:"" }}
+                                </td>
+                                <td nowrap>
+                                    {{ sr.status|srs_label|default:"" }}
+                                </td>
+                                <td>
+                                    {% if sr.is_published and not sr.latest_version_published %}
+                                        <a class="label label-danger survey-popover modified-after-publish" title=""
+                                           data-placement="top"
+                                           data-toggle="tooltip" href="#"
+                                           data-original-title="Enkäten har ändrats efter publicering">
+                                            {{ sr.published_at|utc_tz|date:"Y-m-d H:i" }}
+                                        </a>
+                                    {% elif not sr.is_published and sr.published_at %}
+                                        <a class="label label-danger survey-popover modified-after-publish" title=""
+                                           data-placement="top"
+                                           data-toggle="tooltip" href="#"
+                                           data-original-title="Enkätens publicering har återkallats. Inget data i enkäten är synlig för allmänheten. Publicera enkäten igen för att synliggöra datan för allmänheten.">
+                                            {{ sr.published_at|utc_tz|date:"Y-m-d H:i" }}
+                                        </a>
+                                    {% else %}
+                                        <span>
                                         {{ sr.published_at|utc_tz|date:"Y-m-d H:i" }}
                                     </span>
-                                {% endif %}
-                            </td>
-                            <td>
-                                {% if sr.library and sr.library.sigel %}
-                                    <a title="" class="survey-popover" data-placement="top" data-toggle="tooltip" 
-                                       href="{{ bibdb_library_base_url }}/{{ sr.library.sigel }}" 
-                                       data-original-title="Visa biblioteket i Biblioteksdatabasen">
-                                        <i class="fa fa-external-link"></i>
-                                    </a>
-                                {% endif %}
-                            </td>
-                        </tr>
-                    {% endfor %}
-                {% endif %}
-                </tbody>
-            </table>
-            <div class="modal fade" id="change-status-modal" tabindex="-1" role="dialog"
-                         aria-hidden="true">
-                <div class="modal-dialog">
-                    <div class="modal-content">
-                        <div class="modal-body">
-                            <p style="marign-bottom: 15px;">Välj den status som ska sättas för de markerade enkäterna.</p>
-                            <select name="new_status" class="form-control">
-                                {% for status in statuses %}
-                                    <option value="{{ status.0 }}">
-                                        {{ status.1 }}
-                                    </option>
-                                {% endfor %}
-                            </select>
-                            <hr>
-                            <p style="margin-top: 15px;">
-                                För att återkalla publiceringar, ändra status till något annat än publicerad.
-                                <br>För att publicera de senaste ändringarna, ändra enkäternas status till publicerad.
-                            </p>
-                        </div>
-                        <div class="modal-footer">
-                            <a href="#" class="btn btn-danger" data-dismiss="modal">Avbryt</a>
-                            <button class="btn btn-success btn-change-status">Ändra status</button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="modal fade" id="activate-surveys-modal" tabindex="-1" role="dialog" aria-hidden="true">
-                <div class="modal-dialog">
-                    <div class="modal-content">
-                        <div class="modal-body">
-                            <p>
-                                Vill du aktivera de markerade enkäterna?
-                            </p>
-                        </div>
-                        <div class="modal-footer">
-                            <a href="#" class="btn btn-danger" data-dismiss="modal">Avbryt</a>
-                            <button class="btn btn-success btn-activate-surveys">Aktivera</button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="modal fade" id="inactivate-surveys-modal" tabindex="-1" role="dialog" aria-hidden="true">
-                <div class="modal-dialog">
-                    <div class="modal-content">
-                        <div class="modal-body">
-                            <p>
-                                Vill du inaktivera de markerade enkäterna?
-                            </p>
-                        </div>
-                        <div class="modal-footer">
-                            <a href="#" class="btn btn-danger" data-dismiss="modal">Avbryt</a>
-                            <button class="btn btn-success btn-inactivate-surveys">Inaktivera</button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </form>
-
-        <!-- Dispatch Modal -->
-        <div class="modal fade" id="modal-dispatch" tabindex="-1">
-            <div class="modal-dialog">
-                <div class="modal-content">
-                    <form class="form form-dispatch">
-                        <div class="modal-header">
-                            <button type="button" class="close" data-dismiss="modal">
-                                <span aria-hidden="true">&times;</span>
-                                <span class="sr-only">Close</span>
-                            </button>
-                            <h4 class="modal-title">Nytt utskick</h4>
-                        </div>
-
-                        <div class="modal-body">
-                            <div class="form-group">
-                                <label for="description" class="dispatch-label"><b>Kommentar</b> <i>(visas bara internt)</i></label>
-                                <input id="description" name="description" type="text"
-                                       data-bv-notempty
-                                       data-bv-notempty-message="Du måste ange en kommentar"
-                                       class="form-control dispatch-description"/>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    {% if sr.library and sr.library.sigel %}
+                                        <a title="" class="survey-popover" data-placement="top" data-toggle="tooltip"
+                                           href="{{ bibdb_library_base_url }}/{{ sr.library.sigel }}"
+                                           data-original-title="Visa biblioteket i Biblioteksdatabasen">
+                                            <i class="fa fa-external-link"></i>
+                                        </a>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    {% endif %}
+                    </tbody>
+                </table>
+                <div class="modal fade" id="change-status-modal" tabindex="-1" role="dialog"
+                     aria-hidden="true">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-body">
+                                <p>
+                                    Välj vilken status de markerade enkäterna ska få.
+                                </p>
+                                <select name="new_status" class="form-control">
+                                    {% for status in statuses %}
+                                        <option value="{{ status.0 }}">
+                                            {{ status.1 }}
+                                        </option>
+                                    {% endfor %}
+                                </select>
                             </div>
-                            <div class="form-group">
-                                <label for="title" class="dispatch-label"><b>Ämne</b> <i>(titel för mejlet)</i></label>
-                                <input id="title" name="title" type="text"
-                                       data-bv-notempty
-                                       data-bv-notempty-message="Du måste ange ett ämne"
-                                       class="form-control dispatch-title"/>
+                            <div class="modal-footer">
+                                <a href="#" class="btn btn-danger" data-dismiss="modal">Avbryt</a>
+                                <button class="btn btn-success btn-change-status">Ändra status</button>
                             </div>
-                            <div class="form-group">
-                                <label for="message" class="dispatch-label"><b>Meddelande</b> <i>(innehåll i mejlet)</i></label>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal fade" id="activate-surveys-modal" tabindex="-1" role="dialog" aria-hidden="true">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-body">
+                                <p>
+                                    Vill du aktivera de markerade enkäterna?
+                                </p>
+                            </div>
+                            <div class="modal-footer">
+                                <a href="#" class="btn btn-danger" data-dismiss="modal">Avbryt</a>
+                                <button class="btn btn-success btn-activate-surveys">Aktivera</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal fade" id="inactivate-surveys-modal" tabindex="-1" role="dialog" aria-hidden="true">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-body">
+                                <p>
+                                    Vill du inaktivera de markerade enkäterna?
+                                </p>
+                            </div>
+                            <div class="modal-footer">
+                                <a href="#" class="btn btn-danger" data-dismiss="modal">Avbryt</a>
+                                <button class="btn btn-success btn-inactivate-surveys">Inaktivera</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </form>
+
+            <!-- Dispatch Modal -->
+            <div class="modal fade" id="modal-dispatch" tabindex="-1">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <form class="form form-dispatch">
+                            <div class="modal-header">
+                                <button type="button" class="close" data-dismiss="modal">
+                                    <span aria-hidden="true">&times;</span>
+                                    <span class="sr-only">Close</span>
+                                </button>
+                                <h4 class="modal-title">Nytt utskick</h4>
+                            </div>
+
+                            <div class="modal-body">
+                                <div class="form-group">
+                                    <label for="description" class="dispatch-label"><b>Kommentar</b> <i>(visas bara
+                                        internt)</i></label>
+                                    <input id="description" name="description" type="text"
+                                           data-bv-notempty
+                                           data-bv-notempty-message="Du måste ange en beskrivning"
+                                           class="form-control dispatch-description"/>
+                                </div>
+                                <div class="form-group">
+                                    <label for="title" class="dispatch-label"><b>Ämne</b> <i>(titel för
+                                        mejlet)</i></label>
+                                    <input id="title" name="title" type="text"
+                                           data-bv-notempty
+                                           data-bv-notempty-message="Du måste ange en titel"
+                                           class="form-control dispatch-title"/>
+                                </div>
+                                <div class="form-group">
+                                    <label for="message" class="dispatch-label"><b>Meddelande</b> <i>(innehåll i
+                                        mejlet)</i></label>
                                 <textarea id="message" name="message"
                                           data-bv-notempty
                                           data-bv-notempty-message="Du måste ange ett meddelande"
                                           class="form-control dispatch-message"
                                           rows="5"></textarea>
-                            </div>
-                            <div class="form-group">
-                                <div class="btn-group">
-                                    <button type="button"
-                                            class="btn btn-default btn-insert btn-library">Bibliotek</button>
-                                    <button type="button"
-                                            class="btn btn-default btn-insert btn-city">Ort</button>
-                                    <button type="button"
-                                            class="btn btn-default btn-insert btn-address-password">Enkätadress (med lösenord)</button>
-                                    <button type="button"
-                                            class="btn btn-default btn-insert btn-address">Enkätadress</button>
-                                    <button type="button"
-                                            class="btn btn-default btn-insert btn-password">Lösenord</button>
+                                </div>
+                                <div class="form-group">
+                                    <div class="btn-group">
+                                        <button type="button"
+                                                class="btn btn-default btn-insert btn-library">Bibliotek
+                                        </button>
+                                        <button type="button"
+                                                class="btn btn-default btn-insert btn-city">Ort
+                                        </button>
+                                        <button type="button"
+                                                class="btn btn-default btn-insert btn-address-password">Enkätadress (med
+                                            lösenord)
+                                        </button>
+                                        <button type="button"
+                                                class="btn btn-default btn-insert btn-address">Enkätadress
+                                        </button>
+                                        <button type="button"
+                                                class="btn btn-default btn-insert btn-password">Lösenord
+                                        </button>
+                                    </div>
+                                </div>
+                                <div class="panel panel-default">
+                                    <div class="panel-heading">
+                                        <p class="panel-title dispatch-example-heading"></p>
+                                    </div>
+                                    <div class="panel-body dispatch-example-body"></div>
+                                    <div class="panel-footer dispatch-example-footer"></div>
                                 </div>
                             </div>
-                            <div class="panel panel-default">
-                                <div class="panel-heading">
-                                    <p class="panel-title dispatch-example-heading"></p>
-                                </div>
-                                <div class="panel-body dispatch-example-body"></div>
-                                <div class="panel-footer dispatch-example-footer"></div>
-                            </div>
-                        </div>
 
-                        <div class="modal-footer">
-                            <button type="button" class="btn btn-default" data-dismiss="modal">Avbryt</button>
-                            <button class="btn btn-primary">Spara</button>
-                        </div>
-                    </form>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-default" data-dismiss="modal">Avbryt</button>
+                                <button class="btn btn-primary">Spara</button>
+                            </div>
+                        </form>
+                    </div>
                 </div>
             </div>
         </div>
-    </div>
     </div>
     <div class="modal fade" id="modal-import">
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
-                    <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+                    <button type="button" class="close" data-dismiss="modal"><span
+                            aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
                     <h4 class="modal-title">Bekräfta uppdatering</h4>
                 </div>
                 <div class="modal-body">
                     <p>
-                        Denna åtgärd hämtar information om alla bibliotek från Biblioteksdatabasen och uppdaterar eventuella förändringar hos biblioteken här i Biblioteksstatistiken för det valda året (vilket nu är <b>{{ sample_year }}</b>).
+                        Denna åtgärd hämtar information om alla bibliotek från Biblioteksdatabasen och uppdaterar
+                        eventuella förändringar hos biblioteken här i Biblioteksstatistiken för det valda året (vilket
+                        nu är <b>{{ sample_year }}</b>).
                         <br>
                         <br>
-                        Inga enkäter kommer försvinna och inga inlämnade enkätsvar kommer förändras. Aktiva enkäter förblir aktiva och vice versa för inaktiva enkäter, detsamma gäller även för enkäternas status. Det enda som kan ändras är information som berör biblioteken direkt - såsom bibliotekets namn, adress, bibliotekstyp, email-adress till statistikansvarig etc.
+                        Inga enkäter kommer försvinna och inga inlämnade enkätsvar kommer förändras. Aktiva enkäter
+                        förblir aktiva och vice versa för inaktiva enkäter, detsamma gäller även för enkäternas status.
+                        Det enda som kan ändras är information som berör biblioteken direkt - såsom bibliotekets namn,
+                        adress, bibliotekstyp, email-adress till statistikansvarig etc.
                         <br>
                         <br>
-                        Om det hittas bibliotek i Biblioteksdatabasen som inte har en enkät här i Biblioteksstatistiken så kommer det att automatiskt genereras nya enkäter för dessa bibliotek som hamnar under listan "Aktiva".
+                        Om det hittas bibliotek i Biblioteksdatabasen som inte har en enkät här i Biblioteksstatistiken
+                        så kommer det att automatiskt genereras nya enkäter för dessa bibliotek som hamnar under listan
+                        "Aktiva".
                         <br>
                         <br>
                         Uppdateringen kan ta några minuter att genomföra.
