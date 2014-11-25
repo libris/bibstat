@@ -28,7 +28,7 @@ def surveys(request, *args, **kwargs):
     sample_years.reverse()
 
     municipality_codes = Survey.objects.distinct("library.municipality_code")
-    municipality_codes = [(municipalities[code], code) for code in municipality_codes]
+    municipality_codes = [(municipalities[code], code) for code in municipality_codes if code in municipalities]
     municipality_codes.sort()
 
     target_group = request.GET.get("target_group", "")

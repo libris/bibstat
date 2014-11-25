@@ -12,7 +12,7 @@ from libstat.views.apis import (data_api,
                                 open_data)
 from libstat.views.auth import login
 from libstat.views.administration import administration, create_new_collection
-from libstat.views.articles import articles
+from libstat.views.articles import article, articles
 from libstat.views.dispatches import dispatches, dispatches_delete, dispatches_send
 from libstat.views.index import index
 from libstat.views.surveys import (surveys_statuses,
@@ -43,18 +43,20 @@ urlpatterns = patterns(
     url(r'^def/terms/(?P<term_key>\w+)$', term_api, name="term_api"),
 
     # Auth
-    url(r'^login', login, name='login'),
-    url(r'^logout', logout, {'next_page': 'index'}, name='logout'),
+    url(r'^login$', login, name='login'),
+    url(r'^logout$', logout, {'next_page': 'index'}, name='logout'),
 
     # Index
     url(r'^$', index, name='index'),
 
     # Articles
-    url(r'^articles', articles, name='articles'),
+    url(r'^article/(?P<article_id>\w+)$', article, name='article'),
+    url(r'^article$', article, name='article'),
+    url(r'^articles$', articles, name='articles'),
 
     # Administration
-    url(r'^administration/create_new_collection', create_new_collection, name='create_new_collection'),
-    url(r'^administration', administration, name='administration'),
+    url(r'^administration/create_new_collection$', create_new_collection, name='create_new_collection'),
+    url(r'^administration$', administration, name='administration'),
 
     # Survey
     url(r'^surveys$', surveys_active, name='surveys'),

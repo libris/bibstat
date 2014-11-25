@@ -5,33 +5,49 @@
 
 
 {% block content %}
-<div class="container">
-    <div class="panel panel-default">
-        <div class="panel-heading panel-heading-page">
-            <span class="panel-title">Publiceringar</span>
-            <span class="panel-subtitle">Här visas information om de publiceringar och korrigeringar som berör biblioteksstatistiken.</span>
-        </div>
-        <div class="panel-body">
-        	{% for article in articles %}
-        		<div class="article">
-	            	<div class="row title">
-	            		<div class="col-md-6">
-	            			{{ article.title }}
-	            		</div>
-	            	</div>
-	        		<div class="row content">
-	            		<div class="col-md-6">
-	            			{{ article.content|linebreaks }}
-	        			</div>
-	        		</div>
-	        		<div class="row date_published">
-	            		<div class="col-md-6">
-	        				Publicerad: {{ article.date_published }}
-	        			</div>
-	        		</div>
-	        	</div>
-        	{% endfor %}
+    <div class="container">
+        <div class="panel panel-default">
+            <div class="panel-heading panel-heading-page">
+                <span class="panel-title">Publiceringar</span>
+                <span class="panel-subtitle">
+                    Här visas information om de publiceringar och korrigeringar som berör biblioteksstatistiken.
+                </span>
+                {% if is_admin %}
+                    <span class="pull-right" style="margin-top: 4px;">
+                        <a href="{% url 'article' %}">
+                            Skapa nytt inlägg
+                        </a>
+                    </span>
+                {% endif %}
+            </div>
+            <div class="panel-body">
+                {% for article in articles %}
+                    <div class="article">
+                        <div class="row title">
+                            <div class="col-md-6">
+                                {{ article.title }}
+                            </div>
+                        </div>
+                        <div class="row content">
+                            <div class="col-md-6">
+                                {{ article.content|linebreaks }}
+                            </div>
+                        </div>
+                        <div class="row date_published">
+                            <div class="col-md-6">
+                                Publicerad: {{ article.date_published }}
+                                {% if is_admin %}
+                                    <span class="pull-right">
+                                        <a href="{% url 'article' article.pk %}">
+                                            Redigera
+                                        </a>
+                                    </span>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
         </div>
     </div>
-</div>	
 {% endblock %}

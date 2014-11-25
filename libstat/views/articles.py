@@ -1,18 +1,31 @@
 # -*- coding: utf-8 -*
-
-from django.shortcuts import render
+from django.contrib.auth.decorators import permission_required
+from django.core.urlresolvers import reverse
+from django.shortcuts import render, redirect
+from libstat.forms.article import ArticleForm
 from libstat.models import Article
 
 
 def articles(request):
-    # Article(title="Officiell biblioteksstatistik för verksamhetsåret 2014",
-    #        content=("Idag har den insamlade datan för verksamhetsåret 2014 publicerats."
-    #                 "Datan kan nås via Biblioteksstatistikens publika API eller rapportfunktion.")).save()
-    # Article(title="Korrigeringar av år 2014 insamlad data",
-    #        content=("På grund av mänskliga faktorer så var en del av den insamlade datan inkorrekt."
-    #                 "De berörda enkäterna har ompublicerats och finns nu allmänt tillgängliga.")).save()
-    articles = Article.objects.order_by("-date_published")
     context = {
-        "articles": articles
+        "articles": Article.objects.order_by("-date_published"),
+        "is_admin": request.user.is_authenticated()
     }
     return render(request, 'libstat/articles.html', context)
+
+
+@permission_required('is_superuser', login_url='index')
+def article(request, article_id=None):
+    article = Article.objects.get(pk=article_id) if article_id else None
+
+    if request.method == "POST":
+        form = ArticleForm(request.POST, article=article)
+        if form.is_valid():
+            form.save()
+        return redirect(reverse("articles"))
+
+    if request.method == "GET":
+        context = {
+            "form": ArticleForm(article=article)
+        }
+        return render(request, 'libstat/article.html', context)

@@ -1,0 +1,37 @@
+{% extends "libstat/base.html" %}
+{% load i18n %}
+{% load libstat_tags %}
+
+{% block content %}
+    <div class="container">
+        <div class="panel panel-default">
+            <div class="panel-heading panel-heading-page">
+                <span class="panel-title">Inlägg</span>
+                <span class="panel-subtitle">Här skapar du nya eller redigerar existerande inlägg.</span>
+            </div>
+            <form method="post" action="{% if form.article %} {% url 'article' form.article.pk %}
+                                        {% else %} {% url 'article' %}
+                                        {% endif %}">
+                <div class="panel-body">
+                    <div class="row">
+                        <div class="title col-md-6">
+                            {{ form.title.label_tag }}
+                            {{ form.title }}
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="content col-md-6">
+                            {{ form.content.label_tag }}
+                            {{ form.content }}
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <button type="submit" class="btn btn-primary" style="margin-top: 10px;">Spara</button>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+{% endblock %}
