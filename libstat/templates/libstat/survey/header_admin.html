@@ -15,7 +15,7 @@
             {% if form.is_published %}
                 <br>Enkätens innehåll har publicerats, men du kan fortfarande kontrollera, 
                 <br>korrigera och spara enkäten. För att dessa ändringar ska vara synliga 
-                <br>för allmänheten måste du publicera enkäten igen. Den gamla 
+                <br>för allmänheten måste du publicera enkäten igen. Den tidigare
                 <br>publicerade datan kommer då ersättas av den nya.
             {% else %}
                 <br>Här kan du kontrollera, korrigera, spara och ändra status på enkäten.
@@ -40,8 +40,6 @@
                             {% for key, status in form.statuses %}
                                 {% if status == form.status %}
                                     <li class="active"><a href="#" data-key="{{ key }}">{{ status }}</a></li>
-                                {% elif key == "published" and not form.is_published %}
-                                    <!-- DO NOTHING -->
                                 {% else %}
                                     <li><a href="#" data-key="{{ key }}">{{ status }}</a></li>
                                 {% endif %}
