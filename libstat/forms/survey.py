@@ -3,6 +3,7 @@ from sets import Set
 from django import forms
 from django.core.urlresolvers import reverse
 from bibstat import settings
+from data.principals import get_library_types_with_same_principal
 from libstat.models import Survey, Variable, SurveyObservation
 from libstat.survey_templates import survey_template
 
@@ -18,6 +19,7 @@ class LibrarySelection:
 
         return [survey.library for survey in Survey.objects.filter(
             library__municipality_code=self.library.municipality_code,
+            library__library_type__in=get_library_types_with_same_principal(self.library),
             library__sigel__ne=self.library.sigel
         )]
 
@@ -28,6 +30,7 @@ class LibrarySelection:
         surveys = Survey.objects.filter(
             sample_year=sample_year,
             library__municipality_code=self.library.municipality_code,
+            library__library_type__in=get_library_types_with_same_principal(self.library),
             library__sigel__ne=self.library.sigel
         )
 
@@ -52,6 +55,7 @@ class LibrarySelection:
         other_surveys = Survey.objects.filter(
             sample_year=survey.sample_year,
             library__municipality_code=self.library.municipality_code,
+            library__library_type__in=get_library_types_with_same_principal(self.library),
             library__sigel__ne=self.library.sigel
         )
 
@@ -191,8 +195,6 @@ class SurveyForm(forms.Form):
         self.fields["key"] = forms.CharField(required=False, widget=forms.HiddenInput(), initial=survey.pk)
         self.fields["selected_status"] = forms.CharField(
             required=False, widget=forms.HiddenInput(), initial=survey.status)
-        self.fields["principal"] = forms.ChoiceField(
-            required=False, choices=Survey.PRINCIPALS, initial=survey.principal)
 
         intro_variable = Variable.objects.filter(key=template.intro_text_variable_key)
         self.intro_text = intro_variable[0].description if intro_variable.count() != 0 else ""
@@ -246,6 +248,5 @@ class SurveyForm(forms.Form):
 
         if self.is_read_only:
             self.fields["read_only"].initial = "true"
-            self.fields["principal"].widget.attrs["disabled"] = ""  # selects can't have the readonly attribute
             for key, input in self.fields.iteritems():
                 input.widget.attrs["readonly"] = ""
