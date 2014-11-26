@@ -231,19 +231,22 @@ class SurveyForm(forms.Form):
 
             self.can_submit = False
 
+        variables = {}
+        for variable in Variable.objects.all():
+            variables[variable.key] = variable
+
         for section in template.sections:
             for group in section.groups:
                 for row in group.rows:
                     for cell in row.cells:
                         variable_key = cell.variable_key
-                        if len(Variable.objects.filter(key=variable_key)) == 0:
+                        if not variable_key in variables:
                             raise Exception("Can't find variable with key '{}'".format(variable_key))
                         observation = survey.get_observation(variable_key)
 
                         cell.disabled = observation.disabled
                         if not observation:
-                            variable = Variable.objects.get(key=variable_key)
-                            survey.observations.append(SurveyObservation(variable=variable))
+                            survey.observations.append(SurveyObservation(variable=variables[variable_key]))
                         self.fields[variable_key] = self._cell_to_input_field(cell, observation)
 
         if self.is_read_only:
