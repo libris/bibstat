@@ -50,9 +50,8 @@ def survey(request, survey_id):
     def can_view_survey(survey):
         return request.user.is_authenticated() or request.session.get("password") == survey.id
 
-    try:
-        survey = Survey.objects.get(pk=survey_id)
-    except Survey.DoesNotExist:
+    survey = Survey.objects.filter(pk=survey_id)
+    if len(survey) != 1:
         return HttpResponseNotFound()
 
     if not survey.is_active and not request.user.is_authenticated():
