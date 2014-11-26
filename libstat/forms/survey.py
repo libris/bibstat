@@ -181,6 +181,11 @@ class SurveyForm(forms.Form):
         authenticated = kwargs.pop('authenticated', False)
         super(SurveyForm, self).__init__(*args, **kwargs)
 
+        # Cache variables for performance
+        variables = {}
+        for variable in Variable.objects.all():
+            variables[variable.key] = variable
+
         template = survey_template(survey.sample_year, survey)
 
         self.fields["disabled_inputs"] = forms.CharField(
@@ -196,8 +201,8 @@ class SurveyForm(forms.Form):
         self.fields["selected_status"] = forms.CharField(
             required=False, widget=forms.HiddenInput(), initial=survey.status)
 
-        intro_variable = Variable.objects.filter(key=template.intro_text_variable_key)
-        self.intro_text = intro_variable[0].description if intro_variable.count() != 0 else ""
+        intro_variable = variables[template.intro_text_variable_key] if template.intro_text_variable_key in variables else ""
+        self.intro_text = intro_variable.description 
         self.library_name = survey.library.name
         self.library_sigel = survey.library.sigel
         self.city = survey.library.city
@@ -231,9 +236,6 @@ class SurveyForm(forms.Form):
 
             self.can_submit = False
 
-        variables = {}
-        for variable in Variable.objects.all():
-            variables[variable.key] = variable
 
         for cell in template.cells:
             variable_key = cell.variable_key
