@@ -17,7 +17,6 @@ def _save_survey_response_from_form(survey, form):
     if form.is_valid():
         disabled_inputs = form.cleaned_data.pop("disabled_inputs").split(" ")
         unknown_inputs = form.cleaned_data.pop("unknown_inputs").split(" ")
-        survey.principal = form.cleaned_data.pop("principal")
         submit_action = form.cleaned_data.pop("submit_action", None)
 
         for field in form.cleaned_data:

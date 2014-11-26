@@ -11,6 +11,7 @@ from openpyxl import Workbook
 from openpyxl.writer.excel import save_virtual_workbook
 
 from bibstat import settings
+from data.principals import principal_for_library_type
 from libstat import utils
 from libstat.models import Survey, Library, SurveyObservation, Variable
 from libstat.survey_templates import has_template, survey_template
@@ -167,7 +168,8 @@ def _surveys_as_excel(survey_ids):
             survey.library.municipality_code,
             survey.library.city,
             survey.library.address,
-            survey.principal,
+            principal_for_library_type[survey.library.library_type]
+            if survey.library.library_type in principal_for_library_type else None,
 
         ]
         for key in variable_keys:
