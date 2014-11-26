@@ -21,11 +21,15 @@ PRINCIPALS = (
 )
 
 principal_for_library_type = dict(PRINCIPALS)
+library_types_with_principals = [library_type for library_type, principal in principal_for_library_type.iteritems()]
 
 library_types_for_principal = {}
 for k, v in principal_for_library_type.iteritems():
     library_types_for_principal.setdefault(v, []).append(k)
 
 def get_library_types_with_same_principal(library):
+    if library.library_type is None or library.library_type not in principal_for_library_type:
+        return library_types_with_principals
+
     principal = principal_for_library_type[library.library_type]
     return library_types_for_principal[principal]
