@@ -304,10 +304,13 @@ class Cell(EmbeddedDocument):
     sum_of = ListField(StringField())
     types = ListField(StringField())
     disabled = BooleanField()
+    _variable = ReferenceField(Variable)
 
     @property
     def variable(self):
-        return Variable.objects.get(key=self.variable_key)
+        if not self._variable:
+            self._variable = Variable.objects.get(key=self.variable_key)
+        return self._variable
 
     @property
     def explanation(self):
