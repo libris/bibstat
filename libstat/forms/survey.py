@@ -235,19 +235,16 @@ class SurveyForm(forms.Form):
         for variable in Variable.objects.all():
             variables[variable.key] = variable
 
-        for section in template.sections:
-            for group in section.groups:
-                for row in group.rows:
-                    for cell in row.cells:
-                        variable_key = cell.variable_key
-                        if not variable_key in variables:
-                            raise Exception("Can't find variable with key '{}'".format(variable_key))
-                        observation = survey.get_observation(variable_key)
+        for cell in template.cells:
+            variable_key = cell.variable_key
+            if not variable_key in variables:
+                raise Exception("Can't find variable with key '{}'".format(variable_key))
+            observation = survey.get_observation(variable_key)
 
-                        cell.disabled = observation.disabled
-                        if not observation:
-                            survey.observations.append(SurveyObservation(variable=variables[variable_key]))
-                        self.fields[variable_key] = self._cell_to_input_field(cell, observation)
+            cell.disabled = observation.disabled
+            if not observation:
+                survey.observations.append(SurveyObservation(variable=variables[variable_key]))
+            self.fields[variable_key] = self._cell_to_input_field(cell, observation)
 
         if self.is_read_only:
             self.fields["read_only"].initial = "true"
