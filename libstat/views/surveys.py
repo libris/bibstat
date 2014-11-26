@@ -38,6 +38,8 @@ def surveys(request, *args, **kwargs):
     surveys_state = request.GET.get("surveys_state", "active")
 
     surveys = []
+    active_surveys = []
+    inactive_surveys = []
     if Survey.objects.count() == 0:
         message = u"Det finns inga enkäter inlagda i systemet"
     elif not sample_year:
@@ -81,8 +83,8 @@ def surveys(request, *args, **kwargs):
         'url_base': settings.API_BASE_URL,
         'bibdb_library_base_url': u"{}/library".format(settings.BIBDB_BASE_URL),
         'nav_surveys_css': 'active',
-        'num_active_surveys': active_surveys.count(),
-        'num_inactive_surveys': inactive_surveys.count()
+        'num_active_surveys': active_surveys.count() if active_surveys else 0,
+        'num_inactive_surveys': inactive_surveys.count() if inactive_surveys else 0
     }
 
     return render(request, 'libstat/surveys.html', context)
