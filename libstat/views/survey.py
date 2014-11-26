@@ -54,6 +54,8 @@ def survey(request, survey_id):
     if len(survey) != 1:
         return HttpResponseNotFound()
 
+    survey = survey[0]
+
     if not survey.is_active and not request.user.is_authenticated():
         return HttpResponseNotFound()
 
