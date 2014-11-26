@@ -13,8 +13,8 @@ def _rendered_template(template, survey):
     survey_url = settings.API_BASE_URL + reverse('survey', args=(survey.id,))
     survey_url_with_password = survey_url + "?p=" + survey.password
 
-    rendered = template.replace(u"{bibliotek}", survey.library.name)
-    rendered = rendered.replace(u"{ort}", survey.library.city)
+    rendered = template.replace(u"{bibliotek}", survey.library.name if survey.library.name else u"")
+    rendered = rendered.replace(u"{ort}", survey.library.city if survey.library.city else u"")
     rendered = rendered.replace(u"{lösenord}", survey.password)
     rendered = rendered.replace(u"{enkätadress}", survey_url)
     rendered = rendered.replace(u"{enkätadress (med lösenord)}", survey_url_with_password)
