@@ -3,336 +3,452 @@
 {% load libstat_tags %}
 
 {% block content %}
-<style>
-    .final-words {
-        background-color: rgb(242, 148, 0) !important; 
-        font-size: 30px;
-        font-weight: bold;
-        color: white;
-    }
+    <style>
+        .final-words {
+            background-color: rgb(242, 148, 0) !important;
+            font-size: 30px;
+            font-weight: bold;
+            color: white;
+        }
 
-    .popover{
-        max-width: none;
-        width: 500px;
-    }
+        .popover {
+            max-width: none;
+            width: 500px;
+        }
 
-    .panel-body {
-        background-color: rgb(255, 209, 142);
-        border-top-color: rgb(219, 136, 4) !important;
-        border-bottom: 0px !important;
-        border-bottom-left-radius: 3px !important;
-        border-bottom-right-radius: 3px !important;
-    }
+        .panel-body {
+            background-color: rgb(255, 209, 142);
+            border-top-color: rgb(219, 136, 4) !important;
+            border-bottom: 0px !important;
+            border-bottom-left-radius: 3px !important;
+            border-bottom-right-radius: 3px !important;
+        }
 
-    .panel-heading {
-        background-color: rgb(242, 148, 0) !important;
-        color: white !important;
-        border-color: rgb(219, 136, 4) !important;
-    }
+        .panel-heading {
+            background-color: rgb(242, 148, 0) !important;
+            color: white !important;
+            border-color: rgb(219, 136, 4) !important;
+        }
 
-    .panel-footer {
-        background-color: rgb(242, 148, 0) !important;
-        color: white !important;
-    }
+        .panel-footer {
+            background-color: rgb(242, 148, 0) !important;
+            color: white !important;
+        }
 
-    .panel {
-        border-color: rgb(219, 136, 4) !important;
-    }
+        .panel {
+            border-color: rgb(219, 136, 4) !important;
+        }
 
-    .container-survey hr {
-        border-color: rgb(219, 136, 4) !important;
-    }
+        .container-survey hr {
+            border-color: rgb(219, 136, 4) !important;
+        }
 
-    th {
-        border-bottom-color: rgb(219, 136, 4) !important;
-    }
+        th {
+            border-bottom-color: rgb(219, 136, 4) !important;
+        }
 
-    .group-description {
-        font-family: helvetica;
-        font-size: 15px;
-    }
+        .group-description {
+            font-family: helvetica;
+            font-size: 15px;
+        }
 
-    .section-title {
-        color: rgb(0, 158, 224);
-        font-weight: bold;
-        margin-top: 40px;
-        padding-left: 14px;
-    }
+        .section-title {
+            color: rgb(0, 158, 224);
+            font-weight: bold;
+            margin-top: 40px;
+            padding-left: 14px;
+        }
 
-    .section-comment {
-        width: 100%;
-        height: 100%;
-    }
+        .section-comment {
+            width: 100%;
+            height: 100%;
+        }
 
-    .cell {
-        margin-top: 3px;
-    }
+        .cell {
+            margin-top: 3px;
+        }
 
-    .cell .input-group input {
-        padding-right: 34px;
-    }
+        .cell .input-group input {
+            padding-right: 34px;
+        }
 
-    .btn-dropdown {
-        border-radius: 0;
-    }
+        .btn-dropdown {
+            border-radius: 0;
+        }
 
-    .cell .input-group input[disabled] {
-        font-style: italic;
-    }
+        .cell .input-group input[disabled] {
+            font-style: italic;
+        }
 
-    .row-description {
-        display: flex;
-        align-items: center;
-    }
+        .row-description {
+            display: flex;
+            align-items: center;
+        }
 
-    .container-survey {
-        padding-bottom: 120px;
-    }
+        .container-survey {
+            padding-bottom: 120px;
+        }
 
-    .answers-progress {
-        margin-bottom: 0;
-    }
+        .answers-progress {
+            margin-bottom: 0;
+        }
 
-    .navbar-submit {
-        margin-top: 10px;
-    }
+        .navbar-submit {
+            margin-top: 10px;
+        }
 
-    ::-webkit-input-placeholder {
-        font-style: italic;
-    }
-    .navbar-library-info {
-        background-color: rgb(0, 158, 224);
-    }
+        ::-webkit-input-placeholder {
+            font-style: italic;
+        }
 
-    .navbar-library-info .navbar-text {
-        font-size: 25px;
-        margin-left: 0px;
-        color: white;
-    }
+        .navbar-library-info {
+            background-color: rgb(0, 158, 224);
+        }
 
-    #panel-help.panel-group {
-        margin-bottom: 0;
-    }
+        .navbar-library-info .navbar-text {
+            font-size: 25px;
+            margin-left: 0px;
+            color: white;
+        }
 
-    #panel-help-top.panel-group {
-        margin-bottom: 0;
-    }
+        #panel-help.panel-group {
+            margin-bottom: 0;
+        }
 
-    .row-help {
-        margin-bottom: 10px;
-    }
+        #panel-help-top.panel-group {
+            margin-bottom: 0;
+        }
 
-    .alert-navbar {
-        padding: 6px 12px;
-        margin-bottom: 0;
-        margin-top: 3px;
-    }
+        .row-help {
+            margin-bottom: 10px;
+        }
 
-    .group-header {
-        margin-bottom: 8px;
-    }
+        .alert-navbar {
+            padding: 6px 12px;
+            margin-bottom: 0;
+            margin-top: 3px;
+        }
 
-    .description-separator {
-        margin-top: 10px;
-        margin-bottom: 10px;
-    }
+        .group-header {
+            margin-bottom: 8px;
+        }
 
-    .row-description {
-        padding-left: 10px;
-    }
+        .description-separator {
+            margin-top: 10px;
+            margin-bottom: 10px;
+        }
 
-    .navbar-alert {
-        margin-top: 0
-    }
+        .row-description {
+            padding-left: 10px;
+        }
 
-    .btn-value {
-        border-bottom-style: dashed;
-        border-right-style: dashed;
-        border-top-style: dashed;
-        opacity: 1 !important;
-        font-style: italic;
-    }
+        .navbar-alert {
+            margin-top: 0
+        }
 
-    .btn-dropdown:disabled {
-        opacity: 1 !important;
-    }
+        .btn-value {
+            border-bottom-style: dashed;
+            border-right-style: dashed;
+            border-top-style: dashed;
+            opacity: 1 !important;
+            font-style: italic;
+        }
 
-    .btn-dropdown.disabled {
-        opacity: 1 !important;
-    }
+        .btn-dropdown:disabled {
+            opacity: 1 !important;
+        }
 
-    .table tbody tr td {
-        border-top-color: rgb(219, 136, 4);
-    }
-</style>
+        .btn-dropdown.disabled {
+            opacity: 1 !important;
+        }
 
-<div class="navbar navbar-default navbar-static-top navbar-library-info" role="navigation">
-    <div class="container">
-        <div class="navbar-left">
-            <div class="navbar-text">
-                Välkommen till {{ form.sample_year }} års enkät för
-                <b><u>{{ form.library_name }}</u></b>
-                {% if form.city %} i <b><u>{{ form.city }}</u></b>{% endif %}
+        .table tbody tr td {
+            border-top-color: rgb(219, 136, 4);
+        }
+    </style>
+
+    <div class="navbar navbar-default navbar-static-top navbar-library-info" role="navigation">
+        <div class="container">
+            <div class="navbar-left">
+                <div class="navbar-text">
+                    Välkommen till {{ form.sample_year }} års enkät för
+                    <b><u>{{ form.library_name }}</u></b>
+                    {% if form.city %} i <b><u>{{ form.city }}</u></b>{% endif %}
+                </div>
             </div>
         </div>
     </div>
-</div>
-{% if user.is_authenticated %}
-{% include 'libstat/survey/header_admin.html' %}
-{% endif %}
-<div class="container container-survey">
-    {% if form.is_user_read_only %}
-    {% include "libstat/survey/header_submitted.html" %}
+    {% if user.is_authenticated %}
+        {% include 'libstat/survey/header_admin.html' %}
     {% endif %}
-
-    <div class="row">
-        <div class="col-xs-11 col-sm-10 col-md-7">
-            <h2 class="section-title">Innan du börjar fylla i enkäten...</h2>
-            {% include "libstat/survey/help.html" %}
-        </div>
-        <div class="col-xs-1 pull-right">
-            <img src="/static/img/kb.svg" alt="Kungl. Biblioteket">
-        </div>
-    </div>
-    <form class="survey-content" id="survey-form" method="post">
-        {% csrf_token %}
-        {{ form.key }}
-        {{ form.disabled_inputs }}
-        {{ form.selected_libraries }}
-        {{ form.unknown_inputs }}
-        {{ form.submit_action }}
-        {{ form.read_only }}
-
-        <h2 class="section-title">Svarande organisation/bibliotek</h2>
-        <div class="panel panel-default">
-            <div class="panel-heading">Välj de bibliotek för vilka värdena i denna enkät ska gälla.</div>
-            <div class="panel-body">
-                <table class="table">
-                    <thead>
-                    <tr>
-                        <th class="column"></th>
-                        <th class="column">Namn</th>
-                        <th class="column">Stad</th>
-                        <th class="column">Adress</th>
-                        <th class="column">Kommentar</th>
-                    </tr>
-                    </thead>
-                    <tbody>
-                    {% for library in form.libraries %}
-                        <tr>
-                            <td>
-                                {% with key=library.checkbox_id %}
-                                    {{ form|access:key }}
-                                {% endwith %}
-                            </td>
-                            <td>
-                                {{ library.name }}
-                            </td>
-                            <td>
-                                {{ library.city }}
-                            </td>
-                            <td>
-                                {{ library.address }}
-                            </td>
-                            <td>
-                                <i>{{ library.comment }}</i>
-                            </td>
-                        </tr>
-                    {% endfor %}
-                    </tbody>
-                </table>
-            </div>
-        </div>
-
-        {% for section in form.sections %}
-        <h2 class="section-title">{{ section.title }}</h2>
-        {% for group in section.groups %}
-        <div class="panel panel-default">
-            {% if group.description %}
-                <div class="panel-heading group-heading">
-                    <div class="row">
-                        <div class="col-sm-8 group-description">
-                            {% with description=group.description|split_into_number_and_body %}
-                                <b>{{ description.0 }}</b>
-                                {{ description.1 }}
-                            {% endwith %}
-                        </div>
-                    </div>
-                </div>
-            {% endif %}
-            <div class="panel-body group-body">
-                {% if group.columns == 1 %}{% include "libstat/survey/col-1.html" %}{% endif %}
-                {% if group.columns == 2 %}{% include "libstat/survey/col-2.html" %}{% endif %}
-                {% if group.columns == 3 %}{% include "libstat/survey/col-3.html" %}{% endif %}
-                {% if group.columns == 4 %}{% include "libstat/survey/col-4.html" %}{% endif %}
-            </div>
-        </div>
-        {% endfor %}
-        {% endfor %}
-        <div class="panel panel-default">
-            <div class="panel-body group-body final-words">
-                Stort tack för att du besvarade alla frågorna!
-            </div>
-        </div>
-        {% if not form.is_read_only %}
-        <div class="navbar navbar-default navbar-fixed-bottom" role="navigation">
-            <div class="container">
-                <div class="navbar-left">
-                    <div class="navbar-text">
-                        <span class="answers-text">Du har inte börjat fylla i enkäten än...</span>
-
-                        <div class="progress answers-progress" style="width: 250px">
-                            <div class="progress-bar progress-bar-success progress-bar-striped"
-                            role="progressbar">
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="navbar-right navbar-submit">
-                <div id="unsaved-changes-label" class="navbar-text"></div>
-                <a href="#" id="save-survey-btn" class="btn btn-primary navbar-btn">Spara</a>
-                {% if form.can_submit %}
-                    <a href="#" id="submit-survey-btn" class="btn btn-success navbar-btn">Skicka</a>
-                {% endif %}
-            </div>
-        </div>
-
-        {% if form.library_selection_conflict %}
-            <div class="container">
-                <div class="navbar-left">
-                    <div class="navbar-text navbar-alert">
-                        <div class="alert alert-danger alert-navbar">
-                            Enkäten kan inte skickas in för att de valda biblioteken rapporteras för i flera enkäter.
-                            <br>Du kan antingen avmarkera dessa bibliotek eller kontakta <a href="mailto:biblioteksstatistik@kb.se">biblioteksstatistik@kb.se</a>.
-                        </div>
-                    </div>
-                </div>
-            </div>
+    <div class="container container-survey">
+        {% if form.is_user_read_only %}
+            {% include "libstat/survey/header_submitted.html" %}
         {% endif %}
 
-    </div>
-    {% endif %}
-</form>
-</div>
-<div class="modal fade" id="submit-confirm-modal" tabindex="-1" role="dialog" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-body">
-                <p><b>Är du säker på att du vill skicka in din enkät?</b></p>
-
-                <p>
-                    När du skickat in din enkät kommer vi börja behandla värdena.
-                    <br>Du kommer då inte längre kunna göra några ändringar i enkäten.
-                    <br>
-                    <br>Du kommer alltid kunna återvända till enkäten för att se de inlämnade värdena.
-                    <br>Detta gör du genom att gå in på samma enkätadress som du använde tidigare.
-                </p>
+        <div class="row">
+            <div class="col-xs-11 col-sm-10 col-md-7">
+                <h2 class="section-title">Innan du börjar fylla i enkäten...</h2>
+                {% include "libstat/survey/help.html" %}
             </div>
-            <div class="modal-footer">
-                <a href="#" class="btn btn-danger" data-dismiss="modal">Avbryt</a>
-                <a href="#" id="confirm-submit-survey-btn" class="btn btn-success">Skicka</a>
+            <div class="col-xs-1 pull-right">
+                <img src="/static/img/kb.svg" alt="Kungl. Biblioteket">
+            </div>
+        </div>
+        <form class="survey-content" id="survey-form" method="post">
+            {% csrf_token %}
+            {{ form.key }}
+            {{ form.disabled_inputs }}
+            {{ form.selected_libraries }}
+            {{ form.unknown_inputs }}
+            {{ form.submit_action }}
+            {{ form.read_only }}
+
+            <h2 class="section-title">Svarande organisation/bibliotek</h2>
+
+            <div class="panel panel-default">
+                <div class="panel-heading">Välj de bibliotek för vilka värdena i denna enkät ska gälla.</div>
+                <div class="panel-body">
+                    <table class="table">
+                        <thead>
+                        <tr>
+                            <th class="column"></th>
+                            <th class="column">Namn</th>
+                            <th class="column">Stad</th>
+                            <th class="column">Adress</th>
+                            <th class="column">Kommentar</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        {% for library in form.libraries %}
+                            <tr>
+                                <td>
+                                    {% with key=library.checkbox_id %}
+                                        {{ form|access:key }}
+                                    {% endwith %}
+                                </td>
+                                <td>
+                                    {{ library.name }}
+                                </td>
+                                <td>
+                                    {{ library.city }}
+                                </td>
+                                <td>
+                                    {{ library.address }}
+                                </td>
+                                <td>
+                                    <i>{{ library.comment }}</i>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            {% for section in form.sections %}
+                <h2 class="section-title">{{ section.title }}</h2>
+                {% for group in section.groups %}
+                    <div class="panel panel-default">
+                        {% if group.description %}
+                            <div class="panel-heading group-heading">
+                                <div class="row">
+                                    <div class="col-sm-8 group-description">
+                                        {% with description=group.description|split_into_number_and_body %}
+                                            <b>{{ description.0 }}</b>
+                                            {{ description.1 }}
+                                        {% endwith %}
+                                    </div>
+                                </div>
+                            </div>
+                        {% endif %}
+                        <div class="panel-body group-body">
+                            {% if group.columns >= 2 %}
+                                <div class="row">
+                                    <div class="{% if group.columns == 2 %}
+                                                    col-sm-4
+                                                {% elif group.columns == 3 %}
+                                                    col-sm-3
+                                                {% endif %}
+                                                     ">
+                                    </div>
+                                    {% for header in group.headers %}
+                                        <div class="group-header {% if group.columns <= 2 %}
+                                                                        col-sm-4
+                                                                    {% else %}
+                                                                        col-sm-3
+                                                                    {% endif %}
+                                                                         ">
+                                            <b>{{ header }}</b>
+                                        </div>
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+                            {% for row in group.rows %}
+                                {% if row.cells and row.cells.0 and "comment" in row.cells.0.types %}
+                                    <div class="row">
+                                        <div class="col-sm-12">
+                                            {% with variable_key=row.cells.0.variable_key %}
+                                                {{ form|access:variable_key }}
+                                            {% endwith %}
+                                        </div>
+                                    </div>
+                                {% else %}
+                                <div class="row">
+                                    <div class="{% if group.columns <= 2 %}
+                                                        col-sm-4
+                                                    {% else %}
+                                                        col-sm-3
+                                                    {% endif %}
+                                                         ">
+                                        {{ row.description }}
+                                        {% if row.description|length > 70 and not forloop.last %}
+                                            <hr class="description-separator">
+                                        {% endif %}
+                                    </div>
+
+                                    {% for cell in row.cells %}
+                                        <div class="{% if group.columns <= 2 %}
+                                                        col-sm-4
+                                                    {% else %}
+                                                        col-sm-3
+                                                    {% endif %}
+                                                         ">
+                                            <div class="cell">
+                                                <div class="form-group">
+                                                    <div class="input-group">
+                                                        {% with variable_key=cell.variable_key %}
+                                                            {{ form|access:variable_key }}
+                                                        {% endwith %}
+                                                        <div class="input-group-btn">
+                                                            {% with variable=form|access:cell.variable_key %}
+                                                                <button type="button"
+                                                                        class="btn btn-default btn-dropdown dropdown-toggle"
+                                                                        data-toggle="dropdown"
+                                                                        {% if cell.disabled and not cell.sum_of %}
+                                                                        disabled {% endif %}
+                                                                        {% if form.is_read_only %}
+                                                                        disabled {% endif %}
+                                                                        >
+                                                                    <span class="caret"></span>
+                                                                </button>
+
+                                                                <ul class="dropdown-menu dropdown-menu-right"
+                                                                    role="menu">
+                                                                    {% if cell.disabled and variable.value == 'Värdet är okänt' %}
+                                                                        <li class="active"><a href="#"
+                                                                                              class="menu-disable">Värdet
+                                                                            är okänt</a></li>
+                                                                        <li><a href="#" class="menu-enable">Ange
+                                                                            värdet</a></li>
+                                                                    {% else %}
+                                                                        <li><a href="#" class="menu-disable">Värdet
+                                                                            är okänt</a></li>
+                                                                        <li class="active"><a href="#"
+                                                                                              class="menu-enable">Ange
+                                                                            värdet</a></li>
+                                                                    {% endif %}
+                                                                </ul>
+                                                            {% endwith %}
+
+                                                            {% if cell.explanation %}
+                                                                <a type="button" class="btn btn-default btn-help"
+                                                                   href="#"
+                                                                   title="Förklaring"
+                                                                   tabindex="0"
+                                                                   data-toggle="popover" data-placement="top"
+                                                                   data-content="{{ cell.explanation }}"
+                                                                   data-trigger="click">
+                                                                    <i class="fa fa-question"></i>
+                                                                </a>
+                                                            {% endif %}
+
+                                                            <button class="btn btn-default btn-value disabled">
+                                                                {% if cell.previous_value %}
+                                                                    {{ cell.previous_value }}
+                                                                {% else %}
+                                                                    &mdash;
+                                                                {% endif %}
+                                                            </button>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    {% endfor %}
+                                </div>
+                                {% endif %}
+                            {% endfor %}
+                        </div>
+                    </div>
+                {% endfor %}
+            {% endfor %}
+            <div class="panel panel-default">
+                <div class="panel-body group-body final-words">
+                    Stort tack för att du besvarade alla frågorna!
+                </div>
+            </div>
+            {% if not form.is_read_only %}
+                <div class="navbar navbar-default navbar-fixed-bottom" role="navigation">
+                    <div class="container">
+                        <div class="navbar-left">
+                            <div class="navbar-text">
+                                <span class="answers-text">Du har inte börjat fylla i enkäten än...</span>
+
+                                <div class="progress answers-progress" style="width: 250px">
+                                    <div class="progress-bar progress-bar-success progress-bar-striped"
+                                         role="progressbar">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="navbar-right navbar-submit">
+                            <div id="unsaved-changes-label" class="navbar-text"></div>
+                            <a href="#" id="save-survey-btn" class="btn btn-primary navbar-btn">Spara</a>
+                            {% if form.can_submit %}
+                                <a href="#" id="submit-survey-btn" class="btn btn-success navbar-btn">Skicka</a>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    {% if form.library_selection_conflict %}
+                        <div class="container">
+                            <div class="navbar-left">
+                                <div class="navbar-text navbar-alert">
+                                    <div class="alert alert-danger alert-navbar">
+                                        Enkäten kan inte skickas in för att de valda biblioteken rapporteras för i flera
+                                        enkäter.
+                                        <br>Du kan antingen avmarkera dessa bibliotek eller kontakta <a
+                                            href="mailto:biblioteksstatistik@kb.se">biblioteksstatistik@kb.se</a>.
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    {% endif %}
+
+                </div>
+            {% endif %}
+        </form>
+    </div>
+    <div class="modal fade" id="submit-confirm-modal" tabindex="-1" role="dialog" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-body">
+                    <p><b>Är du säker på att du vill skicka in din enkät?</b></p>
+
+                    <p>
+                        När du skickat in din enkät kommer vi börja behandla värdena.
+                        <br>Du kommer då inte längre kunna göra några ändringar i enkäten.
+                        <br>
+                        <br>Du kommer alltid kunna återvända till enkäten för att se de inlämnade värdena.
+                        <br>Detta gör du genom att gå in på samma enkätadress som du använde tidigare.
+                    </p>
+                </div>
+                <div class="modal-footer">
+                    <a href="#" class="btn btn-danger" data-dismiss="modal">Avbryt</a>
+                    <a href="#" id="confirm-submit-survey-btn" class="btn btn-success">Skicka</a>
+                </div>
             </div>
         </div>
     </div>
-</div>
 {% endblock %}
