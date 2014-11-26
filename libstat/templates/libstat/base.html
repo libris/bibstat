@@ -58,6 +58,11 @@
                             {% trans "Start" %}
                         </a>
                     </li>
+                    <li class="{{ nav_reports_css }}">
+                        <a href="{% url 'reports' %}">
+                            {% trans "Verksamhetsrapporter" %}
+                        </a>
+                    </li>
                     <li class="{{ nav_open_data_css }}">
                         <a href="{% url 'open_data' %}">
                             {% trans "Öppna data" %}
