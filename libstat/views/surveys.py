@@ -59,6 +59,10 @@ def surveys(request, *args, **kwargs):
             is_active=False)
         surveys = active_surveys if surveys_state == "active" else inactive_surveys
 
+    # Triggering lazy loading of the list of surveys before iterating over it in the
+    # template seems to give significant performance gains. Unknown why.
+    surveys = list(surveys)
+
     context = {
         'current_url': request.get_full_path,
         'sample_year': sample_year,
