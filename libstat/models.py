@@ -210,7 +210,7 @@ class Variable(VariableBase):
                 to avoid saving siblings for draft variables.
             """
             if (not to_replace.replaced_by or to_replace.replaced_by.id != self.id
-                    or to_replace.active_to != switchover_date):
+                or to_replace.active_to != switchover_date):
                 to_replace.replaced_by = self
                 to_replace.active_to = switchover_date if switchover_date else None
                 modified_siblings.add(to_replace)
@@ -376,7 +376,6 @@ class SurveyTemplate(Document):
 
 
 class SurveyResponseQuerySet(QuerySet):
-
     def by(self, sample_year=None, target_group=None, status=None, municipality_code=None, free_text=None,
            is_active=None):
         target_group_query = Q(library__library_type=target_group) if target_group else Q()
@@ -603,9 +602,12 @@ class Survey(SurveyBase):
         'collection': 'libstat_surveys',
         'queryset_class': SurveyResponseQuerySet,
         'indexes': [
-            {
-                "fields": ["library.municipality_code", "library.library_type", "sample_year", "_status"]
-            }
+            "library.sigel",
+            "library.municipality_code",
+            "library.library_type",
+            "sample_year",
+            "_status",
+            "is_active"
         ]
     }
 
@@ -665,7 +667,7 @@ class Survey(SurveyBase):
                          target_group=self.library.library_type,
                          date_created=publishing_date,
                          date_modified=publishing_date,
-                         ).save()
+                ).save()
 
         publishing_date = datetime.utcnow()
 
