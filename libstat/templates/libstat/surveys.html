@@ -200,12 +200,12 @@
                                 <td>
                                     <input title="Välj" class="select-one" name="survey-response-ids"
                                            type="checkbox" value="{{ sr.id }}" data-library="{{ sr.library.name }}"
-                                           data-address="{% url 'survey' sr.id %}" data-url-base="{{ url_base }}"
+                                           data-address="{{ survey_base_url }}/{{ sr.id }}" data-url-base="{{ url_base }}"
                                            data-city="{{ sr.library.city }}"/>
                                 </td>
                                 <td>
                                     <a title="" class="survey-popover" data-placement="top"
-                                       data-toggle="tooltip" href="{% url 'survey' sr.id %}"
+                                       data-toggle="tooltip" href="{{ survey_base_url }}/{{ sr.id }}"
                                        data-original-title="Öppna bibliotekets enkät">
                                         {{ sr.library.name }}
                                     </a>

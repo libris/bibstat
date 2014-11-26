@@ -77,6 +77,7 @@ def surveys(request, *args, **kwargs):
         'surveys_state': surveys_state,
         'survey_responses': surveys,
         'message': message,
+        'survey_base_url': reverse("surveys"),
         'url_base': settings.API_BASE_URL,
         'bibdb_library_base_url': u"{}/library".format(settings.BIBDB_BASE_URL),
         'nav_surveys_css': 'active',
