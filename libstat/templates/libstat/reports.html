@@ -12,7 +12,7 @@
                 </span>
             </div>
             <div class="panel-body">
-                <p><b>Välj de bibliotek som ska ingå i verksamhetsrapporten:</b></p>
+                <p><b>Välj den biblioteksverksamhet som ska ingå i verksamhetsrapporten.</b></p>
                 {% if message %}
                     <div class="row">
                         <div class="col-md-6">
@@ -87,6 +87,45 @@
                         <button type="submit" class="btn btn-primary">Visa</button>
                     </div>
                 </form>
+
+
+                {% if show_filtered_surveys %}
+                    <hr>
+                    {% if filtered_surveys|length > 0 %}
+                        <p><b>Välj de bibliotek som du vill ska ingå i verksamhetsrapporten.</b></p>
+
+                        {% for survey in filtered_surveys %}
+                            <div class="row">
+                                <div class="col-xs-12 col-sm-8">
+                                    {% if survey.selected_libraries|length > 1 %}
+                                        <div class="panel panel-default">
+                                            <div class="panel-heading">{{ survey.library.name }}</div>
+                                            <div class="panel-body">
+                                                <p>Det här biblioteket har också svarat för följande bibliotek.</p>
+                                                <ul>
+                                                    {% for sigel in survey.selected_libraries %}
+                                                        {% ifnotequal sigel survey.library.sigel %}
+                                                            <li>{{ library_name_for_sigel|access:sigel }}</li>
+                                                        {% endifnotequal %}
+                                                    {% endfor %}
+                                                </ul>
+                                            </div>
+                                        </div>
+                                    {% else %}
+                                        <div class="panel panel-default inverse">
+                                            <div class="panel-body">
+                                                {{ survey.library.name }}
+                                            </div>
+                                        </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+
+                        {% endfor %}
+                    {% else %}
+                        <p>Det finns inga bibliotek att visa för valen av biblioteksverksamhet. Försök igen.</p>
+                    {% endif %}
+                {% endif %}
             </div>
         </div>
     </div>
