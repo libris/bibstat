@@ -447,30 +447,6 @@ class Library(EmbeddedDocument):
         self.sigel = sigel if sigel else self._random_sigel()
 
 
-class LibraryCached(EmbeddedDocument):
-    name = StringField()
-    bibdb_id = StringField()
-    sigel = StringField()
-    email = StringField()
-    city = StringField()
-    municipality_code = StringField()
-    address = StringField()
-    library_type = StringField(choices=SURVEY_TARGET_GROUPS)
-
-    def __init__(self, *args, **kwargs):
-        library = kwargs.pop("library", None)
-        super(LibraryCached, self).__init__(*args, **kwargs)
-        if library:
-            self.name = library.name
-            self.bibdb_id = library.bibdb_id
-            self.sigel = library.sigel
-            self.email = library.email
-            self.city = library.city
-            self.municipality_code = library.municipality_code
-            self.address = library.address
-            self.library_type = library.library_type
-
-
 class LibrarySelection(Document):
     name = StringField(unique=True)
     sigels = ListField()
