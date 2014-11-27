@@ -101,6 +101,9 @@ class SurveyForm(forms.Form):
         if observation.disabled:
             attrs["disabled"] = ""
 
+        if observation.value_unknown:
+            attrs["class"] = "{} value-unknown".format(attrs["class"])
+
         if "comment" in cell.types:
             field = forms.CharField(required=False, widget=forms.Textarea(attrs=attrs))
         elif "integer" in cell.types:
@@ -244,6 +247,7 @@ class SurveyForm(forms.Form):
             observation = survey.get_observation(variable_key)
 
             cell.disabled = observation.disabled
+            cell.value_unknown = observation.value_unknown
             if not observation:
                 survey.observations.append(SurveyObservation(variable=variables[variable_key]))
             self.fields[variable_key] = self._cell_to_input_field(cell, observation)

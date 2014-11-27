@@ -158,7 +158,7 @@ define(['jquery', 'survey.sum', 'survey.cell', 'surveys.dispatch', 'bootstrap.va
             updateProgress();
             showChangesNotSaved();
         });
-        survey.form(".cell .input-group-btn .dropdown-menu li.active a").click();
+        survey.form(".cell .input-group-btn .dropdown-menu.value-unknown li.active a").click();
     };
     var updateProgress = function () {
         var total = survey.enabledInputs().length;
