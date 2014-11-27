@@ -8,7 +8,7 @@
             <div class="panel-heading panel-heading-page">
                 <span class="panel-title">Verksamhetsrapporter</span>
                 <span class="panel-subtitle">
-                    Här finns möjligheten att ta ut olika typer av rapporter för biblioteksverksamheten.
+                    Här finns möjligheten att ta ut rapporter för biblioteksverksamheten.
                 </span>
             </div>
             <div class="panel-body">
@@ -84,38 +84,34 @@
                     </div>
 
                     <div class="form-group">
-                        <button type="submit" class="btn btn-primary">Visa</button>
+                        <button type="submit" class="btn btn-primary">Visa bibliotek</button>
                     </div>
                 </form>
 
 
-                {% if show_filtered_surveys %}
+                {% if filtered_surveys|length > 0 %}
                     <hr>
-                    {% if filtered_surveys|length > 0 %}
-                        <p>
-                            <b>Välj nedan de bibliotek som du vill ska ingå i verksamhetsrapporten.</b>
-                            <br>Visar bibliotek som svarat {{ sample_year }} i {{ municipality_name }} och med {{ principal }} som huvudman.
-                        </p>
+                    <p style="margin-bottom: 15px;">
+                        <b>Välj de bibliotek som har svarat och ska ingå i verksamhetsrapporten.</b>
+                        <br>Visar bibliotek som svarat {{ sample_year }} i {{ municipality_name }} och med {{ principal }} som huvudman.
+                    </p>
 
-                        <form class="form" method="post" action="">
-                            {% for survey in filtered_surveys %}
-                                <div class="row">
-                                    <div class="col-xs-12 col-sm-8">
-                                        <div class="panel panel-default panel-report" {% if forloop.last %} style="margin-bottom: 0;" {% endif %}>
-                                            <div class="panel-heading">
-                                                <input type="checkbox" name="surveys" value="{{ survey.library.sigel }}" style="margin-right: 5px;">
-                                                {% for sigel in survey.selected_libraries %}
-                                                    {{ library_name_for_sigel|access:sigel }}{% if not forloop.last %}, {% endif %}
-                                                {% endfor %}
-                                            </div>
+                    <form class="form" method="post" action="">
+                        {% for survey in filtered_surveys %}
+                            <div class="row">
+                                <div class="col-xs-12 col-sm-8">
+                                    <div class="panel panel-default panel-report" {% if forloop.last %} style="margin-bottom: 0;" {% endif %}>
+                                        <div class="panel-heading">
+                                            <input type="checkbox" name="surveys" value="{{ survey.library.sigel }}" style="margin-right: 5px;">
+                                            {% for sigel in survey.selected_libraries %}
+                                                {{ library_name_for_sigel|access:sigel }}{% if not forloop.last %}, {% endif %}
+                                            {% endfor %}
                                         </div>
                                     </div>
                                 </div>
-                            {% endfor %}
-                        </form>
-                    {% else %}
-                        <p>Det finns inga bibliotek att visa för valen av biblioteksverksamhet.</p>
-                    {% endif %}
+                            </div>
+                        {% endfor %}
+                    </form>
                 {% endif %}
             </div>
         </div>

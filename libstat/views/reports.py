@@ -53,18 +53,21 @@ def reports(request):
                     library__library_type__in=library_types_for_principal[principal]
                 ).exclude("observations"))
 
-                sigels = []
-                for survey in filtered_surveys:
-                    for sigel in survey.selected_libraries:
-                        sigels.append(sigel)
+                if len(filtered_surveys) > 0:
+                    sigels = []
+                    for survey in filtered_surveys:
+                        for sigel in survey.selected_libraries:
+                            sigels.append(sigel)
 
-                library_name_for_sigel = {}
-                for survey in Survey.objects.filter(
-                        sample_year=sample_year,
-                        library__municipality_code=municipality_code,
-                        library__sigel__in=sigels
-                ).only("library.sigel", "library.name"):
-                    library_name_for_sigel[survey.library.sigel] = survey.library.name
+                    library_name_for_sigel = {}
+                    for survey in Survey.objects.filter(
+                            sample_year=sample_year,
+                            library__municipality_code=municipality_code,
+                            library__sigel__in=sigels
+                    ).only("library.sigel", "library.name"):
+                        library_name_for_sigel[survey.library.sigel] = survey.library.name
+                else:
+                    message = u"Det finns inga bibliotek att visa för valen av biblioteksverksamhet."
 
             else:
                 message = missing_parameters_message(sample_year, municipality_code, principal)
@@ -74,7 +77,6 @@ def reports(request):
             "sample_year": sample_year,
             "sample_years": sample_years,
             "message": message,
-            "show_filtered_surveys": submit and all(parameters),
             "filtered_surveys": filtered_surveys,
             "library_name_for_sigel": library_name_for_sigel,
             "municipality_code": municipality_code,
