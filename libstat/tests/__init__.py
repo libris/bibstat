@@ -11,11 +11,10 @@ from django.test import TestCase
 from django.conf import settings
 from django.core.urlresolvers import reverse
 
-from libstat.models import Variable, OpenData, Survey, Library, SurveyObservation, Article
+from libstat.models import Variable, OpenData, Survey, Library, SurveyObservation, Article, Dispatch
 
 
 class MongoEngineTestRunner(DiscoverRunner):
-
     def setup_databases(self):
         pass
 
@@ -112,6 +111,14 @@ class MongoTestCase(TestCase):
         article.save()
         article.reload()
         return article
+
+    def _dummy_dispatch(self, description=None, title=None, message=None, library_email=None,
+                        library_city=None, library_name=None):
+        dispatch = Dispatch(description=description, title=title, message=message, library_email=library_email,
+                            library_city=library_city, library_name=library_name)
+        dispatch.save()
+        dispatch.reload()
+        return dispatch
 
     def _fixture_setup(self):
         from mongoengine.connection import connect, disconnect

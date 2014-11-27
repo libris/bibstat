@@ -1,5 +1,4 @@
 # -*- coding: UTF-8 -*-
-from django.core.urlresolvers import reverse
 from libstat.models import Article
 from libstat.tests import MongoTestCase
 
