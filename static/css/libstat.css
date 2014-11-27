@@ -322,3 +322,7 @@ label.sub-label {
 .textarea-vertical {
     resize: vertical;
 }
+
+.panel-report {
+    margin-bottom: 10px;
+}

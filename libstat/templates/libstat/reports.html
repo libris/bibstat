@@ -92,38 +92,29 @@
                 {% if show_filtered_surveys %}
                     <hr>
                     {% if filtered_surveys|length > 0 %}
-                        <p><b>Välj de bibliotek som du vill ska ingå i verksamhetsrapporten.</b></p>
+                        <p>
+                            <b>Välj nedan de bibliotek som du vill ska ingå i verksamhetsrapporten.</b>
+                            <br>Visar bibliotek som svarat {{ sample_year }} i {{ municipality_name }} och med {{ principal }} som huvudman.
+                        </p>
 
-                        {% for survey in filtered_surveys %}
-                            <div class="row">
-                                <div class="col-xs-12 col-sm-8">
-                                    {% if survey.selected_libraries|length > 1 %}
-                                        <div class="panel panel-default">
-                                            <div class="panel-heading">{{ survey.library.name }}</div>
-                                            <div class="panel-body">
-                                                <p>Det här biblioteket har också svarat för följande bibliotek.</p>
-                                                <ul>
-                                                    {% for sigel in survey.selected_libraries %}
-                                                        {% ifnotequal sigel survey.library.sigel %}
-                                                            <li>{{ library_name_for_sigel|access:sigel }}</li>
-                                                        {% endifnotequal %}
-                                                    {% endfor %}
-                                                </ul>
+                        <form class="form" method="post" action="">
+                            {% for survey in filtered_surveys %}
+                                <div class="row">
+                                    <div class="col-xs-12 col-sm-8">
+                                        <div class="panel panel-default panel-report" {% if forloop.last %} style="margin-bottom: 0;" {% endif %}>
+                                            <div class="panel-heading">
+                                                <input type="checkbox" name="surveys" value="{{ survey.library.sigel }}" style="margin-right: 5px;">
+                                                {% for sigel in survey.selected_libraries %}
+                                                    {{ library_name_for_sigel|access:sigel }}{% if not forloop.last %}, {% endif %}
+                                                {% endfor %}
                                             </div>
                                         </div>
-                                    {% else %}
-                                        <div class="panel panel-default inverse">
-                                            <div class="panel-body">
-                                                {{ survey.library.name }}
-                                            </div>
-                                        </div>
-                                    {% endif %}
+                                    </div>
                                 </div>
-                            </div>
-
-                        {% endfor %}
+                            {% endfor %}
+                        </form>
                     {% else %}
-                        <p>Det finns inga bibliotek att visa för valen av biblioteksverksamhet. Försök igen.</p>
+                        <p>Det finns inga bibliotek att visa för valen av biblioteksverksamhet.</p>
                     {% endif %}
                 {% endif %}
             </div>
