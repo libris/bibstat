@@ -1,7 +1,5 @@
 # -*- coding: UTF-8 -*-
 
-from django.core.urlresolvers import reverse
-
 from libstat.tests import MongoTestCase
 
 from libstat.models import Survey

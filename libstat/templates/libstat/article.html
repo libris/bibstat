@@ -9,19 +9,21 @@
                 <span class="panel-title">Inlägg</span>
                 <span class="panel-subtitle">
                     {% if form.article %}
-                    Här redigerar du ett existerande inlägg.
+                        Här redigerar du ett existerande inlägg.
                     {% else %}
-                    Här är skapar du ett nytt inlägg.
+                        Här är skapar du ett nytt inlägg.
                     {% endif %}
                 </span>
             </div>
-            <form method="post" action="{% if form.article %} {% url 'article' form.article.pk %}
-                                        {% else %} {% url 'article' %}
-                                        {% endif %}">
-
-                {% csrf_token %}
-
-                <div class="panel-body">
+            {% if form.article %}
+            <form id="delete-article" method="post" action="{% url 'articles_delete' form.article.pk %}">{% csrf_token %}</form>
+            {% endif %}
+            <div class="panel-body">
+                <form id="article-form" method="post"
+                      action="{% if form.article %} {% url 'article' form.article.pk %}
+                                  {% else %} {% url 'article' %}
+                                  {% endif %}">
+                    {% csrf_token %}
                     <div class="row">
                         <div class="title col-md-6">
                             {{ form.title.label_tag }}
@@ -34,16 +36,22 @@
                             {{ form.content }}
                         </div>
                     </div>
-                    <div class="row">
-                        <div class="col-md-6">
-                            <button type="submit" class="btn btn-primary" style="margin-top: 15px;">Spara</button>
-                            {% if form.article %}
-                                <a href="{% url 'articles_delete' form.article.pk %}" class="btn btn-danger" style="margin-top: 15px;">Ta bort</a>
-                            {% endif %}
-                        </div>
+                </form>
+                <div class="row">
+                    <div class="col-md-6">
+                        <button type="submit" class="btn btn-primary" form="article-form" style="margin-top: 15px;">
+                            Spara
+                        </button>
+                        {% if form.article %}
+                            <button form="delete-article" type="submit" class="btn btn-danger"
+                                    style="margin-top: 15px;">
+                                Ta bort
+                            </button>
+                        {% endif %}
                     </div>
                 </div>
-            </form>
+            </div>
+
         </div>
     </div>
 {% endblock %}

@@ -33,7 +33,7 @@ def article(request, article_id=None):
 
 @permission_required('is_superuser', login_url='index')
 def articles_delete(request, article_id=None):
-    if request.method == "GET":
+    if request.method == "POST":
         article = Article.objects.get(pk=article_id) if article_id else None
         if article:
             article.delete()

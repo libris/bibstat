@@ -11,7 +11,7 @@ from django.test import TestCase
 from django.conf import settings
 from django.core.urlresolvers import reverse
 
-from libstat.models import Variable, OpenData, Survey, Library, SurveyObservation
+from libstat.models import Variable, OpenData, Survey, Library, SurveyObservation, Article
 
 
 class MongoEngineTestRunner(DiscoverRunner):
@@ -44,7 +44,10 @@ class MongoTestCase(TestCase):
         return json.loads(self._get(action, kwargs).content)
 
     def _post(self, action=None, kwargs=None, data=None):
-        return self.client.post(reverse(action, kwargs=kwargs), data=data)
+        if data:
+            return self.client.post(reverse(action, kwargs=kwargs), data=data)
+        else:
+            return self.client.post(reverse(action, kwargs=kwargs))
 
     def _dummy_library(self, name="dummy_name", sigel=None, bibdb_id="dummy_id", city="dummy_city",
                        municipality_code="dummy_code", library_type="folkbib"):
@@ -103,6 +106,12 @@ class MongoTestCase(TestCase):
             open_data.save()
             open_data.reload()
         return open_data
+
+    def _dummy_article(self, title=None, content=None):
+        article = Article(title, content)
+        article.save()
+        article.reload()
+        return article
 
     def _fixture_setup(self):
         from mongoengine.connection import connect, disconnect
