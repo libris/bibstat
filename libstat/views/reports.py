@@ -7,21 +7,6 @@ from libstat.models import Survey
 
 
 def reports(request):
-    def missing_parameters_message(sample_year, municipality_code, principal):
-        message = "Du måste göra ett val för "
-
-        parameter_names = []
-        if not sample_year: parameter_names.append("verksamhetsår")
-        if not municipality_code: parameter_names.append("kommun/län")
-        if not principal: parameter_names.append("huvudman")
-
-        if len(parameter_names) > 2:
-            message += "{} och {}.".format(", ".join(parameter_names[0:2]), parameter_names[2])
-        else:
-            message += " och ".join(parameter_names) + "."
-
-        return message
-
     if request.method == "GET":
         surveys = Survey.objects.filter(_status=u"published")
 
@@ -40,18 +25,19 @@ def reports(request):
         principals.sort()
 
         message = None
-        filtered_surveys = None
+        filtered_surveys = []
         library_name_for_sigel = None
         submit = request.GET.get("submit", False)
 
-        parameters = [sample_year, municipality_code, principal]
         if submit:
-            if all(parameters):
-                filtered_surveys = list(surveys.filter(
-                    sample_year=sample_year,
-                    library__municipality_code=municipality_code,
-                    library__library_type__in=library_types_for_principal[principal]
-                ).exclude("observations"))
+            if sample_year:
+                filtered_surveys = surveys.filter(sample_year=sample_year)
+                if municipality_code:
+                    filtered_surveys = filtered_surveys.filter(library__municipality_code=municipality_code)
+                if principal:
+                    filtered_surveys = filtered_surveys.filter(library__library_type__in=library_types_for_principal[principal])
+
+                filtered_surveys = list(filtered_surveys.exclude("observations"))
 
                 if len(filtered_surveys) > 0:
                     sigels = []
@@ -60,17 +46,19 @@ def reports(request):
                             sigels.append(sigel)
 
                     library_name_for_sigel = {}
-                    for survey in Survey.objects.filter(
-                            sample_year=sample_year,
-                            library__municipality_code=municipality_code,
-                            library__sigel__in=sigels
-                    ).only("library.sigel", "library.name"):
+                    surveys_with_sigels = Survey.objects.filter(sample_year=sample_year)
+                    if municipality_code:
+                        surveys_with_sigels = surveys_with_sigels.filter(library__municipality_code=municipality_code)
+                    if principal:
+                        surveys_with_sigels = surveys_with_sigels.filter(library__library_type__in=library_types_for_principal[principal])
+
+                    for survey in surveys_with_sigels.only("library.sigel", "library.name"):
                         library_name_for_sigel[survey.library.sigel] = survey.library.name
                 else:
                     message = u"Det finns inga bibliotek att visa för valen av biblioteksverksamhet."
 
             else:
-                message = missing_parameters_message(sample_year, municipality_code, principal)
+                message = u"Du måste välja ett verksamhetsår för att visa bibliotek."
 
         context = {
             "nav_reports_css": "active",

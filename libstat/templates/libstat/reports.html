@@ -93,7 +93,7 @@
                     <hr>
                     <p style="margin-bottom: 15px;">
                         <b>Välj de bibliotek som har svarat och ska ingå i verksamhetsrapporten.</b>
-                        <br>Visar bibliotek som svarat {{ sample_year }} i {{ municipality_name }} och med {{ principal }} som huvudman.
+                        <br>Visar bibliotek som svarat <i>{{ sample_year }}</i>{% if municipality_name %} i <i>{{ municipality_name }}</i>{% endif %}{% if principal %} och har <i>{{ principal }}</i> som huvudman{% endif %}.
                     </p>
 
                     <form class="form" method="post" action="">
