@@ -18,17 +18,6 @@ from libstat.utils import SURVEY_TARGET_GROUPS, targetGroups, VARIABLE_TYPES, rd
 logger = logging.getLogger(__name__)
 
 
-class Article(Document):
-    title = StringField()
-    content = StringField()
-    date_published = DateTimeField(default=datetime.utcnow())
-
-    meta = {
-        'collection': 'libstat_articles',
-        'ordering': ['date_published']
-    }
-
-
 class VariableBase(Document):
     description = StringField(required=True)
     # Comment is a private field and should never be returned as open data
@@ -270,103 +259,6 @@ class VariableVersion(VariableBase):
     }
 
 
-class Cell(EmbeddedDocument):
-    variable_key = StringField()
-    required = BooleanField()
-    previous_value = StringField()
-    sum_of = ListField(StringField())
-    types = ListField(StringField())
-    disabled = BooleanField()
-    _variable = ReferenceField(Variable)
-
-    @property
-    def variable(self):
-        if not self._variable:
-            self._variable = Variable.objects.get(key=self.variable_key)
-        return self._variable
-
-    @property
-    def explanation(self):
-        return self.variable.description
-
-
-class Row(EmbeddedDocument):
-    cells = ListField(EmbeddedDocumentField(Cell))
-
-    @property
-    def description(self):
-        for cell in self.cells:
-            sub_category = cell.variable.sub_category
-            return sub_category if sub_category else ""
-
-
-class Group(EmbeddedDocument):
-    rows = ListField(EmbeddedDocumentField(Row))
-
-    @property
-    def description(self):
-        for row in self.rows:
-            for cell in row.cells:
-                question = cell.variable.question
-                return question if question else ""
-
-    @property
-    def headers(self):
-        for row in self.rows:
-            headers = []
-            for cell in row.cells:
-                category = cell.variable.category
-                headers.append(category if category else "")
-            return headers
-
-    @property
-    def columns(self):
-        for row in self.rows:
-            return len(row.cells)
-
-
-class Section(EmbeddedDocument):
-    title = StringField()
-    groups = ListField(EmbeddedDocumentField(Group))
-
-
-class SurveyTemplate(Document):
-    intro_text_variable_key = StringField()
-    sections = ListField(EmbeddedDocumentField(Section))
-
-    @property
-    def cells(self):
-        cells = []
-        for section in self.sections:
-            for group in section.groups:
-                for row in group.rows:
-                    for cell in row.cells:
-                        cells.append(cell)
-        return cells
-
-    def get_cell(self, variable_key):
-        for cell in self.cells:
-            if cell.variable_key == variable_key:
-                return cell
-        return None
-
-
-class SurveyObservation(EmbeddedDocument):
-    variable = ReferenceField(Variable, required=True)
-    value = DynamicField()
-    disabled = BooleanField()
-    value_unknown = BooleanField()
-    # Public API Optimization and traceability (was this field public at the time of the survey?)
-    _is_public = BooleanField(required=True, default=True)
-
-    def __unicode__(self):
-        return u"{0}: {1}".format(self.variable, self.value)
-
-    @property
-    def instance_id(self):
-        return self._instance.id
-
-
 class Library(EmbeddedDocument):
     # From: http://en.wikipedia.org/wiki/Random_password_generator#Python
 
@@ -401,6 +293,22 @@ class LibrarySelection(Document):
     meta = {
         'collection': 'libstat_library_selection'
     }
+
+
+class SurveyObservation(EmbeddedDocument):
+    variable = ReferenceField(Variable, required=True)
+    value = DynamicField()
+    disabled = BooleanField()
+    value_unknown = BooleanField()
+    # Public API Optimization and traceability (was this field public at the time of the survey?)
+    _is_public = BooleanField(required=True, default=True)
+
+    def __unicode__(self):
+        return u"{0}: {1}".format(self.variable, self.value)
+
+    @property
+    def instance_id(self):
+        return self._instance.id
 
 
 class SurveyBase(Document):
@@ -626,6 +534,17 @@ class SurveyVersion(SurveyBase):
     }
 
 
+class Article(Document):
+    title = StringField()
+    content = StringField()
+    date_published = DateTimeField(default=datetime.utcnow())
+
+    meta = {
+        'collection': 'libstat_articles',
+        'ordering': ['date_published']
+    }
+
+
 class Dispatch(Document):
     description = StringField()
     title = StringField()
@@ -678,6 +597,87 @@ class OpenData(Document):
     def __unicode__(self):
         return u"{} {} {} {} {}".format(self.library_name, self.sample_year, self.target_group, self.variable.key,
                                         self.value)
+
+
+class Cell(EmbeddedDocument):
+    variable_key = StringField()
+    required = BooleanField()
+    previous_value = StringField()
+    sum_of = ListField(StringField())
+    types = ListField(StringField())
+    disabled = BooleanField()
+    _variable = ReferenceField(Variable)
+
+    @property
+    def variable(self):
+        if not self._variable:
+            self._variable = Variable.objects.get(key=self.variable_key)
+        return self._variable
+
+    @property
+    def explanation(self):
+        return self.variable.description
+
+
+class Row(EmbeddedDocument):
+    cells = ListField(EmbeddedDocumentField(Cell))
+
+    @property
+    def description(self):
+        for cell in self.cells:
+            sub_category = cell.variable.sub_category
+            return sub_category if sub_category else ""
+
+
+class Group(EmbeddedDocument):
+    rows = ListField(EmbeddedDocumentField(Row))
+
+    @property
+    def description(self):
+        for row in self.rows:
+            for cell in row.cells:
+                question = cell.variable.question
+                return question if question else ""
+
+    @property
+    def headers(self):
+        for row in self.rows:
+            headers = []
+            for cell in row.cells:
+                category = cell.variable.category
+                headers.append(category if category else "")
+            return headers
+
+    @property
+    def columns(self):
+        for row in self.rows:
+            return len(row.cells)
+
+
+class Section(EmbeddedDocument):
+    title = StringField()
+    groups = ListField(EmbeddedDocumentField(Group))
+
+
+class SurveyTemplate(Document):
+    intro_text_variable_key = StringField()
+    sections = ListField(EmbeddedDocumentField(Section))
+
+    @property
+    def cells(self):
+        cells = []
+        for section in self.sections:
+            for group in section.groups:
+                for row in group.rows:
+                    for cell in row.cells:
+                        cells.append(cell)
+        return cells
+
+    def get_cell(self, variable_key):
+        for cell in self.cells:
+            if cell.variable_key == variable_key:
+                return cell
+        return None
 
 
 signals.pre_save.connect(Survey.store_version_and_update_date_modified, sender=Survey)
