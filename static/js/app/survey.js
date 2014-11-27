@@ -95,11 +95,13 @@ define(['jquery', 'survey.sum', 'survey.cell', 'surveys.dispatch', 'bootstrap.va
             input.css("padding-right", "0px");
             input.val(element.text());
             input.prop('disabled', true);
+            input.addClass('value-unknown');
         };
         var enableInput = function (input) {
             input.css("padding-right", "");
             input.val("");
             input.prop('disabled', false);
+            input.removeClass('value-unknown');
         };
         var disableDropdown = function (input) {
             if (input.attr('data-is-child')) {
@@ -253,9 +255,7 @@ define(['jquery', 'survey.sum', 'survey.cell', 'surveys.dispatch', 'bootstrap.va
                 if (!$("#submit_action").val())
                     return;
 
-                var unknownInputs = survey.disabledInputs().filter(function () {
-                    return $(this).val() == "Värdet är okänt";
-                });
+                var unknownInputs = $(".value-unknown");
 
                 var unknownInputIds = unknownInputs.map(function () {
                     return $(this).attr("id");
