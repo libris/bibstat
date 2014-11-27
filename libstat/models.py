@@ -5,16 +5,14 @@ import random
 
 from mongoengine import *
 from mongoengine import signals
-from mongoengine.queryset import Q
-from mongoengine.errors import DoesNotExist
-from mongoengine.queryset.queryset import QuerySet
 from django.conf import settings
 
 from datetime import datetime
+from libstat.query_sets.survey import SurveyQuerySet
+from libstat.query_sets.variable import VariableQuerySet
 
 from libstat.utils import ISO8601_utc_format
 from libstat.utils import SURVEY_TARGET_GROUPS, targetGroups, VARIABLE_TYPES, rdfVariableTypes
-from data.municipalities import MUNICIPALITIES
 
 
 logger = logging.getLogger(__name__)
@@ -29,31 +27,6 @@ class Article(Document):
         'collection': 'libstat_articles',
         'ordering': ['date_published']
     }
-
-
-class VariableQuerySet(QuerySet):
-    is_draft_not_set_query = Q(is_draft=None)
-    is_not_draft_query = Q(is_draft=False)
-    public_query = Q(is_public=True)
-    is_not_replaced_query = Q(replaced_by=None)
-
-    def public_terms(self):
-        return self.filter(self.public_query & (self.is_draft_not_set_query | self.is_not_draft_query))
-
-    def public_term_by_key(self, key):
-        if not key:
-            raise DoesNotExist("No key value given")
-        key_query = Q(key=key)
-        return self.get(key_query & self.public_query & (self.is_draft_not_set_query | self.is_not_draft_query))
-
-    def replaceable(self):
-        return self.filter(self.is_not_replaced_query & (self.is_draft_not_set_query | self.is_not_draft_query))
-
-    def surveyable(self):
-        today = datetime.utcnow().replace(hour=0, minute=0, second=0, microsecond=0)
-        active_to_not_set = Q(active_to=None)
-        is_not_discontinued = Q(active_to__gt=today)
-        return self.filter((active_to_not_set | is_not_discontinued) & self.is_not_replaced_query)
 
 
 class VariableBase(Document):
@@ -378,32 +351,6 @@ class SurveyTemplate(Document):
         return None
 
 
-class SurveyResponseQuerySet(QuerySet):
-    def by(self, sample_year=None, target_group=None, status=None, municipality_code=None, free_text=None,
-           is_active=None):
-        target_group_query = Q(library__library_type=target_group) if target_group else Q()
-        sample_year_query = Q(sample_year=sample_year) if sample_year else Q()
-        status_query = Q(_status=status) if status else Q()
-        is_active_query = Q(is_active=is_active) if is_active is not None else Q()
-        municipality_code_query = (Q(library__municipality_code=municipality_code)
-                                   if municipality_code else Q())
-
-        free_text_query = Q()
-        if free_text:
-            free_text = free_text.strip().lower()
-            municipality_codes = [m[1] for m in MUNICIPALITIES if free_text in m[0].lower()]
-
-            free_text_municipality_code_query = Q(library__municipality_code__icontains=free_text)
-            free_text_municipality_name_query = Q(library__municipality_code__in=municipality_codes)
-            free_text_email_query = Q(library__email__icontains=free_text)
-            free_text_library_name_query = Q(library__name__icontains=free_text)
-            free_text_query = (free_text_municipality_code_query | free_text_email_query | free_text_library_name_query
-                               | free_text_municipality_name_query)
-
-        return self.filter(target_group_query & sample_year_query & status_query &
-                           municipality_code_query & free_text_query & is_active_query).exclude("observations")
-
-
 class SurveyObservation(EmbeddedDocument):
     variable = ReferenceField(Variable, required=True)
     value = DynamicField()
@@ -579,7 +526,7 @@ class SurveyBase(Document):
 class Survey(SurveyBase):
     meta = {
         'collection': 'libstat_surveys',
-        'queryset_class': SurveyResponseQuerySet,
+        'queryset_class': SurveyQuerySet,
         'indexes': [
             "library.sigel",
             "library.municipality_code",
