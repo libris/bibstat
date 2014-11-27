@@ -549,7 +549,9 @@ class Dispatch(Document):
     description = StringField()
     title = StringField()
     message = StringField()
-    survey = ReferenceField(Survey)
+    library_email = StringField()
+    library_city = StringField()
+    library_name = StringField()
 
     meta = {
         'collection': 'libstat_dispatches'

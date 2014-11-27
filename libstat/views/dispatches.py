@@ -26,33 +26,23 @@ def _rendered_template(template, survey):
 def dispatches(request):
     if request.method == "POST":
         survey_ids = request.POST.getlist("survey-response-ids", [])
-        surveys = Survey.objects.filter(id__in=survey_ids)
+        surveys = list(Survey.objects.filter(id__in=survey_ids).exclude("observations"))
 
         for survey in surveys:
             Dispatch(
                 message=_rendered_template(request.POST.get("message", None), survey),
                 title=_rendered_template(request.POST.get("title", None), survey),
                 description=request.POST.get("description", None),
-                survey=survey
+                library_name=survey.library.name,
+                library_email=survey.library.email,
+                library_city=survey.library.city,
             ).save()
 
         return redirect(reverse("dispatches"))
 
     if request.method == "GET":
-        dispatches = [
-            {
-                "id": dispatch.id,
-                "description": dispatch.description,
-                "title": dispatch.title,
-                "message": dispatch.message.replace("\n", "<br>"),
-                "library_name": dispatch.survey.library.name,
-                "library_city": dispatch.survey.library.city,
-                "library_email": dispatch.survey.library.email,
-            } for dispatch in Dispatch.objects.all()
-        ]
-
         context = {
-            "dispatches": dispatches,
+            "dispatches": list(Dispatch.objects.all()),
             "message": request.session.pop("message", None),
             "nav_dispatches_css": "active"
         }
@@ -74,10 +64,10 @@ def dispatches_send(request):
     if request.method == "POST":
         dispatch_ids = request.POST.getlist("dispatch-ids", [])
         dispatches = Dispatch.objects.filter(id__in=dispatch_ids)
-        dispatches_with_email = [dispatch for dispatch in dispatches if dispatch.survey.library.email]
+        dispatches_with_email = [dispatch for dispatch in dispatches if dispatch.library_email]
 
         messages = [
-            (dispatch.title, dispatch.message, settings.EMAIL_SENDER, [dispatch.survey.library.email])
+            (dispatch.title, dispatch.message, settings.EMAIL_SENDER, [dispatch.library_email])
             for dispatch in dispatches_with_email
         ]
 
