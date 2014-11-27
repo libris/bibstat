@@ -20,6 +20,13 @@ PRINCIPALS = (
     (u"natbib", u"stat")
 )
 
+name_for_principal = {
+    u"landsting": u"Landsting",
+    u"kommun": u"Kommun",
+    u"stat": u"Stat",
+    u"privat": u"Privat"
+}
+
 principal_for_library_type = dict(PRINCIPALS)
 library_types_with_principals = [library_type for library_type, principal in principal_for_library_type.iteritems()]
 
