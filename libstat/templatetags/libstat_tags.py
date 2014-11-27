@@ -6,7 +6,7 @@ import re
 from django import template
 from libstat.models import Dispatch, Survey
 
-from libstat.utils import target_groups_label
+from libstat.utils import targetGroups, ALL_TARGET_GROUPS_label
 from data.municipalities import municipalities
 
 register = template.Library()
@@ -17,7 +17,20 @@ def utc_tz(value):
 
 
 def tg_label(value):
-    return target_groups_label(value)
+    display_names = []
+    if value:
+        if isinstance(value, list):
+            if set(value) == set(targetGroups.keys()):
+                display_names.append(ALL_TARGET_GROUPS_label)
+            else:
+                for tg in value:
+                    if tg in targetGroups:
+                        display_names.append(targetGroups[tg])
+        else:
+            if value in targetGroups:
+                display_names.append(targetGroups[value])
+    return ", ".join(display_names)
+
 
 
 def srs_label(key):

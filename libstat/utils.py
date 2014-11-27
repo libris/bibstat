@@ -71,19 +71,3 @@ def parse_datetime(date_str, date_format):
         return datetime.datetime.strptime(date_str, date_format)
     except ValueError:
         return None
-
-
-def target_groups_label(value):
-    display_names = []
-    if value:
-        if isinstance(value, list):
-            if set(value) == set(targetGroups.keys()):
-                display_names.append(ALL_TARGET_GROUPS_label)
-            else:
-                for tg in value:
-                    if tg in targetGroups:
-                        display_names.append(targetGroups[tg])
-        else:
-            if value in targetGroups:
-                display_names.append(targetGroups[value])
-    return ", ".join(display_names)
