@@ -78,7 +78,7 @@ def reports(request):
             "filtered_surveys": filtered_surveys,
             "library_name_for_sigel": library_name_for_sigel,
             "municipality_code": municipality_code,
-            "municipality_name": municipalities[municipality_code],
+            "municipality_name": municipalities[municipality_code] if municipality_code in municipalities else None,
             "municipality_codes": municipality_codes,
             "principal": principal,
             "principals": principals
