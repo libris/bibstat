@@ -204,8 +204,8 @@ class SurveyForm(forms.Form):
         self.fields["selected_status"] = forms.CharField(
             required=False, widget=forms.HiddenInput(), initial=survey.status)
 
-        intro_variable = variables[template.intro_text_variable_key] if template.intro_text_variable_key in variables else ""
-        self.intro_text = intro_variable.description 
+        intro_text = variables[template.intro_text_variable_key].description if template.intro_text_variable_key in variables else ""
+        self.intro_text = intro_text
         self.library_name = survey.library.name
         self.library_sigel = survey.library.sigel
         self.city = survey.library.city

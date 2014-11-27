@@ -622,8 +622,8 @@ class Survey(SurveyBase):
             else:
                 changed_fields = document.__dict__["_changed_fields"] if "_changed_fields" in document.__dict__ else []
 
-                if len(changed_fields) == 0 or changed_fields == ['notes']:
-                    logger.info(u"PRE SAVE: No fields or only notes have changed, not creating a survey version")
+                if changed_fields == ['notes']:
+                    logger.info(u"PRE SAVE: Only notes have changed, not creating a survey version")
                     return
 
                 logger.info(

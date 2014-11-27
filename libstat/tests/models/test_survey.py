@@ -147,12 +147,38 @@ class SurveyModelTest(MongoTestCase):
 
         self.assertTrue(survey.date_modified > survey.date_created)
 
+    def test_should_not_set_modified_date_when_updating_notes_in_existing_object(self):
+        survey = self._dummy_survey()
+        survey.notes = "new_notes"
+        survey.save().reload()
+
+        self.assertEquals(survey.date_modified, survey.date_created)
+
+    def test_should_not_store_version_when_updating_notes_in_existing_object(self):
+        survey = self._dummy_survey()
+        self.assertEquals(len(SurveyVersion.objects.filter(survey_response_id=survey.id)), 0)
+
+        survey.notes = "new_notes"
+        survey.save()
+
+        self.assertEquals(len(SurveyVersion.objects.filter(survey_response_id=survey.id)), 0)
+
     def test_should_flag_as_not_published_when_updating_existing_object(self):
         survey = self._dummy_survey()
         survey.library.name = "new_name"
         survey.save().reload()
 
         self.assertFalse(survey.is_published)
+
+    def test_should_not_flag_as_not_published_when_updating_notes_in_existing_object(self):
+        survey = self._dummy_survey()
+        survey.publish()
+        self.assertTrue(survey.is_published)
+
+        survey.notes = "new_notes"
+        survey.save()
+
+        self.assertTrue(survey.is_published)
 
     def test_should_set_modified_date_when_creating_object(self):
         survey = self._dummy_survey()
