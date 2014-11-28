@@ -4,7 +4,7 @@ import json
 from django.core.urlresolvers import reverse
 
 from libstat.tests import MongoTestCase
-from libstat.views.apis import term_context
+from libstat.apis.terms import term_context
 
 
 class TermApiTest(MongoTestCase):

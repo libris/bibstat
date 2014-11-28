@@ -6,7 +6,7 @@ from django.core.urlresolvers import reverse
 from django.conf import settings
 
 from libstat.tests import MongoTestCase
-from libstat.views.apis import data_context
+from libstat.apis.open_data import data_context
 
 
 class OpenDataApiTest(MongoTestCase):

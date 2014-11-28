@@ -4,17 +4,14 @@ from django.views.generic import RedirectView
 from django.contrib.auth.views import logout
 
 from django.contrib import admin
+from libstat.apis.open_data import data_api, observation_api
+from libstat.apis.terms import term_api, terms_api
 
-from libstat.views.apis import (data_api,
-                                term_api,
-                                terms_api,
-                                observation_api,
-                                open_data)
 from libstat.views.auth import login
 from libstat.views.administration import administration, create_new_collection
 from libstat.views.articles import article, articles, articles_delete
 from libstat.views.dispatches import dispatches, dispatches_delete, dispatches_send
-from libstat.views.index import index
+from libstat.views.index import index, open_data
 from libstat.views.reports import reports
 from libstat.views.surveys import (surveys,
                                    surveys_statuses,
