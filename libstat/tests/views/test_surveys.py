@@ -8,7 +8,6 @@ from libstat.survey_templates import survey_template
 
 
 class TestSurveyAuthorization(MongoTestCase):
-
     def test_can_view_survey_if_logged_in(self):
         self._login()
         survey = self._dummy_survey()
@@ -102,7 +101,6 @@ class TestSurveyAuthorization(MongoTestCase):
 
 
 class TestSurveyStatus(MongoTestCase):
-
     def setUp(self):
         self._login()
 
@@ -122,9 +120,37 @@ class TestSurveyStatus(MongoTestCase):
         self.assertEquals(survey3.reload().status, "controlled")
         self.assertEquals(survey4.reload().status, "controlled")
 
+    def test_publishes_surveys(self):
+        survey1 = self._dummy_survey(status="not_viewed")
+        survey2 = self._dummy_survey(status="initiated")
+
+        self._post(action='surveys_statuses',
+                   data={"survey-response-ids": [survey1.pk, survey2.pk],
+                         "new_status": "published"})
+
+        survey1.reload()
+        survey2.reload()
+
+        self.assertTrue(survey1.is_published)
+        self.assertTrue(survey2.is_published)
+
+    def test_does_not_publish_unpublishable_surveys(self):
+        survey1 = self._dummy_survey(status="not_viewed")
+        survey2 = self._dummy_survey(status="initiated",
+                                     selected_libraries=[])
+
+        self._post(action='surveys_statuses',
+                   data={"survey-response-ids": [survey1.pk, survey2.pk],
+                         "new_status": "published"})
+
+        survey1.reload()
+        survey2.reload()
+
+        self.assertTrue(survey1.is_published)
+        self.assertFalse(survey2.is_published)
+
 
 class TestSurveysExport(MongoTestCase):
-
     def setUp(self):
         self._login()
 
@@ -151,7 +177,6 @@ class TestSurveysExport(MongoTestCase):
 
 
 class TestLibraryImport(MongoTestCase):
-
     def setUp(self):
         self._dummy_dict = {
             "country_code": "se",
@@ -160,29 +185,29 @@ class TestLibraryImport(MongoTestCase):
             "library_type": "sjukbib",
             "municipality_code": "1793",
             "address":
-            [
-                {
-                    "address_type": "gen",
-                    "city": "lib1_city",
-                    "street": "street1"
-                },
-                {
-                    "address_type": "ill",
-                    "city": "ill_lib1_city",
-                    "street": "ill_street1"
-                }
-            ],
+                [
+                    {
+                        "address_type": "gen",
+                        "city": "lib1_city",
+                        "street": "street1"
+                    },
+                    {
+                        "address_type": "ill",
+                        "city": "ill_lib1_city",
+                        "street": "ill_street1"
+                    }
+                ],
             "contact":
-            [
-                {
-                    "contact_type": "orgchef",
-                    "email": "dont@care.atall"
-                },
-                {
-                    "contact_type": "statans",
-                    "email": "lib1@dom.top"
-                }
-            ]
+                [
+                    {
+                        "contact_type": "orgchef",
+                        "email": "dont@care.atall"
+                    },
+                    {
+                        "contact_type": "statans",
+                        "email": "lib1@dom.top"
+                    }
+                ]
         }
 
     def test_creates_library_from_dict(self):
@@ -251,7 +276,6 @@ class TestLibraryImport(MongoTestCase):
 
 
 class TestSurveyView(MongoTestCase):
-
     def setUp(self):
         self._login()
 
@@ -345,7 +369,6 @@ class TestSurveyView(MongoTestCase):
 
 
 class TestSurveyState(MongoTestCase):
-
     def setUp(self):
         self._login()
 
@@ -365,7 +388,7 @@ class TestSurveyState(MongoTestCase):
         self._dummy_survey(is_active=True, sample_year=2014)
 
         response = self._get("surveys", params={"action": "list", "sample_year": "2014",
-                                                         "surveys_state": "inactive"})
+                                                "surveys_state": "inactive"})
 
         self.assertEquals(len(response.context["survey_responses"]), 1)
 
@@ -397,7 +420,6 @@ class TestSurveyState(MongoTestCase):
 
 
 class TestSurveysOverview(MongoTestCase):
-
     def test_can_view_overview_when_logged_in(self):
         self._login()
         self._dummy_survey()

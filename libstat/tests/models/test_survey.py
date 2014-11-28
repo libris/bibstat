@@ -188,6 +188,20 @@ class SurveyModelTest(MongoTestCase):
 
 class SurveyPublishTest(MongoTestCase):
 
+    def test_returns_true_if_publish_successful(self):
+        survey = self._dummy_survey()
+
+        successful = survey.publish()
+
+        self.assertTrue(successful)
+
+    def test_returns_false_if_not_publish_successful(self):
+        survey = self._dummy_survey(selected_libraries=[])
+
+        successful = survey.publish()
+
+        self.assertFalse(successful)
+
     def test_should_flag_new_object_as_not_published(self):
         survey = self._dummy_survey()
 
@@ -351,3 +365,23 @@ class SurveyPublishTest(MongoTestCase):
 
         self.assertFalse(survey.is_published)
         self.assertFalse(OpenData.objects.all()[0].is_active)
+
+    def test_can_not_publish_survey_if_it_has_no_selected_libraries(self):
+        survey = self._dummy_survey(selected_libraries=[])
+
+        survey.publish()
+        survey.save()
+        survey.reload()
+
+        self.assertFalse(survey.is_published)
+
+    def test_does_not_create_open_data_when_publishing_survey_if_it_has_no_selected_libraries(self):
+        survey = self._dummy_survey(selected_libraries=[],
+                                    observations=[
+                                        self._dummy_observation(),
+                                        self._dummy_observation(),
+                                    ])
+
+        survey.publish()
+
+        self.assertEquals(OpenData.objects.count(), 0)

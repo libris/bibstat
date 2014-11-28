@@ -419,7 +419,7 @@ class SurveyBase(Document):
         return targetGroups[self.target_group]
 
     def __unicode__(self):
-        return u"{} {} {}".format(self.target_group, self.library.name, self.sample_year)
+        return u"{} {}".format(self.library.name, self.sample_year)
 
     def __init__(self, *args, **kwargs):
         status = kwargs.pop("status", None)
@@ -505,6 +505,9 @@ class Survey(SurveyBase):
 
         publishing_date = datetime.utcnow()
 
+        if not self.selected_libraries:
+            return False
+
         update_existing_open_data(self, publishing_date)
 
         create_new_open_data(self, publishing_date)
@@ -513,6 +516,8 @@ class Survey(SurveyBase):
         self.published_at = publishing_date
         self._action_publish = True
         self.save()
+
+        return True
 
     def unpublish(self):
         for open_data in OpenData.objects.filter(source_survey=self.pk):

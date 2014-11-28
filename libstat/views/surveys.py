@@ -61,6 +61,7 @@ def surveys(request, *args, **kwargs):
             free_text=free_text,
             is_active=False)
         surveys = active_surveys if surveys_state == "active" else inactive_surveys
+        surveys = surveys.order_by("library.name")
 
     # Triggering lazy loading of the list of surveys before iterating over it in the
     # template seems to give significant performance gains. Unknown why.
@@ -225,10 +226,22 @@ def surveys_overview(request, sample_year):
 def surveys_statuses(request):
     status = request.POST.get("new_status", "")
     survey_response_ids = request.POST.getlist("survey-response-ids", [])
-    for survey in Survey.objects.filter(id__in=survey_response_ids):
-        survey.status = status
-        survey.save()
-    message = u"Ändrade status på {} enkäter".format(len(survey_response_ids))
+    if status == "published":
+        num_successful_published = 0
+        for survey in Survey.objects.filter(id__in=survey_response_ids):
+            successful = survey.publish()
+            if successful:
+                num_successful_published += 1
+        message = u"Publicerade {} enkäter.".format(num_successful_published)
+        if num_successful_published != len(survey_response_ids):
+            message = (u"{} Kunde inte publicera {} enkäter eftersom de inte har markerat att "
+                       u"de svarar för några bibliotek.").format(
+                message, len(survey_response_ids) - num_successful_published)
+    else:
+        for survey in Survey.objects.filter(id__in=survey_response_ids):
+            survey.status = status
+            survey.save()
+        message = u"Ändrade status på {} enkäter".format(len(survey_response_ids))
 
     request.session["message"] = message
     return _surveys_redirect(request)

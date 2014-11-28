@@ -77,9 +77,11 @@ class MongoTestCase(TestCase):
 
     def _dummy_survey(self, sample_year=2001, password=None, target_group="folkbib",
                       status="not_viewed", publish=False, library=None, is_active=True,
-                      observations=[], selected_libraries=[]):
+                      observations=[], selected_libraries=None):
         if not library:
             library = self._dummy_library()
+        if selected_libraries is None:
+            selected_libraries = [library.sigel]
         survey = Survey(library=library, sample_year=sample_year,
                         target_group=target_group, password=password, status=status, is_active=is_active,
                         observations=observations, selected_libraries=selected_libraries).save()

@@ -28,7 +28,7 @@ def _save_survey_response_from_form(survey, form):
             else:
                 survey.__dict__["_data"][field] = form.cleaned_data[field]
 
-        survey.selected_libraries = form.cleaned_data["selected_libraries"].split(" ")
+        survey.selected_libraries = filter(None, form.cleaned_data["selected_libraries"].split(" "))
         if submit_action == "submit" and survey.status in ("not_viewed", "initiated"):
             if not LibrarySelection(survey.library).has_conflicts(survey):
                 survey.status = "submitted"
