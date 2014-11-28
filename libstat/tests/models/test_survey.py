@@ -1,12 +1,13 @@
 # -*- coding: UTF-8 -*-
 from datetime import timedelta
+from sets import Set
+from data.principals import PRINCIPALS
 
 from libstat.tests import MongoTestCase
 from libstat.models import OpenData, Survey, SurveyVersion
 
 
-class SurveyModelTest(MongoTestCase):
-
+class TestSurveyModel(MongoTestCase):
     def test_can_not_update_status_to_invalid_value(self):
         survey = self._dummy_survey()
 
@@ -186,8 +187,7 @@ class SurveyModelTest(MongoTestCase):
         self.assertEquals(survey.date_modified, survey.date_created)
 
 
-class SurveyPublishTest(MongoTestCase):
-
+class TestSurveyPublish(MongoTestCase):
     def test_returns_true_if_publish_successful(self):
         survey = self._dummy_survey()
 
@@ -385,3 +385,335 @@ class SurveyPublishTest(MongoTestCase):
         survey.publish()
 
         self.assertEquals(OpenData.objects.count(), 0)
+
+    def test_can_not_publish_survey_if_another_survey_reports_for_the_same_library(self):
+        self._dummy_library(sigel="lib1")
+        self._dummy_library(sigel="lib2")
+        self._dummy_library(sigel="lib3")
+
+        survey1 = self._dummy_survey(selected_libraries=["lib1", "lib3"])
+        survey2 = self._dummy_survey(selected_libraries=["lib2", "lib3"])
+
+        survey1.publish()
+        survey2.publish()
+
+        self.assertFalse(survey1.is_published)
+        self.assertFalse(survey2.is_published)
+
+
+class TestSelectableLibraries(MongoTestCase):
+    def test_should_return_an_empty_list_for_no_municipality_code(self):
+        survey = self._dummy_survey(library=self._dummy_library(municipality_code=None))
+
+        self.assertItemsEqual(survey.selectable_libraries(), [])
+
+    def test_should_exclude_second_library_with_different_municipality_code(self):
+        survey = self._dummy_survey(library=self._dummy_library(municipality_code="1"))
+        self._dummy_survey(library=self._dummy_library(municipality_code="2"))
+
+        self.assertItemsEqual(survey.selectable_libraries(), [])
+
+    def test_should_include_second_library_with_same_municipality_code(self):
+        library = self._dummy_library(municipality_code="1")
+        second = self._dummy_library(municipality_code="1")
+        survey = self._dummy_survey(library=library)
+        self._dummy_survey(library=second)
+        selectables = survey.selectable_libraries()
+
+        self.assertEqual(len(selectables), 1)
+        self.assertEqual(selectables[0], second)
+
+    def test_should_exclude_second_library_with_same_sigel(self):
+        survey = self._dummy_survey(library=self._dummy_library(sigel="1"))
+        self._dummy_survey(library=self._dummy_library(sigel="1"))
+
+        self.assertItemsEqual(survey.selectable_libraries(), [])
+
+    def test_should_include_second_library_with_same_municipality_code_and_same_principal_library_type(self):
+        library = self._dummy_library(municipality_code="1", library_type=u"folkbib")
+        second = self._dummy_library(municipality_code="1", library_type=u"muskom")
+        survey = self._dummy_survey(library=library)
+        self._dummy_survey(library=second)
+        selectables = survey.selectable_libraries()
+
+        self.assertEqual(len(selectables), 1)
+        self.assertEqual(selectables[0], second)
+
+    def test_should_exclude_second_library_with_same_municipality_code_and_different_principal_library_type(self):
+        library = self._dummy_library(municipality_code="1", library_type=u"folkbib")
+        second = self._dummy_library(municipality_code="1", library_type=u"sjukbib")
+        survey = self._dummy_survey(library=library)
+        self._dummy_survey(library=second)
+        selectables = survey.selectable_libraries()
+
+        self.assertEqual(len(selectables), 0)
+
+    def test_should_include_second_library_with_same_municipality_code_when_library_type_is_unknown(self):
+        library = self._dummy_library(municipality_code="1", library_type=None)
+        second = self._dummy_library(municipality_code="1", library_type=u"muskom")
+        survey = self._dummy_survey(library=library)
+        self._dummy_survey(library=second)
+        selectables = survey.selectable_libraries()
+
+        self.assertEqual(len(selectables), 1)
+        self.assertEqual(selectables[0], second)
+
+    def test_should_include_second_library_with_same_municipality_code_when_principal_is_unknown_for_library_type(self):
+        library = self._dummy_library(municipality_code="1", library_type=u"musbib")
+        self.assertFalse(library.library_type in PRINCIPALS)
+
+        second = self._dummy_library(municipality_code="1", library_type=u"muskom")
+        survey = self._dummy_survey(library=library)
+        self._dummy_survey(library=second)
+        selectables = survey.selectable_libraries()
+
+        self.assertEqual(len(selectables), 1)
+        self.assertEqual(selectables[0], second)
+
+
+class TestSelectedSigels(MongoTestCase):
+    def test_should_return_an_empty_set_for_no_municipality_code(self):
+        library = self._dummy_library(municipality_code=None)
+        survey = self._dummy_survey(sample_year=2014)
+
+        self.assertSetEqual(survey.selected_sigels(2014), Set())
+
+    def test_should_include_second_surveys_selected_sigel(self):
+        library = self._dummy_library(sigel="1")
+        second_library = self._dummy_library(sigel="2")
+
+        survey = self._dummy_survey(library=library, sample_year=2014)
+        self._dummy_survey(library=second_library, sample_year=2014, selected_libraries=["2"])
+
+        self.assertSetEqual(survey.selected_sigels(2014), {"2"})
+
+    def test_should_include_librarys_own_sigel_when_selected_in_second_survey(self):
+        library = self._dummy_library(sigel="1")
+        second_library = self._dummy_library(sigel="2")
+
+        survey = self._dummy_survey(library=library, sample_year=2014)
+        self._dummy_survey(library=second_library, sample_year=2014, selected_libraries=["1", "2"])
+
+        self.assertSetEqual(survey.selected_sigels(2014), {"1", "2"})
+
+    def test_should_exclude_selected_sigel_for_another_sample_year(self):
+        library = self._dummy_library(sigel="1")
+        second_library = self._dummy_library(sigel="2")
+
+        survey = self._dummy_survey(library=library, sample_year=2014)
+        self._dummy_survey(library=second_library, sample_year=2015, selected_libraries=["1", "2"])
+
+        self.assertSetEqual(survey.selected_sigels(2014), Set())
+
+    def test_should_exclude_selected_sigel_for_another_municipality_code(self):
+        library = self._dummy_library(sigel="1")
+        second_library = self._dummy_library(sigel="2", municipality_code="m")
+
+        survey = self._dummy_survey(library=library, sample_year=2014)
+        self._dummy_survey(library=second_library, sample_year=2014, selected_libraries=["2"])
+
+        self.assertSetEqual(survey.selected_sigels(2014), Set())
+
+    def test_should_exclude_selected_sigel_in_librarys_own_survey(self):
+        library = self._dummy_library(sigel="1")
+        second_library = self._dummy_library(sigel="2")
+
+        survey = self._dummy_survey(library=library, sample_year=2014, selected_libraries=["3"])
+        self._dummy_survey(library=second_library, sample_year=2014, selected_libraries=["2"])
+
+        self.assertSetEqual(survey.selected_sigels(2014), {"2"})
+
+    def test_should_include_second_surveys_selected_sigel_with_same_principal_library_type(self):
+        library = self._dummy_library(sigel="1", library_type=u"folkbib")
+        second_library = self._dummy_library(sigel="2", library_type=u"muskom")
+
+        survey = self._dummy_survey(library=library, sample_year=2014)
+        self._dummy_survey(library=second_library, sample_year=2014, selected_libraries=["2"])
+
+        self.assertSetEqual(survey.selected_sigels(2014), {"2"})
+
+    def test_should_exclude_second_surveys_selected_sigel_with_different_principal_library_type(self):
+        library = self._dummy_library(sigel="1", library_type=u"folkbib")
+        second_library = self._dummy_library(sigel="2", library_type=u"sjukbib")
+
+        survey = self._dummy_survey(library=library, sample_year=2014)
+        self._dummy_survey(library=second_library, sample_year=2014, selected_libraries=["2"])
+
+        self.assertSetEqual(survey.selected_sigels(2014), Set())
+
+    def test_should_include_second_surveys_selected_sigel_when_library_type_is_unknown(self):
+        library = self._dummy_library(sigel="1", library_type=None)
+        second_library = self._dummy_library(sigel="2", library_type=u"muskom")
+
+        survey = self._dummy_survey(library=library, sample_year=2014)
+        self._dummy_survey(library=second_library, sample_year=2014, selected_libraries=["2"])
+
+        self.assertSetEqual(survey.selected_sigels(2014), {"2"})
+
+    def test_should_include_second_surveys_selected_sigel_when_principal_is_unknown_for_library_type(self):
+        library = self._dummy_library(sigel="1", library_type=u"musbib")
+        self.assertFalse(library.library_type in PRINCIPALS)
+        second_library = self._dummy_library(sigel="2", library_type=u"muskom")
+
+        survey = self._dummy_survey(library=library, sample_year=2014)
+        self._dummy_survey(library=second_library, sample_year=2014, selected_libraries=["2"])
+
+        self.assertSetEqual(survey.selected_sigels(2014), {"2"})
+
+
+class TestHasConflicts(MongoTestCase):
+    def test_should_return_true_for_conflict_in_same_sample_year(self):
+        first_library = self._dummy_library(sigel="1")
+        second_library = self._dummy_library(sigel="2")
+
+        survey = self._dummy_survey(library=first_library, sample_year=2014, selected_libraries=["1", "2"])
+        self._dummy_survey(library=second_library, sample_year=2014, selected_libraries=["2"])
+
+        self.assertTrue(survey.has_conflicts())
+
+    def test_should_return_false_for_non_conflict_in_different_sample_years(self):
+        first_library = self._dummy_library(sigel="1")
+        second_library = self._dummy_library(sigel="2")
+
+        survey = self._dummy_survey(library=first_library, sample_year=2014, selected_libraries=["1", "2"])
+        self._dummy_survey(library=second_library, sample_year=2015, selected_libraries=["2"])
+
+        self.assertFalse(survey.has_conflicts())
+
+    def test_should_return_false_for_non_conflict_in_same_sample_year(self):
+        first_library = self._dummy_library(sigel="1")
+        second_library = self._dummy_library(sigel="2")
+
+        survey = self._dummy_survey(library=first_library, sample_year=2014, selected_libraries=["1"])
+        self._dummy_survey(library=second_library, sample_year=2014, selected_libraries=["2"])
+
+        self.assertFalse(survey.has_conflicts())
+
+    def test_should_return_true_for_conflict_when_second_survey_reports_for_first_survey(self):
+        first_library = self._dummy_library(sigel="1")
+        second_library = self._dummy_library(sigel="2")
+
+        survey = self._dummy_survey(library=first_library, sample_year=2014, selected_libraries=[])
+        self._dummy_survey(library=second_library, sample_year=2014, selected_libraries=["1", "2"])
+
+        self.assertTrue(survey.has_conflicts())
+
+    def test_should_return_true_for_conflict_when_second_survey_reports_for_first_survey_with_same_principal_library_type(
+            self):
+        first_library = self._dummy_library(sigel="1", library_type=u"folkbib")
+        second_library = self._dummy_library(sigel="2", library_type=u"muskom")
+
+        survey = self._dummy_survey(library=first_library, sample_year=2014, selected_libraries=[])
+        self._dummy_survey(library=second_library, sample_year=2014, selected_libraries=["1", "2"])
+
+        self.assertTrue(survey.has_conflicts())
+
+    def test_should_return_false_for_non_conflict_when_second_survey_reports_for_first_survey_with_different_principal_library_type(
+            self):
+        first_library = self._dummy_library(sigel="1", library_type=u"folkbib")
+        second_library = self._dummy_library(sigel="2", library_type=u"sjukbib")
+
+        survey = self._dummy_survey(library=first_library, sample_year=2014, selected_libraries=[])
+        self._dummy_survey(library=second_library, sample_year=2014, selected_libraries=["1", "2"])
+
+        self.assertFalse(survey.has_conflicts())
+
+    def test_should_return_true_for_conflict_when_second_survey_reports_for_first_survey_when_library_type_is_unknown(
+            self):
+        first_library = self._dummy_library(sigel="1", library_type=None)
+        second_library = self._dummy_library(sigel="2", library_type=u"muskom")
+
+        survey = self._dummy_survey(library=first_library, sample_year=2014, selected_libraries=[])
+        self._dummy_survey(library=second_library, sample_year=2014, selected_libraries=["1", "2"])
+
+        self.assertTrue(survey.has_conflicts())
+
+    def test_should_return_true_for_conflict_when_second_survey_reports_for_first_survey_when_principal_for_library_type_is_unknown(
+            self):
+        first_library = self._dummy_library(sigel="1", library_type=u"musbib")
+        self.assertFalse(first_library.library_type in PRINCIPALS)
+        second_library = self._dummy_library(sigel="2", library_type=u"muskom")
+
+        survey = self._dummy_survey(library=first_library, sample_year=2014, selected_libraries=[])
+        self._dummy_survey(library=second_library, sample_year=2014, selected_libraries=["1", "2"])
+
+        self.assertTrue(survey.has_conflicts())
+
+
+class TestGetConflictingSurveys(MongoTestCase):
+    def test_should_return_survey_for_conflict_in_same_sample_year(self):
+        first_library = self._dummy_library(sigel="1")
+        second_library = self._dummy_library(sigel="3")
+
+        first_survey = self._dummy_survey(library=first_library, sample_year=2014, selected_libraries=["1", "2"])
+        second_survey = self._dummy_survey(library=second_library, sample_year=2014, selected_libraries=["2"])
+
+        self.assertListEqual(first_survey.get_conflicting_surveys(), [second_survey])
+
+    def test_should_return_two_surveys_for_conflicts_in_same_sample_year(self):
+        first_library = self._dummy_library(sigel="1")
+        second_library = self._dummy_library(sigel="2")
+        third_library = self._dummy_library(sigel="3")
+
+        first_survey = self._dummy_survey(library=first_library, sample_year=2014, selected_libraries=["1", "2"])
+        second_survey = self._dummy_survey(library=second_library, sample_year=2014, selected_libraries=["1"])
+        third_survey = self._dummy_survey(library=third_library, sample_year=2014, selected_libraries=["2"])
+
+        self.assertListEqual(first_survey.get_conflicting_surveys(), [second_survey, third_survey])
+
+    def test_should_return_empty_list_for_non_conflict_in_different_sample_years(self):
+        first_library = self._dummy_library(sigel="1")
+        second_library = self._dummy_library(sigel="3")
+
+        first_survey = self._dummy_survey(library=first_library, sample_year=2014, selected_libraries=["1", "2"])
+        self._dummy_survey(library=second_library, sample_year=2015, selected_libraries=["2"])
+
+        self.assertListEqual(first_survey.get_conflicting_surveys(), [])
+
+    def test_should_return_second_survey_when_reporting_for_first_survey(self):
+        first_library = self._dummy_library(sigel="1")
+        second_library = self._dummy_library(sigel="2")
+
+        first_survey = self._dummy_survey(library=first_library, sample_year=2014, selected_libraries=[])
+        second_survey = self._dummy_survey(library=second_library, sample_year=2014, selected_libraries=["1", "2"])
+
+        self.assertListEqual(first_survey.get_conflicting_surveys(), [second_survey])
+
+    def test_should_return_second_survey_when_reporting_for_first_survey_with_same_principal_library_type(self):
+        first_library = self._dummy_library(sigel="1", library_type=u"folkbib")
+        second_library = self._dummy_library(sigel="2", library_type=u"muskom")
+
+        first_survey = self._dummy_survey(library=first_library, sample_year=2014, selected_libraries=[])
+        second_survey = self._dummy_survey(library=second_library, sample_year=2014, selected_libraries=["1", "2"])
+
+        self.assertListEqual(first_survey.get_conflicting_surveys(), [second_survey])
+
+    def test_should_not_return_second_survey_when_reporting_for_first_survey_with_different_principal_library_type(
+            self):
+        first_library = self._dummy_library(sigel="1", library_type=u"folkbib")
+        second_library = self._dummy_library(sigel="2", library_type=u"sjukbib")
+
+        first_survey = self._dummy_survey(library=first_library, sample_year=2014, selected_libraries=[])
+        self._dummy_survey(library=second_library, sample_year=2014, selected_libraries=["1", "2"])
+
+        self.assertListEqual(first_survey.get_conflicting_surveys(), [])
+
+    def test_should_return_second_survey_when_reporting_for_first_survey_when_library_type_is_unknown(self):
+        first_library = self._dummy_library(sigel="1", library_type=None)
+        second_library = self._dummy_library(sigel="2", library_type=u"sjukbib")
+
+        first_survey = self._dummy_survey(library=first_library, sample_year=2014, selected_libraries=[])
+        second_survey = self._dummy_survey(library=second_library, sample_year=2014, selected_libraries=["1", "2"])
+
+        self.assertListEqual(first_survey.get_conflicting_surveys(), [second_survey])
+
+    def test_should_return_second_survey_when_reporting_for_first_survey_when_principal_for_library_type_is_unknown(
+            self):
+        first_library = self._dummy_library(sigel="1", library_type=u"musbib")
+        self.assertFalse(first_library.library_type in PRINCIPALS)
+        second_library = self._dummy_library(sigel="2", library_type=u"sjukbib")
+
+        first_survey = self._dummy_survey(library=first_library, sample_year=2014, selected_libraries=[])
+        second_survey = self._dummy_survey(library=second_library, sample_year=2014, selected_libraries=["1", "2"])
+
+        self.assertListEqual(first_survey.get_conflicting_surveys(), [second_survey])

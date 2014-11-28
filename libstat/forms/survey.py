@@ -1,69 +1,12 @@
 # coding=utf-8
 from sets import Set
+
 from django import forms
 from django.core.urlresolvers import reverse
+
 from bibstat import settings
-from data.principals import get_library_types_with_same_principal
 from libstat.models import Survey, Variable, SurveyObservation
 from libstat.survey_templates import survey_template
-
-
-class LibrarySelection:
-
-    def __init__(self, library):
-        self.library = library
-
-    def selectable_libraries(self):
-        if not self.library.municipality_code:
-            return []
-
-        return [survey.library for survey in Survey.objects.filter(
-            library__municipality_code=self.library.municipality_code,
-            library__library_type__in=get_library_types_with_same_principal(self.library),
-            library__sigel__ne=self.library.sigel
-        )]
-
-    def selected_sigels(self, sample_year):
-        if not self.library.municipality_code:
-            return Set()
-
-        surveys = Survey.objects.filter(
-            sample_year=sample_year,
-            library__municipality_code=self.library.municipality_code,
-            library__library_type__in=get_library_types_with_same_principal(self.library),
-            library__sigel__ne=self.library.sigel
-        )
-
-        selected_sigels = Set()
-        for survey in surveys:
-            for sigel in survey.selected_libraries:
-                selected_sigels.add(sigel)
-
-        return selected_sigels
-
-    def has_conflicts(self, survey):
-        for selected_sigel in self.selected_sigels(survey.sample_year):
-            if selected_sigel in survey.selected_libraries or selected_sigel == self.library.sigel:
-                return True
-
-        return False
-
-    def get_conflicting_surveys(self, survey):
-        if not self.library.municipality_code:
-            return []
-
-        other_surveys = Survey.objects.filter(
-            sample_year=survey.sample_year,
-            library__municipality_code=self.library.municipality_code,
-            library__library_type__in=get_library_types_with_same_principal(self.library),
-            library__sigel__ne=self.library.sigel
-        )
-
-        return [
-            other_survey for other_survey in other_surveys
-            if any(sigel in other_survey.selected_libraries for sigel in survey.selected_libraries)
-            or self.library.sigel in other_survey.selected_libraries
-        ]
 
 
 class SurveyForm(forms.Form):
@@ -117,11 +60,11 @@ class SurveyForm(forms.Form):
 
         return field
 
-    def _set_libraries(self, current_library, this_surveys_selected_sigels, authenticated):
-        selection = LibrarySelection(current_library)
-        other_surveys_selected_sigels = selection.selected_sigels(self.sample_year)
+    def _set_libraries(self, current_survey, this_surveys_selected_sigels, authenticated):
+        other_surveys_selected_sigels = current_survey.selected_sigels(self.sample_year)
 
-        def set_library(self, library, current_library=False):
+        def set_library(self, survey, current_library=False):
+            library = survey.library
             checkbox_id = str(library.sigel)
 
             attrs = {
@@ -168,8 +111,8 @@ class SurveyForm(forms.Form):
             self.libraries.append(row)
 
         self.libraries = []
-        set_library(self, current_library, current_library=True)
-        for library in selection.selectable_libraries():
+        set_library(self, current_survey, current_library=True)
+        for library in current_survey.selectable_libraries():
             set_library(self, library)
 
     def _status_label(self, key):
@@ -226,11 +169,9 @@ class SurveyForm(forms.Form):
         self.url = settings.API_BASE_URL + reverse('survey', args=(survey.pk,))
         self.url_with_password = "{}?p={}".format(self.url, self.password)
 
-        self._set_libraries(survey.library, survey.selected_libraries, authenticated)
+        self._set_libraries(survey, survey.selected_libraries, authenticated)
         if hasattr(self, 'library_selection_conflict') and self.library_selection_conflict:
-            selection = LibrarySelection(survey.library)
-
-            self.conflicting_surveys = selection.get_conflicting_surveys(survey)
+            self.conflicting_surveys = survey.get_conflicting_surveys()
             for conflicting_survey in self.conflicting_surveys:
                 conflicting_survey.url = settings.API_BASE_URL + reverse('survey', args=(conflicting_survey.pk,))
                 conflicting_survey.conflicting_libraries = self._conflicting_libraries(

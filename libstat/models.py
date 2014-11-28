@@ -1,5 +1,6 @@
 # -*- coding: UTF-8 -*-
 import logging
+from sets import Set
 import string
 import random
 
@@ -8,6 +9,7 @@ from mongoengine import signals
 from django.conf import settings
 
 from datetime import datetime
+from data.principals import get_library_types_with_same_principal
 from libstat.query_sets.survey import SurveyQuerySet
 from libstat.query_sets.variable import VariableQuerySet
 
@@ -286,14 +288,6 @@ class Library(EmbeddedDocument):
         self.sigel = sigel if sigel else self._random_sigel()
 
 
-class LibrarySelection(Document):
-    name = StringField(unique=True)
-    sigels = ListField()
-
-    meta = {
-        'collection': 'libstat_library_selection'
-    }
-
 
 class SurveyObservation(EmbeddedDocument):
     variable = ReferenceField(Variable, required=True)
@@ -430,6 +424,58 @@ class SurveyBase(Document):
         if target_group:
             self.target_group = target_group
 
+    def selectable_libraries(self):
+        if not self.library.municipality_code:
+            return []
+
+        return [survey.library for survey in Survey.objects.filter(
+            library__municipality_code=self.library.municipality_code,
+            library__library_type__in=get_library_types_with_same_principal(self.library),
+            library__sigel__ne=self.library.sigel
+        )]
+
+    def selected_sigels(self, sample_year):
+        if not self.library.municipality_code:
+            return Set()
+
+        surveys = Survey.objects.filter(
+            sample_year=sample_year,
+            library__municipality_code=self.library.municipality_code,
+            library__library_type__in=get_library_types_with_same_principal(self.library),
+            library__sigel__ne=self.library.sigel
+        )
+
+        selected_sigels = Set()
+        for survey in surveys:
+            for sigel in survey.selected_libraries:
+                selected_sigels.add(sigel)
+
+        return selected_sigels
+
+    def has_conflicts(self):
+        for selected_sigel in self.selected_sigels(self.sample_year):
+            if selected_sigel in self.selected_libraries or selected_sigel == self.library.sigel:
+                return True
+
+        return False
+
+    def get_conflicting_surveys(self):
+        if not self.library.municipality_code:
+            return []
+
+        other_surveys = Survey.objects.filter(
+            sample_year=self.sample_year,
+            library__municipality_code=self.library.municipality_code,
+            library__library_type__in=get_library_types_with_same_principal(self.library),
+            library__sigel__ne=self.library.sigel
+        )
+
+        return [
+            other_survey for other_survey in other_surveys
+            if any(sigel in other_survey.selected_libraries for sigel in self.selected_libraries)
+            or self.library.sigel in other_survey.selected_libraries
+        ]
+
 
 class Survey(SurveyBase):
     meta = {
@@ -506,6 +552,9 @@ class Survey(SurveyBase):
         publishing_date = datetime.utcnow()
 
         if not self.selected_libraries:
+            return False
+
+        if self.has_conflicts():
             return False
 
         update_existing_open_data(self, publishing_date)

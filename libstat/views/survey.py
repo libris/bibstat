@@ -7,7 +7,7 @@ from django.http import HttpResponseNotFound
 from django.contrib.auth.decorators import permission_required
 
 from libstat.models import Survey
-from libstat.forms.survey import SurveyForm, LibrarySelection
+from libstat.forms.survey import SurveyForm
 
 
 logger = logging.getLogger(__name__)
@@ -30,7 +30,7 @@ def _save_survey_response_from_form(survey, form):
 
         survey.selected_libraries = filter(None, form.cleaned_data["selected_libraries"].split(" "))
         if submit_action == "submit" and survey.status in ("not_viewed", "initiated"):
-            if not LibrarySelection(survey.library).has_conflicts(survey):
+            if not survey.has_conflicts():
                 survey.status = "submitted"
 
         survey.save()

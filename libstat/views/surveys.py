@@ -235,7 +235,8 @@ def surveys_statuses(request):
         message = u"Publicerade {} enkäter.".format(num_successful_published)
         if num_successful_published != len(survey_response_ids):
             message = (u"{} Kunde inte publicera {} enkäter eftersom de inte har markerat att "
-                       u"de svarar för några bibliotek.").format(
+                       u"de svarar för några bibliotek eller för att flera enkäter svarar för "
+                       u"samma bibliotek.").format(
                 message, len(survey_response_ids) - num_successful_published)
     else:
         for survey in Survey.objects.filter(id__in=survey_response_ids):
