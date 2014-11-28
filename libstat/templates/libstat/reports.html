@@ -89,15 +89,17 @@
                 </form>
 
 
-                {% if filtered_surveys|length > 0 %}
+                {% if surveys|length > 0 %}
                     <hr>
                     <p style="margin-bottom: 15px;">
                         <b>Välj de bibliotek som har svarat och ska ingå i verksamhetsrapporten.</b>
                         <br>Visar bibliotek som svarat <i>{{ sample_year }}</i>{% if municipality_name %} i <i>{{ municipality_name }}</i>{% endif %}{% if principal %} och har <i>{{ principal }}</i> som huvudman{% endif %}.
                     </p>
 
-                    <form class="form" method="post" action="">
-                        {% for survey in filtered_surveys %}
+                    <form class="form" method="post" action="{% url 'report' %}">
+                        {% csrf_token %}
+                        <input type="hidden" name="sample_year" value="{{ sample_year }}">
+                        {% for survey in surveys %}
                             <div class="row">
                                 <div class="col-xs-12 col-sm-8">
                                     <div class="panel panel-default panel-report" {% if forloop.last %} style="margin-bottom: 0;" {% endif %}>
@@ -111,6 +113,11 @@
                                 </div>
                             </div>
                         {% endfor %}
+                        <div class="row">
+                            <div class="col-xs-12">
+                                <button type="submit" class="btn btn-primary" style="margin-top: 15px;">Visa rapport</button>
+                            </div>
+                        </div>
                     </form>
                 {% endif %}
             </div>

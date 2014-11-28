@@ -12,7 +12,7 @@ from libstat.views.administration import administration, create_new_collection
 from libstat.views.articles import article, articles, articles_delete
 from libstat.views.dispatches import dispatches, dispatches_delete, dispatches_send
 from libstat.views.index import index, open_data
-from libstat.views.reports import reports
+from libstat.views.reports import reports, report
 from libstat.views.surveys import (surveys,
                                    surveys_statuses,
                                    surveys_export,
@@ -54,6 +54,7 @@ urlpatterns = patterns(
 
     # Reports
     url(r'^reports$', reports, name='reports'),
+    url(r'^report$', report, name='report'),
 
     # Administration
     url(r'^administration/create_new_collection$', create_new_collection, name='create_new_collection'),
