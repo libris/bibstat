@@ -8,6 +8,7 @@
             width: 800px;
             margin: 0px auto;
             padding-top: 30px;
+            padding-bottom: 70px;
         }
 
         th {
@@ -21,11 +22,11 @@
         }
 
         td {
-            padding-top: 5px !important;
-            padding-bottom: 5px !important;
+            padding-top: 5px;
+            padding-bottom: 5px;
         }
 
-        .even {
+        .even td:not(.observation-data-missing) {
             background-color: #f2f2f2;
         }
 
@@ -84,6 +85,15 @@
             font-size: 20px;
             font-family: helvetica;
         }
+
+        .observation-data-missing {
+            background-color: white !important;
+            color: #d63f3c;
+        }
+
+        .observation-footer {
+            margin-top: 30px;
+        }
     </style>
     <div class="report">
         <div class="report-title">Verksamhetsrapport för året {{ sample_year }}</div>
@@ -103,6 +113,7 @@
                     <th class="observation-previous-year">År {{ previous_year }}</th>
                     <th class="observation-sample-year">År {{ sample_year }}</th>
                     <th class="observation-difference">Förändring {{ previous_year }} - {{ sample_year }}</th>
+                    <th class="observation-data-missing"></th>
                 </tr>
                 {% for observation in observations %}
                     <tr class="{% if forloop.counter|divisibleby:2 %}even{% else %}odd{% endif %}">
@@ -110,9 +121,15 @@
                         <td class="observation-previous-year">{{ observation.previous_value }}</td>
                         <td class="observation-sample-year">{{ observation.value }}</td>
                         <td class="observation-difference">{{ observation.difference }}</td>
+                        <td class="observation-data-missing">
+                            {% if observation.data_missing %}<i class="fa fa-asterisk"></i>{% endif %}
+                        </td>
                     </tr>
                 {% endfor %}
             </table>
+            <div class="observation-footer">
+                <i class="fa fa-asterisk observation-data-missing"></i> = Alla bibliotek har inte rapporterat in ett värde.
+            </div>
         </div>
     </div>
 {% endblock %}
