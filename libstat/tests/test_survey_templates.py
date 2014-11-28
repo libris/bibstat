@@ -66,3 +66,8 @@ class TestSurveyTemplate(MongoTestCase):
         template = survey_template(2013, survey)
 
         self.assertEquals(len(template.cells), 3)
+
+    def test_returns_empty_template_for_2013_without_survey(self):
+        template = survey_template(2013)
+
+        self.assertEquals(len(template.cells), 0)
