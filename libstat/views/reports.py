@@ -38,8 +38,8 @@ def report(request):
             observations.append({
                 "label": cell.variable.question_part,
                 "value": value,
-                "previous_value": 0,
-                "difference": 0
+                "previous_value": "-",
+                "difference": "-"
             })
 
     context = {
@@ -57,7 +57,6 @@ def reports(request):
         surveys = Survey.objects.filter(_status=u"published")
 
         sample_year = request.GET.get("sample_year", "")
-        sample_year = sample_year
         sample_years = surveys.distinct("sample_year")
         sample_years.sort()
 
