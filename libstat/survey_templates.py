@@ -464,10 +464,10 @@ def has_template(year):
     return year in _survey_templates
 
 
-def _default_template_from_survey_response(response):
+def _default_template_from_survey(survey):
     rows = []
-    if response:
-        for observation in response.observations:
+    if survey:
+        for observation in survey.observations:
             variable = observation.variable
             rows.append(Row(cells=[Cell(variable_key=variable.key, types=["text"])]))
 
@@ -476,9 +476,9 @@ def _default_template_from_survey_response(response):
                 groups=[Group(rows=rows)])])
 
 
-def survey_template(year, response=None):
+def survey_template(year, survey=None):
     year = int(year)
     if year >= 2014:
         return _survey_templates[2014]
 
-    return _default_template_from_survey_response(response)
+    return _default_template_from_survey(survey)
