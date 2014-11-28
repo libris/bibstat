@@ -5,8 +5,9 @@
 {% block content %}
     <style>
         .report {
-            margin-left: 30px;
-            margin-top: 30px;
+            width: 800px;
+            margin: 0px auto;
+            padding-top: 30px;
         }
 
         th {
@@ -59,14 +60,15 @@
             border-bottom: 5px solid black;
             font-size: 40px;
             font-family: helvetica;
-            display: inline-block;
+            width: auto;
+            text-align: center;
 
         }
 
         .libraries-label {
             font-size: 17px;
             font-family: helvetica;
-            margin-top: 40px;
+            margin-top: 30px;
             margin-bottom: 5px;
         }
 
@@ -87,7 +89,7 @@
         <div class="report-title">Verksamhetsrapport för året {{ sample_year }}</div>
 
         <div>
-            <div class="libraries-label">Rapport för:</div>
+            <div class="libraries-label">Bibliotek:</div>
             <div class="libraries">
                 {% for library in libraries %}
                     <div class="library">{{ library.name }} ({{ library.sigel }})</div>
