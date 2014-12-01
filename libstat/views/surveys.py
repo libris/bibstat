@@ -42,9 +42,9 @@ def surveys(request, *args, **kwargs):
     active_surveys = []
     inactive_surveys = []
     if Survey.objects.count() == 0:
-        message = u"Det finns inga enkäter inlagda i systemet"
+        message = u"Det finns inga enkäter inlagda i systemet."
     elif not sample_year:
-        message = u"Du måste ange för vilket år du vill lista enkätsvar"
+        message = u"Du måste ange för vilket år du vill lista enkätsvar."
     else:
         active_surveys = Survey.objects.by(
             sample_year=sample_year,
@@ -99,7 +99,7 @@ def surveys_activate(request):
         for survey in Survey.objects.filter(pk__in=survey_ids):
             survey.is_active = True
             survey.save()
-        request.session["message"] = "Aktiverade {} st enkäter".format(len(survey_ids))
+        request.session["message"] = "Aktiverade {} stycken enkäter.".format(len(survey_ids))
         return redirect("{}?surveys_state=inactive".format(reverse("surveys")))
 
 
@@ -110,7 +110,7 @@ def surveys_inactivate(request):
         for survey in Survey.objects.filter(pk__in=survey_ids):
             survey.is_active = False
             survey.save()
-        request.session["message"] = "Inaktiverade {} st enkäter".format(len(survey_ids))
+        request.session["message"] = "Inaktiverade {} stycken enkäter.".format(len(survey_ids))
         return redirect("{}?surveys_state=active".format(reverse("surveys")))
 
 
@@ -232,7 +232,7 @@ def surveys_statuses(request):
             successful = survey.publish()
             if successful:
                 num_successful_published += 1
-        message = u"Publicerade {} enkäter.".format(num_successful_published)
+        message = u"Publicerade {} stycken enkäter.".format(num_successful_published)
         if num_successful_published != len(survey_response_ids):
             message = (u"{} Kunde inte publicera {} enkäter eftersom de inte har markerat att "
                        u"de svarar för några bibliotek eller för att flera enkäter svarar för "
@@ -242,7 +242,7 @@ def surveys_statuses(request):
         for survey in Survey.objects.filter(id__in=survey_response_ids):
             survey.status = status
             survey.save()
-        message = u"Ändrade status på {} enkäter".format(len(survey_response_ids))
+        message = u"Ändrade status på {} stycken enkäter.".format(len(survey_response_ids))
 
     request.session["message"] = message
     return _surveys_redirect(request)
