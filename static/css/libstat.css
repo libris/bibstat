@@ -308,13 +308,13 @@ label.sub-label {
     margin-right: 0.25em;
 }
 
-.panel-heading-page .panel-title {
+.panel-top .panel-title {
     margin-right: 5px;
     font-weight: bold;
     font-size: 20px;
 }
 
-.panel-heading-page .panel-subtitle {
+.panel-top .panel-subtitle {
     font-style: italic;
     color: rgb(151, 151, 151);
 }

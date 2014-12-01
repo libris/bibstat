@@ -56,6 +56,13 @@ def dispatches_delete(request):
         dispatch_ids = request.POST.getlist("dispatch-ids", [])
         Dispatch.objects.filter(id__in=dispatch_ids).delete()
 
+        message = ""
+        if len(dispatch_ids) == 0:
+            message = "Inga utskick togs bort från utkorgen."
+        elif len(dispatch_ids) >= 1:
+            message = "{} utskick togs bort från utkorgen.".format(len(dispatch_ids))
+
+        request.session["message"] = message
         return redirect(reverse("dispatches"))
 
 
