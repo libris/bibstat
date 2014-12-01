@@ -354,14 +354,13 @@ _survey_template_2014 = SurveyTemplate(
                             Cell(variable_key=u"Open106", types=["integer"]),
                             Cell(variable_key=u"Open206", types=["integer"])])]),
                     Group(rows=[
-                        Row(cells=[
-                            Cell(variable_key=u"Serv01", types=["integer"]),
-                            Cell(variable_key=u"Serv02", types=["integer"]),
-                            Cell(variable_key=u"Serv03", types=["integer"]),
-                            Cell(variable_key=u"Serv04", types=["integer"]),
-                            Cell(variable_key=u"Serv05", types=["integer"]),
-                            Cell(variable_key=u"Serv06", types=["integer"]),
-                            Cell(variable_key=u"Serv07", types=["integer"])])]),
+                        Row(cells=[Cell(variable_key=u"Serv01", types=["integer"])]),
+                        Row(cells=[Cell(variable_key=u"Serv02", types=["integer"])]),
+                        Row(cells=[Cell(variable_key=u"Serv03", types=["integer"])]),
+                        Row(cells=[Cell(variable_key=u"Serv04", types=["integer"])]),
+                        Row(cells=[Cell(variable_key=u"Serv05", types=["integer"])]),
+                        Row(cells=[Cell(variable_key=u"Serv06", types=["integer"])]),
+                        Row(cells=[Cell(variable_key=u"Serv07", types=["integer"])])]),
                     Group(rows=[
                         Row(cells=[Cell(variable_key=u"Openkomm", types=["comment"])])])]),
         Section(title=u"Publika aktiviter",
