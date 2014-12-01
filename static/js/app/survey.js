@@ -306,7 +306,11 @@ define(['jquery', 'survey.sum', 'survey.cell', 'surveys.dispatch', 'bootstrap.va
                     $("#surveys_filter_form").submit();
                 }
             });
-            $(".btn-export").click(function (e) { e.preventDefault(); submitTo('surveys_export', true); });
+            $("#export-surveys-modal .btn-confirm").click(function (e) {
+                e.preventDefault();
+                submitTo('surveys_export', true);
+                $("#export-surveys-modal").modal('hide');
+            });
             $(".btn-change-status").click(function (e) { e.preventDefault(); submitTo('surveys_statuses', true); });
             $(".btn-activate-surveys").click(function (e) { e.preventDefault(); submitTo('surveys_activate', true); });
             $(".btn-inactivate-surveys").click(function (e) { e.preventDefault(); submitTo('surveys_inactivate', true); });
@@ -320,10 +324,15 @@ define(['jquery', 'survey.sum', 'survey.cell', 'surveys.dispatch', 'bootstrap.va
 
                 submitTo('dispatches');
                 dispatch.init(library, address, city, function(unsavedChanges) {
-                    $('.btn-dispatch').text(unsavedChanges
-                            ? "Nytt utskick*"
-                            : "Nytt utskick"
-                    );
+                    var button = $('.btn-dispatch');
+
+                    if(unsavedChanges) {
+                        button.text("Skapa utskick*");
+                        button.attr("data-original-title", "Det finns ett utskick som påbörjats.");
+                    } else {
+                        button.text("Skapa utskick");
+                        button.attr("data-original-title", "");
+                    }
                 });
             });
 
