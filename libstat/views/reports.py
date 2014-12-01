@@ -15,9 +15,11 @@ def report(request):
     sample_year = request.POST.get("sample_year", None)
     sigels = request.POST.getlist("surveys", [])
 
-    surveys = list(Survey.objects.filter(library__sigel__in=sigels))
+    surveys = []
+    for survey in list(Survey.objects.filter(library__sigel__in=sigels)):
+        surveys.append((survey, survey.previous_years_survey()))
     libraries = []
-    for survey in surveys:
+    for survey, _ in surveys:
         for sigel in survey.selected_libraries:
             library = Survey.objects.get(library__sigel=sigel).library
             libraries.append({
@@ -33,14 +35,15 @@ def report(request):
             previous_value = 0
             data_missing = False
             previous_data_missing = False
-            for survey in surveys:
+            for survey, previous_survey in surveys:
                 observation = survey.get_observation(cell.variable_key)
                 if observation and observation.value:
                     value += int(observation.value)
                 else:
                     data_missing = True
                 if observation and observation.variable:
-                    prev_value = survey.previous_years_value(observation.variable)
+                    prev_value = survey.previous_years_value(observation.variable,
+                                                             previous_years_survey=previous_survey)
                     if prev_value:
                         previous_value += int(prev_value)
                     else:

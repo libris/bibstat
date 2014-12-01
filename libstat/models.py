@@ -501,10 +501,11 @@ class Survey(SurveyBase):
             return None
         return previous_surveys[0]
 
-    def previous_years_value(self, variable):
-        previous_years_survey = self.previous_years_survey()
+    def previous_years_value(self, variable, previous_years_survey=None):
         if not previous_years_survey:
-            return None
+            previous_years_survey = self.previous_years_survey()
+            if not previous_years_survey:
+                return None
 
         for observation in previous_years_survey.observations:
             if variable == observation.variable:
