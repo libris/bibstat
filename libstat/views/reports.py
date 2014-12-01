@@ -30,20 +30,31 @@ def report(request):
     for cell in cells:
         if "integer" in cell.types or "decimal" in cell.types:
             value = 0
+            previous_value = 0
             data_missing = False
+            previous_data_missing = False
             for survey in surveys:
                 observation = survey.get_observation(cell.variable_key)
                 if observation and observation.value:
-                    value += observation.value
+                    value += int(observation.value)
                 else:
                     data_missing = True
+                if observation and observation.variable:
+                    prev_value = survey.previous_years_value(observation.variable)
+                    if prev_value:
+                        previous_value += int(prev_value)
+                    else:
+                        previous_data_missing = True
+                else:
+                    previous_data_missing = True
 
             observations.append({
                 "label": cell.variable.question_part,
                 "value": value,
-                "previous_value": "-",
+                "previous_value": previous_value,
                 "difference": "-",
-                "data_missing": data_missing
+                "data_missing": data_missing,
+                "previous_data_missing": previous_data_missing
             })
 
     context = {
