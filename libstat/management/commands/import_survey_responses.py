@@ -79,7 +79,8 @@ class Command(BaseCommand):
             if Survey.objects.filter(library__name=library_name, sample_year=year):
                 continue
 
-            survey = Survey(sample_year=year, library=Library(name=library_name, library_type=target_group))
+            library = Library(name=library_name, library_type=target_group)
+            survey = Survey(sample_year=year, library=library, selected_libraries=[library.sigel])
             for col, variable in variable_keys:
                 survey.observations.append(
                     SurveyObservation(variable=variable, value=_parse_value(row[col]), _is_public=variable.is_public))
