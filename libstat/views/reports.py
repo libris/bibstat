@@ -16,12 +16,12 @@ def report(request):
     sigels = request.POST.getlist("surveys", [])
 
     surveys = []
-    for survey in list(Survey.objects.filter(library__sigel__in=sigels)):
+    for survey in list(Survey.objects.filter(sample_year=sample_year, library__sigel__in=sigels)):
         surveys.append((survey, survey.previous_years_survey()))
     libraries = []
     for survey, _ in surveys:
         for sigel in survey.selected_libraries:
-            library = Survey.objects.get(library__sigel=sigel).library
+            library = Survey.objects.get(sample_year=sample_year, library__sigel=sigel).library
             libraries.append({
                 "sigel": library.sigel,
                 "name": library.name
