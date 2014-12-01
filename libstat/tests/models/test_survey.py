@@ -717,3 +717,21 @@ class TestGetConflictingSurveys(MongoTestCase):
         second_survey = self._dummy_survey(library=second_library, sample_year=2014, selected_libraries=["1", "2"])
 
         self.assertListEqual(first_survey.get_conflicting_surveys(), [second_survey])
+
+
+class TestPreviousYearsSurvey(MongoTestCase):
+    def test_finds_survey_from_previous_year_if_identical_names_ignoring_case(self):
+        previous_years_survey = self._dummy_survey(sample_year=2013,
+                                                   library=self._dummy_library(u"ALLINGSÅS BIBLIOTEK"))
+        this_years_survey = self._dummy_survey(sample_year=2014,
+                                               library=self._dummy_library(u"Allingsås bibliotek"))
+
+        self.assertEqual(previous_years_survey, this_years_survey.previous_years_survey())
+
+    def test_does_not_find_survey_from_previous_year_if_not_identical_names_ignoring_case(self):
+        self._dummy_survey(sample_year=2013,
+                           library=self._dummy_library(u"BOTKYRKA BIBLIOTEK"))
+        this_years_survey = self._dummy_survey(sample_year=2014,
+                                               library=self._dummy_library(u"Allingsås bibliotek"))
+
+        self.assertEqual(None, this_years_survey.previous_years_survey())

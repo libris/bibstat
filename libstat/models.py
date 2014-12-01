@@ -491,6 +491,14 @@ class Survey(SurveyBase):
         ]
     }
 
+    def previous_years_survey(self):
+        previous_year = self.sample_year - 1
+        previous_surveys = Survey.objects.filter(sample_year=previous_year, library__name__icontains=self.library.name)
+        if len(previous_surveys) == 0:
+            return None
+        return previous_surveys[0]
+
+
     @classmethod
     def store_version_and_update_date_modified(cls, sender, document, **kwargs):
         if document.id:
