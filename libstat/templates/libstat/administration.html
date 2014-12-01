@@ -7,8 +7,8 @@
 
     <div class="panel panel-default">
         <div class="panel-heading panel-top">
-            <span class="panel-title">Ny omgång</span>
-            <span class="panel-subtitle">Skapa en ny omgång av insamlingen av den officiella biblioteksstatistiken.</span>
+            <span class="panel-title">Ny insamlingsomgång</span>
+            <span class="panel-subtitle">Skapa en ny omgång av insamling av officiell biblioteksstatistik.</span>
         </div>
         <div class="panel-body">
             {% if message %}
@@ -20,42 +20,47 @@
                     </div>
                 </div>
             {% endif %}
-            <p>
-                Välj för vilket år du vill skapa en ny omgång:
-            </p>
-            <form action="{% url 'create_new_collection' %}" method="POST">
+            <p><b>Välj för vilket år du vill skapa en ny omgång:</b></p>
+            <form class="form" action="{% url 'create_new_collection' %}" method="POST">
                 {% csrf_token %}
-                <select name="year">
-                    {% for year in possible_year_choices %}
-                        <option value="{{ year }}">{{ year }}</option>
-                    {% endfor %}
-                </select>
-                <a href="#" class="btn btn-primary btn-toggle" data-toggle="modal" data-target="#confirm-creation-modal">
-                    Skapa
-                </a>
+
+                <div class="form-group">
+                    <div class="col-md-1" style="padding-left: 0;">
+                        <select class="form-control" name="year">
+                            {% for year in possible_year_choices %}
+                                <option value="{{ year }}">{{ year }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <a href="#" class="btn btn-primary btn-toggle" data-toggle="modal" data-target="#confirm-creation-modal">Skapa</a>
+                </div>
                 <div class="modal fade" id="confirm-creation-modal" tabindex="-1" role="dialog" aria-hidden="true">
                     <div class="modal-dialog">
                         <div class="modal-content">
+                            <div class="modal-header">
+                                <h4 class="modal-title">Skapa statistikinsamling</h4>
+                            </div>
                             <div class="modal-body">
                                 <p>
-                                    Är du säker på att du vill skapa en ny insamlingsomgång för det valda året?
+                                    <b>Är du säker på att du vill skapa en ny insamlingsomgång för det valda året?</b>
                                 </p>
                                 <p>
-                                    Denna åtgärd kommer att hämta information om alla svenska bibliotek från Biblioteksdatabasen och skapa en enkät för varje bibliotek.
+                                    Denna åtgärd kommer att hämta information om alla svenska bibliotek från biblioteksdatabasen och skapa en enkät för varje bibliotek.
                                 </p>
                                 <p>
-                                    Dessa enkäter kommer inte vara synliga för någon annan än administratörer här i Biblioteksstatistiken förrän du väljer att manuellt öppna insamlingen för biblioteken.
+                                    Dessa enkäter kommer inte vara synliga för någon annan än administratörer här i biblioteksstatistiken förrän du väljer att manuellt öppna insamlingen för biblioteken.
                                 </p>
                                 <p>
-                                    Innan insamlingen öppnas har du möjlighet att välja vilka bibliotek som ska få vara en del av insamlingen och kontrollera att alla uppgifter stämmer. De enkäter som inte ska skickas ut till bibliotek kommer fortfarande att existera här i Bibliotekstatistiken, men de kommer vara <i>inaktiva</i> och osynliga för alla andra än administratörer.
+                                    Innan insamlingen öppnas har du möjlighet att välja vilka bibliotek som ska få vara en del av insamlingen och kontrollera att alla uppgifter stämmer. De enkäter som inte ska skickas ut till bibliotek kommer fortfarande att existera här i bibliotekstatistiken, men de kommer vara inaktiva och osynliga för alla andra än administratörer.
                                 </p>
                                 <p>
                                     Importen av biblioteksinformation och skapandet av enkäter kan ta några minuter att genomföra.
                                 </p>
                             </div>
                             <div class="modal-footer">
-                                <a href="#" class="btn btn-danger" data-dismiss="modal">Avbryt</a>
-                                <button class="btn btn-success">Skapa</button>
+                                <a href="#" class="btn btn-default" data-dismiss="modal">Avbryt</a>
+                                <button class="btn btn-primary">Skapa</button>
                             </div>
                         </div>
                     </div>

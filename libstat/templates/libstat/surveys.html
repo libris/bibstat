@@ -260,8 +260,8 @@
                                 <td>
                                     {% if sr.library and sr.library.sigel %}
                                         <a title="" class="survey-popover" data-placement="top" data-toggle="tooltip"
-                                           href="{{ bibdb_library_base_url }}/{{ sr.library.sigel }}"
-                                           data-original-title="Visa biblioteket i Biblioteksdatabasen">
+                                           target="_blank" href="{{ bibdb_library_base_url }}/{{ sr.library.sigel }}"
+                                           data-original-title="Visa biblioteket i biblioteksdatabasen">
                                             <i class="fa fa-external-link"></i>
                                         </a>
                                     {% endif %}

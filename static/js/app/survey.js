@@ -308,8 +308,8 @@ define(['jquery', 'survey.sum', 'survey.cell', 'surveys.dispatch', 'bootstrap.va
             });
             $("#export-surveys-modal .btn-confirm").click(function (e) {
                 e.preventDefault();
-                submitTo('surveys_export', true);
                 $("#export-surveys-modal").modal('hide');
+                submitTo('surveys_export', true);
             });
             $(".btn-change-status").click(function (e) { e.preventDefault(); submitTo('surveys_statuses', true); });
             $(".btn-activate-surveys").click(function (e) { e.preventDefault(); submitTo('surveys_activate', true); });
@@ -328,7 +328,7 @@ define(['jquery', 'survey.sum', 'survey.cell', 'surveys.dispatch', 'bootstrap.va
 
                     if(unsavedChanges) {
                         button.text("Skapa utskick*");
-                        button.attr("data-original-title", "Det finns ett utskick som påbörjats.");
+                        button.attr("data-original-title", "Det finns ett påbörjat utskick.");
                     } else {
                         button.text("Skapa utskick");
                         button.attr("data-original-title", "");

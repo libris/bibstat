@@ -29,7 +29,7 @@ def create_new_collection(request):
     sample_year = request.POST.get("year")
 
     if int(sample_year) in [int(year) for year in Survey.objects.distinct("sample_year")]:
-        request.session["message"] = "Kan inte skapa en ny omgång för {}, den omgången finns redan".format(sample_year)
+        request.session["message"] = "Kan inte skapa en ny omgång för {}, den omgången finns redan.".format(sample_year)
         return redirect(reverse("administration"))
     elif sample_year:
         _create_new_collection(int(sample_year))
