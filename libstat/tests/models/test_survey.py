@@ -560,6 +560,38 @@ class TestSelectedSigels(MongoTestCase):
 
         self.assertSetEqual(survey.selected_sigels(2014), {"2"})
 
+    def test_reports_for_same_libraries_when_same_selected_libraries(self):
+        library1 = self._dummy_library(sigel="lib1")
+        library2 = self._dummy_library(sigel="lib2")
+        library3 = self._dummy_library(sigel="lib3")
+
+        survey1 = self._dummy_survey(selected_libraries=[library1.sigel,
+                                                         library2.sigel,
+                                                         library3.sigel])
+        survey2 = self._dummy_survey(selected_libraries=[library1.sigel,
+                                                         library2.sigel,
+                                                         library3.sigel])
+
+        self.assertTrue(survey1.reports_for_same_libraries(survey2))
+
+    def test_does_not_report_for_same_libraries_when_different_amount_of_selected_libraries(self):
+        library1 = self._dummy_library(sigel="lib1")
+        library2 = self._dummy_library(sigel="lib2")
+
+        survey1 = self._dummy_survey(selected_libraries=[library1.sigel])
+        survey2 = self._dummy_survey(selected_libraries=[library1.sigel,
+                                                         library2.sigel])
+
+        self.assertFalse(survey1.reports_for_same_libraries(survey2))
+
+    def test_does_not_report_for_same_libraries_when_no_selected_libraries(self):
+        library1 = self._dummy_library(sigel="lib1")
+
+        survey1 = self._dummy_survey(selected_libraries=[library1.sigel])
+        survey2 = self._dummy_survey(selected_libraries=[])
+
+        self.assertFalse(survey1.reports_for_same_libraries(survey2))
+
 
 class TestHasConflicts(MongoTestCase):
     def test_should_return_true_for_conflict_in_same_sample_year(self):
@@ -720,18 +752,81 @@ class TestGetConflictingSurveys(MongoTestCase):
 
 
 class TestPreviousYearsSurvey(MongoTestCase):
-    def test_finds_survey_from_previous_year_if_identical_names_ignoring_case(self):
+    def test_finds_survey_from_previous_year_if_identical_names_ignoring_case_before_2014(self):
         previous_years_survey = self._dummy_survey(sample_year=2013,
-                                                   library=self._dummy_library(u"ALLINGSÅS BIBLIOTEK"))
+                                                   library=self._dummy_library(name=u"ALLINGSÅS BIBLIOTEK"))
         this_years_survey = self._dummy_survey(sample_year=2014,
-                                               library=self._dummy_library(u"Allingsås bibliotek"))
+                                               library=self._dummy_library(name=u"Allingsås bibliotek"))
 
         self.assertEqual(previous_years_survey, this_years_survey.previous_years_survey())
 
-    def test_does_not_find_survey_from_previous_year_if_not_identical_names_ignoring_case(self):
+    def test_does_not_find_survey_from_previous_year_if_not_identical_names_ignoring_case_before_2014(self):
         self._dummy_survey(sample_year=2013,
-                           library=self._dummy_library(u"BOTKYRKA BIBLIOTEK"))
+                           library=self._dummy_library(name=u"BOTKYRKA BIBLIOTEK"))
         this_years_survey = self._dummy_survey(sample_year=2014,
-                                               library=self._dummy_library(u"Allingsås bibliotek"))
+                                               library=self._dummy_library(name=u"Allingsås bibliotek"))
 
         self.assertEqual(None, this_years_survey.previous_years_survey())
+
+    def test_finds_survey_from_previous_year_by_sigel_but_different_names_after_2014(self):
+        previous_years_survey = self._dummy_survey(sample_year=2014,
+                                                   library=self._dummy_library(sigel="lib1",
+                                                                               name="previous_name"))
+        this_years_survey = self._dummy_survey(sample_year=2015,
+                                               library=self._dummy_library(sigel="lib1",
+                                                                           name="new_name"))
+
+        self.assertEqual(this_years_survey.previous_years_survey(), previous_years_survey)
+
+    def test_does_not_find_survey_from_previous_year_if_not_identical_sigels_after_2014(self):
+        self._dummy_survey(sample_year=2014,
+                           library=self._dummy_library(sigel="lib1",
+                                                       name=u"ALLINGSÅS BIBLIOTEK"))
+        this_years_survey = self._dummy_survey(sample_year=2015,
+                                               library=self._dummy_library(sigel="lib2",
+                                                                           name=u"Allingsås bibliotek"))
+
+        self.assertEqual(None, this_years_survey.previous_years_survey())
+
+    def test_returns_previous_years_value_if_same_variable_both_years(self):
+        variable = self._dummy_variable()
+        library = self._dummy_library()
+        self._dummy_survey(sample_year=2014, library=library, observations=[
+            self._dummy_observation(variable=variable, value="old_value")])
+        this_years_survey = self._dummy_survey(sample_year=2015, library=library)
+
+        self.assertEqual(this_years_survey.previous_years_value(variable), "old_value")
+
+    def test_does_not_return_previous_years_value_if_no_previous_survey(self):
+        variable = self._dummy_variable()
+        self._dummy_survey(sample_year=2014, library=self._dummy_library(), observations=[
+            self._dummy_observation(variable=variable, value="old_value")])
+        this_years_survey = self._dummy_survey(sample_year=2015, library=self._dummy_library())
+
+        self.assertEqual(this_years_survey.previous_years_value(variable), None)
+
+    def test_returns_previous_years_value_for_replaced_variable(self):
+        old_variable = self._dummy_variable()
+        new_variable = self._dummy_variable(replaces=[old_variable])
+        library = self._dummy_library()
+
+        self._dummy_survey(sample_year=2014, library=library, observations=[
+            self._dummy_observation(variable=old_variable, value="old_value")])
+        this_years_survey = self._dummy_survey(sample_year=2015, library=library)
+
+        self.assertEqual(this_years_survey.previous_years_value(new_variable), "old_value")
+
+    def test_does_not_return_previous_years_value_if_replaces_several_variables(self):
+        old_variable1 = self._dummy_variable()
+        old_variable2 = self._dummy_variable()
+        new_variable = self._dummy_variable(replaces=[old_variable1, old_variable2])
+        library = self._dummy_library()
+
+        self._dummy_survey(sample_year=2014, library=library, observations=[
+            self._dummy_observation(variable=old_variable1, value="old_value1"),
+            self._dummy_observation(variable=old_variable2, value="old_value2")])
+        this_years_survey = self._dummy_survey(sample_year=2015, library=library)
+
+        self.assertEqual(this_years_survey.previous_years_value(new_variable), None)
+
+

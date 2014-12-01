@@ -493,10 +493,44 @@ class Survey(SurveyBase):
 
     def previous_years_survey(self):
         previous_year = self.sample_year - 1
-        previous_surveys = Survey.objects.filter(sample_year=previous_year, library__name__icontains=self.library.name)
+        if previous_year <= 2013:
+            previous_surveys = Survey.objects.filter(sample_year=previous_year, library__name__icontains=self.library.name)
+        else:
+            previous_surveys = Survey.objects.filter(sample_year=previous_year, library__sigel=self.library.sigel)
         if len(previous_surveys) == 0:
             return None
         return previous_surveys[0]
+
+    def previous_years_value(self, variable):
+        previous_years_survey = self.previous_years_survey()
+        if not previous_years_survey:
+            return None
+
+        for observation in previous_years_survey.observations:
+            if variable == observation.variable:
+                return observation.value
+
+        replaces = variable.replaces
+        if len(replaces) != 1:
+            return None
+
+        previous_variable = replaces[0]
+        for observation in previous_years_survey.observations:
+            if previous_variable == observation.variable:
+                return observation.value
+
+        return None
+
+    def reports_for_same_libraries(self, other_survey):
+        if not self.selected_libraries or not other_survey.selected_libraries:
+            return False
+        if len(self.selected_libraries) != len(other_survey.selected_libraries):
+            return False
+        for sigel in self.selected_libraries:
+            if not sigel in other_survey.selected_libraries:
+                return False
+
+        return True
 
 
     @classmethod
