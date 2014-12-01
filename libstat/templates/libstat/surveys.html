@@ -9,8 +9,12 @@
             <div class="panel-heading panel-top">
                 <span class="panel-title">Enkäter</span>
                 <span class="panel-subtitle">Lista med de enkäter som finns i biblioteksstatistiken.</span>
-                <span class="pull-right" style="margin-top: 4px;"><a href="{% url 'administration' %}">Skapa ny
-                    omgång</a></span>
+                <span class="pull-right" style="margin-top: 4px;">
+                    <a href="{% url 'administration' %}"
+                            class="survey-popover"
+                            data-placement="top" data-toggle="tooltip"
+                            data-original-title="Ny statistikinsamling för de kommande åren">Skapa ny omgång</a>
+                </span>
             </div>
             <form id="surveys_filter_form" action="" method="GET" role="form" class="form-inline">
                 {% csrf_token %}
@@ -91,8 +95,11 @@
                                         </option>
                                     {% endfor %}
                                 </select>
-                                <input type="text" name="free_text" value="{{ free_text }}" class="form-control"
-                                       placeholder="Sökord">
+                                <input type="text" name="free_text" value="{{ free_text }}"
+                                       placeholder="Sökord"
+                                       class="form-control survey-popover"
+                                       data-placement="top" data-toggle="tooltip"
+                                       data-original-title="Sök efter hela eller delar av: e-postadress, biblioteksnamn, kommun och kommunkod">
                                 <button type="submit" name="action" value="list"
                                         class="btn btn-primary">
                                     Visa
@@ -147,7 +154,7 @@
                             <div class="col-md-12">
                                 <div class="btn-group">
                                     <div class="btn btn-label disabled" style="padding-left: 0px;">
-                                        <span id="checked-surveys">0</span> av {{ survey_responses|length }} enkäter är
+                                        <span class="selected-count">0</span> av {{ survey_responses|length }} enkäter är
                                         markerade
                                     </div>
                                 </div>
@@ -266,8 +273,12 @@
                         <div class="modal-content">
                             <div class="modal-body">
                                 <p>
-                                    Välj vilken status de markerade enkäterna ska få.
+                                    <span class="selected-single hidden">Välj status att sätta för den markerade enkäten.</span>
+                                    <span class="selected-multiple selected-default">
+                                        Välj status att sätta för de <span class="selected-count"></span> markerade enkäterna.
+                                    </span>
                                 </p>
+
                                 <select name="new_status" class="form-control">
                                     {% for status in statuses %}
                                         <option value="{{ status.0 }}">
@@ -275,10 +286,15 @@
                                         </option>
                                     {% endfor %}
                                 </select>
+                                <hr>
+                                <p style="margin-top: 15px;">
+                                    För att återkalla publiceringar, ändra status till något annat än publicerad.
+                                    <br>För att publicera de senaste ändringarna, ändra återigen status till publicerad.
+                                </p>
                             </div>
                             <div class="modal-footer">
-                                <a href="#" class="btn btn-danger" data-dismiss="modal">Avbryt</a>
-                                <button class="btn btn-success btn-change-status">Ändra status</button>
+                                <a href="#" class="btn btn-default" data-dismiss="modal">Avbryt</a>
+                                <button class="btn btn-primary btn-change-status">Ändra</button>
                             </div>
                         </div>
                     </div>
@@ -388,28 +404,28 @@
                 <div class="modal-header">
                     <button type="button" class="close" data-dismiss="modal"><span
                             aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
-                    <h4 class="modal-title">Bekräfta uppdatering</h4>
+                    <h4 class="modal-title">Bekräfta: Uppdatering</h4>
                 </div>
                 <div class="modal-body">
-                    <p>
-                        Denna åtgärd hämtar information om alla bibliotek från Biblioteksdatabasen och uppdaterar
-                        eventuella förändringar hos biblioteken här i Biblioteksstatistiken för det valda året (vilket
-                        nu är <b>{{ sample_year }}</b>).
-                        <br>
-                        <br>
-                        Inga enkäter kommer försvinna och inga inlämnade enkätsvar kommer förändras. Aktiva enkäter
-                        förblir aktiva och vice versa för inaktiva enkäter, detsamma gäller även för enkäternas status.
-                        Det enda som kan ändras är information som berör biblioteken direkt - såsom bibliotekets namn,
-                        adress, bibliotekstyp, email-adress till statistikansvarig etc.
-                        <br>
-                        <br>
-                        Om det hittas bibliotek i Biblioteksdatabasen som inte har en enkät här i Biblioteksstatistiken
-                        så kommer det att automatiskt genereras nya enkäter för dessa bibliotek som hamnar under listan
-                        "Aktiva".
-                        <br>
-                        <br>
-                        Uppdateringen kan ta några minuter att genomföra.
-                    </p>
+                    <b>Är du säker på att du vill uppdatera biblioteksinformation?</b>
+                    <br>
+                    Denna åtgärd hämtar information om alla bibliotek från biblioteksdatabasen och uppdaterar
+                    eventuella förändringar hos biblioteken här i biblioteksstatistiken för
+                    <br>det valda året (vilket nu är <b>{{ sample_year }}</b>).
+                    <br>
+                    <br>
+                    Inga enkäter kommer försvinna och inga inlämnade enkätsvar kommer förändras. Aktiva enkäter
+                    förblir aktiva och inaktiva enkäter förblir inaktiva. Detsamma gäller även för enkäternas status.
+                    Det enda som kan ändras är information som berör biblioteken direkt, så som bibliotekets namn,
+                    adress, bibliotekstyp, e-postadress till statistikansvarig, etc.
+                    <br>
+                    <br>
+                    Om det hittas bibliotek i biblioteksdatabasen som inte har en enkät här i biblioteksstatistiken,
+                    så kommer det att automatiskt genereras nya enkäter för dessa bibliotek, som då hamnar under listan
+                    "Aktiva".
+                    <br>
+                    <br>
+                    Uppdateringen kan ta några minuter att genomföra.
                 </div>
                 <div class="modal-footer">
                     <form method="POST" action="{% url 'surveys_import_and_create' %}">

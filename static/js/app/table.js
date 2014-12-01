@@ -61,11 +61,6 @@ define(['jquery', 'jquery.tablesorter'], function($) {
 
                 $('.selected-count').text(checked)
             });
-
-            $('.table.survey_responses .select-one, .table.survey_responses .select-all').change(function() {
-                var checked = $('.table.survey_responses .select-one:checked').length;
-                $('#checked-surveys').text(checked);
-            });
         }
     }
 });
