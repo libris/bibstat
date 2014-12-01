@@ -5,9 +5,9 @@
 {% block content %}
     <div class="container">
         <div class="panel panel-default">
-            <div class="panel-heading panel-heading-page">
+            <div class="panel-heading panel-top">
                 <span class="panel-title">Utkorg</span>
-                <span class="panel-subtitle">Lista med de utkast som väntar på att skickas iväg.</span>
+                <span class="panel-subtitle">Lista med de utskick som väntar på att skickas iväg.</span>
             </div>
             <div class="panel-body">
                 {% if message %}
@@ -19,9 +19,25 @@
                         </div>
                     </div>
                 {% endif %}
-                <div class="panel-dispatches">
-                    <button class="btn btn-danger btn-toggle btn-delete disabled">{% trans "Ta bort" %}</button>
-                    <button class="btn btn-primary btn-toggle btn-send disabled">{% trans "Skicka" %}</button>
+                    <p><b>För de markerade utskicken:</b></p>
+
+                    <div class="row">
+                        <div class="col-md-12">
+                            <button class="btn btn-danger btn-toggle btn-delete disabled" data-toggle="modal"
+                                    data-target="#modal-delete">{% trans "Ta bort" %}</button>
+                            <button class="btn btn-primary btn-toggle btn-send disabled" data-toggle="modal"
+                                    data-target="#modal-send">{% trans "Skicka" %}</button>
+                        </div>
+                    </div>
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="btn-group">
+                            <div class="btn btn-label disabled" style="padding-left: 0px;">
+                                <span class="selected-count">0</span> av {{ dispatches|length }} utskick är
+                                markerade
+                            </div>
+                        </div>
+                    </div>
                 </div>
                 <hr>
                 <form action="" method="post" class="form-inline form-dispatches">
@@ -31,7 +47,7 @@
                         <thead>
                         <tr>
                             <th class="column selection">
-                                <input title="{% trans 'Markera alla' %}" class="select-all"type="checkbox" value="all"/>
+                                <input title="{% trans 'Markera alla' %}" class="select-all" type="checkbox" value="all"/>
                             </th>
                             <th class="column">{% trans "Beskrivning" %}</th>
                             <th class="column">{% trans "Bibliotek" %}</th>
@@ -48,7 +64,10 @@
                                 <td>{{ dispatch.library_name|default:"" }}</td>
                                 <td>{{ dispatch.library_city|default:"" }}</td>
                                 <td>{{ dispatch.library_email|default:"" }}</td>
-                                <td><a class="show-dispatch" href="#" data-title="{{ dispatch.title }}" data-message="{{ dispatch.message }}">Förhandsgranska</a></td>
+                                <td><a class="show-dispatch survey-popover" href="#" data-title="{{ dispatch.title }}"
+                                       data-message="{{ dispatch.message }}"
+                                       data-placement="top" data-toggle="tooltip"
+                                       data-original-title="Visa e-postmeddelandet för utskicket">Förhandsgranska</a></td>
                             </tr>
                         {% endfor %}
                         </tbody>
@@ -76,6 +95,66 @@
                         <button type="button" class="btn btn-default" data-dismiss="modal">Stäng</button>
                     </div>
                 </form>
+            </div>
+        </div>
+    </div>
+
+    <div id="modal-delete" class="modal fade" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal">
+                        <span aria-hidden="true">&times;</span>
+                        <span class="sr-only">Close</span>
+                    </button>
+                    <h4 class="modal-title">Bekräfta: Ta bort</h4>
+                </div>
+
+                <div class="modal-body">
+                    <span class="selected-single hidden">
+                        <b>Är du säker på att du vill ta bort det markerade utskicket?</b>
+                    </span>
+                    <span class="selected-default selected-multiple">
+                        <b>Är du säker på att du vill ta bort de <span class="selected-count"></span> markerade utskicken?</b>
+                    </span>
+                    <br>Borttagningen är en permanent åtgärd som inte går att ångra.
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Avbryt</button>
+                    <button type="button" class="btn btn-danger btn-confirm" data-dismiss="modal">Ta bort</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="modal-send" class="modal fade" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal">
+                        <span aria-hidden="true">&times;</span>
+                        <span class="sr-only">Close</span>
+                    </button>
+                    <h4 class="modal-title">Bekräfta: Skicka</h4>
+                </div>
+
+                <div class="modal-body">
+                    <span class="selected-single hidden">
+                        <b>Är du säker på att du vill skicka det markerade utskicket?</b>
+                    </span>
+                    <span class="selected-default selected-multiple">
+                        <b>Är du säker på att du vill skicka de <span class="selected-count"></span> markerade utskicken?</b>
+                    </span>
+                    <br>Detta innebär att e-postmeddelanden skickas ut för dessa utskick, varefter utskicken tas bort från utkorgen.
+                    För utskick där e-postadress saknas kommer ingen åtgärd tas, utan de lämnas kvar i utkorgen.
+                    E-postadressen är den som angivits till statistikansvarig.
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Avbryt</button>
+                    <button type="button" class="btn btn-primary btn-confirm" data-dismiss="modal">Skicka</button>
+                </div>
             </div>
         </div>
     </div>

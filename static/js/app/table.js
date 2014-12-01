@@ -35,16 +35,31 @@ define(['jquery', 'jquery.tablesorter'], function($) {
             });
 
             $(".select-one, .select-all").change(function () {
-                var checked = $(".select-one:checked").length > 0;
+                var checked = $(".select-one:checked").length;
+                var total = $(".select-one").length;
                 var buttons = $(".btn-toggle");
 
-                if (checked) buttons.removeClass("disabled");
+                if (checked > 0) buttons.removeClass("disabled");
                 else buttons.addClass("disabled");
-            });
 
-            $('.table.survey_responses .select-one, .table.survey_responses .select-all').change(function() {
-                var checked = $('.table.survey_responses .select-one:checked').length;
-                $('#checked-surveys').text(checked);
+                if(checked == total) $(".select-all").prop("checked", "checked");
+                else $(".select-all").removeAttr("checked");
+
+                if(checked == 0) {
+                    $('.selected-single').addClass('hidden');
+                    $('.selected-multiple').addClass('hidden');
+                    $('.selected-default').removeClass('hidden');
+                } else if(checked == 1) {
+                    $('.selected-default').addClass('hidden');
+                    $('.selected-multiple').addClass('hidden');
+                    $('.selected-single').removeClass('hidden');
+                } else if(checked > 1) {
+                    $('.selected-default').addClass('hidden');
+                    $('.selected-single').addClass('hidden');
+                    $('.selected-multiple').removeClass('hidden');
+                }
+
+                $('.selected-count').text(checked)
             });
         }
     }
