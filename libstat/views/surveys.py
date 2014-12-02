@@ -96,9 +96,7 @@ def surveys(request, *args, **kwargs):
 def surveys_activate(request):
     if request.method == "POST":
         survey_ids = request.POST.getlist("survey-response-ids", [])
-        for survey in Survey.objects.filter(pk__in=survey_ids):
-            survey.is_active = True
-            survey.save()
+        Survey.objects.filter(pk__in=survey_ids).update(set__is_active=True)
         request.session["message"] = "Aktiverade {} stycken enkäter.".format(len(survey_ids))
         return redirect("{}?surveys_state=inactive".format(reverse("surveys")))
 
@@ -107,9 +105,7 @@ def surveys_activate(request):
 def surveys_inactivate(request):
     if request.method == "POST":
         survey_ids = request.POST.getlist("survey-response-ids", [])
-        for survey in Survey.objects.filter(pk__in=survey_ids):
-            survey.is_active = False
-            survey.save()
+        Survey.objects.filter(pk__in=survey_ids).update(set__is_active=False)
         request.session["message"] = "Inaktiverade {} stycken enkäter.".format(len(survey_ids))
         return redirect("{}?surveys_state=active".format(reverse("surveys")))
 
