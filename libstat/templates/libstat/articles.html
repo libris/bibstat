@@ -47,6 +47,10 @@
                         </div>
                     </div>
                 {% endfor %}
+
+                {% if not articles %}
+                    Det finns inga publiceringar att visa för tillfället.
+                {% endif %}
             </div>
         </div>
     </div>
