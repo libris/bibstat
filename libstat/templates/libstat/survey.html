@@ -269,16 +269,20 @@
                                                     col-sm-4
                                                 {% elif group.columns == 3 %}
                                                     col-sm-3
+                                                {% elif group.columns == 4 %}
+                                                    col-sm-4
                                                 {% endif %}
                                                      ">
                                     </div>
                                     {% for header in group.headers %}
                                         <div class="group-header {% if group.columns <= 2 %}
-                                                                        col-sm-4
-                                                                    {% else %}
-                                                                        col-sm-3
-                                                                    {% endif %}
-                                                                         ">
+                                                                    col-sm-4
+                                                                 {% elif group.columns == 3 %}
+                                                                    col-sm-3
+                                                                 {% elif group.columns == 4 %}
+                                                                    col-sm-2
+                                                                 {% endif %}
+                                                                 ">
                                             <b>{{ header }}</b>
                                         </div>
                                     {% endfor %}
@@ -297,8 +301,10 @@
                                 <div class="row">
                                     <div class="{% if group.columns <= 2 %}
                                                         col-sm-4
-                                                    {% else %}
+                                                    {% elif group.columns == 3 %}
                                                         col-sm-3
+                                                    {% elif group.columns == 4 %}
+                                                        col-sm-4
                                                     {% endif %}
                                                          ">
                                         {{ row.description }}
@@ -310,8 +316,10 @@
                                     {% for cell in row.cells %}
                                         <div class="{% if group.columns <= 2 %}
                                                         col-sm-4
-                                                    {% else %}
+                                                    {% elif group.columns == 3 %}
                                                         col-sm-3
+                                                    {% elif group.columns == 4 %}
+                                                        col-sm-2
                                                     {% endif %}
                                                          ">
                                             <div class="cell">
@@ -358,13 +366,15 @@
                                                                 </a>
                                                             {% endif %}
 
-                                                            <button class="btn btn-default btn-value disabled">
-                                                                {% if cell.previous_value %}
-                                                                    {{ cell.previous_value }}
-                                                                {% else %}
-                                                                    &mdash;
-                                                                {% endif %}
-                                                            </button>
+                                                            {% if group.columns != 4 %}
+                                                                <button class="btn btn-default btn-value disabled">
+                                                                    {% if cell.previous_value %}
+                                                                        {{ cell.previous_value }}
+                                                                    {% else %}
+                                                                        &mdash;
+                                                                    {% endif %}
+                                                                </button>
+                                                            {% endif %}
                                                         </div>
                                                     </div>
                                                 </div>

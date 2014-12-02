@@ -136,24 +136,22 @@ _survey_template_2014 = SurveyTemplate(
                     Group(rows=[
                         Row(cells=[
                             Cell(variable_key=u"Titlar101", types=["integer"]),
-                            Cell(variable_key=u"Titlar102", types=["integer"]),
-                            Cell(variable_key=u"Titlar199", types=["integer"],
-                                 sum_of=[u"Titlar101", u"Titlar102"])]),
-                        Row(cells=[
                             Cell(variable_key=u"Titlar201", types=["integer"]),
-                            Cell(variable_key=u"Titlar202", types=["integer"]),
-                            Cell(variable_key=u"Titlar299", types=["integer"],
-                                 sum_of=[u"Titlar201", u"Titlar202"])]),
-                        Row(cells=[
                             Cell(variable_key=u"Titlar301", types=["integer"]),
-                            Cell(variable_key=u"Titlar302", types=["integer"]),
-                            Cell(variable_key=u"Titlar399", types=["integer"],
-                                 sum_of=[u"Titlar301", u"Titlar302"])]),
+                            Cell(variable_key=u"Titlar497", types=["integer"],
+                                 sum_of=[u"Titlar101", u"Titlar201", u"Titlar301"])]),
                         Row(cells=[
-                            Cell(variable_key=u"Titlar497", types=["integer"]),
-                            Cell(variable_key=u"Titlar498", types=["integer"]),
+                            Cell(variable_key=u"Titlar102", types=["integer"]),
+                            Cell(variable_key=u"Titlar202", types=["integer"]),
+                            Cell(variable_key=u"Titlar302", types=["integer"]),
+                            Cell(variable_key=u"Titlar498", types=["integer"],
+                                 sum_of=[u"Titlar102", u"Titlar202", u"Titlar302"])]),
+                        Row(cells=[
+                            Cell(variable_key=u"Titlar199", types=["integer"]),
+                            Cell(variable_key=u"Titlar299", types=["integer"]),
+                            Cell(variable_key=u"Titlar399", types=["integer"]),
                             Cell(variable_key=u"Titlar499", types=["integer"],
-                                 sum_of=[u"Titlar497", u"Titlar498"])])]),
+                                 sum_of=[u"Titlar199", u"Titlar299", u"Titlar399"])])]),
                     Group(rows=[
                         Row(cells=[Cell(variable_key=u"Databas01", types=["integer"])]),
                         Row(cells=[Cell(variable_key=u"Databas02", types=["integer"])]),
@@ -452,7 +450,6 @@ _survey_template_2014 = SurveyTemplate(
                         Row(cells=[Cell(variable_key=u"SCB02", types=["decimal", "required"])])]),
                     Group(rows=[
                         Row(cells=[Cell(variable_key=u"Alltkomm", types=["comment"])])])])])
-
 
 _survey_templates = {
     2014: _survey_template_2014
