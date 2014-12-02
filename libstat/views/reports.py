@@ -15,9 +15,8 @@ def report(request):
     sample_year = request.POST.get("sample_year", None)
     sigels = request.POST.getlist("surveys", [])
 
-    surveys = []
-    for survey in list(Survey.objects.filter(sample_year=sample_year, library__sigel__in=sigels)):
-        surveys.append((survey, survey.previous_years_survey()))
+    surveys = [(survey, survey.previous_years_survey()) for survey in
+               list(Survey.objects.filter(sample_year=sample_year, library__sigel__in=sigels))]
     libraries = []
     for survey, _ in surveys:
         for sigel in survey.selected_libraries:
@@ -27,9 +26,8 @@ def report(request):
                 "name": library.name
             })
 
-    cells = survey_template(sample_year).cells
     observations = []
-    for cell in cells:
+    for cell in survey_template(sample_year).cells:
         if "integer" in cell.types or "decimal" in cell.types:
             value = 0
             previous_value = 0
