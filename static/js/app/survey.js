@@ -10,7 +10,7 @@ define(['jquery', 'survey.sum', 'survey.cell', 'surveys.dispatch', 'bootstrap.va
         inputs: function () {
             return survey.form("input:not([type='checkbox'])").not("[type='hidden']");
         },
-        changeableInputs: function() {
+        changeableInputs: function () {
             return survey.form("input:not([type='checkbox']),textarea").not("[type='hidden']").not('.form-excluded')
         },
         disabledInputs: function () {
@@ -19,8 +19,8 @@ define(['jquery', 'survey.sum', 'survey.cell', 'surveys.dispatch', 'bootstrap.va
         enabledInputs: function () {
             return survey.inputs().not('[disabled]');
         },
-        selectedLibraries: function() {
-            return survey.form(".select-library:checked").map(function() {
+        selectedLibraries: function () {
+            return survey.form(".select-library:checked").map(function () {
                 return $(this).attr("name");
             }).get().join(" ");
         },
@@ -70,16 +70,25 @@ define(['jquery', 'survey.sum', 'survey.cell', 'surveys.dispatch', 'bootstrap.va
                 return inputs;
             };
             var getSiblings = function (input) {
+
                 var inputs = [];
-                $.each($("input[data-sum-of]"), function() {
-                   var children = $(this).attr('data-sum-of').split(' ');
-                   var inputIndex = children.indexOf(input.attr("name"));
-                   if(inputIndex != -1) {
-                       for(var i = 0; i < children.length; i++) {
-                           if(i == inputIndex) continue;
-                           inputs.push($("#" + children[i]));
-                       }
-                   }
+                $.each($("input[data-sum-of]"), function () {
+                    var indexOf = function (list, obj, start) {
+                        for (var i = (start || 0), j = list.length; i < j; i++) {
+                            if (list[i] === obj) {
+                                return i;
+                            }
+                        }
+                        return -1;
+                    }
+                    var children = $(this).attr('data-sum-of').split(' ');
+                    var inputIndex = indexOf(children, input.attr("name"));
+                    if (inputIndex != -1) {
+                        for (var i = 0; i < children.length; i++) {
+                            if (i == inputIndex) continue;
+                            inputs.push($("#" + children[i]));
+                        }
+                    }
                 });
 
                 return inputs;
@@ -168,17 +177,21 @@ define(['jquery', 'survey.sum', 'survey.cell', 'surveys.dispatch', 'bootstrap.va
         var requiredPercent = Math.ceil((survey.requiredInputs().length / total) * 100);
         var boostedPercent = Math.ceil(1.15 * percent);
 
-        var setText = function(text) { survey.form('.answers-text').text(text); };
-        var setPercent = function(percent) {survey.form('.answers-progress .progress-bar-success').css('width', percent + "%"); };
-        var setPercentAndText = function(percent) {
+        var setText = function (text) {
+            survey.form('.answers-text').text(text);
+        };
+        var setPercent = function (percent) {
+            survey.form('.answers-progress .progress-bar-success').css('width', percent + "%");
+        };
+        var setPercentAndText = function (percent) {
             setText("Du har hittills fyllt i " + percent + "% av hela enkäten");
             setPercent(percent);
         };
 
-        if(correct == 0) {
+        if (correct == 0) {
             setText("Du har inte börjat fylla i enkäten än...");
             setPercent(0);
-        } else if(boostedPercent <= requiredPercent) {
+        } else if (boostedPercent <= requiredPercent) {
             setPercentAndText(Math.min(boostedPercent, requiredPercent));
         } else {
             setPercentAndText(Math.max(Math.ceil(percent), requiredPercent));
@@ -272,8 +285,7 @@ define(['jquery', 'survey.sum', 'survey.cell', 'surveys.dispatch', 'bootstrap.va
 
 
                 $("#selected_libraries").val(survey.selectedLibraries());
-                console.log($("#selected_libraries").val());
-                
+
                 survey.form().attr("action", Urls.survey(survey.form("#id_key").val()));
                 survey.validator().defaultSubmit();
             }).on('error.form.bv', function () {
@@ -286,7 +298,7 @@ define(['jquery', 'survey.sum', 'survey.cell', 'surveys.dispatch', 'bootstrap.va
                 submit = submit || false
                 var element = $(".publish-survey-responses-form").get(0);
                 element.setAttribute('action', Urls[action]());
-                if(submit) {
+                if (submit) {
                     element.submit();
                 }
                 return element;
@@ -294,14 +306,14 @@ define(['jquery', 'survey.sum', 'survey.cell', 'surveys.dispatch', 'bootstrap.va
 
             $("#surveys_active").click(function (e) {
                 e.preventDefault();
-                if($("#surveys_state").val() != "active") {
+                if ($("#surveys_state").val() != "active") {
                     $("#surveys_state").val("active");
                     $("#surveys_filter_form").submit();
                 }
             });
             $("#surveys_inactive").click(function (e) {
                 e.preventDefault();
-                if($("#surveys_state").val() != "inactive") {
+                if ($("#surveys_state").val() != "inactive") {
                     $("#surveys_state").val("inactive");
                     $("#surveys_filter_form").submit();
                 }
@@ -311,9 +323,18 @@ define(['jquery', 'survey.sum', 'survey.cell', 'surveys.dispatch', 'bootstrap.va
                 $("#export-surveys-modal").modal('hide');
                 submitTo('surveys_export', true);
             });
-            $(".btn-change-status").click(function (e) { e.preventDefault(); submitTo('surveys_statuses', true); });
-            $(".btn-activate-surveys").click(function (e) { e.preventDefault(); submitTo('surveys_activate', true); });
-            $(".btn-inactivate-surveys").click(function (e) { e.preventDefault(); submitTo('surveys_inactivate', true); });
+            $(".btn-change-status").click(function (e) {
+                e.preventDefault();
+                submitTo('surveys_statuses', true);
+            });
+            $(".btn-activate-surveys").click(function (e) {
+                e.preventDefault();
+                submitTo('surveys_activate', true);
+            });
+            $(".btn-inactivate-surveys").click(function (e) {
+                e.preventDefault();
+                submitTo('surveys_inactivate', true);
+            });
             $(".btn-dispatch").click(function (e) {
                 e.preventDefault();
 
@@ -323,10 +344,10 @@ define(['jquery', 'survey.sum', 'survey.cell', 'surveys.dispatch', 'bootstrap.va
                 var city = checked.data('city');
 
                 submitTo('dispatches');
-                dispatch.init(library, address, city, function(unsavedChanges) {
+                dispatch.init(library, address, city, function (unsavedChanges) {
                     var button = $('.btn-dispatch');
 
-                    if(unsavedChanges) {
+                    if (unsavedChanges) {
                         button.text("Skapa utskick*");
                         button.attr("data-original-title", "Det finns ett påbörjat utskick.");
                     } else {
@@ -377,27 +398,27 @@ define(['jquery', 'survey.sum', 'survey.cell', 'surveys.dispatch', 'bootstrap.va
             });
 
             /* FAQ Panel */
-            var setIcon = function(id, state) {
-                var icon = $("a[href='#" + id +"']").siblings('.fa');
+            var setIcon = function (id, state) {
+                var icon = $("a[href='#" + id + "']").siblings('.fa');
 
-                if(state == 'collapse') {
+                if (state == 'collapse') {
                     icon.removeClass("fa-angle-down");
                     icon.addClass("fa-angle-right");
-                } else if(state == 'show') {
+                } else if (state == 'show') {
                     icon.removeClass("fa-angle-right");
                     icon.addClass("fa-angle-down");
                 }
             };
 
-            $('#panel-help .collapse').on('show.bs.collapse', function() {
+            $('#panel-help .collapse').on('show.bs.collapse', function () {
                 setIcon($(this).attr('id'), 'show');
-            }).on('hide.bs.collapse', function() {
+            }).on('hide.bs.collapse', function () {
                 setIcon($(this).attr('id'), 'collapse');
             });
-            
+
             $('.survey-popover').tooltip();
 
-            $('.modified-after-publish').on("click", function(e) {
+            $('.modified-after-publish').on("click", function (e) {
                 e.preventDefault();
             });
 
