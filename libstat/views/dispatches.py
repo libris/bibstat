@@ -28,7 +28,7 @@ def dispatches(request):
         survey_ids = request.POST.getlist("survey-response-ids", [])
         surveys = list(Survey.objects.filter(id__in=survey_ids).exclude("observations"))
 
-        for survey in surveys:
+        dispatches = [
             Dispatch(
                 message=_rendered_template(request.POST.get("message", None), survey),
                 title=_rendered_template(request.POST.get("title", None), survey),
@@ -36,7 +36,10 @@ def dispatches(request):
                 library_name=survey.library.name,
                 library_email=survey.library.email,
                 library_city=survey.library.city,
-            ).save()
+            ) for survey in surveys
+        ]
+
+        Dispatch.objects.insert(dispatches, load_bulk=False)
 
         return redirect(reverse("dispatches"))
 
