@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from libstat.models import Survey
+from libstat.models import Survey, Variable
 
 
 class ReportTemplate():
@@ -14,8 +14,11 @@ class Group():
 
 
 class VariableRow():
-    def __init__(self, description, variable_key):
-        self.description = description
+    def __init__(self, variable_key, description=None):
+        if description:
+            self.description = description
+        else:
+            self.description = Variable.objects.get(key=variable_key).question_part
         self.variable_key = variable_key
 
 
@@ -101,42 +104,44 @@ def get_report(surveys, year):
     report = {
         "year": year,
         "libraries": libraries,
-        "measurements": generate_report(report_template_2014, year, observations)
+        "measurements": generate_report(report_template_2014(), year, observations)
     }
 
     return report
 
 
-report_template_2014 = ReportTemplate(groups=[
-    Group(title=u"Organisation",
-          rows=[VariableRow(description=u"Antal bemannade serviceställen",
-                            variable_key=u"BemanService01"),
-                VariableRow(description=u"",
-                            variable_key=u"Integrerad01"),
-                VariableRow(description=u"",
-                            variable_key=u"Obeman01"),
-                VariableRow(description=u"",
-                            variable_key=u"ObemanLan01"),
-                VariableRow(description=u"",
-                            variable_key=u"Bokbuss01"),
-                VariableRow(description=u"",
-                            variable_key=u"BokbussHP01"),
-                VariableRow(description=u"",
-                            variable_key=u"Bokbil01"),
-                VariableRow(description=u"",
-                            variable_key=u"Population01"),
-                VariableRow(description=u"",
-                            variable_key=u"Population02"),
-                VariableRow(description=u"",
-                            variable_key=u"Population03"),
-                KeyFigureRow(description=u"Antal bemannade serviceställen per 1000 invånare",
-                             computation=(lambda a, b: a / (b / 1000)),
-                             variable_keys=[u"BemanService01", u"Population01"]),
-                KeyFigureRow(description=u"Antal integrerade serviceställen",
-                             computation=(lambda a, b: a / b),
-                             variable_keys=[u"Integrerad01", u"BemanService01"]),
-                KeyFigureRow(description=u"Medelantal utlån per servicesställe där vidare låneregistrering inte sker",
-                             computation=(lambda a, b: a / b),
-                             variable_keys=[u"ObemanLan01", u"Obeman01"])
-          ])
-])
+def report_template_2014():
+    return ReportTemplate(groups=[
+        Group(title=u"Organisation",
+              rows=[VariableRow(description=u"Antal bemannade serviceställen",
+                                variable_key=u"BemanService01"),
+                    VariableRow(description=u"",
+                                variable_key=u"Integrerad01"),
+                    VariableRow(description=u"",
+                                variable_key=u"Obeman01"),
+                    VariableRow(description=u"",
+                                variable_key=u"ObemanLan01"),
+                    VariableRow(description=u"",
+                                variable_key=u"Bokbuss01"),
+                    VariableRow(description=u"",
+                                variable_key=u"BokbussHP01"),
+                    VariableRow(description=u"",
+                                variable_key=u"Bokbil01"),
+                    VariableRow(description=u"",
+                                variable_key=u"Population01"),
+                    # VariableRow(description=u"",
+                    #             variable_key=u"Population02"),
+                    # VariableRow(description=u"",
+                    #             variable_key=u"Population03"),
+                    KeyFigureRow(description=u"Antal bemannade serviceställen per 1000 invånare",
+                                 computation=(lambda a, b: a / (b / 1000)),
+                                 variable_keys=[u"BemanService01", u"Population01"]),
+                    KeyFigureRow(description=u"Antal integrerade serviceställen",
+                                 computation=(lambda a, b: a / b),
+                                 variable_keys=[u"Integrerad01", u"BemanService01"]),
+                    KeyFigureRow(
+                        description=u"Medelantal utlån per servicesställe där vidare låneregistrering inte sker",
+                        computation=(lambda a, b: a / b),
+                        variable_keys=[u"ObemanLan01", u"Obeman01"])
+              ])
+    ])
