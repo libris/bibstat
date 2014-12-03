@@ -76,14 +76,24 @@ def dispatches_send(request):
         dispatches = Dispatch.objects.filter(id__in=dispatch_ids)
         dispatches_with_email = [dispatch for dispatch in dispatches if dispatch.library_email]
 
-        messages = [
-            (dispatch.title, dispatch.message, settings.EMAIL_SENDER, [dispatch.library_email])
-            for dispatch in dispatches_with_email
-        ]
+        def chunks(l, n):
+            for i in xrange(0, len(l), n):
+                yield l[i:i+n]
 
-        send_mass_mail(messages)
-        for dispatch in dispatches_with_email:
-            dispatch.delete()
+        sent = 0
+        for dispatches_with_email_chunk in chunks(dispatches_with_email, 50):
+            messages = [
+                (dispatch.title, dispatch.message, settings.EMAIL_SENDER, [dispatch.library_email])
+                for dispatch in dispatches_with_email_chunk
+            ]
+
+            try:
+                sent += send_mass_mail(messages)
+            except Exception:
+                continue
+
+            message_ids = [dispatch.id for dispatch in dispatches_with_email_chunk]
+            Dispatch.objects.filter(id__in=message_ids).delete()
 
         def get_message(total, sent):
             message = ""
@@ -100,6 +110,6 @@ def dispatches_send(request):
 
             return message
 
-        request.session["message"] = get_message(len(dispatches), len(dispatches_with_email))
+        request.session["message"] = get_message(len(dispatches), sent)
 
     return redirect(reverse("dispatches"))
