@@ -15,8 +15,7 @@ define(['jquery', 'jquery.tablesorter'], function($) {
                     headers: {
                         0: { sorter: false },
                         7: { sorter: false}
-                    },
-                    sortList: [[3, 0]]
+                    }
                 });
                 $(".table.libraries").addClass("tablesorter").tablesorter({
                     headers: {
