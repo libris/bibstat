@@ -314,4 +314,16 @@ MUNICIPALITIES = (
     (u"Överkalix", u"2513"),
     (u"Övertorneå", u"2518"))
 
+
 municipalities = dict([(tuple[1], tuple[0]) for tuple in MUNICIPALITIES])
+
+def get_counties(municipality_codes):
+    county_list = []
+    for municipality_code in municipality_codes:
+        county_code = municipality_code[1][0:2] + u"00"
+        if county_code in municipalities:
+            county_list.append((municipalities[county_code], county_code))
+
+    for name, code in dict(county_list).iteritems():
+        yield (name ,code)
+

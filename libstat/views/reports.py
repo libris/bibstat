@@ -2,7 +2,7 @@
 from django.core.urlresolvers import reverse
 
 from django.shortcuts import render, redirect
-from data.municipalities import municipalities
+from data.municipalities import municipalities, get_counties
 from data.principals import principal_for_library_type, name_for_principal, library_types_for_principal
 from libstat.models import Survey
 from libstat.survey_templates import survey_template
@@ -79,7 +79,15 @@ def reports(request):
         municipality_code = request.GET.get("municipality_code", "")
         municipality_codes = surveys.distinct("library.municipality_code")
         municipality_codes = [(municipalities[code], code) for code in municipality_codes if code in municipalities]
+        municipality_codes += list(get_counties(municipality_codes))
         municipality_codes.sort()
+
+        def filter_municipality_code(surveys, municipality_code):
+            if municipality_code.endswith(u"00"): # County codes end with double zero
+                return surveys.filter(library__municipality_code__startswith=municipality_code[0:2])
+            else:
+                return surveys.filter(library__municipality_code=municipality_code)
+
 
         principal = request.GET.get("principal", "")
         principals = list(set(
@@ -97,7 +105,7 @@ def reports(request):
             if sample_year:
                 filtered_surveys = surveys.filter(sample_year=sample_year)
                 if municipality_code:
-                    filtered_surveys = filtered_surveys.filter(library__municipality_code=municipality_code)
+                    filtered_surveys = filter_municipality_code(filtered_surveys, municipality_code)
                 if principal:
                     filtered_surveys = filtered_surveys.filter(
                         library__library_type__in=library_types_for_principal[principal])
@@ -112,7 +120,7 @@ def reports(request):
                     library_name_for_sigel = {}
                     surveys_with_sigels = Survey.objects.filter(sample_year=sample_year)
                     if municipality_code:
-                        surveys_with_sigels = surveys_with_sigels.filter(library__municipality_code=municipality_code)
+                        surveys_with_sigels = filter_municipality_code(surveys_with_sigels, municipality_code)
                     if principal:
                         surveys_with_sigels = surveys_with_sigels.filter(
                             library__library_type__in=library_types_for_principal[principal])
