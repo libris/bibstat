@@ -21,6 +21,7 @@
             'dispatches': ['app/dispatches'],
             'libraries': ['app/libraries'],
             'login': ['app/login'],
+            'reports': ['app/reports'],
             'survey': ['app/survey'],
             'survey.cell': ['app/survey/cell'],
             'survey.sum': ['app/survey/sum'],
