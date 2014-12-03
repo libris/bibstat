@@ -39,8 +39,14 @@ define(['jquery', 'jquery.tablesorter'], function($) {
                 var total = $(".select-one").length;
                 var buttons = $(".btn-toggle");
 
-                if (checked > 0) buttons.removeClass("disabled");
-                else buttons.addClass("disabled");
+                if (checked > 0) {
+                    buttons.removeAttr("disabled");
+                    buttons.removeClass("disabled");
+                }
+                else {
+                    buttons.attr("disabled", true);
+                    buttons.addClass("disabled");
+                }
 
                 if(checked == total) $(".select-all").prop("checked", "checked");
                 else $(".select-all").removeAttr("checked");

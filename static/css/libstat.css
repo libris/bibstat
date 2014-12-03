@@ -2,6 +2,10 @@
  * Customizations for libstat
  */
 
+a[disabled] {
+    pointer-events: none;
+}
+
 .article .title {
     font-family: helvetica;
     font-weight: bold;

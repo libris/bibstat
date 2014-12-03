@@ -117,29 +117,29 @@
                                 <div class="form-group">
                                     <a href="#" class="btn btn-primary btn-toggle btn-survey disabled"
                                        data-toggle="modal"
-                                       data-target="#change-status-modal">
+                                       data-target="#change-status-modal" disabled>
                                         Ändra status
                                     </a>
                                     <a href="#" class="btn btn-primary btn-toggle btn-survey btn-dispatch survey-popover disabled"
                                        data-placement="top" data-toggle="tooltip"
-                                       data-original-title="">
+                                       data-original-title="" disabled>
                                         Skapa utskick
                                     </a>
                                     <a href="#" name="action"
                                        class="btn btn-primary btn-toggle btn-survey disabled" data-toggle="modal"
-                                       data-target="#export-surveys-modal">
+                                       data-target="#export-surveys-modal" disabled>
                                         Exportera
                                     </a>
                                     {% if surveys_state == 'inactive' %}
                                         <a href="#" name="action"
                                            class="btn btn-primary btn-toggle btn-survey disabled" data-toggle="modal"
-                                           data-target="#activate-surveys-modal">
+                                           data-target="#activate-surveys-modal" disabled>
                                             Aktivera
                                         </a>
                                     {% else %}
                                         <a href="#" name="action"
                                            class="btn btn-primary btn-toggle btn-survey disabled" data-toggle="modal"
-                                           data-target="#inactivate-surveys-modal">
+                                           data-target="#inactivate-surveys-modal" disabled>
                                             Inaktivera
                                         </a>
                                     {% endif %}
