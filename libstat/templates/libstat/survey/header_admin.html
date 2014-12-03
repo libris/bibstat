@@ -4,18 +4,7 @@
     <div class="jumbotron">
         <p>
             Du ser nu {{ form.sample_year }} års enkät för <b>{{ form.library_name }} ({{ form.library_sigel }})</b>.
-            {% if form.city %}
-                <br>Biblioteket finns i <b>{{ form.city }}</b>
-                {% if form.municipality_code %}, som finns i
-                    {% if form.municipality_code|municipality_name %}
-                        <b>{{ form.municipality_code|municipality_name }}</b> med kommunkod
-                    {% else %}
-                        kommunen med kod
-                    {% endif %}
-
-                    <b>{{ form.municipality_code }}</b>
-                {% endif %}.
-            {% endif %}
+            {% if form.city %}<br>Biblioteket finns i <b>{{ form.city }}</b>{% if form.municipality_code %}, som finns i{% if form.municipality_code|municipality_name %}<b>{{ form.municipality_code|municipality_name }}</b> med kommunkod{% else %}kommunen med kod{% endif %}<b>{{ form.municipality_code }}</b>{% endif %}.{% endif %}
 
             <br><br>Enkäten har status <b>{{ form.status|lower }}</b> och är
             <b>{% if form.is_user_read_only %} stängd {% else %} öppen {% endif %}
