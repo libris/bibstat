@@ -4,6 +4,9 @@
 
 {% block content %}
     <style>
+        .sum-description {
+            font-weight: bold;
+        }
         .final-words {
             background-color: rgb(242, 148, 0) !important;
             font-size: 30px;
@@ -295,14 +298,17 @@
                                     </div>
                                 {% else %}
                                 <div class="row">
-                                    <div class="{% if group.columns <= 2 %}
-                                                        col-sm-4
-                                                    {% elif group.columns == 3 %}
-                                                        col-sm-3
-                                                    {% elif group.columns == 4 %}
-                                                        col-sm-4
-                                                    {% endif %}
-                                                         ">
+                                    <div class="{% if row.cells and row.cells.0 and row.cells.0.sum_of %}
+                                                    sum-description
+                                                {% endif %}
+                                                {% if group.columns <= 2 %}
+                                                    col-sm-4
+                                                {% elif group.columns == 3 %}
+                                                    col-sm-3
+                                                {% elif group.columns == 4 %}
+                                                    col-sm-4
+                                                {% endif %}
+                                                ">
                                         {{ row.description }}
                                         {% if row.description|length > 70 and not forloop.last %}
                                             <hr class="description-separator">
