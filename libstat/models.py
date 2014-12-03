@@ -9,6 +9,7 @@ from mongoengine import signals
 from django.conf import settings
 
 from datetime import datetime
+from mongoengine.context_managers import no_dereference
 from data.principals import get_library_types_with_same_principal
 from libstat.query_sets.survey import SurveyQuerySet
 from libstat.query_sets.variable import VariableQuerySet
@@ -394,9 +395,16 @@ class SurveyBase(Document):
                 self.unpublish()
             self._status = status
 
-    def get_observation(self, key):
-        hits = [obs for obs in self.observations if obs.variable.key == key]
-        return hits[0] if len(hits) > 0 else None
+    def get_observation(self, key, key_id=None):
+        if key_id:
+            for observation in self.observations:
+                if observation.variable == key_id:
+                    return observation
+
+            return None
+        else:
+            hits = [obs for obs in self.observations if obs.variable.key == key]
+            return hits[0] if len(hits) > 0 else None
 
     def observation_by_key(self, key):
         return self.get_observation(key)

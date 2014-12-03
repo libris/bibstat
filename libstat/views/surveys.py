@@ -1,5 +1,7 @@
 # -*- coding: utf-8 -*-
 import logging
+from bson import ObjectId
+from mongoengine.context_managers import no_dereference
 import requests
 from time import strftime
 
@@ -124,20 +126,8 @@ def _surveys_redirect(request):
 
 
 def _surveys_as_excel(survey_ids):
-    def variable_keys_in(survey):
-        variable_keys = []
-        if has_template(survey.sample_year):
-            template = survey_template(survey.sample_year)
-            for cell in template.cells:
-                variable_keys.append(cell.variable_key)
-        else:
-            for observation in surveys[0].observations:
-                variable_keys.append(unicode(observation.variable.key))
-        return variable_keys
-
     surveys = Survey.objects.filter(id__in=survey_ids).order_by('library__name')
-
-    variable_keys = variable_keys_in(surveys[0])
+    variable_keys = [unicode(observation.variable.key) for observation in surveys[0].observations]
 
     headers = [
                   "Bibliotek",
@@ -169,8 +159,8 @@ def _surveys_as_excel(survey_ids):
             if survey.library.library_type in principal_for_library_type else None,
 
         ]
-        for key in variable_keys:
-            row.append(survey.get_observation(key).value)
+        for observation in survey.observations:
+            row.append(observation.value)
         worksheet.append(row)
 
     return workbook
