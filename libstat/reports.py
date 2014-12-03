@@ -15,7 +15,7 @@ class Group():
 
 class VariableRow():
     def __init__(self, variable_key, description=None):
-        if description:
+        if description is not None:
             self.description = description
         else:
             self.description = Variable.objects.get(key=variable_key).question_part
@@ -113,26 +113,16 @@ def get_report(surveys, year):
 def report_template_2014():
     return ReportTemplate(groups=[
         Group(title=u"Organisation",
-              rows=[VariableRow(description=u"Antal bemannade serviceställen",
-                                variable_key=u"BemanService01"),
-                    VariableRow(description=u"",
-                                variable_key=u"Integrerad01"),
-                    VariableRow(description=u"",
-                                variable_key=u"Obeman01"),
-                    VariableRow(description=u"",
-                                variable_key=u"ObemanLan01"),
-                    VariableRow(description=u"",
-                                variable_key=u"Bokbuss01"),
-                    VariableRow(description=u"",
-                                variable_key=u"BokbussHP01"),
-                    VariableRow(description=u"",
-                                variable_key=u"Bokbil01"),
-                    VariableRow(description=u"",
-                                variable_key=u"Population01"),
-                    # VariableRow(description=u"",
-                    #             variable_key=u"Population02"),
-                    # VariableRow(description=u"",
-                    #             variable_key=u"Population03"),
+              rows=[VariableRow(variable_key=u"BemanService01"),
+                    VariableRow(variable_key=u"Integrerad01"),
+                    VariableRow(variable_key=u"Obeman01"),
+                    VariableRow(variable_key=u"ObemanLan01"),
+                    VariableRow(variable_key=u"Bokbuss01"),
+                    VariableRow(variable_key=u"BokbussHP01"),
+                    VariableRow(variable_key=u"Bokbil01"),
+                    VariableRow(variable_key=u"Population01"),
+                    # VariableRow(variable_key=u"Population02"),
+                    # VariableRow(variable_key=u"Population03"),
                     KeyFigureRow(description=u"Antal bemannade serviceställen per 1000 invånare",
                                  computation=(lambda a, b: a / (b / 1000)),
                                  variable_keys=[u"BemanService01", u"Population01"]),
