@@ -4,6 +4,10 @@
 
 {% block content %}
     <style>
+        .observation-group {
+            margin-bottom: 50px;
+        }
+        
         .report {
             width: 800px;
             margin: 0px auto;
@@ -100,7 +104,7 @@
             </div>
         </div>
         {% for group in measurements %}
-            <div>
+            <div class="observation-group">
                 <table class="observation">
                     {% for row in group %}
                         {% if forloop.first %}
