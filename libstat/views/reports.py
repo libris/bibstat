@@ -6,33 +6,18 @@ from data.municipalities import municipalities, get_counties
 from data.principals import principal_for_library_type, name_for_principal, library_types_for_principal
 from libstat.models import Survey
 from libstat.reports import get_report
-from libstat.survey_templates import survey_template
 
 
 def report(request):
     if request.method == "GET":
-        return redirect(reverse("administration"))
+        return redirect(reverse("reports"))
 
     sample_year = int(request.POST.get("sample_year", None))
     sigels = request.POST.getlist("surveys", [])
 
-    surveys = [(survey, survey.previous_years_survey()) for survey in
-               list(Survey.objects.filter(sample_year=sample_year, library__sigel__in=sigels))]
-    libraries = []
-    for survey, _ in surveys:
-        for sigel in survey.selected_libraries:
-            library = Survey.objects.get(sample_year=sample_year, library__sigel=sigel).library
-            libraries.append({
-                "sigel": library.sigel,
-                "name": library.name
-            })
+    surveys = list(Survey.objects.filter(sample_year=sample_year, library__sigel__in=sigels))
 
-    context = {
-        "sample_year": sample_year,
-        "previous_year": int(sample_year) - 1,
-        "libraries": libraries,
-        "report": get_report(surveys, sample_year)
-    }
+    context = get_report(surveys, sample_year)
 
     return render(request, 'libstat/report.html', context)
 
@@ -52,7 +37,7 @@ def reports(request):
         municipality_codes.sort()
 
         def filter_municipality_code(surveys, municipality_code):
-            if municipality_code.endswith(u"00"): # County codes end with double zero
+            if municipality_code.endswith(u"00"):  # County codes end with double zero
                 return surveys.filter(library__municipality_code__startswith=municipality_code[0:2])
             else:
                 return surveys.filter(library__municipality_code=municipality_code)

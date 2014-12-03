@@ -89,7 +89,7 @@
 
     </style>
     <div class="report">
-        <div class="report-title">Verksamhetsrapport för året {{ sample_year }}</div>
+        <div class="report-title">Verksamhetsrapport för året {{ year }}</div>
 
         <div>
             <div class="libraries-label">Bibliotek:</div>
@@ -99,7 +99,7 @@
                 {% endfor %}
             </div>
         </div>
-        {% for group in report %}
+        {% for group in measurements %}
             <div>
                 <table class="observation">
                     {% for row in group %}

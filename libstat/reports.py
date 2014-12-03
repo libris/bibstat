@@ -1,4 +1,6 @@
 # -*- coding: utf-8 -*-
+from libstat.models import Survey
+
 
 class ReportTemplate():
     def __init__(self, groups):
@@ -64,29 +66,45 @@ def get_report(surveys, year):
         return isinstance(obj, (int, long, float, complex))
 
     previous_year = year - 1
+
+    surveys = [(survey, survey.previous_years_survey()) for survey in surveys]
+    libraries = []
+    for survey, _ in surveys:
+        for sigel in survey.selected_libraries:
+            library = Survey.objects.get(sample_year=year, library__sigel=sigel).library
+            libraries.append({
+                "sigel": library.sigel,
+                "name": library.name
+            })
+
     observations = {}
     for survey, previous_survey in surveys:
         for observation in survey.observations:
-            if not is_number(observation.value):
-                continue
-            variable_key = observation.variable.key
-            if variable_key not in observations:
-                observations[variable_key] = {
-                    year: 0,
-                    previous_year: 0
-                }
-            observations[variable_key][year] += float(observation.value)
-        for observation in previous_survey.observations:
-            if not is_number(observation.value):
-                continue
-            variable_key = observation.variable.key
-            if variable_key not in observations:
-                observations[variable_key] = {
-                    year: 0,
-                    previous_year: 0
-                }
-            observations[variable_key][previous_year] += float(observation.value)
-    return generate_report(report_template_2014, year, observations)
+            if is_number(observation.value):
+                variable_key = observation.variable.key
+                if variable_key not in observations:
+                    observations[variable_key] = {
+                        year: 0,
+                        previous_year: 0
+                    }
+                observations[variable_key][year] += float(observation.value)
+            previous_value = survey.previous_years_value(observation.variable, previous_years_survey=previous_survey)
+            if is_number(previous_value):
+                variable_key = observation.variable.key
+                if variable_key not in observations:
+                    observations[variable_key] = {
+                        year: 0,
+                        previous_year: 0
+                    }
+                observations[variable_key][previous_year] += float(previous_value)
+
+    report = {
+        "year": year,
+        "libraries": libraries,
+        "measurements": generate_report(report_template_2014, year, observations)
+    }
+
+    return report
 
 
 report_template_2014 = ReportTemplate(groups=[
