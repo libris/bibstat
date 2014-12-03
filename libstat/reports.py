@@ -39,34 +39,53 @@ def generate_report(template, sample_year, observations):
                 values = [float(v) if v is not None else None for v in values]
                 previous_values = [observations.get(key, {}).get(sample_year - 1, None) for key in row.variable_keys]
                 previous_values = [float(v) if v is not None else None for v in previous_values]
-                report_row = [row.description,
-                              apply(row.computation, previous_values) if None not in previous_values else None,
-                              apply(row.computation, values) if None not in values else None]
+                if None not in values:
+                    try:
+                        value = apply(row.computation, values)
+                    except ZeroDivisionError:
+                        value = None
+                else:
+                    value = None
+                if None not in previous_values:
+                    try:
+                        previous_value = apply(row.computation, previous_values)
+                    except ZeroDivisionError:
+                        previous_value = None
+                else:
+                    previous_value = None
+                report_row = [row.description, previous_value, value]
             report_group.append(report_row)
         report.append(report_group)
     return report
 
 
 def get_report(surveys, year):
+    def is_number(obj):
+        return isinstance(obj, (int, long, float, complex))
+
     previous_year = year - 1
     observations = {}
     for survey, previous_survey in surveys:
         for observation in survey.observations:
+            if not is_number(observation.value):
+                continue
             variable_key = observation.variable.key
             if variable_key not in observations:
                 observations[variable_key] = {
                     year: 0,
                     previous_year: 0
                 }
-            observations[variable_key][year] += observation.value
+            observations[variable_key][year] += float(observation.value)
         for observation in previous_survey.observations:
+            if not is_number(observation.value):
+                continue
             variable_key = observation.variable.key
             if variable_key not in observations:
                 observations[variable_key] = {
                     year: 0,
                     previous_year: 0
                 }
-            observations[variable_key][previous_year] += observation.value
+            observations[variable_key][previous_year] += float(observation.value)
     return generate_report(report_template_2014, year, observations)
 
 

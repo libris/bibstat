@@ -32,6 +32,7 @@
 
         th.observation-label {
             background-color: rgb(255, 163, 56);
+            color: white;
         }
 
         th.observation-previous-year {
@@ -86,15 +87,6 @@
             font-family: helvetica;
         }
 
-        .observation-data-missing {
-            background-color: white !important;
-            font-weight: bold;
-            color: #d63f3c;
-        }
-
-        .observation-footer {
-            margin-top: 30px;
-        }
     </style>
     <div class="report">
         <div class="report-title">Verksamhetsrapport för året {{ sample_year }}</div>
@@ -107,43 +99,28 @@
                 {% endfor %}
             </div>
         </div>
-        <div>
-            <table class="observation">
-                <tr>
-                    <th class="observation-label"></th>
-                    <th class="observation-previous-year">År {{ previous_year }}</th>
-                    <th class="observation-sample-year">År {{ sample_year }}</th>
-                    <th class="observation-difference">Förändring {{ previous_year }} - {{ sample_year }}</th>
-                    <th class="observation-data-missing"></th>
-                </tr>
-                {% for observation in observations %}
-                    <tr class="{% if forloop.counter|divisibleby:2 %}even{% else %}odd{% endif %}">
-                        <td class="observation-label">{{ observation.label }}</td>
-                        <td class="observation-previous-year">{{ observation.previous_value }}</td>
-                        <td class="observation-sample-year">{{ observation.value }}</td>
-                        <td class="observation-difference">{{ observation.difference }}</td>
-                        <td class="observation-data-missing">
-                            {% if observation.data_missing and observation.previous_data_missing %}
-                                (1,2)
-                            {% elif observation.data_missing %}
-                                (1)
-                            {% elif observation.previous_data_missing %}
-                                (2)
-                            {% endif %}
-                        </td>
-                    </tr>
-                {% endfor %}
-            </table>
-            <div class="observation-footer">
-                <div>
-                    <span class="observation-data-missing">(1)</span> = Alla bibliotek har inte rapporterat in ett värde
-                    för detta år.
-                </div>
-                <div>
-                    <span class="observation-data-missing">(2)</span> = Alla bibliotek har inte rapporterat in ett värde
-                    för föregående år.
-                </div>
+        {% for group in report %}
+            <div>
+                <table class="observation">
+                    {% for row in group %}
+                        {% if forloop.first %}
+                            <tr>
+                                <th class="observation-label">{{ row.0 }}</th>
+                                <th class="observation-previous-year">År {{ row.1 }}</th>
+                                <th class="observation-sample-year">År {{ row.2 }}</th>
+                                <th class="observation-difference">Förändring {{ row.1 }} - {{ row.2 }}</th>
+                            </tr>
+                        {% else %}
+                            <tr class="{% if forloop.counter|divisibleby:2 %}even{% else %}odd{% endif %}">
+                                <td class="observation-label">{{ row.0 }}</td>
+                                <td class="observation-previous-year">{{ row.1|floatformat|default:"-" }}</td>
+                                <td class="observation-sample-year">{{ row.2|floatformat|default:"-" }}</td>
+                                <td class="observation-difference">-</td>
+                            </tr>
+                        {% endif %}
+                    {% endfor %}
+                </table>
             </div>
-        </div>
+        {% endfor %}
     </div>
 {% endblock %}

@@ -5,6 +5,7 @@ from django.shortcuts import render, redirect
 from data.municipalities import municipalities, get_counties
 from data.principals import principal_for_library_type, name_for_principal, library_types_for_principal
 from libstat.models import Survey
+from libstat.reports import get_report
 from libstat.survey_templates import survey_template
 
 
@@ -12,7 +13,7 @@ def report(request):
     if request.method == "GET":
         return redirect(reverse("administration"))
 
-    sample_year = request.POST.get("sample_year", None)
+    sample_year = int(request.POST.get("sample_year", None))
     sigels = request.POST.getlist("surveys", [])
 
     surveys = [(survey, survey.previous_years_survey()) for survey in
@@ -26,43 +27,11 @@ def report(request):
                 "name": library.name
             })
 
-    observations = []
-    for cell in survey_template(sample_year).cells:
-        if "integer" in cell.types or "decimal" in cell.types:
-            value = 0
-            previous_value = 0
-            data_missing = False
-            previous_data_missing = False
-            for survey, previous_survey in surveys:
-                observation = survey.get_observation(cell.variable_key)
-                if observation and observation.value:
-                    value += int(observation.value)
-                else:
-                    data_missing = True
-                if observation and observation.variable:
-                    prev_value = survey.previous_years_value(observation.variable,
-                                                             previous_years_survey=previous_survey)
-                    if prev_value:
-                        previous_value += int(prev_value)
-                    else:
-                        previous_data_missing = True
-                else:
-                    previous_data_missing = True
-
-            observations.append({
-                "label": cell.variable.question_part,
-                "value": value,
-                "previous_value": previous_value,
-                "difference": "-",
-                "data_missing": data_missing,
-                "previous_data_missing": previous_data_missing
-            })
-
     context = {
         "sample_year": sample_year,
         "previous_year": int(sample_year) - 1,
         "libraries": libraries,
-        "observations": observations
+        "report": get_report(surveys, sample_year)
     }
 
     return render(request, 'libstat/report.html', context)
