@@ -1,4 +1,4 @@
-define(['jquery', 'survey.sum', 'survey.cell', 'surveys.dispatch', 'bootstrap.validator.sv'], function ($, sum, cell, dispatch) {
+define(['jquery', 'survey.sum', 'survey.cell', 'surveys.dispatch', 'bootstrap.validator.sv', 'jquery.placeholder'], function ($, sum, cell, dispatch) {
     var survey = {
         form: function (selector) {
             if (selector) return $('#survey-form ' + selector);
@@ -421,6 +421,8 @@ define(['jquery', 'survey.sum', 'survey.cell', 'surveys.dispatch', 'bootstrap.va
             $('.modified-after-publish').on("click", function (e) {
                 e.preventDefault();
             });
+
+            $("input").placeholder();
 
             sum.init();
             initDropdown();
