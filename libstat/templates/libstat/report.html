@@ -115,9 +115,9 @@
                 <table class="observation">
                     <tr>
                         <th class="observation-label">{{ group.title }}</th>
-                        <th class="observation-previous-year">År {{ previous_year }}</th>
-                        <th class="observation-sample-year">År {{ year }}</th>
-                        <th class="observation-difference">Förändring {{ previous_year }} - {{ year }}</th>
+                        <th class="observation-previous-year">År {{ group.years.0 }}</th>
+                        <th class="observation-sample-year">År {{ group.years.1 }}</th>
+                        <th class="observation-difference">Förändring {{ group.years.0 }} - {{ group.years.1 }}</th>
                         <th class="observation-difference-total">Andel av riket</th>
                     </tr>
                     {% for row in group|access:"rows" %}
