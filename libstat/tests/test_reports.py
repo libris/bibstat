@@ -27,15 +27,17 @@ class TestReports(MongoTestCase):
         ])
         observations = {
             "key1": {
-                2013: 5,
-                2014: 7
+                2013: 5.0,
+                2014: 7.0,
+                "total": 31.0
             },
             "key2": {
-                2013: 11,
-                2014: 13
+                2013: 11.0,
+                2014: 13.0,
+                "total": 47.0
             },
             "key4": {
-                2014: 3
+                2014: 3.0
             }
         }
 
@@ -43,16 +45,16 @@ class TestReports(MongoTestCase):
         expected_report = [
             [
                 ["some_title1", 2013, 2014],
-                ["some_description1", 5, 7, ((7.0 / 5.0) - 1) * 100]
+                ["some_description1", 5.0, 7.0, ((7.0 / 5.0) - 1) * 100, (7.0 / 31.0) * 1000]
             ],
             [
                 ["some_title2", 2013, 2014],
-                ["some_description2", 11, 13, ((13.0 / 11.0) - 1) * 100],
+                ["some_description2", 11.0, 13.0, ((13.0 / 11.0) - 1) * 100, (13.0 / 47.0) * 1000],
                 ["some_description3", (5.0 / 11.0) / 15, (7.0 / 13.0) / 15,
-                 (((7.0 / 13.0) / 15) / ((5.0 / 11.0) / 15) - 1) * 100],
-                ["some_description4", None, None, None],
-                ["some_description5", None, 3, None],
-                ["some_description6", None, None, None]
+                 (((7.0 / 13.0) / 15) / ((5.0 / 11.0) / 15) - 1) * 100, None],
+                ["some_description4", None, None, None, None],
+                ["some_description5", None, 3.0, None, None],
+                ["some_description6", None, None, None, None]
             ]
         ]
         self.assertEqual(report, expected_report)

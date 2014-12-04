@@ -510,6 +510,7 @@ class Survey(SurveyBase):
         return previous_surveys[0]
 
     def previous_years_value(self, variable, previous_years_survey=None):
+        # allow passing previous survey to reduce db lookups
         if not previous_years_survey:
             previous_years_survey = self.previous_years_survey()
             if not previous_years_survey:

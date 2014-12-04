@@ -37,25 +37,27 @@ class KeyFigureRow():
         self.variable_keys = variable_keys
 
 
-def generate_report(template, sample_year, observations):
+def generate_report(template, year, observations):
+    def values_for(observations, variable_keys, year):
+        values = [observations.get(key, {}).get(year, None) for key in variable_keys]
+        values = [float(v) if v is not None else None for v in values]
+        return values
+
     report = []
     for group in template.groups:
-        report_group = [[group.title, sample_year - 1, sample_year]]
+        report_group = [[group.title, year - 1, year]]
         for row in group.rows:
             value = None
             previous_value = None
             total = None
             if isinstance(row, VariableRow):
-                value = observations.get(row.variable_key, {}).get(sample_year, None)
-                previous_value = observations.get(row.variable_key, {}).get(sample_year - 1, None)
-                total = observations.get(row.variable_key, {}).get("total", None)
+                observation = observations.get(row.variable_key, {})
+                value = observation.get(year, None)
+                previous_value = observation.get(year - 1, None)
+                total = observation.get("total", None)
             elif isinstance(row, KeyFigureRow):
-                values = [observations.get(key, {}).get(sample_year, None) for key in row.variable_keys]
-                values = [float(v) if v is not None else None for v in values]
-                previous_values = [observations.get(key, {}).get(sample_year - 1, None) for key in row.variable_keys]
-                previous_values = [float(v) if v is not None else None for v in previous_values]
-                value = row.compute(values)
-                previous_value = row.compute(previous_values)
+                value = row.compute(values_for(observations, row.variable_keys, year))
+                previous_value = row.compute(values_for(observations, row.variable_keys, year - 1))
             report_group.append([row.description,
                                  previous_value,
                                  value,
@@ -69,61 +71,66 @@ def _get_observations_from(surveys, year):
     def is_number(obj):
         return isinstance(obj, (int, long, float, complex))
 
+    this_year = year
+    previous_year = year - 1
+
+    def add_value(observations, variable_key, year, value):
+        if not is_number(value):
+            return
+
+        if variable_key not in observations:
+            observations[variable_key] = {
+                this_year: 0.0,
+                previous_year: 0.0,
+                "total": 0.0
+            }
+        observations[variable_key][year] += float(value)
+
     previous_year = year - 1
     observations = {}
-    for survey, previous_survey in surveys:
+    for survey in surveys:
+        previous_survey = survey.previous_years_survey()
         for observation in survey.observations:
-            if is_number(observation.value):
-                variable_key = observation.variable.key
-                if variable_key not in observations:
-                    observations[variable_key] = {
-                        year: 0,
-                        previous_year: 0,
-                        "total": 0
-                    }
-                observations[variable_key][year] += float(observation.value)
+            value = observation.value
             previous_value = survey.previous_years_value(observation.variable, previous_years_survey=previous_survey)
-            if is_number(previous_value):
-                variable_key = observation.variable.key
-                if variable_key not in observations:
-                    observations[variable_key] = {
-                        year: 0,
-                        previous_year: 0,
-                        "total": 0
-                    }
-                observations[variable_key][previous_year] += float(previous_value)
+
+            variable_key = observation.variable.key
+            add_value(observations, variable_key, year, value)
+            add_value(observations, variable_key, previous_year, previous_value)
+
     for survey in Survey.objects.filter(sample_year=year, _status="published"):
         for observation in survey.observations:
-            if is_number(observation.value):
-                variable_key = observation.variable.key
-                if variable_key not in observations:
-                    observations[variable_key] = {
-                        year: 0,
-                        previous_year: 0,
-                        "total": 0
-                    }
-                observations[variable_key]["total"] += float(observation.value)
+            value = observation.value
+            if not is_number(value):
+                continue
+
+            variable_key = observation.variable.key
+            if variable_key not in observations:
+                observations[variable_key] = {
+                    year: 0.0,
+                    previous_year: 0.0,
+                    "total": 0.0
+                }
+
+            observations[variable_key]["total"] += float(value)
+
     return observations
 
 
 def get_report(surveys, year):
-    surveys = [(survey, survey.previous_years_survey()) for survey in surveys]
     libraries = []
-    for survey, _ in surveys:
+    for survey in surveys:
         for sigel in survey.selected_libraries:
-            library = Survey.objects.get(sample_year=year, library__sigel=sigel).library
-            libraries.append({
-                "name": library.name,
-                "city": library.city,
-                "address": library.address
-            })
+            libraries.append(Survey.objects.get(sample_year=year, library__sigel=sigel).library)
+
+    template = report_template_2014()
 
     observations = _get_observations_from(surveys, year)
 
     report = {
         "year": year,
         "libraries": libraries,
-        "measurements": generate_report(report_template_2014(), year, observations)
+        "measurements": generate_report(template, year, observations)
     }
 
     return report
