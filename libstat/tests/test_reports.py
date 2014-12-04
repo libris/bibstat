@@ -21,9 +21,9 @@ class TestReports(MongoTestCase):
                         VariableRow(description="some_description5",
                                     variable_key="key4"),
                         KeyFigureRow(description="some_description6",
-                                     computation=(lambda a, b: (a/b)),
+                                     computation=(lambda a, b: (a / b)),
                                      variable_keys=["does_not_exist2", "does_not_exist3"]),
-                        ])
+                  ])
         ])
         observations = {
             "key1": {
@@ -43,15 +43,16 @@ class TestReports(MongoTestCase):
         expected_report = [
             [
                 ["some_title1", 2013, 2014],
-                ["some_description1", 5, 7]
+                ["some_description1", 5, 7, ((7.0 / 5.0) - 1) * 100]
             ],
             [
                 ["some_title2", 2013, 2014],
-                ["some_description2", 11, 13],
-                ["some_description3", (5.0 / 11.0) / 15, (7.0 / 13.0) / 15],
-                ["some_description4", None, None],
-                ["some_description5", None, 3],
-                ["some_description6", None, None]
+                ["some_description2", 11, 13, ((13.0 / 11.0) - 1) * 100],
+                ["some_description3", (5.0 / 11.0) / 15, (7.0 / 13.0) / 15,
+                 (((7.0 / 13.0) / 15) / ((5.0 / 11.0) / 15) - 1) * 100],
+                ["some_description4", None, None, None],
+                ["some_description5", None, 3, None],
+                ["some_description6", None, None, None]
             ]
         ]
         self.assertEqual(report, expected_report)

@@ -49,8 +49,8 @@ def generate_report(template, sample_year, observations):
                         value = apply(row.computation, values)
                     except ZeroDivisionError:
                         value = None
-                    else:
-                        value = None
+                else:
+                    value = None
                 if None not in previous_values:
                     try:
                         previous_value = apply(row.computation, previous_values)
