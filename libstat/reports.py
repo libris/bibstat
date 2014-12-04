@@ -23,6 +23,14 @@ class VariableRow():
 
 
 class KeyFigureRow():
+    def compute(self, values):
+        if None in values:
+            return None
+        try:
+            return apply(self.computation, values)
+        except ZeroDivisionError:
+            return None
+
     def __init__(self, description, computation, variable_keys):
         self.description = description
         self.computation = computation
@@ -36,41 +44,69 @@ def generate_report(template, sample_year, observations):
         for row in group.rows:
             value = None
             previous_value = None
+            total = None
             if isinstance(row, VariableRow):
-                previous_value = observations.get(row.variable_key, {}).get(sample_year - 1, None)
                 value = observations.get(row.variable_key, {}).get(sample_year, None)
+                previous_value = observations.get(row.variable_key, {}).get(sample_year - 1, None)
+                total = observations.get(row.variable_key, {}).get("total", None)
             elif isinstance(row, KeyFigureRow):
                 values = [observations.get(key, {}).get(sample_year, None) for key in row.variable_keys]
                 values = [float(v) if v is not None else None for v in values]
                 previous_values = [observations.get(key, {}).get(sample_year - 1, None) for key in row.variable_keys]
                 previous_values = [float(v) if v is not None else None for v in previous_values]
-                if None not in values:
-                    try:
-                        value = apply(row.computation, values)
-                    except ZeroDivisionError:
-                        value = None
-                else:
-                    value = None
-                if None not in previous_values:
-                    try:
-                        previous_value = apply(row.computation, previous_values)
-                    except ZeroDivisionError:
-                        previous_value = None
-                else:
-                    previous_value = None
-            difference = None
-            if value and previous_value:
-                difference = ((float(value) / float(previous_value)) - 1) * 100
-            report_group.append([row.description, previous_value, value, difference])
+                value = row.compute(values)
+                previous_value = row.compute(previous_values)
+            report_group.append([row.description,
+                                 previous_value,
+                                 value,
+                                 ((value / previous_value) - 1) * 100 if value and previous_value else None,
+                                 (value / total) * 1000 if value and total else None])
         report.append(report_group)
     return report
 
-def get_report(surveys, year):
+
+def _get_observations_from(surveys, year):
     def is_number(obj):
         return isinstance(obj, (int, long, float, complex))
 
     previous_year = year - 1
+    observations = {}
+    for survey, previous_survey in surveys:
+        for observation in survey.observations:
+            if is_number(observation.value):
+                variable_key = observation.variable.key
+                if variable_key not in observations:
+                    observations[variable_key] = {
+                        year: 0,
+                        previous_year: 0,
+                        "total": 0
+                    }
+                observations[variable_key][year] += float(observation.value)
+            previous_value = survey.previous_years_value(observation.variable, previous_years_survey=previous_survey)
+            if is_number(previous_value):
+                variable_key = observation.variable.key
+                if variable_key not in observations:
+                    observations[variable_key] = {
+                        year: 0,
+                        previous_year: 0,
+                        "total": 0
+                    }
+                observations[variable_key][previous_year] += float(previous_value)
+    for survey in Survey.objects.filter(sample_year=year, _status="published"):
+        for observation in survey.observations:
+            if is_number(observation.value):
+                variable_key = observation.variable.key
+                if variable_key not in observations:
+                    observations[variable_key] = {
+                        year: 0,
+                        previous_year: 0,
+                        "total": 0
+                    }
+                observations[variable_key]["total"] += float(observation.value)
+    return observations
 
+
+def get_report(surveys, year):
     surveys = [(survey, survey.previous_years_survey()) for survey in surveys]
     libraries = []
     for survey, _ in surveys:
@@ -82,26 +118,7 @@ def get_report(surveys, year):
                 "address": library.address
             })
 
-    observations = {}
-    for survey, previous_survey in surveys:
-        for observation in survey.observations:
-            if is_number(observation.value):
-                variable_key = observation.variable.key
-                if variable_key not in observations:
-                    observations[variable_key] = {
-                        year: 0,
-                        previous_year: 0
-                    }
-                observations[variable_key][year] += float(observation.value)
-            previous_value = survey.previous_years_value(observation.variable, previous_years_survey=previous_survey)
-            if is_number(previous_value):
-                variable_key = observation.variable.key
-                if variable_key not in observations:
-                    observations[variable_key] = {
-                        year: 0,
-                        previous_year: 0
-                    }
-                observations[variable_key][previous_year] += float(previous_value)
+    observations = _get_observations_from(surveys, year)
 
     report = {
         "year": year,

@@ -58,6 +58,13 @@
             width: 110px;
         }
 
+        th.observation-difference-total {
+            background-color: rgb(37, 146, 188);
+            color: white;
+            text-align: center;
+            width: 90px;
+        }
+
         .observation-label {
             width: 500px;
         }
@@ -113,6 +120,7 @@
                                 <th class="observation-previous-year">År {{ row.1 }}</th>
                                 <th class="observation-sample-year">År {{ row.2 }}</th>
                                 <th class="observation-difference">Förändring {{ row.1 }} - {{ row.2 }}</th>
+                                <th class="observation-difference-total">Andel av riket</th>
                             </tr>
                         {% else %}
                             <tr class="{% if forloop.counter|divisibleby:2 %}even{% else %}odd{% endif %}">
@@ -122,6 +130,13 @@
                                 <td class="observation-difference">
                                     {% if row.3 %}
                                         {{ row.3|floatformat:"0"|default:"-" }}%
+                                    {% else %}
+                                        -
+                                    {% endif %}
+                                </td>
+                                <td class="observation-difference-total">
+                                    {% if row.4 %}
+                                        {{ row.4|floatformat:"0"|default:"-" }}&permil;
                                     {% else %}
                                         -
                                     {% endif %}
