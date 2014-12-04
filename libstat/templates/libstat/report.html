@@ -123,17 +123,29 @@
                     {% for row in group|access:"rows" %}
                         <tr class="{% if forloop.counter|divisibleby:2 %}even{% else %}odd{% endif %}">
                             <td class="observation-label">{{ row|access:"label" }}</td>
-                            <td class="observation-previous-year">{{ row|access:group.years.0|floatformat:"0"|default:"-" }}</td>
-                            <td class="observation-sample-year">{{ row|access:group.years.1|floatformat:"0"|default:"-" }}</td>
+                            <td class="observation-previous-year">
+                                {% if row|access:group.years.0 >= 1 %}
+                                    {{ row|access:group.years.0|floatformat:"0" }}
+                                {% else %}
+                                    -
+                                {% endif %}
+                            </td>
+                            <td class="observation-sample-year">
+                                {% if row|access:group.years.1 >= 1 %}
+                                    {{ row|access:group.years.1|floatformat:"0" }}
+                                {% else %}
+                                    -
+                                {% endif %}
+                            </td>
                             <td class="observation-difference">
-                                {% if row.diff %}
+                                {% if row.diff >= 1 %}
                                     {{ row.diff|floatformat:"0"|default:"-" }}%
                                 {% else %}
                                     -
                                 {% endif %}
                             </td>
                             <td class="observation-difference-total">
-                                {% if row.nation_diff %}
+                                {% if row.nation_diff >= 1 %}
                                     {{ row.nation_diff|floatformat:"0"|default:"-" }}&permil;
                                 {% else %}
                                     -
