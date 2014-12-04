@@ -72,34 +72,22 @@ class TestReports(MongoTestCase):
                         "label": "some_description3",
                         2013: (5.0 / 11.0) / 15,
                         2014: (7.0 / 13.0) / 15,
-                        "diff": (((7.0 / 13.0) / 15) / ((5.0 / 11.0) / 15) - 1) * 100,
-                        "nation_diff": None
+                        "diff": (((7.0 / 13.0) / 15) / ((5.0 / 11.0) / 15) - 1) * 100
                     },
                     {
-                        "label": "some_description4",
-                        2013: None,
-                        2014: None,
-                        "diff": None,
-                        "nation_diff": None
+                        "label": "some_description4"
                     },
                     {
                         "label": "some_description5",
-                        2013: None,
-                        2014: 3.0,
-                        "diff": None,
-                        "nation_diff": None
+                        2014: 3.0
                     },
                     {
-                        "label": "some_description6",
-                        2013: None,
-                        2014: None,
-                        "diff": None,
-                        "nation_diff": None
+                        "label": "some_description6"
                     }
                 ]
             }
         ]
-        
+
         self.assertEqual(report, expected_report)
 
 

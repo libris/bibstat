@@ -60,13 +60,17 @@ def generate_report(template, year, observations):
             elif isinstance(row, KeyFigureRow):
                 value = row.compute(values_for(observations, row.variable_keys, year))
                 previous_value = row.compute(values_for(observations, row.variable_keys, year - 1))
+
             diff = ((value / previous_value) - 1) * 100 if value and previous_value else None
             nation_diff = (value / total) * 1000 if value and total else None
-            report_group["rows"].append({"label": row.description,
-                                         (year - 1): previous_value,
-                                         year: value,
-                                         "diff": diff,
-                                         "nation_diff": nation_diff})
+
+            report_row = {"label": row.description}
+            if previous_value is not None: report_row[year - 1] = previous_value
+            if value is not None: report_row[year] = value
+            if diff is not None: report_row["diff"] = diff
+            if nation_diff is not None: report_row["nation_diff"] = nation_diff
+
+            report_group["rows"].append(report_row)
         report.append(report_group)
     return report
 
