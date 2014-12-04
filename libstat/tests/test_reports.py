@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 from pprint import pprint
 
-from libstat.reports import generate_report, ReportTemplate, Group, VariableRow, KeyFigureRow
+from libstat.reports import generate_report, ReportTemplate, Group, VariableRow, KeyFigureRow, _get_observations_from
 from libstat.tests import MongoTestCase
 
 
@@ -91,7 +91,72 @@ class TestReports(MongoTestCase):
         self.assertEqual(report, expected_report)
 
 
+    def test_parses_observations_from_surveys(self):
+        variable1 = self._dummy_variable(key="key1")
+        variable2 = self._dummy_variable(key="key2")
+        variable3 = self._dummy_variable(key="key3")
 
+        library1 = self._dummy_library()
+        library2 = self._dummy_library()
+        library3 = self._dummy_library()
+
+        survey1 = self._dummy_survey(
+            sample_year=2015,
+            library=library1,
+            observations=[
+                self._dummy_observation(variable=variable1, value=1),
+                self._dummy_observation(variable=variable2, value=2)
+            ])
+
+        survey2 = self._dummy_survey(
+            sample_year=2015,
+            library=library2,
+            observations=[
+                self._dummy_observation(variable=variable1, value=3),
+                self._dummy_observation(variable=variable3, value=5)
+            ])
+
+        survey3 = self._dummy_survey(
+            sample_year=2015,
+            library=library3,
+            observations=[
+                self._dummy_observation(variable=variable2, value=13),
+                self._dummy_observation(variable=variable3, value=17)
+            ])
+
+        survey4 = self._dummy_survey(
+            sample_year=2014,
+            library=library1,
+            observations=[
+                self._dummy_observation(variable=variable1, value=7),
+                self._dummy_observation(variable=variable2, value=11)
+            ])
+
+        survey1.publish()
+        survey2.publish()
+        survey3.publish()
+        survey4.publish()
+
+        observations = _get_observations_from([survey1, survey2], 2015)
+        expected_observations = {
+            u"key1": {
+                2014: 7.0,
+                2015: (1.0 + 3.0),
+                "total": (1.0 + 3.0)
+            },
+            u"key2": {
+                2014: 11.0,
+                2015: 2.0,
+                "total": (2.0 + 13.0)
+            },
+            u"key3": {
+                2014: 0.0,
+                2015: 5.0,
+                "total": (5.0 + 17.0)
+            }
+        }
+
+        self.assertEqual(observations, expected_observations)
 
 
 
