@@ -330,3 +330,8 @@ label.sub-label {
 .panel-report {
     margin-bottom: 10px;
 }
+
+a[title="JavaScript charts"] {
+    display: none;
+    visibility: hidden;
+}
