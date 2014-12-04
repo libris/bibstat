@@ -76,8 +76,9 @@ def get_report(surveys, year):
         for sigel in survey.selected_libraries:
             library = Survey.objects.get(sample_year=year, library__sigel=sigel).library
             libraries.append({
-                "sigel": library.sigel,
-                "name": library.name
+                "name": library.name,
+                "city": library.city,
+                "address": library.address
             })
 
     observations = {}

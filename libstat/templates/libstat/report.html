@@ -7,7 +7,7 @@
         .observation-group {
             margin-bottom: 50px;
         }
-        
+
         .report {
             width: 800px;
             margin: 0px auto;
@@ -79,7 +79,7 @@
         }
 
         .libraries {
-            border-left: 10px solid black;
+            border-left: 8px solid black;
             padding-left: 15px;
             margin-bottom: 30px;
         }
@@ -96,10 +96,10 @@
         <div class="report-title">Verksamhetsrapport för året {{ year }}</div>
 
         <div>
-            <div class="libraries-label">Bibliotek:</div>
+            <div class="libraries-label">Serviceställen:</div>
             <div class="libraries">
                 {% for library in libraries %}
-                    <div class="library">{{ library.name }} ({{ library.sigel }})</div>
+                    <div class="library">{{ library.name }} ({{ library.city }}, {{ library.address }})</div>
                 {% endfor %}
             </div>
         </div>
