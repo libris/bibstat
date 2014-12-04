@@ -502,9 +502,9 @@ class Survey(SurveyBase):
     def previous_years_survey(self):
         previous_year = self.sample_year - 1
         if previous_year <= 2013:
-            previous_surveys = Survey.objects.filter(sample_year=previous_year, library__name__icontains=self.library.name)
+            previous_surveys = Survey.objects.filter(_status=u"published", sample_year=previous_year, library__name__icontains=self.library.name)
         else:
-            previous_surveys = Survey.objects.filter(sample_year=previous_year, library__sigel=self.library.sigel)
+            previous_surveys = Survey.objects.filter(_status=u"published", sample_year=previous_year, library__sigel=self.library.sigel)
         if len(previous_surveys) == 0:
             return None
         return previous_surveys[0]

@@ -180,6 +180,7 @@ class SurveyForm(forms.Form):
             self.can_submit = False
 
 
+        previous_survey = survey.previous_years_survey()
         for cell in template.cells:
             variable_key = cell.variable_key
             if not variable_key in variables:
@@ -188,6 +189,8 @@ class SurveyForm(forms.Form):
 
             cell.disabled = observation.disabled
             cell.value_unknown = observation.value_unknown
+            if previous_survey:
+                cell.previous_value = survey.previous_years_value(observation.variable, previous_survey)
             if not observation:
                 survey.observations.append(SurveyObservation(variable=variables[variable_key]))
             self.fields[variable_key] = self._cell_to_input_field(cell, observation)
