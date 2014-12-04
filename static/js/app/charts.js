@@ -1,5 +1,4 @@
 define(['jquery', 'amcharts.theme'], function($, AmCharts) {
-    var hideLinks = function() { $('a[title="JavaScript charts"]').addClass("hidden"); };
     var makeChart = function(id, years, chart) {
         var graphs = $.map(years, function(year) {
             return {
@@ -42,8 +41,6 @@ define(['jquery', 'amcharts.theme'], function($, AmCharts) {
 
                 makeChart(container.attr("id"), years, chart)
             });
-
-            hideLinks();
         }
     }
 });
