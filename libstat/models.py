@@ -10,7 +10,7 @@ from django.conf import settings
 
 from datetime import datetime
 from mongoengine.context_managers import no_dereference
-from data.principals import get_library_types_with_same_principal
+from data.principals import get_library_types_with_same_principal, PRINCIPALS, principal_for_library_type
 from libstat.query_sets.survey import SurveyQuerySet
 from libstat.query_sets.variable import VariableQuerySet
 
@@ -601,6 +601,12 @@ class Survey(SurveyBase):
                 ).save()
 
         publishing_date = datetime.utcnow()
+
+        if not self.library.municipality_code:
+            return False
+
+        if not self.library.library_type in principal_for_library_type:
+            return False
 
         if not self.selected_libraries:
             return False
