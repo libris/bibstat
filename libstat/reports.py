@@ -34,11 +34,11 @@ def generate_report(template, sample_year, observations):
     for group in template.groups:
         report_group = [[group.title, sample_year - 1, sample_year]]
         for row in group.rows:
-            report_row = []
+            value = None
+            previous_value = None
             if isinstance(row, VariableRow):
-                report_row = [row.description,
-                              observations.get(row.variable_key, {}).get(sample_year - 1, None),
-                              observations.get(row.variable_key, {}).get(sample_year, None)]
+                previous_value = observations.get(row.variable_key, {}).get(sample_year - 1, None)
+                value = observations.get(row.variable_key, {}).get(sample_year, None)
             elif isinstance(row, KeyFigureRow):
                 values = [observations.get(key, {}).get(sample_year, None) for key in row.variable_keys]
                 values = [float(v) if v is not None else None for v in values]
@@ -49,8 +49,8 @@ def generate_report(template, sample_year, observations):
                         value = apply(row.computation, values)
                     except ZeroDivisionError:
                         value = None
-                else:
-                    value = None
+                    else:
+                        value = None
                 if None not in previous_values:
                     try:
                         previous_value = apply(row.computation, previous_values)
@@ -58,11 +58,12 @@ def generate_report(template, sample_year, observations):
                         previous_value = None
                 else:
                     previous_value = None
-                report_row = [row.description, previous_value, value]
-            report_group.append(report_row)
+            difference = None
+            if value and previous_value:
+                difference = ((float(value) / float(previous_value)) - 1) * 100
+            report_group.append([row.description, previous_value, value, difference])
         report.append(report_group)
     return report
-
 
 def get_report(surveys, year):
     def is_number(obj):
@@ -279,7 +280,7 @@ def report_template_2014():
                   VariableRow(variable_key=u"Bestand313"),
                   VariableRow(variable_key=u"Bestand399"),
                   KeyFigureRow(description=u"Andel e-bokstitlar av det totala elektroniska titelbeståndet",
-                               computation=(lambda a, b: a/b),
+                               computation=(lambda a, b: a / b),
                                variable_keys=[u"Bestand301", u"Bestand399"])
               ]),
 

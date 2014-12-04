@@ -117,9 +117,15 @@
                         {% else %}
                             <tr class="{% if forloop.counter|divisibleby:2 %}even{% else %}odd{% endif %}">
                                 <td class="observation-label">{{ row.0 }}</td>
-                                <td class="observation-previous-year">{{ row.1|floatformat|default:"-" }}</td>
-                                <td class="observation-sample-year">{{ row.2|floatformat|default:"-" }}</td>
-                                <td class="observation-difference">-</td>
+                                <td class="observation-previous-year">{{ row.1|floatformat:"0"|default:"-" }}</td>
+                                <td class="observation-sample-year">{{ row.2|floatformat:"0"|default:"-" }}</td>
+                                <td class="observation-difference">
+                                    {% if row.3 %}
+                                        {{ row.3|floatformat:"0"|default:"-" }}%
+                                    {% else %}
+                                        -
+                                    {% endif %}
+                                </td>
                             </tr>
                         {% endif %}
                     {% endfor %}
