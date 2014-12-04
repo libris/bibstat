@@ -113,36 +113,33 @@
         {% for group in measurements %}
             <div class="observation-group">
                 <table class="observation">
-                    {% for row in group %}
-                        {% if forloop.first %}
-                            <tr>
-                                <th class="observation-label">{{ row.0 }}</th>
-                                <th class="observation-previous-year">År {{ row.1 }}</th>
-                                <th class="observation-sample-year">År {{ row.2 }}</th>
-                                <th class="observation-difference">Förändring {{ row.1 }} - {{ row.2 }}</th>
-                                <th class="observation-difference-total">Andel av riket</th>
-                            </tr>
-                        {% else %}
-                            <tr class="{% if forloop.counter|divisibleby:2 %}even{% else %}odd{% endif %}">
-                                <td class="observation-label">{{ row.0 }}</td>
-                                <td class="observation-previous-year">{{ row.1|floatformat:"0"|default:"-" }}</td>
-                                <td class="observation-sample-year">{{ row.2|floatformat:"0"|default:"-" }}</td>
-                                <td class="observation-difference">
-                                    {% if row.3 %}
-                                        {{ row.3|floatformat:"0"|default:"-" }}%
-                                    {% else %}
-                                        -
-                                    {% endif %}
-                                </td>
-                                <td class="observation-difference-total">
-                                    {% if row.4 %}
-                                        {{ row.4|floatformat:"0"|default:"-" }}&permil;
-                                    {% else %}
-                                        -
-                                    {% endif %}
-                                </td>
-                            </tr>
-                        {% endif %}
+                    <tr>
+                        <th class="observation-label">{{ group.title }}</th>
+                        <th class="observation-previous-year">År {{ previous_year }}</th>
+                        <th class="observation-sample-year">År {{ year }}</th>
+                        <th class="observation-difference">Förändring {{ previous_year }} - {{ year }}</th>
+                        <th class="observation-difference-total">Andel av riket</th>
+                    </tr>
+                    {% for row in group|access:"rows" %}
+                        <tr class="{% if forloop.counter|divisibleby:2 %}even{% else %}odd{% endif %}">
+                            <td class="observation-label">{{ row|access:"label" }}</td>
+                            <td class="observation-previous-year">{{ row|access:group.years.0|floatformat:"0"|default:"-" }}</td>
+                            <td class="observation-sample-year">{{ row|access:group.years.1|floatformat:"0"|default:"-" }}</td>
+                            <td class="observation-difference">
+                                {% if row.diff %}
+                                    {{ row.diff|floatformat:"0"|default:"-" }}%
+                                {% else %}
+                                    -
+                                {% endif %}
+                            </td>
+                            <td class="observation-difference-total">
+                                {% if row.nation_diff %}
+                                    {{ row.nation_diff|floatformat:"0"|default:"-" }}&permil;
+                                {% else %}
+                                    -
+                                {% endif %}
+                            </td>
+                        </tr>
                     {% endfor %}
                 </table>
             </div>

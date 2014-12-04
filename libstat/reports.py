@@ -45,7 +45,9 @@ def generate_report(template, year, observations):
 
     report = []
     for group in template.groups:
-        report_group = [[group.title, year - 1, year]]
+        report_group = {"title": group.title,
+                        "years": [year - 1, year],
+                        "rows": []}
         for row in group.rows:
             value = None
             previous_value = None
@@ -58,11 +60,13 @@ def generate_report(template, year, observations):
             elif isinstance(row, KeyFigureRow):
                 value = row.compute(values_for(observations, row.variable_keys, year))
                 previous_value = row.compute(values_for(observations, row.variable_keys, year - 1))
-            report_group.append([row.description,
-                                 previous_value,
-                                 value,
-                                 ((value / previous_value) - 1) * 100 if value and previous_value else None,
-                                 (value / total) * 1000 if value and total else None])
+            diff = ((value / previous_value) - 1) * 100 if value and previous_value else None
+            nation_diff = (value / total) * 1000 if value and total else None
+            report_group["rows"].append({"label": row.description,
+                                         (year - 1): previous_value,
+                                         year: value,
+                                         "diff": diff,
+                                         "nation_diff": nation_diff})
         report.append(report_group)
     return report
 

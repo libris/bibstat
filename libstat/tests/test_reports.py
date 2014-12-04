@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+from pprint import pprint
 
 from libstat.reports import generate_report, ReportTemplate, Group, VariableRow, KeyFigureRow
 from libstat.tests import MongoTestCase
@@ -43,18 +44,66 @@ class TestReports(MongoTestCase):
 
         report = generate_report(template, 2014, observations)
         expected_report = [
-            [
-                ["some_title1", 2013, 2014],
-                ["some_description1", 5.0, 7.0, ((7.0 / 5.0) - 1) * 100, (7.0 / 31.0) * 1000]
-            ],
-            [
-                ["some_title2", 2013, 2014],
-                ["some_description2", 11.0, 13.0, ((13.0 / 11.0) - 1) * 100, (13.0 / 47.0) * 1000],
-                ["some_description3", (5.0 / 11.0) / 15, (7.0 / 13.0) / 15,
-                 (((7.0 / 13.0) / 15) / ((5.0 / 11.0) / 15) - 1) * 100, None],
-                ["some_description4", None, None, None, None],
-                ["some_description5", None, 3.0, None, None],
-                ["some_description6", None, None, None, None]
-            ]
+            {
+                "title": "some_title1",
+                "years": [2013, 2014],
+                "rows": [
+                    {
+                        "label": "some_description1",
+                        2013: 5.0,
+                        2014: 7.0,
+                        "diff": ((7.0 / 5.0) - 1) * 100,
+                        "nation_diff": (7.0 / 31.0) * 1000
+                    }
+                ]
+            },
+            {
+                "title": "some_title2",
+                "years": [2013, 2014],
+                "rows": [
+                    {
+                        "label": "some_description2",
+                        2013: 11.0,
+                        2014: 13.0,
+                        "diff": ((13.0 / 11.0) - 1) * 100,
+                        "nation_diff": (13.0 / 47.0) * 1000
+                    },
+                    {
+                        "label": "some_description3",
+                        2013: (5.0 / 11.0) / 15,
+                        2014: (7.0 / 13.0) / 15,
+                        "diff": (((7.0 / 13.0) / 15) / ((5.0 / 11.0) / 15) - 1) * 100,
+                        "nation_diff": None
+                    },
+                    {
+                        "label": "some_description4",
+                        2013: None,
+                        2014: None,
+                        "diff": None,
+                        "nation_diff": None
+                    },
+                    {
+                        "label": "some_description5",
+                        2013: None,
+                        2014: 3.0,
+                        "diff": None,
+                        "nation_diff": None
+                    },
+                    {
+                        "label": "some_description6",
+                        2013: None,
+                        2014: None,
+                        "diff": None,
+                        "nation_diff": None
+                    }
+                ]
+            }
         ]
+        
         self.assertEqual(report, expected_report)
+
+
+
+
+
+
