@@ -143,6 +143,12 @@
                     {% endfor %}
                 </table>
             </div>
+
+            <div id="chart-{{ forloop.counter }}" class="chart" style="width: 100%; height: 500px; font-size: 11px;"
+                    data-years="{{ group.years }}"
+                    data-chart="{{ group.rows|as_json }}">
+
+            </div>
         {% endfor %}
 
         <div id="chart-unique" class="chart" style="width: 100%; height: 500px; font-size: 11px;"

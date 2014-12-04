@@ -1,5 +1,6 @@
 # -*- coding: UTF-8 -*-
 from datetime import datetime
+import json
 
 import pytz
 import re
@@ -55,6 +56,8 @@ def split_into_number_and_body(description):
 def municipality_name(municipality_code):
     return municipalities.get(municipality_code, None)
 
+def as_json(o):
+    return json.dumps(o)
 
 register.filter('utc_tz', utc_tz)
 register.filter('tg_label', tg_label)
@@ -62,4 +65,5 @@ register.filter('srs_label', srs_label)
 register.filter('access', access)
 register.filter('municipality_name', municipality_name)
 register.filter('split_into_number_and_body', split_into_number_and_body)
+register.filter('as_json', as_json)
 register.simple_tag(dispatches_count)
