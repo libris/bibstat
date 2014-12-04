@@ -5,6 +5,20 @@
         baseUrl: '/static/js/',
         urlArgs: "bust=" + (new Date()).getTime(),
         shim: {
+            'amcharts.serial': {
+                deps: ['amcharts'],
+                exports: 'AmCharts',
+                init: function() {
+                    AmCharts.isReady = true;
+                }
+            },
+            'amcharts.theme': {
+                deps: ['amcharts.serial'],
+                exports: 'AmCharts',
+                init: function() {
+                    AmCharts.isReady = true;
+                }
+            },
             'bootstrap': ['jquery'],
             'bootstrap.datepicker': ['bootstrap'],
             'bootstrap.tokenfield': ['bootstrap'],
@@ -18,6 +32,7 @@
         paths: {
 
             /* App */
+            'charts': ['app/charts'],
             'dispatches': ['app/dispatches'],
             'libraries': ['app/libraries'],
             'login': ['app/login'],
@@ -30,6 +45,9 @@
             'variables': ['app/variables'],
 
             /* Plugins */
+            'amcharts': ['plugins/amcharts/amcharts'],
+            'amcharts.serial': ['plugins/amcharts/serial'],
+            'amcharts.theme': ['plugins/amcharts/themes/light'],
             'bootstrap': ['plugins/bootstrap/3.2.0/js/bootstrap'],
             'bootstrap.datepicker': ['plugins/bootstrap-datepicker/1.3.0/bootstrap-datepicker'],
             'bootstrap.tokenfield': ['plugins/bootstrap-tokenfield/0.12.0/bootstrap-tokenfield'],

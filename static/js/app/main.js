@@ -1,5 +1,6 @@
-define(['dispatches', 'libraries', 'login', 'reports', 'survey', 'table', 'variables'],
-    function(dispatches, libraries, login, reports, survey, table, variables) {
+define(['charts', 'dispatches', 'libraries', 'login', 'reports', 'survey', 'table', 'variables'],
+    function(charts, dispatches, libraries, login, reports, survey, table, variables) {
+        charts.init();
         dispatches.init();
         libraries.init();
         login.init();
