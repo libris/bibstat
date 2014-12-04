@@ -117,12 +117,14 @@ def _surveys_redirect(request):
         method = request.GET
     elif request.method == "POST":
         method = request.POST
+
     target_group = method.get("target_group", "")
     sample_year = method.get("sample_year", "")
     status = method.get("status", "")
+    free_text = method.get("free_text", "")
     return HttpResponseRedirect(u"{}{}".format(
         reverse("surveys"),
-        u"?action=list&target_group={}&sample_year={}&status={}".format(target_group, sample_year, status)))
+        u"?action=list&target_group={}&sample_year={}&status={}&free_text={}".format(target_group, sample_year, status, free_text)))
 
 
 def _surveys_as_excel(survey_ids):
