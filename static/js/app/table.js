@@ -24,7 +24,7 @@ define(['jquery', 'jquery.tablesorter'], function($) {
                 });
             });
 
-            $(".table .select-all").change(function () {
+            $(".select-all").change(function () {
                 var checkboxes = $(".select-one");
                 if ($(this).is(":checked")) {
                     checkboxes.prop("checked", "checked");
