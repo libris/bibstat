@@ -329,6 +329,7 @@ label.sub-label {
 
 .panel-report {
     margin-bottom: 10px;
+    display: inline-block;
 }
 
 a[title="JavaScript charts"] {
