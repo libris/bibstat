@@ -34,6 +34,7 @@ class VariableRow():
             variables = Variable.objects.filter(key=self.variable_key)
             self.description = variables[0].question_part if len(variables) == 1 else None
 
+
 class KeyFigureRow():
     def compute(self, values):
         if None in values:
@@ -89,6 +90,14 @@ def _get_observations_from(template, surveys, year):
     def is_number(obj):
         return isinstance(obj, (int, long, float, complex))
 
+    survey_ids = []
+    previous_survey_ids = []
+    for survey in surveys:
+        survey_ids.append(survey.pk)
+        previous_survey = survey.previous_years_survey()
+        if previous_survey:
+            previous_survey_ids.append(previous_survey.pk)
+
     observations = {}
     for key in template.all_variable_keys:
         variables = Variable.objects.filter(key=key)
@@ -107,15 +116,15 @@ def _get_observations_from(template, surveys, year):
                                                    variable__in=variables).sum("value"))
         }
 
-        for survey in surveys:
-            this_years_data = OpenData.objects.filter(source_survey=survey.pk, variable__in=variables, is_active=True)
-            if len(this_years_data) == 1 and is_number(this_years_data[0].value):
-                observations[key][year] += this_years_data[0].value
+        value = OpenData.objects.filter(source_survey__in=survey_ids, variable__in=variables,
+                                        is_active=True).sum("value")
+        if is_number(value):
+            observations[key][year] = value
 
-            previous_years_data = OpenData.objects.filter(source_survey=survey.previous_years_survey(),
-                                                          variable__in=variables, is_active=True)
-            if len(previous_years_data) == 1 and is_number(previous_years_data[0].value):
-                observations[key][year - 1] += previous_years_data[0].value
+        previous_value = OpenData.objects.filter(source_survey__in=previous_survey_ids, variable__in=variables,
+                                                 is_active=True).sum("value")
+        if is_number(previous_value):
+            observations[key][year - 1] = previous_value
 
     return observations
 
