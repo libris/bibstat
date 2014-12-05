@@ -395,7 +395,10 @@ class SurveyBase(Document):
             self._status = status
 
     def get_observation(self, key, variable_id=None, backtrack_replaced_variables=False):
-        variable = Variable.objects.get(id=variable_id) if variable_id else Variable.objects.get(key=key)
+        variables = Variable.objects.filter(id=variable_id) if variable_id else Variable.objects.filter(key=key)
+        if len(variables) == 0:
+            return None
+        variable = variables[0]
 
         for observation in self.observations:
             if observation.variable == variable:

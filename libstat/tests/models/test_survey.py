@@ -91,6 +91,12 @@ class TestSurveyModel(MongoTestCase):
         ])
         self.assertEquals(survey.get_observation("key2"), observation2)
 
+    def test_returns_none_if_variable_does_not_exist(self):
+        survey = self._dummy_survey()
+
+        self.assertEqual(survey.get_observation(key="does_not_exist"), None)
+
+
     def test_should_get_observation_for_replaced_variable_if_wanted(self):
         variable1 = self._dummy_variable(key="key1")
         variable2 = self._dummy_variable(key="key2", replaces=[variable1])
