@@ -227,9 +227,12 @@ def surveys_statuses(request):
                        u"samma bibliotek. Alternativt saknar bibliotekten kommunkod eller huvudman.").format(
                 message, len(survey_response_ids) - num_successful_published)
     else:
-        for survey in Survey.objects.filter(id__in=survey_response_ids):
+        surveys = Survey.objects.filter(id__in=survey_response_ids)
+        for survey in surveys.filter(_status="published"):
             survey.status = status
             survey.save()
+
+        surveys.filter(_status__ne="published").update(set___status=status)
         message = u"Ändrade status på {} stycken enkäter.".format(len(survey_response_ids))
 
     request.session["message"] = message
