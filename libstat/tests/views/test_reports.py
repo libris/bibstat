@@ -14,7 +14,7 @@ class ReportSelectionTest(MongoTestCase):
         self.assertEqual(response.status_code, 200)
 
     def test_can_filter_reports_by_sample_year(self):
-        self._dummy_survey(sample_year=2014, observations=[self._dummy_observation()]).save()
+        self._dummy_survey(sample_year=2014, observations=[self._dummy_observation()]).publish()
 
         response = self._get("reports", params={
             "sample_year": "2014",

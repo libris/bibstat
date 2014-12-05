@@ -758,6 +758,9 @@ class TestPreviousYearsSurvey(MongoTestCase):
         this_years_survey = self._dummy_survey(sample_year=2014,
                                                library=self._dummy_library(name=u"Allingsås bibliotek"))
 
+        previous_years_survey.publish()
+        this_years_survey.publish()
+
         self.assertEqual(previous_years_survey, this_years_survey.previous_years_survey())
 
     def test_does_not_find_survey_from_previous_year_if_not_identical_names_ignoring_case_before_2014(self):
@@ -765,6 +768,8 @@ class TestPreviousYearsSurvey(MongoTestCase):
                            library=self._dummy_library(name=u"BOTKYRKA BIBLIOTEK"))
         this_years_survey = self._dummy_survey(sample_year=2014,
                                                library=self._dummy_library(name=u"Allingsås bibliotek"))
+
+        this_years_survey.publish()
 
         self.assertEqual(None, this_years_survey.previous_years_survey())
 
@@ -775,8 +780,20 @@ class TestPreviousYearsSurvey(MongoTestCase):
         this_years_survey = self._dummy_survey(sample_year=2015,
                                                library=self._dummy_library(sigel="lib1",
                                                                            name="new_name"))
+        previous_years_survey.publish()
+        this_years_survey.publish()
 
         self.assertEqual(this_years_survey.previous_years_survey(), previous_years_survey)
+
+    def test_does_not_find_survey_from_previous_year_if_not_published(self):
+        self._dummy_survey(sample_year=2014,
+                           library=self._dummy_library(sigel="lib1",
+                                                       name="previous_name"))
+        this_years_survey = self._dummy_survey(sample_year=2015,
+                                               library=self._dummy_library(sigel="lib1",
+                                                                           name="new_name"))
+
+        self.assertEqual(this_years_survey.previous_years_survey(), None)
 
     def test_does_not_find_survey_from_previous_year_if_not_identical_sigels_after_2014(self):
         self._dummy_survey(sample_year=2014,
@@ -785,6 +802,7 @@ class TestPreviousYearsSurvey(MongoTestCase):
         this_years_survey = self._dummy_survey(sample_year=2015,
                                                library=self._dummy_library(sigel="lib2",
                                                                            name=u"Allingsås bibliotek"))
+        this_years_survey.publish()
 
         self.assertEqual(None, this_years_survey.previous_years_survey())
 
@@ -792,8 +810,9 @@ class TestPreviousYearsSurvey(MongoTestCase):
         variable = self._dummy_variable()
         library = self._dummy_library()
         self._dummy_survey(sample_year=2014, library=library, observations=[
-            self._dummy_observation(variable=variable, value="old_value")])
+            self._dummy_observation(variable=variable, value="old_value")]).publish()
         this_years_survey = self._dummy_survey(sample_year=2015, library=library)
+        this_years_survey.publish()
 
         self.assertEqual(this_years_survey.previous_years_value(variable), "old_value")
 
@@ -811,8 +830,10 @@ class TestPreviousYearsSurvey(MongoTestCase):
         library = self._dummy_library()
 
         self._dummy_survey(sample_year=2014, library=library, observations=[
-            self._dummy_observation(variable=old_variable, value="old_value")])
+            self._dummy_observation(variable=old_variable, value="old_value")]).publish()
         this_years_survey = self._dummy_survey(sample_year=2015, library=library)
+
+        this_years_survey.publish()
 
         self.assertEqual(this_years_survey.previous_years_value(new_variable), "old_value")
 

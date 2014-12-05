@@ -39,7 +39,9 @@ def srs_label(key):
 
 
 def access(value, arg):
-    return value.get(arg, None)
+    if arg in value:
+        return value[arg]
+    return None
 
 
 def dispatches_count():
