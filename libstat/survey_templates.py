@@ -162,7 +162,11 @@ _survey_template_2014 = SurveyTemplate(
                         Row(cells=[Cell(variable_key=u"Databas06", types=["integer"])]),
                         Row(cells=[Cell(variable_key=u"Databas07", types=["integer"])]),
                         Row(cells=[Cell(variable_key=u"Databas08", types=["integer"])]),
-                        Row(cells=[Cell(variable_key=u"Databas09", types=["integer"])])]),
+                        Row(cells=[Cell(variable_key=u"Databas09", types=["integer"])]),
+                        Row(cells=[Cell(variable_key=u"Databas99", types=["integer"],
+                                        sum_of=[u"Databas01",u"Databas02",u"Databas03",
+                                                u"Databas04",u"Databas05",u"Databas06",
+                                                u"Databas07",u"Databas08",u"Databas09"])])]),
                     Group(rows=[
                         Row(cells=[Cell(variable_key=u"Databaskomm", types=["comment"])])])]),
         Section(title=u"Frågor om utlån, omlån och användning",
@@ -313,8 +317,9 @@ _survey_template_2014 = SurveyTemplate(
                     Group(rows=[
                         Row(cells=[Cell(variable_key=u"Aktiv01", types=["integer"])]),
                         Row(cells=[Cell(variable_key=u"Aktiv02", types=["integer"])]),
+                        Row(cells=[Cell(variable_key=u"Aktiv04", types=["integer"])]),
                         Row(cells=[Cell(variable_key=u"Aktiv99", types=["integer"],
-                                        sum_of=[u"Aktiv01", u"Aktiv02"])]),
+                                        sum_of=[u"Aktiv01", u"Aktiv02", u"Aktiv04"])]),
                         Row(cells=[Cell(variable_key=u"Aktiv03", types=["integer"])])])]),
         Section(title=u"Frågor om resurser och lokaler",
                 groups=[
