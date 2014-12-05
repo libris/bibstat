@@ -289,7 +289,6 @@ class Library(EmbeddedDocument):
         self.sigel = sigel if sigel else self._random_sigel()
 
 
-
 class SurveyObservation(EmbeddedDocument):
     variable = ReferenceField(Variable, required=True)
     value = DynamicField()
@@ -386,7 +385,7 @@ class SurveyBase(Document):
 
     @status.setter
     def status(self, status):
-        if not status in [s[0] for s in Survey.STATUSES]:
+        if status not in [s[0] for s in Survey.STATUSES]:
             raise KeyError(u"Invalid status '{}'".format(status))
         elif status == "published":
             self.publish()
@@ -395,19 +394,19 @@ class SurveyBase(Document):
                 self.unpublish()
             self._status = status
 
-    def get_observation(self, key, key_id=None):
-        if key_id:
-            for observation in self.observations:
-                if observation.variable == key_id:
-                    return observation
+    def get_observation(self, key, variable_id=None, backtrack_replaced_variables=False):
+        variable = Variable.objects.get(id=variable_id) if variable_id else Variable.objects.get(key=key)
 
-            return None
-        else:
-            hits = [obs for obs in self.observations if obs.variable.key == key]
-            return hits[0] if len(hits) > 0 else None
+        for observation in self.observations:
+            if observation.variable == variable:
+                return observation
 
-    def observation_by_key(self, key):
-        return self.get_observation(key)
+        if backtrack_replaced_variables and len(variable.replaces) == 1:
+            replaced_variable = variable.replaces[0]
+            return self.get_observation(key=replaced_variable.key, variable_id=replaced_variable.id,
+                                        backtrack_replaced_variables=True)
+
+        return None
 
     @property
     def is_published(self):
@@ -502,9 +501,11 @@ class Survey(SurveyBase):
     def previous_years_survey(self):
         previous_year = self.sample_year - 1
         if previous_year <= 2013:
-            previous_surveys = Survey.objects.filter(_status=u"published", sample_year=previous_year, library__name__icontains=self.library.name)
+            previous_surveys = Survey.objects.filter(_status=u"published", sample_year=previous_year,
+                                                     library__name__icontains=self.library.name)
         else:
-            previous_surveys = Survey.objects.filter(_status=u"published", sample_year=previous_year, library__sigel=self.library.sigel)
+            previous_surveys = Survey.objects.filter(_status=u"published", sample_year=previous_year,
+                                                     library__sigel=self.library.sigel)
         if len(previous_surveys) == 0:
             return None
         return previous_surveys[0]

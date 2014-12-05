@@ -89,7 +89,48 @@ class TestSurveyModel(MongoTestCase):
             observation2,
             observation3
         ])
-        self.assertEquals(survey.observation_by_key("key2"), observation2)
+        self.assertEquals(survey.get_observation("key2"), observation2)
+
+    def test_should_get_observation_for_replaced_variable_if_wanted(self):
+        variable1 = self._dummy_variable(key="key1")
+        variable2 = self._dummy_variable(key="key2", replaces=[variable1])
+        variable3 = self._dummy_variable(key="key3", replaces=[variable2])
+        survey = self._dummy_survey(observations=[
+            self._dummy_observation(variable=variable1, value="some_value")
+        ])
+
+        self.assertEqual(survey.get_observation("key3", backtrack_replaced_variables=True).value, "some_value")
+
+    def test_should_not_get_observation_for_replaced_variable_if_not_wanted(self):
+        variable1 = self._dummy_variable(key="key1")
+        variable2 = self._dummy_variable(key="key2", replaces=[variable1])
+        variable3 = self._dummy_variable(key="key3", replaces=[variable2])
+        survey = self._dummy_survey(observations=[
+            self._dummy_observation(variable=variable1, value="some_value")
+        ])
+
+        self.assertEqual(survey.get_observation("key3"), None)
+
+    def test_should_not_get_observation_for_replaced_variable_if_replaced_by_multiple_variables(self):
+        variable1 = self._dummy_variable(key="key1")
+        variable2 = self._dummy_variable(key="key2")
+        variable3 = self._dummy_variable(key="key3", replaces=[variable1, variable2])
+        survey = self._dummy_survey(observations=[
+            self._dummy_observation(variable=variable1, value="some_value")
+        ])
+
+        self.assertEqual(survey.get_observation("key3"), None)
+
+    def test_should_get_most_recent_observation_for_replaced_variable(self):
+        variable1 = self._dummy_variable(key="key1")
+        variable2 = self._dummy_variable(key="key2", replaces=[variable1])
+        variable3 = self._dummy_variable(key="key3", replaces=[variable2])
+        survey = self._dummy_survey(observations=[
+            self._dummy_observation(variable=variable1, value="some_value1"),
+            self._dummy_observation(variable=variable2, value="some_value2")
+        ])
+
+        self.assertEqual(survey.get_observation("key3", backtrack_replaced_variables=True).value, "some_value2")
 
     def test_should_store_version_when_updating_existing_object(self):
         library = self._dummy_library(name="lib1_old_name", city="lib1_old_city", sigel="lib1_sigel")
@@ -129,7 +170,7 @@ class TestSurveyModel(MongoTestCase):
         ])
         self.assertEquals(len(SurveyVersion.objects.all()), 0)
 
-        survey.observation_by_key("key1").value = "new_value"
+        survey.get_observation("key1").value = "new_value"
         survey.save()
 
         self.assertEquals(len(SurveyVersion.objects.all()), 1)
@@ -306,7 +347,7 @@ class TestSurveyPublish(MongoTestCase):
         self.assertEquals(OpenData.objects.filter(variable=variable2)[0].date_modified,
                           OpenData.objects.filter(variable=variable2)[0].date_created)
 
-        survey.observation_by_key("key1").value = "new_value1"
+        survey.get_observation("key1").value = "new_value1"
         survey.publish()
 
         self.assertEquals(OpenData.objects.filter(variable=variable2)[0].date_modified,
@@ -322,7 +363,7 @@ class TestSurveyPublish(MongoTestCase):
 
         self.assertEquals(OpenData.objects.filter(variable=variable2)[0].value, "old_value2")
 
-        survey.observation_by_key("key1").value = "new_value1"
+        survey.get_observation("key1").value = "new_value1"
         survey.publish()
 
         self.assertEquals(OpenData.objects.filter(variable=variable2)[0].value, "old_value2")
