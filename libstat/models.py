@@ -394,11 +394,12 @@ class SurveyBase(Document):
                 self.unpublish()
             self._status = status
 
-    def get_observation(self, key, variable_id=None, backtrack_replaced_variables=False):
-        variables = Variable.objects.filter(id=variable_id) if variable_id else Variable.objects.filter(key=key)
-        if len(variables) == 0:
-            return None
-        variable = variables[0]
+    def get_observation(self, key, variable=None, variable_id=None, backtrack_replaced_variables=False):
+        if variable is None:
+            variables = Variable.objects.filter(id=variable_id) if variable_id else Variable.objects.filter(key=key)
+            if len(variables) == 0:
+                return None
+            variable = variables[0]
 
         for observation in self.observations:
             if observation.variable == variable:
@@ -688,7 +689,13 @@ class OpenData(Document):
 
     meta = {
         'collection': 'libstat_open_data',
-        'ordering': ['-date_modified']
+        'ordering': ['-date_modified'],
+        'indexes': [
+            "is_active",
+            "source_survey",
+            "variable",
+            "sample_year"
+        ]
     }
 
     def date_created_str(self):

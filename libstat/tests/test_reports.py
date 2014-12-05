@@ -137,19 +137,28 @@ class TestReports(MongoTestCase):
         survey3.publish()
         survey4.publish()
 
-        observations = _get_observations_from([survey1, survey2], 2015)
+        template = ReportTemplate(groups=[
+            Group(rows=[VariableRow(variable_key="key1")]),
+            Group(rows=[VariableRow(variable_key="key2"),
+                        KeyFigureRow(variable_keys=["key3", "key2"]),
+                        VariableRow(variable_key="does_not_exist1"),
+                        KeyFigureRow(variable_keys=["does_not_exist2", "does_not_exist3"]),
+            ])
+        ])
+
+        observations = _get_observations_from(template, [survey1, survey2], 2015)
         expected_observations = {
-            u"key1": {
+            "key1": {
                 2014: 7.0,
                 2015: (1.0 + 3.0),
                 "total": (1.0 + 3.0)
             },
-            u"key2": {
+            "key2": {
                 2014: 11.0,
                 2015: 2.0,
                 "total": (2.0 + 13.0)
             },
-            u"key3": {
+            "key3": {
                 2014: 0.0,
                 2015: 5.0,
                 "total": (5.0 + 17.0)

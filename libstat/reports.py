@@ -1,26 +1,38 @@
 # -*- coding: utf-8 -*-
-from libstat.models import Survey, Variable
+from pprint import pprint
+from libstat.models import Survey, Variable, OpenData
 
 
 class ReportTemplate():
-    def __init__(self, groups):
-        self.groups = groups
+    @property
+    def all_variable_keys(self):
+        variable_keys = []
+        for group in self.groups:
+            for row in group.rows:
+                if isinstance(row, VariableRow):
+                    variable_keys.append(row.variable_key)
+                elif isinstance(row, KeyFigureRow):
+                    for variable_key in row.variable_keys:
+                        variable_keys.append(variable_key)
+        return variable_keys
+
+    def __init__(self, *args, **kwargs):
+        self.groups = kwargs.pop("groups", None)
 
 
 class Group():
-    def __init__(self, title, rows):
-        self.title = title
-        self.rows = rows
+    def __init__(self, *args, **kwargs):
+        self.title = kwargs.pop("title", None)
+        self.rows = kwargs.pop("rows", None)
 
 
 class VariableRow():
-    def __init__(self, variable_key, description=None):
-        if description is not None:
-            self.description = description
-        else:
-            self.description = Variable.objects.get(key=variable_key).question_part
-        self.variable_key = variable_key
-
+    def __init__(self, *args, **kwargs):
+        self.variable_key = kwargs.pop("variable_key", None)
+        self.description = kwargs.pop("description", None)
+        if self.description is None:
+            variables = Variable.objects.filter(key=self.variable_key)
+            self.description = variables[0].question_part if len(variables) == 1 else None
 
 class KeyFigureRow():
     def compute(self, values):
@@ -31,17 +43,15 @@ class KeyFigureRow():
         except ZeroDivisionError:
             return None
 
-    def __init__(self, description, computation, variable_keys):
-        self.description = description
-        self.computation = computation
-        self.variable_keys = variable_keys
+    def __init__(self, *args, **kwargs):
+        self.description = kwargs.pop("description", None)
+        self.computation = kwargs.pop("computation", None)
+        self.variable_keys = kwargs.pop("variable_keys", None)
 
 
 def generate_report(template, year, observations):
     def values_for(observations, variable_keys, year):
-        values = [observations.get(key, {}).get(year, None) for key in variable_keys]
-        values = [float(v) if v is not None else None for v in values]
-        return values
+        return [float(observations.get(key, {}).get(year, 0)) for key in variable_keys]
 
     report = []
     for group in template.groups:
@@ -75,52 +85,37 @@ def generate_report(template, year, observations):
     return report
 
 
-def _get_observations_from(surveys, year):
+def _get_observations_from(template, surveys, year):
     def is_number(obj):
         return isinstance(obj, (int, long, float, complex))
 
-    this_year = year
-    previous_year = year - 1
-
-    def add_value(observations, variable_key, year, value):
-        if not is_number(value):
-            return
-
-        if variable_key not in observations:
-            observations[variable_key] = {
-                this_year: 0.0,
-                previous_year: 0.0,
-                "total": 0.0
-            }
-        observations[variable_key][year] += float(value)
-
-    previous_year = year - 1
     observations = {}
-    for survey in surveys:
-        previous_survey = survey.previous_years_survey()
-        for observation in survey.observations:
-            value = observation.value
-            previous_value = survey.previous_years_value(observation.variable, previous_years_survey=previous_survey)
+    for key in template.all_variable_keys:
+        variables = Variable.objects.filter(key=key)
+        if len(variables) != 1:
+            continue
+        variable = variables[0]
 
-            variable_key = observation.variable.key
-            add_value(observations, variable_key, year, value)
-            add_value(observations, variable_key, previous_year, previous_value)
+        variables = [variable]
+        if len(variable.replaces) == 1:
+            variables.append(variable.replaces[0])
 
-    for survey in Survey.objects.filter(sample_year=year, _status="published"):
-        for observation in survey.observations:
-            value = observation.value
-            if not is_number(value):
-                continue
+        observations[key] = {
+            year: 0.0,
+            (year - 1): 0.0,
+            "total": float(OpenData.objects.filter(sample_year=year, is_active=True,
+                                                   variable__in=variables).sum("value"))
+        }
 
-            variable_key = observation.variable.key
-            if variable_key not in observations:
-                observations[variable_key] = {
-                    year: 0.0,
-                    previous_year: 0.0,
-                    "total": 0.0
-                }
+        for survey in surveys:
+            this_years_data = OpenData.objects.filter(source_survey=survey.pk, variable__in=variables, is_active=True)
+            if len(this_years_data) == 1 and is_number(this_years_data[0].value):
+                observations[key][year] += this_years_data[0].value
 
-            observations[variable_key]["total"] += float(value)
+            previous_years_data = OpenData.objects.filter(source_survey=survey.previous_years_survey(),
+                                                          variable__in=variables, is_active=True)
+            if len(previous_years_data) == 1 and is_number(previous_years_data[0].value):
+                observations[key][year - 1] += previous_years_data[0].value
 
     return observations
 
@@ -133,7 +128,7 @@ def get_report(surveys, year):
 
     template = report_template_2014()
 
-    observations = _get_observations_from(surveys, year)
+    observations = _get_observations_from(template, surveys, year)
 
     report = {
         "year": year,
