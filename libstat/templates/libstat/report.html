@@ -124,21 +124,21 @@
                         <tr class="{% if forloop.counter|divisibleby:2 %}even{% else %}odd{% endif %}">
                             <td class="observation-label">{{ row|access:"label" }}</td>
                             <td class="observation-previous-year">
-                                {% if row|access:group.years.0 >= 1 %}
-                                    {{ row|access:group.years.0|floatformat:"0" }}
+                                {% if row|access:group.years.0 %}
+                                    {{ row|access:group.years.0|floatformat }}
                                 {% else %}
                                     -
                                 {% endif %}
                             </td>
                             <td class="observation-sample-year">
-                                {% if row|access:group.years.1 >= 1 %}
-                                    {{ row|access:group.years.1|floatformat:"0" }}
+                                {% if row|access:group.years.1 %}
+                                    {{ row|access:group.years.1|floatformat }}
                                 {% else %}
                                     -
                                 {% endif %}
                             </td>
                             <td class="observation-difference">
-                                {% if row.diff >= 1 %}
+                                {% if row.diff %}
                                     {{ row.diff|floatformat:"0"|default:"-" }}%
                                 {% else %}
                                     -
