@@ -574,6 +574,38 @@ class Survey(SurveyBase):
         else:
             document.date_modified = document.date_created
 
+    def can_publish(self):
+        if not self.library.municipality_code:
+            return False
+
+        if not self.library.library_type in principal_for_library_type:
+            return False
+
+        if not self.selected_libraries:
+            return False
+
+        if self.has_conflicts():
+            return False
+
+        return True
+
+    def reasons_for_not_able_to_publish(self):
+        reasons = []
+        if not self.library.municipality_code:
+            reasons.append("Kommunkod saknas")
+
+        if not self.library.library_type in principal_for_library_type:
+            reasons.append("Huvudman saknas")
+
+        if not self.selected_libraries:
+            reasons.append("Inga bibliotek har valts")
+
+        if self.has_conflicts():
+            conflicting_surveys = ", ".join([survey.library.sigel for survey in self.get_conflicting_surveys()])
+            reasons.append("Konflikt i rapporteringen (med {})".format(conflicting_surveys))
+
+        return ", ".join(reasons)
+
     def publish(self):
         def update_existing_open_data(self, publishing_date):
             for observation in self.observations:
@@ -608,16 +640,7 @@ class Survey(SurveyBase):
 
         publishing_date = datetime.utcnow()
 
-        if not self.library.municipality_code:
-            return False
-
-        if not self.library.library_type in principal_for_library_type:
-            return False
-
-        if not self.selected_libraries:
-            return False
-
-        if self.has_conflicts():
+        if not self.can_publish():
             return False
 
         update_existing_open_data(self, publishing_date)
