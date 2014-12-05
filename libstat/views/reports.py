@@ -36,12 +36,11 @@ def reports(request):
         municipality_codes += list(get_counties(municipality_codes))
         municipality_codes.sort()
 
-        def filter_municipality_code(surveys, municipality_code):
+        def filter_municipality_code(surveys):
             if municipality_code.endswith(u"00"):  # County codes end with double zero
                 return surveys.filter(library__municipality_code__startswith=municipality_code[0:2])
             else:
                 return surveys.filter(library__municipality_code=municipality_code)
-
 
         principal = request.GET.get("principal", "")
         principals = list(set(
@@ -50,6 +49,15 @@ def reports(request):
         principals = [(name_for_principal[p], p) for p in principals]
         principals.sort()
 
+        def filter_with_parameters(surveys):
+            surveys = surveys.filter(sample_year=sample_year)
+            if municipality_code:
+                surveys = filter_municipality_code(surveys)
+            if principal:
+                surveys = surveys.filter(library__library_type__in=library_types_for_principal[principal])
+
+            return surveys
+
         message = None
         filtered_surveys = []
         library_name_for_sigel = None
@@ -57,14 +65,7 @@ def reports(request):
 
         if submit:
             if sample_year:
-                filtered_surveys = surveys.filter(sample_year=sample_year)
-                if municipality_code:
-                    filtered_surveys = filter_municipality_code(filtered_surveys, municipality_code)
-                if principal:
-                    filtered_surveys = filtered_surveys.filter(
-                        library__library_type__in=library_types_for_principal[principal])
-
-                filtered_surveys = list(filtered_surveys.exclude("observations"))
+                filtered_surveys = list(filter_with_parameters(surveys).exclude("observations"))
                 if len(filtered_surveys) > 0:
                     sigels = []
                     for survey in filtered_surveys:
@@ -72,13 +73,7 @@ def reports(request):
                             sigels.append(sigel)
 
                     library_name_for_sigel = {}
-                    surveys_with_sigels = Survey.objects.filter(sample_year=sample_year)
-                    if municipality_code:
-                        surveys_with_sigels = filter_municipality_code(surveys_with_sigels, municipality_code)
-                    if principal:
-                        surveys_with_sigels = surveys_with_sigels.filter(
-                            library__library_type__in=library_types_for_principal[principal])
-
+                    surveys_with_sigels = Survey.objects.filter(library__sigel__in=sigels)
                     for survey in surveys_with_sigels.only("library.sigel", "library.name"):
                         library_name_for_sigel[survey.library.sigel] = survey.library.name
                 else:
