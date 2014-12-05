@@ -141,6 +141,7 @@ def _surveys_as_excel(survey_ids):
                   "Stad",
                   "Adress",
                   "Huvudman",
+                  "Kan publiceras?"
               ] + variable_keys
 
     workbook = Workbook(encoding="utf-8")
@@ -159,7 +160,7 @@ def _surveys_as_excel(survey_ids):
             survey.library.address,
             principal_for_library_type[survey.library.library_type]
             if survey.library.library_type in principal_for_library_type else None,
-
+            "Ja" if survey.can_publish() else "Nej: " + survey.reasons_for_not_able_to_publish()
         ]
         for observation in survey.observations:
             row.append(observation.value)
