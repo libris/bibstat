@@ -440,6 +440,7 @@ class SurveyBase(Document):
             return []
 
         return [survey.library for survey in Survey.objects.filter(
+            sample_year=self.sample_year,
             library__municipality_code=self.library.municipality_code,
             library__library_type__in=get_library_types_with_same_principal(self.library),
             library__sigel__ne=self.library.sigel
