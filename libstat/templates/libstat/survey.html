@@ -372,7 +372,7 @@
                                                             {% if group.columns != 4 %}
                                                                 <button class="btn btn-default btn-value disabled">
                                                                     {% if cell.previous_value %}
-                                                                        {{ cell.previous_value }}
+                                                                        {{ cell.previous_value|floatformat:"-2" }}
                                                                     {% else %}
                                                                         &mdash;
                                                                     {% endif %}
