@@ -16,6 +16,7 @@ from libstat import utils
 from libstat.models import Survey, Library, SurveyObservation, Variable
 from libstat.survey_templates import has_template, survey_template
 from data.municipalities import municipalities
+from libstat.utils import SURVEY_TARGET_GROUPS
 
 logger = logging.getLogger(__name__)
 
@@ -279,6 +280,9 @@ def _library_from_json(dict):
         return None
 
     if dict.get("library_type", None) == "busbib":
+        return None
+
+    if dict.get("library_type", None) not in [g[0] for g in SURVEY_TARGET_GROUPS]:
         return None
 
     library = Library()
