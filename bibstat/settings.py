@@ -131,7 +131,7 @@ STATICFILES_DIRS = (
     # TODO '/var/www/static/',
 )
 
-LOGIN_REDIRECT_URL = '/'
+LOGIN_REDIRECT_URL = '/admin'
 
 """
     Logging

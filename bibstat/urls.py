@@ -42,7 +42,7 @@ urlpatterns = patterns(
 
     # Auth
     url(r'^login$', login, name='login'),
-    url(r'^logout$', logout, {'next_page': 'index'}, name='logout'),
+    url(r'^logout$', logout, {'next_page': 'admin'}, name='logout'),
 
     # Index
     url(r'^$', index, name='index'),
