@@ -34,7 +34,7 @@ def login(request):
 
             # Okay, security check complete. Log the user in.
             auth_login(request, form.get_user())
-            request.session.set_expiry(0)
+            request.session.set_expiry(1000000)
 
             context = {
                 'next': redirect_to

@@ -80,7 +80,7 @@ def survey(request, survey_id):
     if has_password():
         if get_password() == survey.password:
             request.session["password"] = survey.id
-            request.session.set_expiry(0)
+            request.session.set_expiry(1000000)
             return redirect(reverse("survey", args=(survey_id,)))
         else:
             context["wrong_password"] = True
