@@ -189,7 +189,7 @@ define(['jquery', 'survey.sum', 'survey.cell', 'surveys.dispatch', 'bootstrap.va
         };
 
         if (correct == 0) {
-            setText("Du har inte börjat fylla i enkäten än...");
+            setText("Inga fält är ifyllda");
             setPercent(0);
         } else if (boostedPercent <= requiredPercent) {
             setPercentAndText(Math.min(boostedPercent, requiredPercent));
