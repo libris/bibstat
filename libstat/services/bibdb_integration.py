@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 import requests
 from libstat.models import Library
 from libstat.utils import SURVEY_TARGET_GROUPS

@@ -6,14 +6,13 @@ from django.core.urlresolvers import reverse
 from django.shortcuts import render, redirect
 from django.http import HttpResponse, HttpResponseRedirect
 from django.contrib.auth.decorators import permission_required
-from openpyxl import Workbook
 from openpyxl.writer.excel import save_virtual_workbook
 
 from bibstat import settings
-from data.principals import principal_for_library_type
 from libstat import utils
-from libstat.bibdb_integration import fetch_libraries
+from libstat.services.bibdb_integration import fetch_libraries
 from libstat.models import Survey, SurveyObservation, Variable
+from libstat.services.excel_export import surveys_to_excel_workbook
 from libstat.survey_templates import survey_template
 from data.municipalities import municipalities
 
@@ -127,46 +126,7 @@ def _surveys_redirect(request):
                                                                                      free_text)))
 
 
-def _surveys_as_excel(survey_ids):
-    surveys = Survey.objects.filter(id__in=survey_ids).order_by('library__name')
-    variable_keys = [unicode(observation.variable.key) for observation in surveys[0].observations]
 
-    headers = [
-                  "Bibliotek",
-                  "Sigel",
-                  "Bibliotekstyp",
-                  "Status",
-                  "Email",
-                  "Kommunkod",
-                  "Stad",
-                  "Adress",
-                  "Huvudman",
-                  "Kan publiceras?"
-              ] + variable_keys
-
-    workbook = Workbook(encoding="utf-8")
-    worksheet = workbook.active
-    worksheet.append(headers)
-
-    for survey in surveys:
-        row = [
-            survey.library.name,
-            survey.library.sigel,
-            survey.library.library_type,
-            Survey.status_label(survey.status),
-            survey.library.email,
-            survey.library.municipality_code,
-            survey.library.city,
-            survey.library.address,
-            principal_for_library_type[survey.library.library_type]
-            if survey.library.library_type in principal_for_library_type else None,
-            "Ja" if survey.can_publish() else "Nej: " + survey.reasons_for_not_able_to_publish()
-        ]
-        for observation in survey.observations:
-            row.append(observation.value)
-        worksheet.append(row)
-
-    return workbook
 
 
 @permission_required('is_superuser', login_url='index')
@@ -174,7 +134,7 @@ def surveys_export(request):
     if request.method == "POST":
         survey_ids = request.POST.getlist("survey-response-ids", [])
         filename = u"Exporterade enkätsvar ({}).xlsx".format(strftime("%Y-%m-%d %H.%M.%S"))
-        workbook = _surveys_as_excel(survey_ids)
+        workbook = surveys_to_excel_workbook(survey_ids)
 
         response = HttpResponse(save_virtual_workbook(workbook), content_type='application/vnd.ms-excel')
         response['Content-Disposition'] = u'attachment; filename="{}"'.format(filename)
@@ -263,7 +223,7 @@ def _create_surveys(libraries, sample_year, ignore_missing_variables=False):
                 observations=[])
             for cell in template_cells:
                 variable_key = cell.variable_key
-                if not variable_key in variables:
+                if variable_key not in variables:
                     if ignore_missing_variables:
                         continue
                     raise Exception("Can't find variable with key '{}'".format(variable_key))

@@ -1,10 +1,10 @@
 # -*- coding: UTF-8 -*-
-from libstat.bibdb_integration import library_from_json
+from libstat.services.excel_export import surveys_to_excel_workbook
 
 from libstat.tests import MongoTestCase
 
 from libstat.models import Survey
-from libstat.views.surveys import _surveys_as_excel, _create_surveys
+from libstat.views.surveys import _create_surveys
 from libstat.survey_templates import survey_template
 
 
@@ -168,7 +168,7 @@ class TestSurveysExport(MongoTestCase):
         survey1 = self._dummy_survey(library=self._dummy_library(name="lib1_name"))
         survey2 = self._dummy_survey(library=self._dummy_library(name="lib2_name"), status="controlled")
 
-        worksheet = _surveys_as_excel([survey1.pk, survey2.pk]).active
+        worksheet = surveys_to_excel_workbook([survey1.pk, survey2.pk]).active
 
         self.assertEquals(worksheet["A1"].value, "Bibliotek")
         self.assertEquals(worksheet["F1"].value, "Kommunkod")
