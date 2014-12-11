@@ -279,11 +279,14 @@ def _dict_to_library(dict):
     if not dict["country_code"] == "se":
         return None
 
+    if dict.get("library_type", None) == "busbib":
+        return None
+
     library = Library()
-    library.sigel = dict.get("sigel") if dict.get("sigel") else None
-    library.name = dict.get("name") if dict.get("name") else None
-    library.municipality_code = dict.get("municipality_code") if dict.get("municipality_code") else None
-    library.library_type = dict.get("library_type") if dict.get("library_type") else None
+    library.sigel = dict.get("sigel", None)
+    library.name = dict.get("name", None)
+    library.municipality_code = dict.get("municipality_code", None)
+    library.library_type = dict.get("library_type", None)
     location = next((a for a in dict["address"] if a["address_type"] == "gen"), None)
     library.address = location["street"] if location and location["street"] else None
     library.city = location["city"] if location and location["city"] else None
