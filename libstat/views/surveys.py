@@ -288,6 +288,8 @@ def _library_from_json(dict):
     library = Library()
     library.sigel = dict.get("sigel", None)
     library.name = dict.get("name", None)
+    if library.name:
+        library.name = library.name.strip()
     library.municipality_code = dict.get("municipality_code", None)
     library.library_type = dict.get("library_type", None)
     location = next((a for a in dict["address"] if a["address_type"] == "gen"), None)

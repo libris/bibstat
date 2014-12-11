@@ -247,6 +247,14 @@ class TestLibraryImport(MongoTestCase):
 
         self.assertEquals(library, None)
 
+    def test_trims_blank_spaces_from_library_name(self):
+        dict = self._dummy_dict
+        dict["name"] = "  a b c  "
+
+        library = _library_from_json(dict)
+
+        self.assertEquals(library.name, "a b c")
+
     def test_updates_existing_surveys_with_new_library_data(self):
         original_library1 = self._dummy_library(sigel="sigel1", name="old_name1")
         original_library2 = self._dummy_library(sigel="sigel2", name="old_name2")
