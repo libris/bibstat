@@ -352,32 +352,6 @@ class SurveyBase(Document):
         alphabet = string.letters[0:52] + string.digits
         return str().join(random.SystemRandom().choice(alphabet) for _ in range(10))
 
-    @classmethod
-    def filter_by(cls, target_group=None, status=None, sample_year=None, municipality_code=None, free_text=None):
-        result = []
-        for survey in cls.objects.all():
-            if target_group and not survey.target_group == target_group:
-                continue
-            if status and not survey.status == status:
-                continue
-            if sample_year and not str(survey.sample_year) == str(sample_year):
-                continue
-            if municipality_code and not survey.library.municipality_code[0] == municipality_code:
-                continue
-            if free_text:
-                free_text = free_text.strip().lower()
-
-                library_email = free_text in survey.library.email.lower() if survey.library.email else False
-                library_name = free_text in survey.library.name.lower() if survey.library.name else False
-                library_municipality_code = free_text in survey.library.municipality_code.lower(
-                ) if survey.library.municipality_code else False
-
-                if not (library_email or library_name or library_municipality_code):
-                    continue
-
-            result.append(survey)
-        return result
-
     @property
     def status(self):
         return self._status
