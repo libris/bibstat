@@ -1,0 +1,295 @@
+html {
+    width: 100%;
+    height: 100%;
+}
+
+body {
+    width: 100%;
+    height: 100%;
+    font-family: Lora, "Helvetica Neue", Helvetica, Arial, sans-serif;
+    color: rgb(248, 248, 248);
+}
+
+h1, h2, h3, h4, h5, h6 {
+    margin: 0 0 35px;
+    font-family: Montserrat, "Helvetica Neue", Helvetica, Arial, sans-serif;
+    font-weight: 700;
+    letter-spacing: 1px;
+}
+
+p {
+    margin: 0 0 25px;
+    font-size: 18px;
+    line-height: 1.5;
+}
+
+@media (min-width: 767px) {
+    p {
+        margin: 0 0 35px;
+        font-size: 20px;
+        line-height: 1.6;
+    }
+}
+
+a {
+    color: #219ab3;
+    -webkit-transition: all .2s ease-in-out;
+    -moz-transition: all .2s ease-in-out;
+    transition: all .2s ease-in-out;
+}
+
+a:hover, a:focus {
+    text-decoration: none;
+    color: #11505d;
+}
+
+.intro {
+    display: table;
+    width: 100%;
+    height: auto;
+    text-align: center;
+    color: #fff;
+    background: url(../img/intro.jpg) no-repeat center center fixed;
+    background-color: #000;
+    -webkit-background-size: cover;
+    -moz-background-size: cover;
+    background-size: cover;
+    -o-background-size: cover;
+}
+
+.intro .intro-logo {
+    margin-bottom: 25px;
+    height: 100px;
+}
+
+.intro .intro-body {
+    display: table-cell;
+    vertical-align: middle;
+    background: rgba(0, 0, 0, 0.55);
+    padding-top: 25px;
+    padding-bottom: 25px;
+}
+
+.intro .intro-body .intro-title {
+    font-size: 40px;
+}
+
+.intro .intro-body .intro-text {
+    font-size: 18px;
+}
+
+@media (min-width: 767px) {
+    .intro {
+        height: 100%;
+        padding: 0;
+    }
+
+    .intro .intro-logo {
+        margin-bottom: 25px;
+        height: 125px;
+    }
+
+    .intro .intro-body .intro-title {
+        font-size: 55px;
+    }
+
+    .intro .intro-body .intro-text {
+        font-size: 25px;
+    }
+}
+
+.intro .intro-buttons {
+    margin-top: 0;
+}
+
+@media (max-width: 1199px) {
+    ul.intro-buttons {
+        margin-top: 15px;
+    }
+}
+
+@media (max-width: 767px) {
+    ul.intro-buttons li {
+        display: inline-block;
+        margin-left: 15px;
+        margin-bottom: 15px;
+        padding: 0;
+    }
+
+    ul.intro-buttons li:last-child {
+        margin-bottom: 0;
+    }
+}
+
+.section {
+    color: #2a2a2a;
+}
+
+@media (min-width: 767px) {
+    .section {
+        padding-top: 25px;
+    }
+}
+
+.section .row div {
+    margin-top: 35px;
+}
+
+.section-title {
+    margin-bottom: 10px;
+    color: #6d6d6d;
+}
+
+.section-text {
+    margin-bottom: 20px;
+    color: #2a2a2a;
+}
+
+.section-separator {
+    color: #6d6d6d;
+    margin-top: 50px;
+    margin-bottom: 35px;
+}
+
+.subsection-articles {
+    border-left: 10px solid rgb(0, 158, 224);
+}
+
+.subsection-opendata {
+    border-left: 10px solid rgb(242, 148, 0);
+}
+
+.subsection-opendata .subsection-title {
+    margin-bottom: 20px;
+}
+
+.subsection-title {
+    font-size: 22px;
+    margin-bottom: 10px;
+    color: #6d6d6d;
+}
+
+.subsection-text {
+    font-size: 18px;
+    margin-bottom: 20px;
+    color: #2a2a2a;
+}
+
+.subsection-footer {
+    color: #2a2a2a;
+    font-size: 18px;
+    margin-bottom: 0;
+}
+
+dt {
+    color: #6d6d6d;
+    font-size: 18px;
+}
+
+dl {
+    margin-bottom: 0;
+}
+
+dd {
+    color: #2a2a2a;
+    font-size: 16px;
+    margin-bottom: 15px;
+}
+
+dd:last-child {
+    margin-bottom: 0;
+}
+
+.btn {
+    font-family: Montserrat, "Helvetica Neue", Helvetica, Arial, sans-serif;
+    font-weight: 400;
+    -webkit-transition: all .3s ease-in-out;
+    -moz-transition: all .3s ease-in-out;
+    transition: all .3s ease-in-out;
+}
+
+.btn-articles {
+    border: 1px solid rgb(0, 158, 224);
+    color: rgb(0, 158, 224);
+    background-color: transparent;
+}
+
+.btn-articles:hover,
+.btn-articles:focus {
+    border: 1px solid rgb(0, 158, 224);
+    outline: 0;
+    color: white;
+    background-color: rgb(0, 158, 224);
+}
+
+.btn-reports {
+    border: 1px solid rgb(185, 203, 0);
+    color: rgb(185, 203, 0);
+    background-color: transparent;
+}
+
+.btn-reports:hover,
+.btn-reports:focus {
+    border: 1px solid rgb(185, 203, 0);
+    outline: 0;
+    color: white;
+    background-color: rgb(185, 203, 0);
+}
+
+.btn-opendata {
+    border: 1px solid rgb(242, 148, 0);
+    color: rgb(242, 148, 0);
+    background-color: transparent;
+}
+
+.btn-opendata:hover,
+.btn-opendata:focus {
+    border: 1px solid rgb(242, 148, 0);
+    outline: 0;
+    color: white;
+    background-color: rgb(242, 148, 0);
+}
+
+.btn-moreinfo {
+    border: 1px solid rgb(226, 0, 122);
+    color: rgb(226, 0, 122);
+    background-color: transparent;
+}
+
+.btn-moreinfo:hover,
+.btn-moreinfo:focus {
+    border: 1px solid rgb(226, 0, 122);
+    outline: 0;
+    color: white;
+    background-color: rgb(226, 0, 122);
+}
+
+.color-articles {
+    color: rgb(0, 158, 224);
+}
+
+.color-reports {
+    color: rgb(185, 203, 0);
+}
+
+.color-opendata {
+    color: rgb(242, 148, 0);
+}
+
+.color-moreinfo {
+    color: rgb(226, 0, 122);
+}
+
+footer {
+    padding-top: 15px;
+}
+
+footer hr {
+    color: #6d6d6d;
+}
+
+footer p {
+    color: #6d6d6d;
+    font-size: 14px;
+    margin-bottom: 25px;
+}

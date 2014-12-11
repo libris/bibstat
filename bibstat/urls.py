@@ -4,6 +4,7 @@ from django.views.generic import RedirectView
 from django.contrib.auth.views import logout
 
 from django.contrib import admin
+import libstat
 from libstat.apis.open_data import data_api, observation_api
 from libstat.apis.terms import term_api, terms_api
 
@@ -41,10 +42,11 @@ urlpatterns = patterns(
 
     # Auth
     url(r'^login$', login, name='login'),
-    url(r'^logout$', logout, {'next_page': 'index'}, name='logout'),
+    url(r'^logout$', logout, {'next_page': 'admin'}, name='logout'),
 
     # Index
     url(r'^$', index, name='index'),
+    url(r'^admin$', libstat.views.index.admin, name='admin'),
 
     # Articles
     url(r'^article/(?P<article_id>\w+)$', article, name='article'),

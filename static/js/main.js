@@ -34,6 +34,7 @@
             /* App */
             'charts': ['app/charts'],
             'dispatches': ['app/dispatches'],
+            'index': ['app/index'],
             'libraries': ['app/libraries'],
             'login': ['app/login'],
             'reports': ['app/reports'],

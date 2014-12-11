@@ -54,6 +54,7 @@ def login(request):
         'form': form,
         'next': redirect_to,
     }
+
     return render(request, 'libstat/modals/login.html', context)
 
 

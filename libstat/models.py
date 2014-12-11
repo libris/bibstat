@@ -677,7 +677,7 @@ class SurveyVersion(SurveyBase):
 class Article(Document):
     title = StringField()
     content = StringField()
-    date_published = DateTimeField(default=datetime.utcnow())
+    date_published = DateTimeField(default=datetime.utcnow)
 
     meta = {
         'collection': 'libstat_articles',
