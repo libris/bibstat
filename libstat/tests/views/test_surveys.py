@@ -1,9 +1,10 @@
 # -*- coding: UTF-8 -*-
+from libstat.bibdb_integration import library_from_json
 
 from libstat.tests import MongoTestCase
 
 from libstat.models import Survey
-from libstat.views.surveys import _surveys_as_excel, _library_from_json, _create_surveys
+from libstat.views.surveys import _surveys_as_excel, _create_surveys
 from libstat.survey_templates import survey_template
 
 
@@ -177,84 +178,6 @@ class TestSurveysExport(MongoTestCase):
 
 
 class TestLibraryImport(MongoTestCase):
-    def setUp(self):
-        self._dummy_dict = {
-            "country_code": "se",
-            "sigel": "lib1_sigel",
-            "name": "lib1",
-            "library_type": "sjukbib",
-            "municipality_code": "1793",
-            "address":
-                [
-                    {
-                        "address_type": "gen",
-                        "city": "lib1_city",
-                        "street": "street1"
-                    },
-                    {
-                        "address_type": "ill",
-                        "city": "ill_lib1_city",
-                        "street": "ill_street1"
-                    }
-                ],
-            "contact":
-                [
-                    {
-                        "contact_type": "orgchef",
-                        "email": "dont@care.atall"
-                    },
-                    {
-                        "contact_type": "statans",
-                        "email": "lib1@dom.top"
-                    }
-                ]
-        }
-
-    def test_creates_library_from_dict(self):
-        dict = self._dummy_dict
-
-        library = _library_from_json(dict)
-
-        self.assertEquals(library.sigel, "lib1_sigel")
-        self.assertEquals(library.name, "lib1")
-        self.assertEquals(library.city, "lib1_city")
-        self.assertEquals(library.address, "street1")
-        self.assertEquals(library.email, "lib1@dom.top")
-        self.assertEquals(library.municipality_code, "1793")
-        self.assertEquals(library.library_type, "sjukbib")
-
-    def test_does_not_import_non_swedish_libraries(self):
-        dict = self._dummy_dict
-        dict["country_code"] = "dk"
-
-        library = _library_from_json(dict)
-
-        self.assertEquals(library, None)
-
-    def test_does_not_import_busbib(self):
-        dict = self._dummy_dict
-        dict["library_type"] = "busbib"
-
-        library = _library_from_json(dict)
-
-        self.assertEquals(library, None)
-
-    def test_does_not_import_library_with_invalid_library_type(self):
-        dict = self._dummy_dict
-        dict["library_type"] = "does_not_exist"
-
-        library = _library_from_json(dict)
-
-        self.assertEquals(library, None)
-
-    def test_trims_blank_spaces_from_library_name(self):
-        dict = self._dummy_dict
-        dict["name"] = "  a b c  "
-
-        library = _library_from_json(dict)
-
-        self.assertEquals(library.name, "a b c")
-
     def test_updates_existing_surveys_with_new_library_data(self):
         original_library1 = self._dummy_library(sigel="sigel1", name="old_name1")
         original_library2 = self._dummy_library(sigel="sigel2", name="old_name2")

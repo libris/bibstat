@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
 import logging
-import requests
 from time import strftime
 
 from django.core.urlresolvers import reverse
@@ -13,10 +12,11 @@ from openpyxl.writer.excel import save_virtual_workbook
 from bibstat import settings
 from data.principals import principal_for_library_type
 from libstat import utils
-from libstat.models import Survey, Library, SurveyObservation, Variable
-from libstat.survey_templates import has_template, survey_template
+from libstat.bibdb_integration import fetch_libraries
+from libstat.models import Survey, SurveyObservation, Variable
+from libstat.survey_templates import survey_template
 from data.municipalities import municipalities
-from libstat.utils import SURVEY_TARGET_GROUPS
+
 
 logger = logging.getLogger(__name__)
 
@@ -275,49 +275,8 @@ def _create_surveys(libraries, sample_year, ignore_missing_variables=False):
     return created
 
 
-def _library_from_json(dict):
-    if not dict["country_code"] == "se":
-        return None
-
-    if dict.get("library_type", None) == "busbib":
-        return None
-
-    if dict.get("library_type", None) not in [g[0] for g in SURVEY_TARGET_GROUPS]:
-        return None
-
-    library = Library()
-    library.sigel = dict.get("sigel", None)
-    library.name = dict.get("name", None)
-    if library.name:
-        library.name = library.name.strip()
-    library.municipality_code = dict.get("municipality_code", None)
-    library.library_type = dict.get("library_type", None)
-    location = next((a for a in dict["address"] if a["address_type"] == "gen"), None)
-    library.address = location["street"] if location and location["street"] else None
-    library.city = location["city"] if location and location["city"] else None
-    library.email = next((c["email"] for c in dict["contact"]
-                          if "email" in c and c["contact_type"] == "statans"), None)
-
-    return library
-
-
-def _get_libraries_from_bibdb():
-    libraries = []
-    # bibdb api paginated by 200 and had ca. 2800 responses when this was written
-    for start_index in range(0, 6000, 200):
-        response = requests.get(
-            url="http://bibdb.libris.kb.se/api/lib?dump=true&start=%d" % start_index,
-            headers={"APIKEY_AUTH_HEADER": "bibstataccess"})
-
-        for lib_data in response.json()["libraries"]:
-            library = _library_from_json(lib_data)
-            if library:
-                libraries.append(library)
-    return libraries
-
-
 def _create_new_collection(year):
-    libraries = _get_libraries_from_bibdb()
+    libraries = fetch_libraries()
     _create_surveys(libraries, year)
 
 

@@ -263,13 +263,6 @@ class VariableVersion(VariableBase):
 
 
 class Library(EmbeddedDocument):
-    # From: http://en.wikipedia.org/wiki/Random_password_generator#Python
-
-    @classmethod
-    def _random_sigel(cls):
-        alphabet = string.letters[0:52] + string.digits
-        return str().join(random.SystemRandom().choice(alphabet) for _ in range(10))
-
     name = StringField()
     bibdb_id = StringField()
     sigel = StringField()
@@ -282,6 +275,12 @@ class Library(EmbeddedDocument):
     meta = {
         'collection': 'libstat_libraries'
     }
+
+    # From: http://en.wikipedia.org/wiki/Random_password_generator#Python
+    @classmethod
+    def _random_sigel(cls):
+        alphabet = string.letters[0:52] + string.digits
+        return str().join(random.SystemRandom().choice(alphabet) for _ in range(10))
 
     def __init__(self, *args, **kwargs):
         sigel = kwargs.pop("sigel", None)
