@@ -17,14 +17,14 @@ define(['jquery'], function($) {
                 var section = $($(this).attr('href'));
 
                 section.removeClass("hidden");
-                scrollTo(section.find(".row"));
+                scrollTo(section.find(".section-title"));
             });
 
             $('.btn.btn-articles-expand').click(function(e) {
                 e.preventDefault();
                 $('.row.row-article').removeClass('hidden');
                 $(this).closest('.row').addClass('hidden');
-                scrollTo($('.row-article'))
+                scrollTo($('.row-article .subsection-title'))
             });
         }
     };
