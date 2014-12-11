@@ -5,7 +5,7 @@ from django.shortcuts import render, redirect
 from data.municipalities import municipalities, get_counties
 from data.principals import principal_for_library_type, name_for_principal, library_types_for_principal
 from libstat.models import Survey
-from libstat.reports import get_report
+from libstat.services.report_generation import get_report
 
 
 def report(request):

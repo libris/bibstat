@@ -1,11 +1,10 @@
 # -*- coding: utf-8 -*-
-from pprint import pprint
-
-from libstat.reports import generate_report, ReportTemplate, Group, VariableRow, KeyFigureRow, _get_observations_from
+from libstat.report_templates import ReportTemplate, Group, VariableRow, KeyFigureRow
+from libstat.services.report_generation import generate_report, _get_observations_from
 from libstat.tests import MongoTestCase
 
 
-class TestReports(MongoTestCase):
+class TestReportGeneration(MongoTestCase):
     def test_creates_correct_report(self):
         template = ReportTemplate(groups=[
             Group(title="some_title1",

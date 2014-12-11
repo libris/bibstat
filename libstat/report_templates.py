@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
-from pprint import pprint
-from libstat.models import Survey, Variable, OpenData
+from libstat.models import Variable
 
 
 class ReportTemplate():
@@ -50,127 +49,30 @@ class KeyFigureRow():
         self.variable_keys = kwargs.pop("variable_keys", None)
 
 
-def generate_report(template, year, observations):
-    def values_for(observations, variable_keys, year):
-        return [float(observations.get(key, {}).get(year, 0)) for key in variable_keys]
-
-    report = []
-    for group in template.groups:
-        report_group = {"title": group.title,
-                        "years": [year - 1, year],
-                        "rows": []}
-        for row in group.rows:
-            value = None
-            previous_value = None
-            total = None
-            if isinstance(row, VariableRow):
-                observation = observations.get(row.variable_key, {})
-                value = observation.get(year, None)
-                previous_value = observation.get(year - 1, None)
-                total = observation.get("total", None)
-            elif isinstance(row, KeyFigureRow):
-                value = row.compute(values_for(observations, row.variable_keys, year))
-                previous_value = row.compute(values_for(observations, row.variable_keys, year - 1))
-
-            diff = ((value / previous_value) - 1) * 100 if value and previous_value else None
-            nation_diff = (value / total) * 1000 if value and total else None
-
-            report_row = {"label": row.description}
-            if previous_value is not None: report_row[year - 1] = previous_value
-            if value is not None: report_row[year] = value
-            if diff is not None: report_row["diff"] = diff
-            if nation_diff is not None: report_row["nation_diff"] = nation_diff
-
-            report_group["rows"].append(report_row)
-        report.append(report_group)
-    return report
-
-
-def _get_observations_from(template, surveys, year):
-    def is_number(obj):
-        return isinstance(obj, (int, long, float, complex))
-
-    survey_ids = []
-    previous_survey_ids = []
-    for survey in surveys:
-        survey_ids.append(survey.pk)
-        previous_survey = survey.previous_years_survey()
-        if previous_survey:
-            previous_survey_ids.append(previous_survey.pk)
-
-    observations = {}
-    for key in template.all_variable_keys:
-        variables = Variable.objects.filter(key=key)
-        if len(variables) != 1:
-            continue
-        variable = variables[0]
-
-        variables = [variable]
-        if len(variable.replaces) == 1:
-            variables.append(variable.replaces[0])
-
-        observations[key] = {
-            year: 0.0,
-            (year - 1): 0.0,
-            "total": float(OpenData.objects.filter(sample_year=year, is_active=True,
-                                                   variable__in=variables).sum("value"))
-        }
-
-        value = OpenData.objects.filter(source_survey__in=survey_ids, variable__in=variables,
-                                        is_active=True).sum("value")
-        if is_number(value):
-            observations[key][year] = value
-
-        previous_value = OpenData.objects.filter(source_survey__in=previous_survey_ids, variable__in=variables,
-                                                 is_active=True).sum("value")
-        if is_number(previous_value):
-            observations[key][year - 1] = previous_value
-
-    return observations
-
-
-def get_report(surveys, year):
-    libraries = []
-    for survey in surveys:
-        for sigel in survey.selected_libraries:
-            libraries.append(Survey.objects.get(sample_year=year, library__sigel=sigel).library)
-
-    template = report_template_2014()
-
-    observations = _get_observations_from(template, surveys, year)
-
-    report = {
-        "year": year,
-        "libraries": libraries,
-        "measurements": generate_report(template, year, observations)
-    }
-
-    return report
-
-
 def report_template_2014():
     return ReportTemplate(groups=[
         Group(title=u"Organisation",
-              rows=[VariableRow(variable_key=u"BemanService01"),
-                    VariableRow(variable_key=u"Integrerad01"),
-                    VariableRow(variable_key=u"Obeman01"),
-                    VariableRow(variable_key=u"ObemanLan01"),
-                    VariableRow(variable_key=u"Bokbuss01"),
-                    VariableRow(variable_key=u"BokbussHP01"),
-                    VariableRow(variable_key=u"Bokbil01"),
-                    VariableRow(variable_key=u"Population01"),
-                    # VariableRow(variable_key=u"Population02"),
-                    # VariableRow(variable_key=u"Population03"),
-                    KeyFigureRow(description=u"Antal bemannade serviceställen per 1000 invånare",
-                                 computation=(lambda a, b: a / (b / 1000)),
-                                 variable_keys=[u"BemanService01", u"Population01"]),
-                    KeyFigureRow(description=u"Antal integrerade serviceställen",
-                                 computation=(lambda a, b: a / b),
-                                 variable_keys=[u"Integrerad01", u"BemanService01"]),
-                    KeyFigureRow(
-                        description=u"Medelantal utlån per servicesställe där vidare låneregistrering inte sker",
-                        computation=(lambda a, b: a / b),
-                        variable_keys=[u"ObemanLan01", u"Obeman01"])
+              rows=[
+                  VariableRow(variable_key=u"BemanService01"),
+                  VariableRow(variable_key=u"Integrerad01"),
+                  VariableRow(variable_key=u"Obeman01"),
+                  VariableRow(variable_key=u"ObemanLan01"),
+                  VariableRow(variable_key=u"Bokbuss01"),
+                  VariableRow(variable_key=u"BokbussHP01"),
+                  VariableRow(variable_key=u"Bokbil01"),
+                  VariableRow(variable_key=u"Population01"),
+                  VariableRow(variable_key=u"Population02"),
+                  VariableRow(variable_key=u"Population03"),
+                  KeyFigureRow(description=u"Antal bemannade serviceställen per 1000 invånare",
+                               computation=(lambda a, b: a / (b / 1000)),
+                               variable_keys=[u"BemanService01", u"Population01"]),
+                  KeyFigureRow(description=u"Antal integrerade serviceställen",
+                               computation=(lambda a, b: a / b),
+                               variable_keys=[u"Integrerad01", u"BemanService01"]),
+                  KeyFigureRow(
+                      description=u"Medelantal utlån per servicesställe där vidare låneregistrering inte sker",
+                      computation=(lambda a, b: a / b),
+                      variable_keys=[u"ObemanLan01", u"Obeman01"])
               ]),
         Group(title=u"Årsverken",
               rows=[
@@ -205,10 +107,10 @@ def report_template_2014():
                   VariableRow(variable_key=u"Personer02"),
                   VariableRow(variable_key=u"Personer99"),
                   KeyFigureRow(description=u"Andel anställda kvinnor",
-                               computation=(lambda a, b: a / b ),
+                               computation=(lambda a, b: a / b),
                                variable_keys=[u"Personer01", u"Personer99"]),
                   KeyFigureRow(description=u"Antal årsverken per person",
-                               computation=(lambda a, b: a / b ),
+                               computation=(lambda a, b: a / b),
                                variable_keys=[u"Arsverke99", u"Personer99"]),
               ]),
         Group(title=u"Ekonomi",
@@ -222,25 +124,25 @@ def report_template_2014():
                   VariableRow(variable_key=u"Utgift99"),
                   VariableRow(variable_key=u"Utgift07"),
                   KeyFigureRow(description=u"Mediekostnad per invånare",
-                               computation=(lambda a, b, c: (a + b) / c ),
+                               computation=(lambda a, b, c: (a + b) / c),
                                variable_keys=[u"Utgift01", u"Utgift02", u"Population01"]),
                   KeyFigureRow(description=u"Mediekostnad per personer i målgruppen",
-                               computation=(lambda a, b, c: (a + b) / c ),
+                               computation=(lambda a, b, c: (a + b) / c),
                                variable_keys=[u"Utgift01", u"Utgift02", u"Population01"]),
                   KeyFigureRow(description=u"Total driftkostnad per invånare",
-                               computation=(lambda a, b: a / b ),
+                               computation=(lambda a, b: a / b),
                                variable_keys=[u"Utgift99", u"Population01"]),
                   KeyFigureRow(description=u"Total driftkostnad per personer i målgruppen",
-                               computation=(lambda a, b: a / b ),
+                               computation=(lambda a, b: a / b),
                                variable_keys=[u"Utgift99", u"Population02"]),
                   KeyFigureRow(description=u"Andel kostnader för medier av total driftkostnad",
-                               computation=(lambda a, b, c: (a + b) / c ),
+                               computation=(lambda a, b, c: (a + b) / c),
                                variable_keys=[u"Utgift01", u"Utgift02", u"Utgift98"]),
                   KeyFigureRow(description=u"Andel kostnader för personal av total driftkostnader",
-                               computation=(lambda a, b, c: (a + b) / c ),
+                               computation=(lambda a, b, c: (a + b) / c),
                                variable_keys=[u"Utgift03", u"Utgift04", u"Utgift99"]),
                   KeyFigureRow(description=u"Andel kostnad för e-medier av totala driftskostnader",
-                               computation=(lambda a, b, c: a / (b + c) ),
+                               computation=(lambda a, b, c: a / (b + c)),
                                variable_keys=[u"Utgift02", u"Utgift01", u"Utgift02"]),
               ]),
         Group(title=u"Egengenererade intäkter",
