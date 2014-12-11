@@ -1,7 +1,5 @@
 # -*- coding: utf-8 -*-
 import logging
-from bson import ObjectId
-from mongoengine.context_managers import no_dereference
 import requests
 from time import strftime
 
@@ -124,7 +122,8 @@ def _surveys_redirect(request):
     free_text = method.get("free_text", "")
     return HttpResponseRedirect(u"{}{}".format(
         reverse("surveys"),
-        u"?action=list&target_group={}&sample_year={}&status={}&free_text={}".format(target_group, sample_year, status, free_text)))
+        u"?action=list&target_group={}&sample_year={}&status={}&free_text={}".format(target_group, sample_year, status,
+                                                                                     free_text)))
 
 
 def _surveys_as_excel(survey_ids):
@@ -275,7 +274,7 @@ def _create_surveys(libraries, sample_year, ignore_missing_variables=False):
     return created
 
 
-def _dict_to_library(dict):
+def _library_from_json(dict):
     if not dict["country_code"] == "se":
         return None
 
@@ -305,7 +304,7 @@ def _get_libraries_from_bibdb():
             headers={"APIKEY_AUTH_HEADER": "bibstataccess"})
 
         for lib_data in response.json()["libraries"]:
-            library = _dict_to_library(lib_data)
+            library = _library_from_json(lib_data)
             if library:
                 libraries.append(library)
     return libraries

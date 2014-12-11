@@ -3,7 +3,7 @@
 from libstat.tests import MongoTestCase
 
 from libstat.models import Survey
-from libstat.views.surveys import _surveys_as_excel, _dict_to_library, _create_surveys
+from libstat.views.surveys import _surveys_as_excel, _library_from_json, _create_surveys
 from libstat.survey_templates import survey_template
 
 
@@ -213,7 +213,7 @@ class TestLibraryImport(MongoTestCase):
     def test_creates_library_from_dict(self):
         dict = self._dummy_dict
 
-        library = _dict_to_library(dict)
+        library = _library_from_json(dict)
 
         self.assertEquals(library.sigel, "lib1_sigel")
         self.assertEquals(library.name, "lib1")
@@ -227,7 +227,7 @@ class TestLibraryImport(MongoTestCase):
         dict = self._dummy_dict
         dict["country_code"] = "dk"
 
-        library = _dict_to_library(dict)
+        library = _library_from_json(dict)
 
         self.assertEquals(library, None)
 
@@ -235,7 +235,7 @@ class TestLibraryImport(MongoTestCase):
         dict = self._dummy_dict
         dict["library_type"] = "busbib"
 
-        library = _dict_to_library(dict)
+        library = _library_from_json(dict)
 
         self.assertEquals(library, None)
 
