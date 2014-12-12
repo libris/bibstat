@@ -52,29 +52,15 @@
                     <span class="icon-bar"></span>
                     <span class="icon-bar"></span>
                 </button>
-                <a class="navbar-brand" href="{% url 'admin' %}">{% trans "KB Statistik" %}</a>
             </div>
             <div class="collapse navbar-collapse" id="top-main-nav">
-                <ul class="nav navbar-nav">
-                    <li class="{{ nav_start_css }}">
-                        <a href="{% url 'admin' %}">
-                            {% trans "Start" %}
-                        </a>
-                    </li>
-                    <li class="{{ nav_reports_css }}">
-                        <a href="{% url 'reports' %}">
-                            {% trans "Verksamhetsrapporter" %}
-                        </a>
-                    </li>
-                    <li class="{{ nav_open_data_css }}">
-                        <a href="{% url 'open_data' %}">
-                            {% trans "Öppna data" %}
-                        </a>
-                    </li>
-                </ul>
                 <ul class="nav navbar-nav navbar-right">
                     {% if user.is_authenticated %}
-
+                        <li class="{{ nav_articles_css }}">
+                            <a href="{% url 'articles' %}">
+                                {% trans "Publiceringar" %}
+                            </a>
+                        </li>
                         <li class="{{ nav_variables_css }}">
                             <a href="{% url 'variables' %}">
                                 {% trans "Termer" %}
@@ -98,9 +84,7 @@
                         </li>
                     {% else %}
                         <li>
-                            <a class="show-login-modal" href="#" data-toggle="modal" data-target="#loginModal">
-                                {% trans "Logga in" %}
-                            </a>
+                            <a class="show-login-modal" href="#" data-toggle="modal" data-target="#loginModal">Logga in</a>
                         </li>
                     {% endif %}
                 </ul>

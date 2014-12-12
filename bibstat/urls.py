@@ -12,7 +12,7 @@ from libstat.views.auth import login
 from libstat.views.administration import administration, create_new_collection
 from libstat.views.articles import article, articles, articles_delete
 from libstat.views.dispatches import dispatches, dispatches_delete, dispatches_send
-from libstat.views.index import index, open_data
+from libstat.views.index import index
 from libstat.views.reports import reports, report
 from libstat.views.surveys import (surveys,
                                    surveys_statuses,
@@ -30,11 +30,9 @@ from libstat.views.variables import (variables,
 
 admin.autodiscover()
 
-urlpatterns = patterns(
-    '',
+urlpatterns = patterns('',
 
     # APIs
-    url(r'^open_data$', open_data, name="open_data"),
     url(r'^data$', data_api, name="data_api"),
     url(r'^data/(?P<observation_id>\w+)$', observation_api, name="observation_api"),
     url(r'^def/terms$', terms_api, name="terms_api"),
@@ -85,7 +83,6 @@ urlpatterns = patterns(
     url(r'^variables/(?P<variable_id>\w+)$', edit_variable, name='edit_variable'),
 
     # Other
-    url(r'^.well-known/void$', RedirectView.as_view(url=reverse_lazy('open_data'),
-                                                    permanent=False)),
+    url(r'^.well-known/void$', RedirectView.as_view(url=reverse_lazy('open_data'), permanent=False)),
     url(r'^jsreverse/$', 'django_js_reverse.views.urls_js', name='js_reverse')
 )

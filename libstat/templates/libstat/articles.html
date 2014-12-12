@@ -12,13 +12,11 @@
                 <span class="panel-subtitle">
                     Här visas information om de publiceringar och korrigeringar som berör biblioteksstatistiken.
                 </span>
-                {% if is_admin %}
-                    <span class="pull-right" style="margin-top: 4px;">
-                        <a href="{% url 'article' %}">
-                            Skapa nytt inlägg
-                        </a>
-                    </span>
-                {% endif %}
+                <span class="pull-right" style="margin-top: 4px;">
+                    <a href="{% url 'article' %}">
+                        Skapa nytt inlägg
+                    </a>
+                </span>
             </div>
             <div class="panel-body">
                 {% for article in articles %}
@@ -36,13 +34,11 @@
                         <div class="row date_published">
                             <div class="col-md-6">
                                 Publicerad: {{ article.date_published }}
-                                {% if is_admin %}
-                                    <span class="pull-right">
-                                        <a href="{% url 'article' article.pk %}">
-                                            Redigera
-                                        </a>
-                                    </span>
-                                {% endif %}
+                                <span class="pull-right">
+                                    <a href="{% url 'article' article.pk %}">
+                                        Redigera
+                                    </a>
+                                </span>
                             </div>
                         </div>
                     </div>

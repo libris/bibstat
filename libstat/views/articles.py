@@ -2,14 +2,16 @@
 from django.contrib.auth.decorators import permission_required
 from django.core.urlresolvers import reverse
 from django.shortcuts import render, redirect
+
 from libstat.forms.article import ArticleForm
 from libstat.models import Article
 
 
+@permission_required('is_superuser', login_url='index')
 def articles(request):
     context = {
         "articles": Article.objects.order_by("-date_published"),
-        "is_admin": request.user.is_authenticated()
+        "nav_articles_css": "active"
     }
     return render(request, 'libstat/articles.html', context)
 
