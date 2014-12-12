@@ -16,7 +16,9 @@ define(['jquery', 'scroll'], function($, scroll) {
                }
            });
 
-           scroll.to('.scroll-start');
+           var scrollStart = $('.scroll-start');
+           if(scrollStart.length > 0)
+               scroll.to(scrollStart);
        }
    }
 });
