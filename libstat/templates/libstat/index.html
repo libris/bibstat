@@ -86,7 +86,7 @@
                     </div>
                 </div>
 
-                {% if forloop.counter == 3 %}
+                {% if forloop.counter == 3 and articles|length > 3%}
                     <div class="row">
                         <div class="col-xs-12">
                             <button class="btn btn-articles btn-lg btn-articles-expand"><i class="fa fa-plus-circle fa-fw"></i> Visa alla publiceringar</button>
