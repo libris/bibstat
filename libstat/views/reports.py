@@ -2,6 +2,7 @@
 from django.core.urlresolvers import reverse
 
 from django.shortcuts import render, redirect
+from django.utils.http import is_safe_url
 from data.municipalities import municipalities, get_counties
 from data.principals import principal_for_library_type, name_for_principal, library_types_for_principal
 from libstat.models import Survey
@@ -13,11 +14,16 @@ def report(request):
         return redirect(reverse("reports"))
 
     sample_year = int(request.POST.get("sample_year", None))
-    sigels = request.POST.getlist("surveys", [])
 
+    previous_url = request.POST.get("previous_url", reverse("reports"))
+    if not is_safe_url(url=previous_url, host=request.get_host()):
+        return redirect(reverse("reports"))
+
+    sigels = request.POST.getlist("surveys", [])
     surveys = list(Survey.objects.filter(sample_year=sample_year, library__sigel__in=sigels))
 
     context = get_report(surveys, sample_year)
+    context["previous_url"] = previous_url
 
     return render(request, 'libstat/report.html', context)
 

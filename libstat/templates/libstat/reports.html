@@ -125,7 +125,7 @@
                       <h2 class="subsection-title scroll-start">Välj de bibliotek som ska ingå i verksamhetsrapporten</h2>
                       <p class="subsection-text">Visar {{ surveys|length }} bibliotek som svarat för <i>{{ sample_year }}</i>{% if municipality_name %} i <i>{{ municipality_name }}</i>{% endif %}{% if principal %} och har <i>{{ principal }}</i> som huvudman{% endif %}</p>
 
-                      <form class="form" method="post" action="{% url 'report' %}">
+                      <form id="form-libraries" class="form" method="post" action="{% url 'report' %}">
                           {% csrf_token %}
                           <input type="hidden" name="sample_year" value="{{ sample_year }}">
                           {% for survey in surveys %}
@@ -147,7 +147,7 @@
                           {% endfor %}
                           <div class="row row-inside">
                               <div class="col-xs-12 col-inside">
-                                  <button type="submit" class="btn btn-reports" style="margin-top: 15px;">Visa verksamhetsrapport</button>
+                                  <button id="form-libraries-submit" type="submit" class="btn btn-reports" style="margin-top: 15px;">Visa verksamhetsrapport</button>
                                   <button type="button" class="btn btn-default btn-checked" style="margin-top: 15px;">Markera alla</button>
                               </div>
                           </div>
