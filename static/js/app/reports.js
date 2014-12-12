@@ -6,8 +6,14 @@ define(['jquery', 'scroll'], function($, scroll) {
                $('.checkbox-survey').prop("checked", "checked");
            });
 
-           $('#form-libraries-submit').click(function() {
-              $('#form-libraries').append('<input type="hidden" name="previous_url" value="' + window.location.href + '">')
+           $('#form-libraries-submit').click(function(e) {
+               var anyChecked = $('.checkbox-survey:checked').length > 0;
+               if(anyChecked) {
+                   $('#form-libraries').append('<input type="hidden" name="previous_url" value="' + window.location.href + '">')
+               } else {
+                   e.preventDefault();
+                   $('.row-alert').removeClass("hidden")
+               }
            });
 
            scroll.to('.scroll-start');
