@@ -43,18 +43,40 @@ a:hover, a:focus {
     color: #11505d;
 }
 
+.col-inside {
+    margin-top: 0 !important;
+}
+
+.row-inside {
+    margin-top: 0 !important;
+}
+
+.alert.alert-reports {
+    margin-top: 15px !important;
+    margin-bottom: 10px !important;
+    background: transparent;
+    border-color: rgb(169, 68, 66);
+}
+
+.alert-reports p {
+    font-size: 16px;
+}
+
 .intro {
     display: table;
     width: 100%;
     height: auto;
     text-align: center;
     color: #fff;
-    background: url(../img/intro.jpg) no-repeat center center fixed;
-    background-color: #000;
+    background: #000 url(../img/intro.jpg) no-repeat fixed center center;
     -webkit-background-size: cover;
     -moz-background-size: cover;
     background-size: cover;
     -o-background-size: cover;
+}
+
+.intro.intro-fixed {
+    height: 350px;
 }
 
 .intro .intro-logo {
@@ -135,6 +157,19 @@ a:hover, a:focus {
     margin-top: 35px;
 }
 
+.section .row .panel-report {
+    margin-top: 0;
+    margin-bottom: 15px;
+}
+
+.section .row .panel-report .panel-heading {
+    margin-top: 0;
+}
+
+.section.section-bottom {
+    padding-bottom: 50px;
+}
+
 .section-title {
     margin-bottom: 10px;
     color: #6d6d6d;
@@ -149,6 +184,14 @@ a:hover, a:focus {
     color: #6d6d6d;
     margin-top: 50px;
     margin-bottom: 35px;
+}
+
+.subsection-reports {
+    border-left: 10px solid rgb(185, 203, 0);
+}
+
+.subsection-reports .subsection-text {
+    margin-bottom: 0;
 }
 
 .subsection-articles {
@@ -206,6 +249,20 @@ dd:last-child {
     -webkit-transition: all .3s ease-in-out;
     -moz-transition: all .3s ease-in-out;
     transition: all .3s ease-in-out;
+}
+
+.btn-default {
+    border: 1px solid grey;
+    color: grey;
+    background-color: transparent;
+}
+
+.btn-default:hover,
+.btn-default:focus {
+    border: 1px solid grey;
+    outline: 0;
+    color: white;
+    background-color: grey;
 }
 
 .btn-articles {
@@ -278,6 +335,10 @@ dd:last-child {
 
 .color-moreinfo {
     color: rgb(226, 0, 122);
+}
+
+.form.form-inline .form-group {
+    margin-top: 10px;
 }
 
 footer {

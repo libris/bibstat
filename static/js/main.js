@@ -38,6 +38,7 @@
             'libraries': ['app/libraries'],
             'login': ['app/login'],
             'reports': ['app/reports'],
+            'scroll': ['app/scroll'],
             'survey': ['app/survey'],
             'survey.cell': ['app/survey/cell'],
             'survey.sum': ['app/survey/sum'],

@@ -77,7 +77,7 @@ def reports(request):
                     for survey in surveys_with_sigels.only("library.sigel", "library.name"):
                         library_name_for_sigel[survey.library.sigel] = survey.library.name
                 else:
-                    message = u"Det finns inga bibliotek att visa för valen av biblioteksverksamhet."
+                    message = u"Det finns inga bibliotek att visa för den valda verksamheten."
 
             else:
                 message = u"Du måste välja ett verksamhetsår för att visa bibliotek."
