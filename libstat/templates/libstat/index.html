@@ -26,7 +26,7 @@
                             <p class="intro-text">Den officiella biblioteksstatistiken visar uppgifter om de offentligt finansierade bibliotekens verksamhet. Alla bibliotekstyper som finansieras av staten, en kommun eller ett landsting ingår.</p>
 
                             <ul class="list-inline intro-buttons">
-                                <li><a href="#articles" class="btn btn-articles btn-lg scroll"><i class="fa fa-newspaper-o fa-fw"></i> Publiceringar</a></li>
+                                <li><a href="#articles" class="btn btn-articles btn-lg scroll"><i class="fa fa-newspaper-o fa-fw"></i> Om statistiken</a></li>
                                 <li><a href="#reports" class="btn btn-reports btn-lg scroll"><i class="fa fa-line-chart fa-fw"></i> Rapporter</a></li>
                                 <li><a href="#opendata" class="btn btn-opendata btn-lg scroll"><i class="fa fa-database fa-fw"></i> Öppna data</a></li>
                                 <li><a href="#moreinfo" class="btn btn-moreinfo btn-lg scroll"><i class="fa fa-info-circle fa-fw"></i> Läs mera</a></li>
@@ -40,13 +40,13 @@
         <section class="container section">
             <div class="row">
                 <div class="col-xs-12 col-sm-6">
-                    <h2 id="articles" class="section-title"><i class="fa fa-newspaper-o fa-fw color-articles"></i> Publiceringar</h2>
-                    <p class="section-text">Vi informerar kontinuerligt om publicering av insamlad data. Detta gäller även korrigeringar och uppdateringar av redan publicerad data och statistik.</p>
-                    <a href="#articles-section" class="btn btn-articles btn-lg scroll-section">Visa publiceringar</a>
+                    <h2 id="articles" class="section-title"><i class="fa fa-newspaper-o fa-fw color-articles"></i> Om statistiken</h2>
+                    <p class="section-text">Regeringen utsåg 2011 KB till statistikansvarig myndighet för den officiella biblioteksstatistiken. Statistiken samlas in varje år och gäller då det föregående kalenderåret.</p>
+                    <a href="#articles-section" class="btn btn-articles btn-lg scroll-section">Läs mer om statistiken</a>
                 </div>
                 <div class="col-xs-12 col-sm-6">
                     <h2 id="reports" class="section-title"><i class="fa fa-line-chart fa-fw color-reports"></i> Rapporter</h2>
-                    <p class="section-text">Utifrån publicerad data finns möjligheten att ta fram rapporter för biblioteksverksamheten. Dessa verksamhetsrapporter kan tas fram för hela landet, för en kommun eller för ett län.</p>
+                    <p class="section-text">Utifrån publicerad data finns möjligheten att ta fram rapporter för biblioteksverksamheten. Dessa verksamhetsrapporter kan tas fram för hela landet, för ett län eller för en kommun.</p>
                     <a href="{% url "reports" %}" class="btn btn-reports btn-lg">Till rapporterna &raquo;</a>
                 </div>
             </div>
@@ -57,7 +57,7 @@
                 <div class="col-xs-12 col-sm-6">
                     <h2 id="opendata" class="section-title"><i class="fa fa-database fa-fw color-opendata"></i> Öppna data</h2>
                     <p class="section-text">För att göra insamlad data mer tillgänglig för allmänheten, så går all publicerad data att komma åt som öppna data. Det är denna data som används för verksamhetsrapporterna.</p>
-                    <a href="#opendata-section" class="btn btn-opendata btn-lg scroll-section">Mer om öppna data</a>
+                    <a href="#opendata-section" class="btn btn-opendata btn-lg scroll-section">Läs mer om öppna data</a>
                 </div>
                 <div class="col-xs-12 col-sm-6">
                     <h2 id="moreinfo" class="section-title"><i class="fa fa-info-circle fa-fw color-moreinfo"></i> Läs mera</h2>
@@ -72,8 +72,23 @@
 
             <div class="row">
                 <div class="col-xs-12 col-sm-10 col-lg-8 subsection-articles">
-                    <h2 class="section-title"><i class="fa fa-newspaper-o fa-fw color-articles"></i> Publiceringar</h2>
-                    <p class="subsection-text" style="margin-bottom: 0;">Nedan följer information om vilka publiceringar som har gjorts i statistiken. Förutom nypublicering av data och statistik, så visas även information om korrigeringar och uppdateringar som har gjorts för redan publicerad data.</p>
+                    <h2 class="section-title"><i class="fa fa-newspaper-o fa-fw color-articles"></i> Om statistiken</h2>
+                    <p class="subsection-text" style="margin-bottom: 0;">Regeringen utsåg 2011 KB till statistikansvarig myndighet för den officiella biblioteksstatistiken. Statistiken samlas in varje år och gäller då det föregående kalenderåret. De bibliotek som ingår i den officiella bibliotekstatistiken är de offentligt finansierade biblioteken. Från och med den statistik som samlas in under 2015 har de variabler som efterfrågas och urvalsramen förändrats något jämfört med tidigare år.</p>
+                    <!--<p class="subsection-text" style="margin-bottom: 0;">Nedan följer information om vilka publiceringar som har gjorts i statistiken. Förutom nypublicering av data och statistik, så visas även information om korrigeringar och uppdateringar som har gjorts för redan publicerad data.</p>-->
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-xs-12 col-sm-10 col-lg-8 subsection-articles">
+                    <p class="subsection-text">Det finns idag 27 myndigheter i Sverige som är ansvariga för officiell statistik, varav KB och Statistiska centralbyrån (SCB) är två. SCB har också ansvar för att samordna och stödja systemet för den officiella statistiken. Läs mer om vad officiell statistik är och <a href="http://www.scb.se/Pages/List____250770.aspx">Rådet för den officiella statistiken</a> på SCB:s webbplats.</p>
+                    <p class="subsection-text">Sveriges officiella statistik regleras av Lagen om den officiella statistiken (<a href="http://www.notisum.se/rnp/sls/lag/20010099.htm">SFS 2001:99</a>) och Förordningen om den officiella statistiken (<a href="http://www.notisum.se/rnp/sls/lag/20010100.htm">SFS 2001:100</a>). I statistiksystemet har biblioteksstatistiken produktkod KU0105. En förändring av Lagen om den officiella statistiken trädde i kraft 2013. <a href="http://www.scb.se/sv_/Om-SCB/Sveriges-officiella-statistik/Statistikansvariga-myndigheter/">Myndigheter</a> som har ansvar för Sveriges officiella statistik har bland annat ansvar för att</p>
+                    <p class="subsection-text">§ statistiken är objektiv<br>§ statistiken dokumenteras<br>§ statistiken kvalitetsdeklareras</p>
+                    <p class="subsection-text">Den officiella statistiken ska utan avgift finnas tillgänglig i elektronisk form. All officiell statistik ska ha beteckningen officiell statistik eller märkas med symbolen</p>
+                    <img src="/static/img/logo-statistics.jpg" style="margin-bottom: 10px;">
+                    <p class="subsection-text">Observera att beteckningen eller symbolen inte får användas vid vidarebearbetningar av den officiella statistiken.</p>
+                    <p class="subsection-text">Det är upp till var och en av de statistikansvariga myndigheterna att utfärda regler uppgiftsskyldighet för officiell statistik. Om statistik inte besvaras där det föreligger uppgiftsskyldighet kan detta medföra böter. KB har inte utfärdat någon sådan regel.</p>
+                    <p class="subsection-text">Produktionen av officiell statistik följer ett särskilt regelverk som verkar för statistiken kvalitet och generaliserbarhet. Eftersom många delar av Sveriges officiella statistik ingår i EUs statistiksystem följer också den officiella statistiken ”European statistics code of practice”.</p>
+                    <p class="subsection-text" style="margin-bottom: 0;">Biblioteksstatistiken har under åren publicerats på olika sätt, <a href="http://www.kb.se/bibliotek/Statistik-kvalitet/biblioteksstatistik/">här finns en länk om du vill nå lite äldre statistik.</a></p>
                 </div>
             </div>
 
@@ -89,7 +104,7 @@
                 {% if forloop.counter == 3 and articles|length > 3%}
                     <div class="row">
                         <div class="col-xs-12">
-                            <button class="btn btn-articles btn-lg btn-articles-expand"><i class="fa fa-plus-circle fa-fw"></i> Visa alla publiceringar</button>
+                            <button class="btn btn-articles btn-lg btn-articles-expand"><i class="fa fa-plus-circle fa-fw"></i> Visa tidigare information</button>
                         </div>
                     </div>
                 {% endif %}
@@ -201,7 +216,7 @@
         <footer>
             <hr>
             <div class="container text-center">
-                <p>&copy; Kungliga Biblioteket 2014<br><a href="{% url "admin" %}">Administrera biblioteksstatistiken</a></p>
+                <p>&copy; Kungliga Biblioteket 2014<br><a href="{% url "admin" %}">Administrera Biblioteksstatistiken</a></p>
             </div>
         </footer>
 
