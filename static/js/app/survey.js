@@ -299,8 +299,9 @@ define(['jquery', 'survey.sum', 'survey.cell', 'surveys.dispatch', 'bootstrap.va
                 survey.form().attr("action", Urls.survey(survey.form("#id_key").val()));
                 survey.validator().defaultSubmit();
             }).on('error.form.bv', function () {
+                var invalidField = survey.validator().getInvalidFields().first();
                 $('html, body').animate({
-                    scrollTop: survey.validator().getInvalidFields().first().offset().top - 100
+                    scrollTop: invalidField.offset().top - 10
                 }, 300);
             });
 

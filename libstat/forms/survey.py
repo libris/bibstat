@@ -37,6 +37,13 @@ class SurveyForm(forms.Form):
             attrs["data-bv-greaterthan"] = ""
             attrs["data-bv-greaterthan-value"] = "0"
             attrs["data-bv-greaterthan-inclusive"] = ""
+
+        if "email" in cell.types:
+            attrs["data-bv-emailaddress"] = ""
+            attrs["data-bv-regexp"] = ""
+            attrs["data-bv-regexp-regexp"] = ".+@.+\..+"
+            attrs["data-bv-regexp-message"] = "Vänligen mata in en giltig emailadress"
+
         if "text" in cell.types:
             attrs["data-bv-stringlength"] = ""
             attrs["data-bv-stringlength-min"] = "0"
