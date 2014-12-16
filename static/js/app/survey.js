@@ -194,7 +194,8 @@ define(['jquery', 'survey.sum', 'survey.cell', 'surveys.dispatch', 'bootstrap.va
         } else if (boostedPercent <= requiredPercent) {
             setPercentAndText(Math.min(boostedPercent, requiredPercent));
         } else {
-            setPercentAndText(Math.max(Math.ceil(percent), requiredPercent));
+            percent = (correct == total) ? 100 : Math.min(99, Math.ceil(percent));
+            setPercentAndText(Math.max(percent, requiredPercent));
         }
     };
     var initProgress = function () {
