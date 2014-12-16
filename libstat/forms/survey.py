@@ -146,6 +146,8 @@ class SurveyForm(forms.Form):
             required=False, widget=forms.HiddenInput(attrs={"id": "unknown_inputs"}))
         self.fields["selected_libraries"] = forms.CharField(
             required=False, widget=forms.HiddenInput(attrs={"id": "selected_libraries"}))
+        self.fields["scroll_position"] = forms.CharField(
+            required=False, widget=forms.HiddenInput(attrs={"id": "scroll_position"}))
         self.fields["submit_action"] = forms.CharField(
             required=False, widget=forms.HiddenInput(attrs={"id": "submit_action"}))
         self.fields["read_only"] = forms.CharField(required=False, widget=forms.HiddenInput(attrs={"id": "read_only"}))
