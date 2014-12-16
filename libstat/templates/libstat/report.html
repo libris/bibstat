@@ -150,6 +150,10 @@
         font-weight: bold;
     }
 
+    tr.empty {
+        height: 30px;
+    }
+
 </style>
 <div class="report">
     <div class="report-title scroll-start">Verksamhetsrapport för året {{ year }}</div>
@@ -176,15 +180,19 @@
                 </tr>
                 {% for row in group|access:"rows" %}
                     {% if row.label_only %}
-                        <tr class="label-only">
-                            <td class="observation-label">{{ row|access:"label" }}</td>
-                            <td></td>
-                            <td></td>
-                            <td></td>
-                            <td></td>
-                            <td></td>
-                            <td></td>
-                        </tr>
+                        {% if row.label %}
+                            <tr class="label-only">
+                                {% else %}
+                            <tr class="empty">
+                        {% endif %}
+                    <td class="observation-label">{{ row.label }}</td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    </tr>
                     {% else %}
                         <tr class="{% if forloop.counter|divisibleby:2 %}even{% else %}odd{% endif %}{% if row.is_sum %} sum{% endif %}">
                             <td class="observation-label">{{ row|access:"label" }}</td>
