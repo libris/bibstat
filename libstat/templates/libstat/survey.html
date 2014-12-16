@@ -336,6 +336,7 @@
                                                                 <button type="button"
                                                                         class="btn btn-default btn-dropdown dropdown-toggle"
                                                                         data-toggle="dropdown"
+                                                                        tabindex="-1"
                                                                         {% if form.is_read_only %}
                                                                         disabled {% endif %}
                                                                         >
@@ -361,7 +362,7 @@
                                                                 <a type="button" class="btn btn-default btn-help"
                                                                    href="#"
                                                                    title="Förklaring"
-                                                                   tabindex="0"
+                                                                   tabindex="-1"
                                                                    data-toggle="popover" data-placement="top"
                                                                    data-content="{{ cell.explanation }}"
                                                                    data-trigger="click">
@@ -370,7 +371,7 @@
                                                             {% endif %}
 
                                                             {% if group.columns != 4 %}
-                                                                <button class="btn btn-default btn-value disabled">
+                                                                <button class="btn btn-default btn-value disabled" tabindex="-1">
                                                                     {% if cell.previous_value %}
                                                                         {{ cell.previous_value|floatformat:"-2" }}
                                                                     {% else %}
