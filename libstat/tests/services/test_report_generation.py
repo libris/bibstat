@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+from pprint import pprint
 from libstat.report_templates import ReportTemplate, Group, VariableRow, KeyFigureRow
 from libstat.services.report_generation import generate_report, _get_observations_from
 from libstat.tests import MongoTestCase
@@ -27,6 +28,7 @@ class TestReportGeneration(MongoTestCase):
         ])
         observations = {
             "key1": {
+                2012: 19.0,
                 2013: 5.0,
                 2014: 7.0,
                 "total": 31.0
@@ -37,7 +39,8 @@ class TestReportGeneration(MongoTestCase):
                 "total": 47.0
             },
             "key4": {
-                2014: 3.0
+                2014: 3.0,
+                2012: 17.0
             }
         }
 
@@ -45,10 +48,11 @@ class TestReportGeneration(MongoTestCase):
         expected_report = [
             {
                 "title": "some_title1",
-                "years": [2013, 2014],
+                "years": [2012, 2013, 2014],
                 "rows": [
                     {
                         "label": "some_description1",
+                        2012: 19.0,
                         2013: 5.0,
                         2014: 7.0,
                         "diff": ((7.0 / 5.0) - 1) * 100,
@@ -58,7 +62,7 @@ class TestReportGeneration(MongoTestCase):
             },
             {
                 "title": "some_title2",
-                "years": [2013, 2014],
+                "years": [2012, 2013, 2014],
                 "rows": [
                     {
                         "label": "some_description2",
@@ -78,6 +82,7 @@ class TestReportGeneration(MongoTestCase):
                     },
                     {
                         "label": "some_description5",
+                        2012: 17.0,
                         2014: 3.0
                     },
                     {
@@ -89,7 +94,6 @@ class TestReportGeneration(MongoTestCase):
 
         self.assertEqual(report, expected_report)
 
-
     def test_parses_observations_from_surveys(self):
         variable1 = self._dummy_variable(key="key1")
         variable2 = self._dummy_variable(key="key2")
@@ -100,7 +104,7 @@ class TestReportGeneration(MongoTestCase):
         library3 = self._dummy_library()
 
         survey1 = self._dummy_survey(
-            sample_year=2015,
+            sample_year=2016,
             library=library1,
             observations=[
                 self._dummy_observation(variable=variable1, value=1),
@@ -108,7 +112,7 @@ class TestReportGeneration(MongoTestCase):
             ])
 
         survey2 = self._dummy_survey(
-            sample_year=2015,
+            sample_year=2016,
             library=library2,
             observations=[
                 self._dummy_observation(variable=variable1, value=3),
@@ -116,7 +120,7 @@ class TestReportGeneration(MongoTestCase):
             ])
 
         survey3 = self._dummy_survey(
-            sample_year=2015,
+            sample_year=2016,
             library=library3,
             observations=[
                 self._dummy_observation(variable=variable2, value=13),
@@ -124,17 +128,26 @@ class TestReportGeneration(MongoTestCase):
             ])
 
         survey4 = self._dummy_survey(
-            sample_year=2014,
+            sample_year=2015,
             library=library1,
             observations=[
                 self._dummy_observation(variable=variable1, value=7),
                 self._dummy_observation(variable=variable2, value=11)
             ])
 
+        survey5 = self._dummy_survey(
+            sample_year=2014,
+            library=library1,
+            observations=[
+                self._dummy_observation(variable=variable1, value=19),
+                self._dummy_observation(variable=variable2, value=23)
+            ])
+
         survey1.publish()
         survey2.publish()
         survey3.publish()
         survey4.publish()
+        survey5.publish()
 
         template = ReportTemplate(groups=[
             Group(rows=[VariableRow(variable_key="key1")]),
@@ -145,21 +158,24 @@ class TestReportGeneration(MongoTestCase):
             ])
         ])
 
-        observations = _get_observations_from(template, [survey1, survey2], 2015)
+        observations = _get_observations_from(template, [survey1, survey2], 2016)
         expected_observations = {
             "key1": {
-                2014: 7.0,
-                2015: (1.0 + 3.0),
+                2014: 19.0,
+                2015: 7.0,
+                2016: (1.0 + 3.0),
                 "total": (1.0 + 3.0)
             },
             "key2": {
-                2014: 11.0,
-                2015: 2.0,
+                2014: 23.0,
+                2015: 11.0,
+                2016: 2.0,
                 "total": (2.0 + 13.0)
             },
             "key3": {
                 2014: 0.0,
-                2015: 5.0,
+                2015: 0.0,
+                2016: 5.0,
                 "total": (5.0 + 17.0)
             }
         }

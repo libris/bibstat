@@ -70,15 +70,22 @@
                 color: white;
             }
 
-            th.observation-previous-year {
+            th.observation-previous-previous-year {
                 color: white;
                 background-color: rgb(239, 131, 24);
                 width: 85px;
             }
 
-            th.observation-sample-year {
+
+            th.observation-previous-year {
                 color: white;
                 background-color: rgb(220, 110, 16);
+                width: 85px;
+            }
+
+            th.observation-sample-year {
+                color: white;
+                background-color: rgb(206, 93, 26);
                 width: 85px;
             }
 
@@ -146,24 +153,32 @@
                     <table class="observation">
                         <tr>
                             <th class="observation-label">{{ group.title }}</th>
-                            <th class="observation-previous-year">År {{ group.years.0 }}</th>
-                            <th class="observation-sample-year">År {{ group.years.1 }}</th>
+                            <th class="observation-previous-previous-year">År {{ group.years.0 }}</th>
+                            <th class="observation-previous-year">År {{ group.years.1 }}</th>
+                            <th class="observation-sample-year">År {{ group.years.2 }}</th>
                             <th class="observation-difference">Förändring {{ group.years.0 }} - {{ group.years.1 }}</th>
                             <th class="observation-difference-total">Andel av riket</th>
                         </tr>
                         {% for row in group|access:"rows" %}
                             <tr class="{% if forloop.counter|divisibleby:2 %}even{% else %}odd{% endif %}">
                                 <td class="observation-label">{{ row|access:"label" }}</td>
-                                <td class="observation-previous-year">
+                                <td class="observation-previous-previous-year">
                                     {% if row|access:group.years.0 %}
                                         {{ row|access:group.years.0|floatformat }}
                                     {% else %}
                                         -
                                     {% endif %}
                                 </td>
-                                <td class="observation-sample-year">
+                                <td class="observation-previous-year">
                                     {% if row|access:group.years.1 %}
                                         {{ row|access:group.years.1|floatformat }}
+                                    {% else %}
+                                        -
+                                    {% endif %}
+                                </td>
+                                <td class="observation-sample-year">
+                                    {% if row|access:group.years.2 %}
+                                        {{ row|access:group.years.2|floatformat }}
                                     {% else %}
                                         -
                                     {% endif %}
