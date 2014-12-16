@@ -39,6 +39,7 @@
             'login': ['app/login'],
             'reports': ['app/reports'],
             'scroll': ['app/scroll'],
+            'spinner': ['app/spinner'],
             'survey': ['app/survey'],
             'survey.cell': ['app/survey/cell'],
             'survey.sum': ['app/survey/sum'],
