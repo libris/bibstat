@@ -36,6 +36,7 @@
             'dispatches': ['app/dispatches'],
             'index': ['app/index'],
             'libraries': ['app/libraries'],
+            'loading': ['app/loading'],
             'login': ['app/login'],
             'reports': ['app/reports'],
             'scroll': ['app/scroll'],

@@ -342,3 +342,26 @@ a[title="JavaScript charts"] {
     height: 500px;
     font-size: 11px;
 }
+
+.loading {
+    display: table;
+    position: fixed;
+    top: 350px;
+    left: 50%;
+    margin-top: -96px;
+    margin-left: -96px;
+    background-color: rgba(0, 0, 0, 0.85);
+    border-radius: 25px;
+    width: 250px;
+    height: 190px;
+    z-index: 99999;
+    color: white;
+    font-size: 20px;
+}
+
+.loading p {
+    display: table-cell;
+    margin: auto auto;
+    vertical-align: middle;
+    text-align: center;
+}

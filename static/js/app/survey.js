@@ -216,9 +216,18 @@ define(['jquery', 'survey.sum', 'survey.cell', 'surveys.dispatch', 'bootstrap.va
 
         /* Enable help button popover. */
         $(".btn-help").popover({
-            container: 'body'
+            container: 'body',
+            title: function() {
+                return 'Förklaring' + '<button class="close" style="line-height: inherit;">&times</button>';
+            },
+            html: true
         }).click(function (e) {
             e.preventDefault();
+        }).on('shown.bs.popover', function() {
+            var button = $(this);
+            $('.popover button.close').click(function() {
+                button.popover('toggle');
+            });
         });
 
         var initAdmin = function () {
@@ -290,8 +299,9 @@ define(['jquery', 'survey.sum', 'survey.cell', 'surveys.dispatch', 'bootstrap.va
                 survey.form().attr("action", Urls.survey(survey.form("#id_key").val()));
                 survey.validator().defaultSubmit();
             }).on('error.form.bv', function () {
+                var invalidField = survey.validator().getInvalidFields().first();
                 $('html, body').animate({
-                    scrollTop: survey.validator().getInvalidFields().first().offset().top - 100
+                    scrollTop: invalidField.offset().top - 10
                 }, 300);
             });
 

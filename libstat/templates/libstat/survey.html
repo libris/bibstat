@@ -3,6 +3,8 @@
 {% load libstat_tags %}
 
 {% block content %}
+    {% include "libstat/analytics.html" %}
+
     <style>
         .sum-description {
             font-weight: bold;
@@ -167,6 +169,8 @@
         }
     </style>
 
+    <div class="loading"><p>Var vänlig vänta medan enkäten laddas...<br><br><i class="fa fa-2x fa-spinner fa-spin"></i></p></div>
+
     <div class="navbar navbar-default navbar-static-top navbar-library-info" role="navigation">
         <div class="container">
             <div class="navbar-left">
@@ -207,7 +211,7 @@
             <h2 class="section-title">Svarande organisation/bibliotek</h2>
 
             <div class="panel panel-default">
-                <div class="panel-heading">Välj de bibliotek för vilka värdena i denna enkät ska gälla.</div>
+                <div class="panel-heading">Välj eventuellt andra bibliotek för vilka värdena i denna enkät ska gälla.</div>
                 <div class="panel-body">
                     <table class="table">
                         <thead>
@@ -361,7 +365,6 @@
                                                             {% if cell.explanation %}
                                                                 <a type="button" class="btn btn-default btn-help"
                                                                    href="#"
-                                                                   title="Förklaring"
                                                                    tabindex="-1"
                                                                    data-toggle="popover" data-placement="top"
                                                                    data-content="{{ cell.explanation }}"
