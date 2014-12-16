@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 from libstat.models import Survey, Variable, OpenData
-from libstat.report_templates import report_template_2014, VariableRow, KeyFigureRow
+from libstat.report_templates import report_template_2014
 
 
 def get_report(surveys, year):
@@ -32,18 +32,23 @@ def generate_report(template, year, observations):
         report_group = {"title": group.title,
                         "years": [year - 2, year - 1, year],
                         "rows": []}
+        if group.extra is not None:
+            report_group["extra"] = group.extra
         for row in group.rows:
             value0 = None
             value1 = None
             value2 = None
             total = None
-            if isinstance(row, VariableRow):
+            extra = None
+            if row.variable_key:
                 observation = observations.get(row.variable_key, {})
                 value0 = observation.get(year, None)
                 value1 = observation.get(year - 1, None)
                 value2 = observation.get(year - 2, None)
                 total = observation.get("total", None)
-            elif isinstance(row, KeyFigureRow):
+                if row.computation:
+                    extra = row.compute(values_for(observations, row.variable_keys, year))
+            else:
                 value0 = row.compute(values_for(observations, row.variable_keys, year))
                 value1 = row.compute(values_for(observations, row.variable_keys, year - 1))
                 value2 = row.compute(values_for(observations, row.variable_keys, year - 2))
@@ -57,6 +62,7 @@ def generate_report(template, year, observations):
             if value2 is not None: report_row[year - 2] = value2
             if diff is not None: report_row["diff"] = diff
             if nation_diff is not None: report_row["nation_diff"] = nation_diff
+            if extra is not None: report_row["extra"] = extra
 
             report_group["rows"].append(report_row)
         report.append(report_group)

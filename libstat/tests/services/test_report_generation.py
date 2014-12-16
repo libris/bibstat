@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 from pprint import pprint
-from libstat.report_templates import ReportTemplate, Group, VariableRow, KeyFigureRow
+from libstat.report_templates import ReportTemplate, Group, Row
 from libstat.services.report_generation import generate_report, _get_observations_from
 from libstat.tests import MongoTestCase
 
@@ -9,21 +9,24 @@ class TestReportGeneration(MongoTestCase):
     def test_creates_correct_report(self):
         template = ReportTemplate(groups=[
             Group(title="some_title1",
-                  rows=[VariableRow(description="some_description1",
-                                    variable_key="key1")]),
+                  rows=[Row(description="some_description1",
+                            variable_key="key1")]),
             Group(title="some_title2",
-                  rows=[VariableRow(description="some_description2",
-                                    variable_key="key2"),
-                        KeyFigureRow(description="some_description3",
-                                     computation=(lambda a, b: (a / b) / 15),
-                                     variable_keys=["key1", "key2"]),
-                        VariableRow(description="some_description4",
-                                    variable_key="does_not_exist1"),
-                        VariableRow(description="some_description5",
-                                    variable_key="key4"),
-                        KeyFigureRow(description="some_description6",
-                                     computation=(lambda a, b: (a / b)),
-                                     variable_keys=["does_not_exist2", "does_not_exist3"]),
+                  extra="some_extra_description",
+                  rows=[Row(description="some_description2",
+                            variable_key="key2",
+                            computation=(lambda a, b: (a / b)),
+                            variable_keys=["key1", "key2"]),
+                        Row(description="some_description3",
+                            computation=(lambda a, b: (a / b) / 15),
+                            variable_keys=["key1", "key2"]),
+                        Row(description="some_description4",
+                            variable_key="does_not_exist1"),
+                        Row(description="some_description5",
+                            variable_key="key4"),
+                        Row(description="some_description6",
+                            computation=(lambda a, b: (a / b)),
+                            variable_keys=["does_not_exist2", "does_not_exist3"]),
                   ])
         ])
         observations = {
@@ -56,12 +59,13 @@ class TestReportGeneration(MongoTestCase):
                         2013: 5.0,
                         2014: 7.0,
                         "diff": ((7.0 / 5.0) - 1) * 100,
-                        "nation_diff": (7.0 / 31.0) * 1000
+                        "nation_diff": (7.0 / 31.0) * 1000,
                     }
                 ]
             },
             {
                 "title": "some_title2",
+                "extra": "some_extra_description",
                 "years": [2012, 2013, 2014],
                 "rows": [
                     {
@@ -69,7 +73,8 @@ class TestReportGeneration(MongoTestCase):
                         2013: 11.0,
                         2014: 13.0,
                         "diff": ((13.0 / 11.0) - 1) * 100,
-                        "nation_diff": (13.0 / 47.0) * 1000
+                        "nation_diff": (13.0 / 47.0) * 1000,
+                        "extra": (7.0 / 13.0)
                     },
                     {
                         "label": "some_description3",
@@ -150,11 +155,11 @@ class TestReportGeneration(MongoTestCase):
         survey5.publish()
 
         template = ReportTemplate(groups=[
-            Group(rows=[VariableRow(variable_key="key1")]),
-            Group(rows=[VariableRow(variable_key="key2"),
-                        KeyFigureRow(variable_keys=["key3", "key2"]),
-                        VariableRow(variable_key="does_not_exist1"),
-                        KeyFigureRow(variable_keys=["does_not_exist2", "does_not_exist3"]),
+            Group(rows=[Row(variable_key="key1")]),
+            Group(rows=[Row(variable_key="key2"),
+                        Row(variable_keys=["key3", "key2"]),
+                        Row(variable_key="does_not_exist1"),
+                        Row(variable_keys=["does_not_exist2", "does_not_exist3"]),
             ])
         ])
 
@@ -183,4 +188,55 @@ class TestReportGeneration(MongoTestCase):
         self.assertEqual(observations, expected_observations)
 
 
+class TestReportTemplate(MongoTestCase):
+    def test_returns_all_variable_keys_present_in_report_template_without_duplicates(self):
+        template = ReportTemplate(groups=[
+            Group(rows=[
+                Row(variable_key="key1")]),
+            Group(rows=[
+                Row(variable_key="key2"),
+                Row(variable_keys=["key3", "key2"]),
+                Row(variable_key="key4", variable_keys=["key3", "key5"]),
+            ])
+        ])
 
+        variable_keys = template.all_variable_keys
+
+        self.assertEqual(len(variable_keys), 5)
+        self.assertTrue("key1" in variable_keys)
+        self.assertTrue("key2" in variable_keys)
+        self.assertTrue("key3" in variable_keys)
+        self.assertTrue("key4" in variable_keys)
+        self.assertTrue("key5" in variable_keys)
+
+    def test_fetches_description_from_variable_if_variable_exists_and_no_description_is_given(self):
+        variable = self._dummy_variable(question_part="some_description")
+        row = Row(variable_key=variable.key)
+
+        self.assertEqual(row.description, variable.question_part)
+
+    def test_does_not_fetch_description_from_variable_if_no_variable_key_is_given(self):
+        row = Row()
+
+        self.assertEqual(row.description, None)
+
+    def test_does_not_fetch_description_from_variable_if_variable_exists_and_description_is_given(self):
+        variable = self._dummy_variable(question_part="dont use this")
+        row = Row(variable_key=variable.key, description="some_description")
+
+        self.assertEqual(row.description, "some_description")
+
+    def test_row_computes_value(self):
+        row = Row(computation=(lambda a, b, c: (a / (b + c))))
+
+        self.assertEqual(row.compute([3.0, 7.0, 11.0]), 3.0 / (7.0 + 11.0))
+
+    def test_row_does_not_compute_with_none_values(self):
+        row = Row(computation=(lambda a, b, c: (a + b + c)))
+
+        self.assertEqual(row.compute([3.0, None, 7.0]), None)
+
+    def test_row_handles_division_by_zero(self):
+        row = Row(computation=(lambda a, b: (a / b)))
+
+        self.assertEqual(row.compute([3.0, 0]), None)

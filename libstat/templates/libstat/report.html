@@ -41,12 +41,14 @@
             }
 
             .report {
-                width: 800px;
+                width: 1000px;
                 margin: 0px auto;
                 padding-top: 30px;
             }
 
             th {
+                color: white;
+                text-align: center;
                 padding-top: 5px;
                 padding-bottom: 5px;
             }
@@ -66,41 +68,39 @@
             }
 
             th.observation-label {
+                text-align: left;
                 background-color: rgb(255, 163, 56);
-                color: white;
             }
 
             th.observation-previous-previous-year {
-                color: white;
                 background-color: rgb(239, 131, 24);
                 width: 85px;
             }
 
 
             th.observation-previous-year {
-                color: white;
                 background-color: rgb(220, 110, 16);
                 width: 85px;
             }
 
             th.observation-sample-year {
-                color: white;
                 background-color: rgb(206, 93, 26);
                 width: 85px;
             }
 
             th.observation-difference {
-                color: white;
-                text-align: center;
                 background-color: rgb(42, 176, 204);
                 width: 110px;
             }
 
             th.observation-difference-total {
                 background-color: rgb(37, 146, 188);
-                color: white;
-                text-align: center;
                 width: 90px;
+            }
+
+            th.observation-extra {
+                width: 250px;
+                background-color: rgb(27, 124, 173);
             }
 
             .observation-label {
@@ -153,11 +153,12 @@
                     <table class="observation">
                         <tr>
                             <th class="observation-label">{{ group.title }}</th>
-                            <th class="observation-previous-previous-year">År {{ group.years.0 }}</th>
-                            <th class="observation-previous-year">År {{ group.years.1 }}</th>
-                            <th class="observation-sample-year">År {{ group.years.2 }}</th>
-                            <th class="observation-difference">Förändring {{ group.years.0 }} - {{ group.years.1 }}</th>
+                            <th class="observation-previous-previous-year">{{ group.years.0 }}</th>
+                            <th class="observation-previous-year">{{ group.years.1 }}</th>
+                            <th class="observation-sample-year">{{ group.years.2 }}</th>
+                            <th class="observation-difference">Utveckling {{ group.years.0 }} - {{ group.years.1 }}</th>
                             <th class="observation-difference-total">Andel av riket</th>
+                            <th class="observation-extra">{{ group.extra|default:"" }}</th>
                         </tr>
                         {% for row in group|access:"rows" %}
                             <tr class="{% if forloop.counter|divisibleby:2 %}even{% else %}odd{% endif %}">
@@ -193,6 +194,13 @@
                                 <td class="observation-difference-total">
                                     {% if row.nation_diff >= 1 %}
                                         {{ row.nation_diff|floatformat:"0"|default:"-" }}&permil;
+                                    {% else %}
+                                        -
+                                    {% endif %}
+                                </td>
+                                <td class="observation-extra">
+                                    {% if row.extra %}
+                                        {{ row.extra|floatformat:"0"|default:"-" }}%
                                     {% else %}
                                         -
                                     {% endif %}
