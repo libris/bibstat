@@ -1,5 +1,5 @@
-define(['charts', 'dispatches', 'index', 'libraries', 'login', 'reports', 'spinner', 'survey', 'table', 'variables'],
-    function(charts, dispatches, index, libraries, login, reports, spinner, survey, table, variables) {
+define(['charts', 'dispatches', 'index', 'libraries', 'loading', 'login', 'reports', 'spinner', 'survey', 'table', 'variables'],
+    function(charts, dispatches, index, libraries, loading, login, reports, spinner, survey, table, variables) {
         charts.init();
         dispatches.init();
         index.init();
@@ -10,4 +10,5 @@ define(['charts', 'dispatches', 'index', 'libraries', 'login', 'reports', 'spinn
         survey.init();
         table.init();
         variables.init();
+        loading.done();
     });
