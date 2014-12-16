@@ -23,7 +23,8 @@ class TestReportGeneration(MongoTestCase):
                         Row(description="some_description4",
                             variable_key="does_not_exist1"),
                         Row(description="some_description5",
-                            variable_key="key4"),
+                            variable_key="key4",
+                            is_sum=True),
                         Row(description="some_description6",
                             computation=(lambda a, b: (a / b)),
                             variable_keys=["does_not_exist2", "does_not_exist3"]),
@@ -88,7 +89,8 @@ class TestReportGeneration(MongoTestCase):
                     {
                         "label": "some_description5",
                         2012: 17.0,
-                        2014: 3.0
+                        2014: 3.0,
+                        "is_sum": True
                     },
                     {
                         "label": "some_description6"

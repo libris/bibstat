@@ -42,6 +42,7 @@ class Row():
         self.variable_keys = kwargs.pop("variable_keys", None)
         self.computation = kwargs.pop("computation", None)
         self.description = kwargs.pop("description", None)
+        self.is_sum = kwargs.pop("is_sum", False)
 
         if self.description is None and self.variable_key is not None:
             variables = Variable.objects.filter(key=self.variable_key)
@@ -79,7 +80,7 @@ def report_template_2014():
                   Row(variable_key=u"Arsverke02"),
                   Row(variable_key=u"Arsverke03"),
                   Row(variable_key=u"Arsverke04"),
-                  Row(variable_key=u"Arsverke99"),
+                  Row(variable_key=u"Arsverke99", is_sum=True),
                   Row(variable_key=u"Arsverke05"),
                   Row(description=u"Andel årsverken för barn och unga",
                                computation=(lambda a, b: a / b),
@@ -104,7 +105,7 @@ def report_template_2014():
               rows=[
                   Row(variable_key=u"Personer01"),
                   Row(variable_key=u"Personer02"),
-                  Row(variable_key=u"Personer99"),
+                  Row(variable_key=u"Personer99", is_sum=True),
                   Row(description=u"Andel anställda kvinnor",
                                computation=(lambda a, b: a / b),
                                variable_keys=[u"Personer01", u"Personer99"]),
@@ -120,7 +121,7 @@ def report_template_2014():
                   Row(variable_key=u"Utgift04"),
                   Row(variable_key=u"Utgift05"),
                   Row(variable_key=u"Utgift06"),
-                  Row(variable_key=u"Utgift99"),
+                  Row(variable_key=u"Utgift99", is_sum=True),
                   Row(variable_key=u"Utgift07"),
                   Row(description=u"Mediekostnad per invånare",
                                computation=(lambda a, b, c: (a + b) / c),
@@ -149,7 +150,7 @@ def report_template_2014():
                   Row(variable_key=u"Intakt01"),
                   Row(variable_key=u"Intakt02"),
                   Row(variable_key=u"Intakt03"),
-                  Row(variable_key=u"Intakt99"),
+                  Row(variable_key=u"Intakt99", is_sum=True),
                   Row(
                       description=u"Andel egengenererade intäkter i förhållande till de totala driftskostnaderna",
                       computation=(lambda a, b: a / b),
@@ -171,7 +172,7 @@ def report_template_2014():
                   Row(variable_key=u"Bestand111"),
                   Row(variable_key=u"Bestand112"),
                   Row(variable_key=u"Bestand113"),
-                  Row(variable_key=u"Bestand199"),
+                  Row(variable_key=u"Bestand199", is_sum=True),
                   Row(description=u"Totalt fysiskt mediebestånd per invånare",
                                computation=(lambda a, b: a / b),
                                variable_keys=[u"Bestand199", u"Population01"]),
@@ -194,7 +195,7 @@ def report_template_2014():
                   Row(variable_key=u"Bestand211"),
                   Row(variable_key=u"Bestand212"),
                   Row(variable_key=u"Bestand213"),
-                  Row(variable_key=u"Bestand299"),
+                  Row(variable_key=u"Bestand299", is_sum=True),
                   Row(description=u"Antal fysiska  nyförvärv per 1000 invånare (ej tidn.tidskr.)",
                                computation=(lambda a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11:
                                             (a1 + a2 + a3 + a4 + a5 + a6 + a7 + a8 + a9 + a10) / (a11 / 1000)),
@@ -216,7 +217,7 @@ def report_template_2014():
                   Row(variable_key=u"Bestand311"),
                   Row(variable_key=u"Bestand312"),
                   Row(variable_key=u"Bestand313"),
-                  Row(variable_key=u"Bestand399"),
+                  Row(variable_key=u"Bestand399", is_sum=True),
                   Row(description=u"Andel e-bokstitlar av det totala elektroniska titelbeståndet",
                                computation=(lambda a, b: a / b),
                                variable_keys=[u"Bestand301", u"Bestand399"])

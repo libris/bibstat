@@ -63,6 +63,7 @@ def generate_report(template, year, observations):
             if diff is not None: report_row["diff"] = diff
             if nation_diff is not None: report_row["nation_diff"] = nation_diff
             if extra is not None: report_row["extra"] = extra
+            if row.is_sum: report_row["is_sum"] = True
 
             report_group["rows"].append(report_row)
         report.append(report_group)

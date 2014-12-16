@@ -136,6 +136,10 @@
                 font-family: helvetica;
             }
 
+            tr.sum td {
+                background-color: rgb(166, 224, 148) !important;
+            }
+
         </style>
         <div class="report">
             <div class="report-title scroll-start">Verksamhetsrapport för året {{ year }}</div>
@@ -161,7 +165,7 @@
                             <th class="observation-extra">{{ group.extra|default:"" }}</th>
                         </tr>
                         {% for row in group|access:"rows" %}
-                            <tr class="{% if forloop.counter|divisibleby:2 %}even{% else %}odd{% endif %}">
+                            <tr class="{% if forloop.counter|divisibleby:2 %}even{% else %}odd{% endif %}{% if row.is_sum %} sum{% endif %}">
                                 <td class="observation-label">{{ row|access:"label" }}</td>
                                 <td class="observation-previous-previous-year">
                                     {% if row|access:group.years.0 %}
