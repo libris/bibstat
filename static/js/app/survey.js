@@ -380,11 +380,23 @@ define(['jquery', 'survey.sum', 'survey.cell', 'surveys.dispatch', 'bootstrap.va
             survey.form("#submit-survey-btn").click(function (e) {
                 e.preventDefault();
 
-                var validator = survey.validator();
-                validator.validate();
-                if (validator.isValid()) {
-                    $("#submit-confirm-modal").modal("show");
-                }
+                var submitButton = $(this);
+                var submitButtonHtml = submitButton.html();
+                var saveButton = $('#save-survey-btn');
+
+                submitButton.html('<i class="fa fa-spinner fa-spin"></i> Kontrollerar...').addClass('disabled');
+                saveButton.addClass('disabled');
+
+                setTimeout(function() {
+                    var validator = survey.validator();
+                    validator.validate();
+                    if (validator.isValid()) {
+                        $("#submit-confirm-modal").modal("show");
+                    }
+
+                    $('#submit-survey-btn').html(submitButtonHtml).removeClass('disabled');
+                    $('#save-survey-btn').removeClass('disabled');
+                }, 100);
             });
 
             $("#confirm-submit-survey-btn").click(function (e) {
