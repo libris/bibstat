@@ -77,6 +77,7 @@ a:hover, a:focus {
 
 .intro.intro-fixed {
     height: 350px;
+    background-position-y: -225px;
 }
 
 .intro .intro-logo {
