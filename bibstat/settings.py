@@ -192,8 +192,7 @@ MONGOENGINE_USER_DOCUMENT = 'mongoengine.django.auth.User'
 # Store Django sessions in MongoDB backend
 SESSION_ENGINE = 'mongoengine.django.sessions'
 SESSION_SERIALIZER = 'mongoengine.django.sessions.BSONSerializer'
-# 1h session timeout, cleanup of sessions is done with document TTL in mongodb
-SESSION_COOKIE_AGE = 60 * 60 * 1
+SESSION_COOKIE_AGE = 1000000
 
 # Initialize MongoDB connection
 MONGODB_DATABASE_HOST = 'mongodb://%s:%s@%s/%s' % (MONGODB_USER, MONGODB_PASSWD, MONGODB_HOST, MONGODB_NAME)
