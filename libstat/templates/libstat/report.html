@@ -2,236 +2,256 @@
 
 <!doctype html>
 <html lang="sv">
-    <head>
-        <meta charset="utf-8">
-        <meta http-equiv="X-UA-Compatible" content="IE=edge">
-        <meta name="viewport" content="width=device-width, initial-scale=1">
-        <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
 
-        <title>Biblioteksstatistiken</title>
+    <title>Biblioteksstatistiken</title>
 
-        <link href="/static/js/plugins/bootstrap/3.2.0/css/bootstrap.min.css" rel="stylesheet"/>
-        <link href="/static/css/font-awesome.min.css" rel="stylesheet"/>
-        <link href="/static/css/index.css" rel="stylesheet"/>
+    <link href="/static/js/plugins/bootstrap/3.2.0/css/bootstrap.min.css" rel="stylesheet"/>
+    <link href="/static/css/font-awesome.min.css" rel="stylesheet"/>
+    <link href="/static/css/index.css" rel="stylesheet"/>
 
-        {% include "libstat/analytics.html" %}
-    </head>
+    {% include "libstat/analytics.html" %}
+</head>
 
-    <body>
-        <header class="intro intro-fixed">
-            <div class="intro-body">
-                <div class="container">
-                    <div class="row">
-                        <div class="col-md-10 col-md-offset-1">
-                            <img class="intro-logo" src="/static/img/kb.svg">
-                            <h1 class="intro-title">Biblioteksstatistiken</h1>
-                            <a href="{{ previous_url }}" class="btn btn-reports btn-lg"><i class="fa fa-arrow-circle-left fa-fw"></i> Tillbaka till rapportvalen</a>
-                            <a href="{% url "index" %}" class="btn btn-reports btn-lg"><i class="fa fa-arrow-circle-left fa-fw"></i> Till startsidan</a>
-                        </div>
-                    </div>
+<body>
+<header class="intro intro-fixed">
+    <div class="intro-body">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-10 col-md-offset-1">
+                    <img class="intro-logo" src="/static/img/kb.svg">
+
+                    <h1 class="intro-title">Biblioteksstatistiken</h1>
+                    <a href="{{ previous_url }}" class="btn btn-reports btn-lg"><i
+                            class="fa fa-arrow-circle-left fa-fw"></i> Tillbaka till rapportvalen</a>
+                    <a href="{% url "index" %}" class="btn btn-reports btn-lg"><i
+                            class="fa fa-arrow-circle-left fa-fw"></i> Till startsidan</a>
                 </div>
             </div>
-        </header>
+        </div>
+    </div>
+</header>
 
-        <style>
-            .observation-group {
-                margin-bottom: 50px;
-            }
+<style>
+    .observation-group {
+        margin-bottom: 50px;
+    }
 
-            .observation-group:last-child {
-                margin-bottom: 0;
-            }
+    .observation-group:last-child {
+        margin-bottom: 0;
+    }
 
-            .report {
-                width: 1000px;
-                margin: 0px auto;
-                padding-top: 30px;
-            }
+    .report {
+        width: 1000px;
+        margin: 0px auto;
+        padding-top: 30px;
+    }
 
-            th {
-                color: white;
-                text-align: center;
-                padding-top: 5px;
-                padding-bottom: 5px;
-            }
+    th {
+        color: white;
+        text-align: center;
+        padding-top: 5px;
+        padding-bottom: 5px;
+    }
 
-            th, td {
-                padding-left: 15px;
-                padding-right: 15px;
-            }
+    th, td {
+        padding-left: 15px;
+        padding-right: 15px;
+    }
 
-            td {
-                padding-top: 5px;
-                padding-bottom: 5px;
-            }
+    td {
+        padding-top: 5px;
+        padding-bottom: 5px;
+    }
 
-            .even td:not(.observation-data-missing) {
-                background-color: #f2f2f2;
-            }
+    .even td:not(.observation-data-missing) {
+        background-color: #f2f2f2;
+    }
 
-            th.observation-label {
-                text-align: left;
-                background-color: rgb(255, 163, 56);
-            }
+    th.observation-label {
+        text-align: left;
+        background-color: rgb(255, 163, 56);
+    }
 
-            th.observation-previous-previous-year {
-                background-color: rgb(239, 131, 24);
-                width: 85px;
-            }
+    th.observation-previous-previous-year {
+        background-color: rgb(239, 131, 24);
+        width: 85px;
+    }
 
+    th.observation-previous-year {
+        background-color: rgb(220, 110, 16);
+        width: 85px;
+    }
 
-            th.observation-previous-year {
-                background-color: rgb(220, 110, 16);
-                width: 85px;
-            }
+    th.observation-sample-year {
+        background-color: rgb(206, 93, 26);
+        width: 85px;
+    }
 
-            th.observation-sample-year {
-                background-color: rgb(206, 93, 26);
-                width: 85px;
-            }
+    th.observation-difference {
+        background-color: rgb(42, 176, 204);
+        width: 110px;
+    }
 
-            th.observation-difference {
-                background-color: rgb(42, 176, 204);
-                width: 110px;
-            }
+    th.observation-difference-total {
+        background-color: rgb(37, 146, 188);
+        width: 90px;
+    }
 
-            th.observation-difference-total {
-                background-color: rgb(37, 146, 188);
-                width: 90px;
-            }
+    th.observation-extra {
+        width: 250px;
+        background-color: rgb(27, 124, 173);
+    }
 
-            th.observation-extra {
-                width: 250px;
-                background-color: rgb(27, 124, 173);
-            }
+    .observation-label {
+        width: 500px;
+    }
 
-            .observation-label {
-                width: 500px;
-            }
+    .report-title {
+        border-bottom: 5px solid black;
+        font-size: 40px;
+        font-family: helvetica;
+        width: auto;
+        text-align: center;
 
-            .report-title {
-                border-bottom: 5px solid black;
-                font-size: 40px;
-                font-family: helvetica;
-                width: auto;
-                text-align: center;
+    }
 
-            }
+    .libraries-label {
+        font-size: 17px;
+        font-family: helvetica;
+        margin-top: 30px;
+        margin-bottom: 5px;
+    }
 
-            .libraries-label {
-                font-size: 17px;
-                font-family: helvetica;
-                margin-top: 30px;
-                margin-bottom: 5px;
-            }
+    .libraries {
+        border-left: 8px solid black;
+        padding-left: 15px;
+        margin-bottom: 30px;
+    }
 
-            .libraries {
-                border-left: 8px solid black;
-                padding-left: 15px;
-                margin-bottom: 30px;
-            }
+    .libraries .library {
+        padding-bottom: 7px;
+        padding-top: 7px;
+        font-size: 20px;
+        font-family: helvetica;
+    }
 
-            .libraries .library {
-                padding-bottom: 7px;
-                padding-top: 7px;
-                font-size: 20px;
-                font-family: helvetica;
-            }
+    tr.sum td {
+        background-color: rgb(166, 224, 148) !important;
+    }
 
-            tr.sum td {
-                background-color: rgb(166, 224, 148) !important;
-            }
+    tr.label-only td {
+        color: white;
+        background-color: rgb(255, 163, 56);
+        font-weight: bold;
+    }
 
-        </style>
-        <div class="report">
-            <div class="report-title scroll-start">Verksamhetsrapport för året {{ year }}</div>
+</style>
+<div class="report">
+    <div class="report-title scroll-start">Verksamhetsrapport för året {{ year }}</div>
 
-            <div>
-                <div class="libraries-label">Serviceställen:</div>
-                <div class="libraries">
-                    {% for library in libraries %}
-                        <div class="library">{{ library.name }} ({{ library.city }}, {{ library.address }})</div>
-                    {% endfor %}
-                </div>
-            </div>
-            {% for group in measurements %}
-                <div class="observation-group">
-                    <table class="observation">
-                        <tr>
-                            <th class="observation-label">{{ group.title }}</th>
-                            <th class="observation-previous-previous-year">{{ group.years.0 }}</th>
-                            <th class="observation-previous-year">{{ group.years.1 }}</th>
-                            <th class="observation-sample-year">{{ group.years.2 }}</th>
-                            <th class="observation-difference">Utveckling {{ group.years.0 }} - {{ group.years.1 }}</th>
-                            <th class="observation-difference-total">Andel av riket</th>
-                            <th class="observation-extra">{{ group.extra|default:"" }}</th>
-                        </tr>
-                        {% for row in group|access:"rows" %}
-                            <tr class="{% if forloop.counter|divisibleby:2 %}even{% else %}odd{% endif %}{% if row.is_sum %} sum{% endif %}">
-                                <td class="observation-label">{{ row|access:"label" }}</td>
-                                <td class="observation-previous-previous-year">
-                                    {% if row|access:group.years.0 %}
-                                        {{ row|access:group.years.0|floatformat }}
-                                    {% else %}
-                                        -
-                                    {% endif %}
-                                </td>
-                                <td class="observation-previous-year">
-                                    {% if row|access:group.years.1 %}
-                                        {{ row|access:group.years.1|floatformat }}
-                                    {% else %}
-                                        -
-                                    {% endif %}
-                                </td>
-                                <td class="observation-sample-year">
-                                    {% if row|access:group.years.2 %}
-                                        {{ row|access:group.years.2|floatformat }}
-                                    {% else %}
-                                        -
-                                    {% endif %}
-                                </td>
-                                <td class="observation-difference">
-                                    {% if row.diff %}
-                                        {{ row.diff|floatformat:"0"|default:"-" }}%
-                                    {% else %}
-                                        -
-                                    {% endif %}
-                                </td>
-                                <td class="observation-difference-total">
-                                    {% if row.nation_diff >= 1 %}
-                                        {{ row.nation_diff|floatformat:"0"|default:"-" }}&permil;
-                                    {% else %}
-                                        -
-                                    {% endif %}
-                                </td>
-                                <td class="observation-extra">
-                                    {% if row.extra %}
-                                        {{ row.extra|floatformat:"0"|default:"-" }}%
-                                    {% else %}
-                                        -
-                                    {% endif %}
-                                </td>
-                            </tr>
-                        {% endfor %}
-                    </table>
-                </div>
-
-                <!--<div id="chart-{{ forloop.counter }}" class="chart" data-years="{{ group.years }}" data-chart="{{ group.rows|as_json }}"></div>-->
+    <div>
+        <div class="libraries-label">Serviceställen:</div>
+        <div class="libraries">
+            {% for library in libraries %}
+                <div class="library">{{ library.name }} ({{ library.city }}, {{ library.address }})</div>
             {% endfor %}
-
-            <!--<div id="chart-unique" class="chart" style="width: 100%; height: 500px; font-size: 11px;"
-                 data-years="[2013,2014,2015]"
-                 data-chart='[{"label":"Antal anställda bibliotekarier","2013":3062,"2014":3077,"2015":3089},{"label":"Antal övriga anställda","2013":2488,"2014":2478,"2015":2391},{"label":"Antal årsverken bibliotekarier","2013":2706,"2014":2727,"2015":2756},{"label":"Antal årsverken övriga anställda","2013":1959,"2014":1931,"2015":1872},{"label":"varav antal årsverken som är avsatta för barn och unga","2013":962,"2014":937,"2015":975}]'></div>-->
+        </div>
+    </div>
+    {% for group in measurements %}
+        <div class="observation-group">
+            <table class="observation">
+                <tr>
+                    <th class="observation-label">{{ group.title }}</th>
+                    <th class="observation-previous-previous-year">{{ group.years.0 }}</th>
+                    <th class="observation-previous-year">{{ group.years.1 }}</th>
+                    <th class="observation-sample-year">{{ group.years.2 }}</th>
+                    <th class="observation-difference">Utveckling {{ group.years.0 }} - {{ group.years.1 }}</th>
+                    <th class="observation-difference-total">Andel av riket</th>
+                    <th class="observation-extra">{{ group.extra|default:"" }}</th>
+                </tr>
+                {% for row in group|access:"rows" %}
+                    {% if row.label_only %}
+                        <tr class="label-only">
+                            <td class="observation-label">{{ row|access:"label" }}</td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                        </tr>
+                    {% else %}
+                        <tr class="{% if forloop.counter|divisibleby:2 %}even{% else %}odd{% endif %}{% if row.is_sum %} sum{% endif %}">
+                            <td class="observation-label">{{ row|access:"label" }}</td>
+                            <td class="observation-previous-previous-year">
+                                {% if row|access:group.years.0 %}
+                                    {{ row|access:group.years.0|floatformat }}
+                                {% else %}
+                                    -
+                                {% endif %}
+                            </td>
+                            <td class="observation-previous-year">
+                                {% if row|access:group.years.1 %}
+                                    {{ row|access:group.years.1|floatformat }}
+                                {% else %}
+                                    -
+                                {% endif %}
+                            </td>
+                            <td class="observation-sample-year">
+                                {% if row|access:group.years.2 %}
+                                    {{ row|access:group.years.2|floatformat }}
+                                {% else %}
+                                    -
+                                {% endif %}
+                            </td>
+                            <td class="observation-difference">
+                                {% if row.diff %}
+                                    {{ row.diff|floatformat:"0"|default:"-" }}%
+                                {% else %}
+                                    -
+                                {% endif %}
+                            </td>
+                            <td class="observation-difference-total">
+                                {% if row.nation_diff >= 1 %}
+                                    {{ row.nation_diff|floatformat:"0"|default:"-" }}&permil;
+                                {% else %}
+                                    -
+                                {% endif %}
+                            </td>
+                            <td class="observation-extra">
+                                {% if row.extra %}
+                                    {{ row.extra|floatformat:"0"|default:"-" }}%
+                                {% else %}
+                                    -
+                                {% endif %}
+                            </td>
+                        </tr>
+                    {% endif %}
+                {% endfor %}
+            </table>
         </div>
 
-        <footer>
-            <hr>
-            <div class="container text-center">
-                <p>&copy; Kungliga Biblioteket 2014</p>
-            </div>
-        </footer>
+        <!--<div id="chart-{{ forloop.counter }}" class="chart" data-years="{{ group.years }}" data-chart="{{ group.rows|as_json }}"></div>-->
+    {% endfor %}
 
-        <script src="/static/js/plugins/requirejs/require.js"></script>
-        <script src="/static/js/main.js"></script>
-    </body>
+    <!--<div id="chart-unique" class="chart" style="width: 100%; height: 500px; font-size: 11px;"
+         data-years="[2013,2014,2015]"
+         data-chart='[{"label":"Antal anställda bibliotekarier","2013":3062,"2014":3077,"2015":3089},{"label":"Antal övriga anställda","2013":2488,"2014":2478,"2015":2391},{"label":"Antal årsverken bibliotekarier","2013":2706,"2014":2727,"2015":2756},{"label":"Antal årsverken övriga anställda","2013":1959,"2014":1931,"2015":1872},{"label":"varav antal årsverken som är avsatta för barn och unga","2013":962,"2014":937,"2015":975}]'></div>-->
+</div>
+
+<footer>
+    <hr>
+    <div class="container text-center">
+        <p>&copy; Kungliga Biblioteket 2014</p>
+    </div>
+</footer>
+
+<script src="/static/js/plugins/requirejs/require.js"></script>
+<script src="/static/js/main.js"></script>
+</body>
 </html>

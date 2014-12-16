@@ -17,6 +17,8 @@ class TestReportGeneration(MongoTestCase):
                             variable_key="key2",
                             computation=(lambda a, b: (a / b)),
                             variable_keys=["key1", "key2"]),
+                        Row(description="only_a_label",
+                            label_only=True),
                         Row(description="some_description3",
                             computation=(lambda a, b: (a / b) / 15),
                             variable_keys=["key1", "key2"]),
@@ -75,7 +77,11 @@ class TestReportGeneration(MongoTestCase):
                         2014: 13.0,
                         "diff": ((13.0 / 11.0) - 1) * 100,
                         "nation_diff": (13.0 / 47.0) * 1000,
-                        "extra": (7.0 / 13.0)
+                        "extra": (7.0 / 13.0) * 100
+                    },
+                    {
+                        "label": "only_a_label",
+                        "label_only": True
                     },
                     {
                         "label": "some_description3",

@@ -48,8 +48,8 @@ def generate_report(template, year, observations):
                 value2 = observation.get(year - 2, None)
                 total = observation.get("total", None)
                 if row.computation:
-                    extra = row.compute(values_for(observations, row.variable_keys, year)) * 100
-            else:
+                    extra = row.compute(values_for(observations, row.variable_keys, year))
+            elif row.variable_keys:
                 value0 = row.compute(values_for(observations, row.variable_keys, year))
                 value1 = row.compute(values_for(observations, row.variable_keys, year - 1))
                 value2 = row.compute(values_for(observations, row.variable_keys, year - 2))
@@ -63,9 +63,9 @@ def generate_report(template, year, observations):
             if value2 is not None: report_row[year - 2] = value2
             if diff is not None: report_row["diff"] = diff
             if nation_diff is not None: report_row["nation_diff"] = nation_diff
-            if extra is not None: report_row["extra"] = extra
+            if extra is not None: report_row["extra"] = extra * 100
             if row.is_sum: report_row["is_sum"] = True
-
+            if row.label_only: report_row["label_only"] = True
             report_group["rows"].append(report_row)
         report.append(report_group)
     return report
