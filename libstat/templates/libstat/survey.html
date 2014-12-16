@@ -412,7 +412,8 @@
                         </div>
                         <div class="navbar-right navbar-submit">
                             <div id="unsaved-changes-label" class="navbar-text"></div>
-                            <a href="#" id="save-survey-btn" class="btn btn-primary navbar-btn">Spara</a>
+                            <a href="#" id="save-survey-btn" class="btn btn-primary navbar-btn spinner"
+                               data-spinner-text="Sparar..." data-spinner-disable="#submit-survey-btn">Spara</a>
                             {% if form.can_submit %}
                                 <a href="#" id="submit-survey-btn" class="btn btn-success navbar-btn">Skicka</a>
                             {% endif %}
@@ -441,9 +442,11 @@
     <div class="modal fade" id="submit-confirm-modal" tabindex="-1" role="dialog" aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Stäng</span></button>
+                    <h4 class="modal-title">Är du säker på att du vill skicka in din enkät?</h4>
+                </div>
                 <div class="modal-body">
-                    <p><b>Är du säker på att du vill skicka in din enkät?</b></p>
-
                     <p>
                         När du skickat in din enkät kommer vi börja behandla värdena.
                         <br>Du kommer då inte längre kunna göra några ändringar i enkäten.
@@ -453,8 +456,9 @@
                     </p>
                 </div>
                 <div class="modal-footer">
-                    <a href="#" class="btn btn-danger" data-dismiss="modal">Avbryt</a>
-                    <a href="#" id="confirm-submit-survey-btn" class="btn btn-success">Skicka</a>
+                    <a href="#" id="cancel-submit-survey-btn" class="btn btn-danger" data-dismiss="modal">Avbryt</a>
+                    <a href="#" id="confirm-submit-survey-btn" class="btn btn-success spinner"
+                            data-spinner-text="Skickar..." data-spinner-disable="#cancel-submit-survey-btn">Skicka</a>
                 </div>
             </div>
         </div>
