@@ -5,7 +5,9 @@ define(['jquery'], function($) {
             var element = $(element);
 
             if(element.length > 0) {
-                $('#survey-form').data('bootstrapValidator').resetField(element);
+                $('#survey-form').data('bootstrapValidator')
+                    .resetField(element)
+                    .enableFieldValidators(element.attr('name'), false);
                 element.next(".input-group-btn").children(".btn-dropdown").prop("disabled", true);
                 element.prop('disabled', true);
             }
@@ -17,6 +19,9 @@ define(['jquery'], function($) {
             if(element.length > 0) {
                 element.next(".input-group-btn").children(".btn-dropdown").prop("disabled", false);
                 element.prop('disabled', false);
+
+                $('#survey-form').data('bootstrapValidator')
+                    .enableFieldValidators(element.attr('name'), true);
             }
         },
         onChange: function(element, callback) { $(element).on("change paste keyup", callback); },
