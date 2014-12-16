@@ -5,6 +5,7 @@ import json
 import pytz
 import re
 from django import template
+from bibstat import settings
 from libstat.models import Dispatch, Survey
 
 from libstat.utils import targetGroups, ALL_TARGET_GROUPS_label
@@ -62,6 +63,10 @@ def municipality_name(municipality_code):
 def as_json(o):
     return json.dumps(o)
 
+
+def is_production():
+    return settings.DEBUG
+
 register.filter('utc_tz', utc_tz)
 register.filter('tg_label', tg_label)
 register.filter('srs_label', srs_label)
@@ -69,4 +74,5 @@ register.filter('access', access)
 register.filter('municipality_name', municipality_name)
 register.filter('split_into_number_and_body', split_into_number_and_body)
 register.filter('as_json', as_json)
+register.filter('is_production', is_production)
 register.simple_tag(dispatches_count)
