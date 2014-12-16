@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+from pprint import pprint
 from libstat.models import Survey, Variable, OpenData
 from libstat.report_templates import report_template_2014
 
@@ -47,7 +48,7 @@ def generate_report(template, year, observations):
                 value2 = observation.get(year - 2, None)
                 total = observation.get("total", None)
                 if row.computation:
-                    extra = row.compute(values_for(observations, row.variable_keys, year))
+                    extra = row.compute(values_for(observations, row.variable_keys, year)) * 100
             else:
                 value0 = row.compute(values_for(observations, row.variable_keys, year))
                 value1 = row.compute(values_for(observations, row.variable_keys, year - 1))
