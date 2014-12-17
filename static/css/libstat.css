@@ -343,7 +343,7 @@ a[title="JavaScript charts"] {
     font-size: 11px;
 }
 
-.loading {
+.loading,.saving{
     display: table;
     position: absolute;
     top: 0;
@@ -360,7 +360,7 @@ a[title="JavaScript charts"] {
     font-size: 20px;
 }
 
-.loading p {
+.loading p,.saving p {
     display: table-cell;
     margin: auto auto;
     vertical-align: middle;
