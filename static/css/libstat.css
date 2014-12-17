@@ -345,11 +345,12 @@ a[title="JavaScript charts"] {
 
 .loading {
     display: table;
-    position: fixed;
-    top: 350px;
-    left: 50%;
-    margin-top: -96px;
-    margin-left: -96px;
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    margin: auto;
     background-color: rgba(0, 0, 0, 0.85);
     border-radius: 25px;
     width: 250px;

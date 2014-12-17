@@ -169,7 +169,7 @@
         }
     </style>
 
-    <div class="loading"><p>Var vänlig vänta medan enkäten laddas...<br><br><i class="fa fa-2x fa-spinner fa-spin"></i></p></div>
+    <div class="loading"><p><span class="loading-text">Var vänlig vänta medan enkäten laddas...</span><br><br><i class="fa fa-2x fa-spinner fa-spin"></i></p></div>
 
     <div class="navbar navbar-default navbar-static-top navbar-library-info" role="navigation">
         <div class="container">
@@ -207,6 +207,10 @@
             {{ form.unknown_inputs }}
             {{ form.submit_action }}
             {{ form.read_only }}
+
+            {% if not user.is_authenticated %}
+                <input type="hidden" name="scroll_position" id="scroll_position" value="{{ scroll_position }}">
+            {% endif %}
 
             <h2 class="section-title">Svarande organisation/bibliotek</h2>
 

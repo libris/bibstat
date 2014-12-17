@@ -69,6 +69,7 @@ def survey(request, survey_id):
         if request.method == "POST":
             form = SurveyForm(request.POST, survey=survey)
             _save_survey_response_from_form(survey, form)
+            context["scroll_position"] = request.POST.get("scroll_position", 0)
 
         if not request.user.is_authenticated() and survey.status == "not_viewed":
             survey.status = "initiated"

@@ -1,4 +1,5 @@
-define(['jquery', 'survey.sum', 'survey.cell', 'surveys.dispatch', 'bootstrap.validator.sv', 'jquery.placeholder'], function ($, sum, cell, dispatch) {
+define(['jquery', 'survey.sum', 'survey.cell', 'surveys.dispatch', 'bootstrap.validator.sv', 'jquery.placeholder'],
+    function ($, sum, cell, dispatch) {
     var survey = {
         form: function (selector) {
             if (selector) return $('#survey-form ' + selector);
@@ -381,6 +382,8 @@ define(['jquery', 'survey.sum', 'survey.cell', 'surveys.dispatch', 'bootstrap.va
             survey.form("#save-survey-btn").click(function (e) {
                 e.preventDefault();
 
+                $('.loading-text').text("Var vänlig vänta medan enkäten sparas...");
+                $('.loading').removeClass('hidden');
                 $("#submit_action").val("save");
                 var empty = survey.emptyInputs();
                 empty.addClass("disable-validation");
@@ -450,6 +453,17 @@ define(['jquery', 'survey.sum', 'survey.cell', 'surveys.dispatch', 'bootstrap.va
             sum.init();
             initDropdown();
             initProgress();
+
+            var position = $("#scroll_position");
+            if(position.length > 0) {
+                if(position.val() > 0)
+                    $(window).scrollTop(position.val());
+
+                $(window).scroll(function() {
+                    var position = $(this).scrollTop();
+                    $('#scroll_position').val(position);
+                });
+            }
         }
     };
 });
