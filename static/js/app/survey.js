@@ -221,13 +221,14 @@ define(['jquery', 'survey.sum', 'survey.cell', 'surveys.dispatch', 'bootstrap.va
                 title: function () {
                     return 'Förklaring' + '<button class="close" style="line-height: inherit;">&times</button>';
                 },
-                html: true
+                html: true,
+                trigger: 'focus'
             }).click(function (e) {
                 e.preventDefault();
             }).on('shown.bs.popover', function () {
                 var button = $(this);
                 $('.popover button.close').click(function () {
-                    button.popover('toggle');
+                    button.popover('hide');
                 });
             });
 
