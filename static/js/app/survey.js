@@ -471,6 +471,16 @@ define(['jquery', 'survey.sum', 'survey.cell', 'surveys.dispatch', 'bootstrap.va
                         $('#scroll_position').val(position);
                     });
                 }
+
+                // Prevent form submission with enter key.
+                $(document).ready(function() {
+                    survey.form("input").keydown(function(event){
+                        if(event.keyCode == 13) {
+                            event.preventDefault();
+                            return false;
+                        }
+                    });
+                });
             }
         };
     });
