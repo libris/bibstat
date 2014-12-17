@@ -36,6 +36,12 @@
     </div>
 </header>
 
+<style media="print">
+    .intro {
+        display: none;
+    }
+</style>
+
 <style>
     .observation-group {
         margin-bottom: 50px;
@@ -46,13 +52,13 @@
     }
 
     .report {
-        width: 1000px;
+        width: 900px;
         margin: 0px auto;
         padding-top: 30px;
     }
 
     th {
-        color: white;
+        color: white !important;
         text-align: center;
         padding-top: 5px;
         padding-bottom: 5px;
@@ -69,42 +75,42 @@
     }
 
     .even td:not(.observation-data-missing) {
-        background-color: #f2f2f2;
+        background-color: #f2f2f2 !important;
     }
 
     th.observation-label {
         text-align: left;
-        background-color: rgb(255, 163, 56);
+        background-color: rgb(255, 163, 56) !important;
     }
 
     th.observation-previous-previous-year {
-        background-color: rgb(239, 131, 24);
+        background-color: rgb(239, 131, 24) !important;
         width: 85px;
     }
 
     th.observation-previous-year {
-        background-color: rgb(220, 110, 16);
+        background-color: rgb(220, 110, 16) !important;
         width: 85px;
     }
 
     th.observation-sample-year {
-        background-color: rgb(206, 93, 26);
+        background-color: rgb(206, 93, 26) !important;
         width: 85px;
     }
 
     th.observation-difference {
-        background-color: rgb(42, 176, 204);
+        background-color: rgb(42, 176, 204) !important;
         width: 110px;
     }
 
     th.observation-difference-total {
-        background-color: rgb(37, 146, 188);
-        width: 90px;
+        background-color: rgb(37, 146, 188) !important;
+        width: 100px;
     }
 
     th.observation-extra {
         width: 250px;
-        background-color: rgb(27, 124, 173);
+        background-color: rgb(27, 124, 173) !important;
     }
 
     .observation-label {
@@ -112,7 +118,7 @@
     }
 
     .report-title {
-        border-bottom: 5px solid black;
+        border-bottom: 5px solid black !important;
         font-size: 40px;
         font-family: helvetica;
         width: auto;
@@ -128,7 +134,7 @@
     }
 
     .libraries {
-        border-left: 8px solid black;
+        border-left: 8px solid black !important;
         padding-left: 15px;
         margin-bottom: 30px;
     }
@@ -146,7 +152,7 @@
 
     tr.label-only td {
         color: white;
-        background-color: rgb(255, 163, 56);
+        background-color: rgb(255, 163, 56) !important;
         font-weight: bold;
     }
 
