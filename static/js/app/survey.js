@@ -403,10 +403,10 @@ define(['jquery', 'survey.sum', 'survey.cell', 'surveys.dispatch', 'bootstrap.va
 
                     var submitButton = $(this);
                     var submitButtonHtml = submitButton.html();
-                    var saveButton = $('#save-survey-btn');
+                    var otherButtons = $('#save-survey-btn,#print-survey-btn');
 
                     submitButton.html('<i class="fa fa-spinner fa-spin"></i> Kontrollerar...').addClass('disabled');
-                    saveButton.addClass('disabled');
+                    otherButtons.addClass('disabled');
 
                     setTimeout(function () {
                         var validator = survey.validator();
@@ -415,8 +415,8 @@ define(['jquery', 'survey.sum', 'survey.cell', 'surveys.dispatch', 'bootstrap.va
                             $("#submit-confirm-modal").modal("show");
                         }
 
-                        $('#submit-survey-btn').html(submitButtonHtml).removeClass('disabled');
-                        $('#save-survey-btn').removeClass('disabled');
+                        submitButton.html(submitButtonHtml).removeClass('disabled');
+                        otherButtons.removeClass('disabled');
                     }, 100);
                 });
 
