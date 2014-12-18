@@ -360,8 +360,8 @@
                                                             {{ form|access:variable_key }}
                                                         {% endwith %}
                                                         <div class="input-group-btn">
-                                                            <!-- Skip dropdown for inputs in first group. -->
-                                                            {% if not forloop.parentloop.parentloop.first %}
+                                                            <!-- Skip dropdown for inputs in first group of first section. -->
+                                                            {% if not forloop.parentloop.parentloop.parentloop.first or not forloop.parentloop.parentloop.first %}
                                                                 {% with variable=form|access:cell.variable_key %}
                                                                     <button type="button"
                                                                             class="btn btn-default btn-dropdown dropdown-toggle"
