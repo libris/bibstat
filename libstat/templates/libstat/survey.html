@@ -360,31 +360,34 @@
                                                             {{ form|access:variable_key }}
                                                         {% endwith %}
                                                         <div class="input-group-btn">
-                                                            {% with variable=form|access:cell.variable_key %}
-                                                                <button type="button"
-                                                                        class="btn btn-default btn-dropdown dropdown-toggle"
-                                                                        data-toggle="dropdown"
-                                                                        tabindex="-1"
-                                                                        {% if form.is_read_only %}
-                                                                        disabled {% endif %}
-                                                                        >
-                                                                    <span class="caret"></span>
-                                                                </button>
+                                                            <!-- Skip dropdown for inputs in first group. -->
+                                                            {% if not forloop.parentloop.parentloop.first %}
+                                                                {% with variable=form|access:cell.variable_key %}
+                                                                    <button type="button"
+                                                                            class="btn btn-default btn-dropdown dropdown-toggle"
+                                                                            data-toggle="dropdown"
+                                                                            tabindex="-1"
+                                                                            {% if form.is_read_only %}
+                                                                            disabled {% endif %}
+                                                                            >
+                                                                        <span class="caret"></span>
+                                                                    </button>
 
-                                                                <ul class="dropdown-menu dropdown-menu-right {% if cell.value_unknown %}value-unknown{% endif %}"
-                                                                    role="menu">
-                                                                    {% if cell.value_unknown %}
-                                                                        <li class="active">
-                                                                            <a href="#"
-                                                                               class="menu-disable">Värdet är okänt</a></li>
-                                                                        <li><a href="#" class="menu-enable">Ange värdet</a></li>
-                                                                    {% else %}
-                                                                        <li><a href="#" class="menu-disable">Värdet är okänt</a></li>
-                                                                        <li class="active"><a href="#"
-                                                                                              class="menu-enable">Ange värdet</a></li>
-                                                                    {% endif %}
-                                                                </ul>
-                                                            {% endwith %}
+                                                                    <ul class="dropdown-menu dropdown-menu-right {% if cell.value_unknown %}value-unknown{% endif %}"
+                                                                        role="menu">
+                                                                        {% if cell.value_unknown %}
+                                                                            <li class="active">
+                                                                                <a href="#"
+                                                                                   class="menu-disable">Värdet är okänt</a></li>
+                                                                            <li><a href="#" class="menu-enable">Ange värdet</a></li>
+                                                                        {% else %}
+                                                                            <li><a href="#" class="menu-disable">Värdet är okänt</a></li>
+                                                                            <li class="active"><a href="#"
+                                                                                                  class="menu-enable">Ange värdet</a></li>
+                                                                        {% endif %}
+                                                                    </ul>
+                                                                {% endwith %}
+                                                            {% endif %}
 
                                                             {% if cell.explanation %}
                                                                 <a type="button" class="btn btn-default btn-help"
