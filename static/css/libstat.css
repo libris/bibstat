@@ -346,11 +346,11 @@ a[title="JavaScript charts"] {
 .loading,.saving{
     display: table;
     position: absolute;
-    top: 0;
+    top: 30%;
     bottom: 0;
-    left: 0;
+    left: 40%;
     right: 0;
-    margin: auto;
+    background-color: rgb(0, 0, 0);
     background-color: rgba(0, 0, 0, 0.85);
     border-radius: 25px;
     width: 250px;
