@@ -170,6 +170,39 @@ class TestSurveyModel(MongoTestCase):
         survey.save()
         self.assertEquals(len(SurveyVersion.objects.all()), 2)
 
+    def test_should_only_store_5_latest_versions(self):
+        survey = self._dummy_survey(library=self._dummy_library(name="name0"))
+        self.assertEquals(len(SurveyVersion.objects.all()), 0)
+        survey.library.name = "name1"
+        survey.save()
+        self.assertEquals(len(SurveyVersion.objects.all()), 1)
+        survey.library.name = "name2"
+        survey.save()
+        self.assertEquals(len(SurveyVersion.objects.all()), 2)
+        survey.library.name = "name3"
+        survey.save()
+        self.assertEquals(len(SurveyVersion.objects.all()), 3)
+        survey.library.name = "name4"
+        survey.save()
+        self.assertEquals(len(SurveyVersion.objects.all()), 4)
+        survey.library.name = "name5"
+        survey.save()
+        self.assertEquals(len(SurveyVersion.objects.all()), 5)
+        survey.library.name = "name6"
+        survey.save()
+        self.assertEquals(len(SurveyVersion.objects.all()), 5)
+        survey.library.name = "name7"
+        survey.save()
+        self.assertEquals(len(SurveyVersion.objects.all()), 5)
+
+        survey_versions = SurveyVersion.objects.all().order_by("-library.name")
+        self.assertEqual(survey_versions[0].library.name, "name6")
+        self.assertEqual(survey_versions[1].library.name, "name5")
+        self.assertEqual(survey_versions[2].library.name, "name4")
+        self.assertEqual(survey_versions[3].library.name, "name3")
+        self.assertEqual(survey_versions[4].library.name, "name2")
+
+
     def test_should_store_version_when_updating_observations_for_existing_objects(self):
         survey = self._dummy_survey(observations=[
             self._dummy_observation(variable=self._dummy_variable(key="key1"))

@@ -516,14 +516,26 @@ class Survey(SurveyBase):
         if len(self.selected_libraries) != len(other_survey.selected_libraries):
             return False
         for sigel in self.selected_libraries:
-            if not sigel in other_survey.selected_libraries:
+            if sigel not in other_survey.selected_libraries:
                 return False
 
         return True
 
-
     @classmethod
-    def store_version_and_update_date_modified(cls, sender, document, **kwargs):
+    def pre_save(cls, sender, document, **kwargs):
+        def store_version_of(document):
+            survey = Survey.objects.filter(pk=document.id)
+            if survey:
+                survey_version = survey.clone_into(SurveyVersion.objects)[0]
+                survey_version.id = None
+                survey_version.survey_response_id = document.id
+                survey_version.save()
+
+        def remove_older_versions_of(document, max_versions):
+            for version in SurveyVersion.objects[max_versions:].filter(survey_response_id=document.id).only(
+                    "date_modified"):
+                version.delete()
+
         if document.id:
             if hasattr(document, "_action_publish"):
                 document._status = "published"
@@ -531,19 +543,12 @@ class Survey(SurveyBase):
                 changed_fields = document.__dict__["_changed_fields"] if "_changed_fields" in document.__dict__ else []
 
                 if changed_fields == ['notes']:
-                    logger.info(u"PRE SAVE: Only notes have changed, not creating a survey version")
                     return
 
-                logger.info(
-                    u"PRE SAVE: Fields {} have changed, creating survey response version from current version".format(
-                        changed_fields))
-                query_set = Survey.objects.filter(pk=document.id)
-                assert len(query_set) > 0  # Trigger lazy loading
-                versions = query_set.clone_into(SurveyVersion.objects)
-                for v in versions:
-                    v.id = None
-                    v.survey_response_id = document.id
-                    v.save()
+                store_version_of(document)
+
+                remove_older_versions_of(document, max_versions=5)
+
                 document.date_modified = datetime.utcnow()
         else:
             document.date_modified = document.date_created
@@ -802,7 +807,7 @@ class SurveyTemplate(Document):
         return None
 
 
-signals.pre_save.connect(Survey.store_version_and_update_date_modified, sender=Survey)
+signals.pre_save.connect(Survey.pre_save, sender=Survey)
 signals.pre_save.connect(Variable.store_version_and_update_date_modified, sender=Variable)
 Variable.register_delete_rule(Variable, "replaced_by", NULLIFY)
 Variable.register_delete_rule(Variable, "replaces", PULL)
