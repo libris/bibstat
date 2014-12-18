@@ -4,17 +4,8 @@ from libstat.tests import MongoTestCase
 
 
 class TestArticleView(MongoTestCase):
-    def test_can_view_articles_when_not_logged_in(self):
-        self._dummy_article()
-        self._dummy_article()
-        self._dummy_article()
-
-        response = self._get("articles")
-
-        self.assertEqual(response.status_code, 200)
-        self.assertEqual(len(response.context["articles"]), 3)
-
-    def test_can_view_articles_when_not_logged_in(self):
+    def test_can_view_articles(self):
+        self._login()
         self._dummy_article()
         article = self._dummy_article(title="some_title", content="some_content")
         self._dummy_article()
