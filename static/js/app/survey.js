@@ -280,6 +280,12 @@ define(['jquery', 'survey.sum', 'survey.cell', 'surveys.dispatch', 'bootstrap.va
                     if (!$("#submit_action").val())
                         return;
 
+                    $("#altered_fields").val(survey.inputs().filter(function () {
+                        return $(this).val() != $(this).attr("data-original-value");
+                    }).map(function () {
+                       return $(this).attr("id");
+                    }).get().join(" "));
+
                     var unknownInputs = $(".value-unknown");
 
                     var unknownInputIds = unknownInputs.map(function () {
@@ -395,7 +401,7 @@ define(['jquery', 'survey.sum', 'survey.cell', 'surveys.dispatch', 'bootstrap.va
                         empty.addClass("disable-validation");
                         survey.validator().validate();
                         empty.removeClass("disable-validation");
-                    }, 80);
+                    }, 120);
                 });
 
                 survey.form("#submit-survey-btn").click(function (e) {

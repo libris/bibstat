@@ -54,6 +54,8 @@ class SurveyForm(forms.Form):
         if observation.value_unknown:
             attrs["class"] = "{} value-unknown".format(attrs["class"])
 
+        attrs["data-original-value"] = observation.value if observation.value is not None else ""
+
         if "comment" in cell.types:
             field = forms.CharField(required=False, widget=forms.Textarea(attrs=attrs))
         elif "integer" in cell.types:
@@ -144,6 +146,8 @@ class SurveyForm(forms.Form):
             required=False, widget=forms.HiddenInput(attrs={"id": "disabled_inputs"}))
         self.fields["unknown_inputs"] = forms.CharField(
             required=False, widget=forms.HiddenInput(attrs={"id": "unknown_inputs"}))
+        self.fields["altered_fields"] = forms.CharField(
+            required=False, widget=forms.HiddenInput(attrs={"id": "altered_fields"}))
         self.fields["selected_libraries"] = forms.CharField(
             required=False, widget=forms.HiddenInput(attrs={"id": "selected_libraries"}))
         self.fields["scroll_position"] = forms.CharField(

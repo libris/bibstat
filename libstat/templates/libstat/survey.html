@@ -223,6 +223,7 @@
             {% csrf_token %}
             {{ form.key }}
             {{ form.disabled_inputs }}
+            {{ form.altered_fields }}
             {{ form.selected_libraries }}
             {{ form.unknown_inputs }}
             {{ form.submit_action }}

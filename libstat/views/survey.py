@@ -18,13 +18,15 @@ def _save_survey_response_from_form(survey, form):
         disabled_inputs = form.cleaned_data.pop("disabled_inputs").split(" ")
         unknown_inputs = form.cleaned_data.pop("unknown_inputs").split(" ")
         submit_action = form.cleaned_data.pop("submit_action", None)
+        altered_fields = form.cleaned_data.pop("altered_fields", None).split(" ")
 
         for field in form.cleaned_data:
             observation = survey.get_observation(field)
             if observation:
-                observation.value = form.cleaned_data[field]
-                observation.disabled = (field in disabled_inputs)
-                observation.value_unknown = (field in unknown_inputs)
+                if field in altered_fields:
+                    observation.value = form.cleaned_data[field]
+                    observation.disabled = (field in disabled_inputs)
+                    observation.value_unknown = (field in unknown_inputs)
             else:
                 survey.__dict__["_data"][field] = form.cleaned_data[field]
 
