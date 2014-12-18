@@ -26,7 +26,7 @@ define(['jquery'], function($) {
         },
         onChange: function(element, callback) { $(element).on("change paste keyup", callback); },
         value: function(element) { return $.trim($(element).val()); },
-        number: function(element) { return Number(cell.value(element)); }
+        number: function(element) { return Number(cell.value(element).replace(",", ".")); }
     };
 
     return cell;

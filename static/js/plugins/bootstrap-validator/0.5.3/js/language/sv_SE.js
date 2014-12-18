@@ -229,7 +229,7 @@
             'default': 'Vänligen mata in ett värde'
         },
         numeric: {
-            'default': 'Vänligen mata in ett giltigt decimaltal. Använd punkt för att ange decimaler.'
+            'default': 'Vänligen mata in ett giltigt decimaltal'
         },
         phone: {
             'default': 'Vänligen mata in ett giltigt telefonnummer',

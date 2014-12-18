@@ -33,7 +33,7 @@ class SurveyForm(forms.Form):
 
         if "numeric" in cell.types:
             attrs["data-bv-numeric"] = ""
-            attrs["data-bv-numeric-separator"] = "."
+            attrs["data-bv-numeric-separator"] = ","
             attrs["data-bv-greaterthan"] = ""
             attrs["data-bv-greaterthan-value"] = "0"
             attrs["data-bv-greaterthan-inclusive"] = ""
@@ -59,7 +59,7 @@ class SurveyForm(forms.Form):
         elif "integer" in cell.types:
             field = forms.IntegerField(required=False, widget=forms.TextInput(attrs=attrs))
         elif "numeric" in cell.types:
-            field = forms.FloatField(required=False, widget=forms.TextInput(attrs=attrs))
+            field = forms.FloatField(localize=True, required=False, widget=forms.TextInput(attrs=attrs))
         else:
             field = forms.CharField(required=False, widget=forms.TextInput(attrs=attrs))
 

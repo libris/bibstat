@@ -59,7 +59,7 @@ define(['jquery', 'survey.cell'], function($, cell) {
     var setupSum = function(setup) {
         var childCallback = function(parent, child, children) {
             cell.onChange(child, function() {
-                $(parent).val(sumOf(children));
+                $(parent).val(String(sumOf(children)).replace(".", ","));
                 $(parent).change();
             });
         };
