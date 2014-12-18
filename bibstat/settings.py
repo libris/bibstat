@@ -30,6 +30,8 @@ DEBUG = False
 
 TEMPLATE_DEBUG = False
 
+ANALYTICS_ENABLED = False
+
 TEMPLATE_CONTEXT_PROCESSORS = TCP + (
     'django.core.context_processors.request',
 )
