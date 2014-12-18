@@ -65,7 +65,7 @@ def as_json(o):
 
 
 def is_production():
-    return settings.DEBUG
+    return not settings.DEBUG
 
 register.filter('utc_tz', utc_tz)
 register.filter('tg_label', tg_label)
