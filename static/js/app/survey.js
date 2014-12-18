@@ -389,19 +389,30 @@ define(['jquery', 'survey.sum', 'survey.cell', 'surveys.dispatch', 'bootstrap.va
                 survey.form("#save-survey-btn").click(function (e) {
                     e.preventDefault();
 
-                    $(".saving").show();
+                    var saveButton = $(this);
+                    var saveButtonHtml = saveButton.html();
+                    var otherButtons = $('#submit-survey-btn,#print-survey-btn');
 
-                    // USING setTimeout() IS BAD!
-                    // ... but ...
-                    // We must give the browser time to render the saving-spinner
-                    // before submit, else it won't guaranteed be rendered
+                    saveButton.html('<i class="fa fa-spinner fa-spin"></i> Kontrollerar...').addClass('disabled');
+                    otherButtons.addClass('disabled');
+
                     setTimeout(function () {
                         $("#submit_action").val("save");
                         var empty = survey.emptyInputs();
                         empty.addClass("disable-validation");
-                        survey.validator().validate();
+
+                        var validator = survey.validator();
+                        validator.validate();
+
+                        if(!validator.isValid()) {
+                            saveButton.html(saveButtonHtml).removeClass('disabled');
+                            otherButtons.removeClass('disabled');
+                        } else {
+                            saveButton.html('<i class="fa fa-spinner fa-spin"></i> Sparar...')
+                        }
+
                         empty.removeClass("disable-validation");
-                    }, 120);
+                    }, 100);
                 });
 
                 survey.form("#submit-survey-btn").click(function (e) {
