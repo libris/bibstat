@@ -2,10 +2,12 @@
 from optparse import make_option
 import re
 import logging
+import traceback
 
 from django.core.management.base import BaseCommand, CommandError
 from xlrd import open_workbook
 from xlrd.biffh import XLRDError
+from data.municipalities import municipality_code_from, municipality_code_from_county_code
 
 from libstat.utils import TYPE_BOOLEAN, TYPE_INTEGER, TYPE_LONG
 from libstat.models import Survey, SurveyObservation, Variable, Library
@@ -64,6 +66,19 @@ class Command(BaseCommand):
         if not variable_keys:
             raise CommandError(u"Failed to find any variables, aborting!")
 
+        municipality_code_column = -1
+        county_code_column = -1
+        for i in range(0, work_sheet.ncols):
+            if work_sheet.cell_value(1, i) == u"Kommunkod":
+                municipality_code_column = i
+                break
+            elif work_sheet.cell_value(1, i) == u"Länskod":
+                county_code_column = i
+                break
+
+        if county_code_column == -1 and municipality_code_column == -1:
+            raise CommandError("Could not find municipality or county code, aborting!")
+
         num_imported_surveys = 0
         for i in range(2, work_sheet.nrows):
             row = work_sheet.row_values(i)
@@ -79,7 +94,13 @@ class Command(BaseCommand):
             if Survey.objects.filter(library__name=library_name, sample_year=year):
                 continue
 
+            if municipality_code_column != -1:
+                municipality_code = municipality_code_from(row[municipality_code_column])
+            elif county_code_column != -1:
+                municipality_code = municipality_code_from_county_code(row[county_code_column])
             library = Library(name=library_name, library_type=target_group)
+            if municipality_code is not None:
+                library.municipality_code = municipality_code
             survey = Survey(sample_year=year, library=library, selected_libraries=[library.sigel])
             for col, variable in variable_keys:
                 survey.observations.append(
@@ -115,4 +136,7 @@ class Command(BaseCommand):
 
         work_sheet = _get_work_sheet(file_name, year)
 
-        self._import_from_work_sheet(work_sheet, year, target_group)
+        try:
+            self._import_from_work_sheet(work_sheet, year, target_group)
+        except Exception as e:
+            print(traceback.format_exc())

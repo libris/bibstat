@@ -314,8 +314,8 @@ MUNICIPALITIES = (
     (u"Överkalix", u"2513"),
     (u"Övertorneå", u"2518"))
 
-
 municipalities = dict([(tuple[1], tuple[0]) for tuple in MUNICIPALITIES])
+
 
 def get_counties(municipality_codes):
     county_list = []
@@ -325,5 +325,22 @@ def get_counties(municipality_codes):
             county_list.append((municipalities[county_code], county_code))
 
     for name, code in dict(county_list).iteritems():
-        yield (name ,code)
+        yield (name, code)
 
+
+def municipality_code_from(code):
+    if not code and code != 0 and code != 0.0:
+        return None
+    code = int(code)
+    if code > 9999:
+        raise ValueError("Municipality code can only contain four digits: {}".format(code))
+    if code < 0:
+        raise ValueError("Municipality code can not be negative: {}".format(code))
+    return "{0:04d}".format(code)
+
+
+def municipality_code_from_county_code(code):
+    if not code and code != 0 and code != 0.0:
+        return None
+    code = int(code)
+    return municipality_code_from(code * 100)

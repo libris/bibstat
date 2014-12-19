@@ -59,6 +59,7 @@ class ImportSurveyResponsesTest(MongoTestCase):
             if s.library.name == u"KARLSTADS STADSBIBLIOTEK":
                 sr = s
         self.assertEquals(sr.library.name, u"KARLSTADS STADSBIBLIOTEK")
+        self.assertEquals(sr.library.municipality_code, u"1780")
 
         # Check data types and visibility
         # Private, string value
