@@ -5,6 +5,7 @@ from django import forms
 from django.core.urlresolvers import reverse
 
 from bibstat import settings
+from data.municipalities import municipalities
 from libstat.models import Survey, Variable, SurveyObservation
 from libstat.survey_templates import survey_template
 
@@ -130,6 +131,25 @@ class SurveyForm(forms.Form):
         intersection = Set(first_selection).intersection(Set(second_selection))
         return [survey.library for survey in Survey.objects.filter(library__sigel__in=intersection)]
 
+    def _mailto_link(self):
+        body = (
+            u"%0D%0A"
+            u"----------" + "%0D%0A"
+            u"Var vänlig och låt följande information stå kvar i meddelandet." + "%0D%0A"
+            u"" + "%0D%0A"
+            u"Bibliotek: {} ({}) i {}".format(self.library_name, self.library_sigel, self.city) + "%0D%0A"
+            u"Kommun/län: {} ({})".format(municipalities.get(self.municipality_code, ""), self.municipality_code) + "%0D%0A"
+            u"Statistikansvarig: {}".format(self.email) + "%0D%0A"
+            u"Insamlingsår: {}".format(self.sample_year) + "%0D%0A"
+            u"----------"
+        )
+
+        return (
+            u"mailto:biblioteksstatistik@kb.se"
+            u"?subject=Fråga för statistikenkät: {} ({})".format(self.library_name, self.library_sigel) +
+            u"&body={}".format(body)
+        )
+
     def __init__(self, *args, **kwargs):
         survey = kwargs.pop('survey', None)
         authenticated = kwargs.pop('authenticated', False)
@@ -180,6 +200,8 @@ class SurveyForm(forms.Form):
 
         self.url = settings.API_BASE_URL + reverse('survey', args=(survey.pk,))
         self.url_with_password = "{}?p={}".format(self.url, self.password)
+        self.email = survey.library.email
+        self.mailto = self._mailto_link()
 
         self._set_libraries(survey, survey.selected_libraries, authenticated)
         if hasattr(self, 'library_selection_conflict') and self.library_selection_conflict:
