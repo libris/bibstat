@@ -140,7 +140,7 @@ def report_template_2014():
                       variable_keys=[u"Utgift99", u"Population02"]),
                   Row(description=u"Andel kostnader för medier av total driftkostnad",
                       computation=(lambda a, b, c: (a + b) / c),
-                      variable_keys=[u"Utgift01", u"Utgift02", u"Utgift98"]),
+                      variable_keys=[u"Utgift01", u"Utgift02", u"Utgift99"]),
                   Row(description=u"Andel kostnader för personal av total driftkostnader",
                       computation=(lambda a, b, c: (a + b) / c),
                       variable_keys=[u"Utgift03", u"Utgift04", u"Utgift99"]),

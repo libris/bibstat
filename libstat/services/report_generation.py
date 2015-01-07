@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+from pprint import pprint
 from libstat.models import Survey, Variable, OpenData
 from libstat.report_templates import report_template_2014
 
@@ -8,134 +9,135 @@ def get_report(surveys, year):
     libraries = [survey.library for survey in Survey.objects.filter(sample_year=year, library__sigel__in=sigels)]
 
     # This should of course be updated when (and if) more templates are added
-    template = report_template_2014()
+    report_template = report_template_2014()
 
-    observations = _get_observations_from(template, surveys, year)
+    observations = pre_cache_observations(report_template, surveys, year)
 
     report = {
         "year": year,
         "libraries": libraries,
-        "measurements": generate_report(template, year, observations)
+        "measurements": generate_report(report_template, year, observations)
     }
 
     return report
 
 
-def generate_report(template, year, observations):
-    def values_for(observations, variable_keys, year):
+def generate_report(report_template, year, observations):
+    def values_for(variable_keys, year):
         values = []
         for key in variable_keys:
             value = observations.get(key, {}).get(year)
             values.append(float(value) if value is not None else None)
         return values
 
-    report = []
-    for group in template.groups:
-        report_group = {"title": group.title,
-                        "years": [year - 2, year - 1, year],
-                        "rows": []}
-        if group.extra is not None:
-            report_group["extra"] = group.extra
-        for row in group.rows:
-            value0 = None
-            value1 = None
-            value2 = None
-            total = None
-            extra = None
-            incomplete_data = None
-            if row.variable_key:
-                observation = observations.get(row.variable_key, {})
-                value0 = observation.get(year, None)
-                value1 = observation.get(year - 1, None)
-                value2 = observation.get(year - 2, None)
-                total = observation.get("total", None)
-                if row.computation:
-                    extra = row.compute(values_for(observations, row.variable_keys, year))
-                if observations[row.variable_key]["incomplete_data"]:
-                    incomplete_data = observations[row.variable_key]["incomplete_data"]
-            elif row.variable_keys:
-                value0 = row.compute(values_for(observations, row.variable_keys, year))
-                value1 = row.compute(values_for(observations, row.variable_keys, year - 1))
-                value2 = row.compute(values_for(observations, row.variable_keys, year - 2))
+    def group_skeleton(template_group):
+        return {"title": template_group.title,
+                "years": [year - 2, year - 1, year],
+                "rows": [],
+                "extra": template_group.extra}
 
-            diff = ((value0 / value1) - 1) * 100 if value0 is not None and value1 else None
-            if value0 == 0 and value1 == 0:
-                diff = 0.0
-            nation_diff = (value0 / total) * 1000 if value0 is not None and total else None
-            if value0 == 0 and total == 0:
-                nation_diff = 0.0
-
-            report_row = {"label": row.description}
-            if value0 is not None: report_row[year] = value0
-            if value1 is not None: report_row[year - 1] = value1
-            if value2 is not None: report_row[year - 2] = value2
-            if diff is not None: report_row["diff"] = diff
-            if nation_diff is not None: report_row["nation_diff"] = nation_diff
-            if extra is not None: report_row["extra"] = extra * 100
-            if incomplete_data is not None: report_row["incomplete_data"] = incomplete_data
-            if row.is_sum: report_row["is_sum"] = True
-            if row.label_only: report_row["label_only"] = True
-            report_group["rows"].append(report_row)
-        report.append(report_group)
-    return report
-
-
-def _get_observations_from(template, surveys, year):
-    def is_number(obj):
-        return isinstance(obj, (int, long, float, complex))
-
-    survey_ids = []
-    previous_survey_ids = []
-    previous_previous_survey_ids = []
-    for survey in surveys:
-        survey_ids.append(survey.pk)
-        previous_survey = survey.previous_years_survey()
-        if previous_survey:
-            previous_survey_ids.append(previous_survey.pk)
-            previous_previous_survey = previous_survey.previous_years_survey()
-            if previous_previous_survey:
-                previous_previous_survey_ids.append(previous_previous_survey.pk)
-
-    observations = {}
-    for key in template.all_variable_keys:
-        variables = Variable.objects.filter(key=key)
-        if len(variables) != 1:
-            continue
-        variables = [variables[0]]
-        if len(variables[0].replaces) == 1:
-            variables.append(variables[0].replaces[0])  # Assume only one variable is replaced
-
-        observations[key] = {
+    def row_skeleton(template_row):
+        return {
             year: None,
             (year - 1): None,
             (year - 2): None,
-            "total": float(OpenData.objects.filter(sample_year=year, is_active=True,
-                                                   variable__in=variables).sum("value")),
-            "incomplete_data": []
+            "total": None,
+            "extra": None,
+            "incomplete_data": None,
+            "is_sum": template_row.is_sum,
+            "label": template_row.description,
+            "label_only": template_row.label_only,
         }
 
-        open_data = OpenData.objects.filter(source_survey__in=survey_ids, variable__in=variables,
-                                            is_active=True)
-        value = open_data.sum("value")
-        if is_number(value) and open_data.count() != 0:
-            observations[key][year] = value
-        if open_data.count() < len(survey_ids):
-            observations[key]["incomplete_data"].append(year)
+    def clear_nones(a_dict):
+        return dict([(k, v) for k, v in a_dict.iteritems() if v is not None])
 
-        open_data = OpenData.objects.filter(source_survey__in=previous_survey_ids, variable__in=variables,
-                                            is_active=True)
-        value = open_data.sum("value")
-        if is_number(value) and open_data.count() != 0:
-            observations[key][year - 1] = value
-        if open_data.count() < len(previous_survey_ids):
-            observations[key]["incomplete_data"].append(year - 1)
+    report = []
+    for template_group in report_template.groups:
+        group = group_skeleton(template_group)
 
-        open_data = OpenData.objects.filter(source_survey__in=previous_previous_survey_ids, variable__in=variables,
-                                            is_active=True)
-        value = open_data.sum("value")
-        if is_number(value) and open_data.count() != 0:
-            observations[key][year - 2] = value
-        if open_data.count() < len(previous_previous_survey_ids):
-            observations[key]["incomplete_data"].append(year - 2)
+        for template_row in template_group.rows:
+            row = row_skeleton(template_row)
+
+            if template_row.variable_key:
+                observation = observations.get(template_row.variable_key, {})
+                row[year] = observation.get(year, None)
+                row[year - 1] = observation.get(year - 1, None)
+                row[year - 2] = observation.get(year - 2, None)
+                row["total"] = observation.get("total", None)
+                row["incomplete_data"] = observations[template_row.variable_key]["incomplete_data"]
+                if template_row.computation:
+                    row["extra"] = template_row.compute(values_for(template_row.variable_keys, year))
+                    row["extra"] = row["extra"] * 100 if row["extra"] is not None else None
+
+            elif template_row.variable_keys:
+                row[year] = template_row.compute(values_for(template_row.variable_keys, year))
+                row[year - 1] = template_row.compute(values_for(template_row.variable_keys, year - 1))
+                row[year - 2] = template_row.compute(values_for(template_row.variable_keys, year - 2))
+
+            if row[year] == 0 and row[year - 1] == 0:
+                row["diff"] = 0.0
+            elif row[year] is not None and row[year - 1]:
+                row["diff"] = ((row[year] / row[year - 1]) - 1) * 100
+
+            if row[year] == 0 and row[year - 1] == 0:
+                row["nation_diff"] = 0.0
+            elif row[year] is not None and row["total"]:
+                row["nation_diff"] = (row[year] / row["total"]) * 1000
+
+            group["rows"].append(clear_nones(row))
+        report.append(clear_nones(group))
+    return report
+
+
+def pre_cache_observations(template, surveys, year):
+    def is_number(obj):
+        return isinstance(obj, (int, long, float, complex))
+
+    def survey_ids_three_latest_years():
+        survey_ids = {
+            year: [],
+            (year - 1): [],
+            (year - 2): []
+        }
+
+        for survey in surveys:
+            survey_ids[year].append(survey.pk)
+            previous_survey = survey.previous_years_survey()
+            if previous_survey:
+                survey_ids[year - 1].append(previous_survey.pk)
+                previous_previous_survey = previous_survey.previous_years_survey()
+                if previous_previous_survey:
+                    survey_ids[year - 2].append(previous_previous_survey.pk)
+        return survey_ids
+
+    def observation_skeleton(variables):
+        return {
+            year: None,
+            (year - 1): None,
+            (year - 2): None,
+            "incomplete_data": [],
+            "total": float(OpenData.objects.filter(sample_year=year, is_active=True,
+                                                   variable__in=variables).sum("value"))
+        }
+
+    survey_ids = survey_ids_three_latest_years()
+
+    observations = {}
+    for key in template.all_variable_keys:
+        variables = [Variable.objects.get(key=key)]
+        if len(variables[0].replaces) == 1:
+            variables.append(variables[0].replaces[0])  # Assume only one variable is replaced
+
+        observations[key] = observation_skeleton(variables)
+
+        for y in (year, year - 1, year - 2):
+            open_data = OpenData.objects.filter(source_survey__in=survey_ids[y], variable__in=variables,
+                                                is_active=True)
+            value = open_data.sum("value")
+            if is_number(value) and open_data.count() != 0:
+                observations[key][y] = value
+            if open_data.count() < len(survey_ids[y]):
+                observations[key]["incomplete_data"].append(y)
 
     return observations

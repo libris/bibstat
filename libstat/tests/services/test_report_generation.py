@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 from pprint import pprint
 from libstat.report_templates import ReportTemplate, Group, Row
-from libstat.services.report_generation import generate_report, _get_observations_from
+from libstat.services.report_generation import generate_report, pre_cache_observations
 from libstat.tests import MongoTestCase
 
 
@@ -171,7 +171,7 @@ class TestReportGeneration(MongoTestCase):
             ])
         ])
 
-        observations = _get_observations_from(template, [survey1, survey2], 2016)
+        observations = pre_cache_observations(template, [survey1, survey2], 2016)
         expected_observations = {
             "key1": {
                 2014: 19.0,
