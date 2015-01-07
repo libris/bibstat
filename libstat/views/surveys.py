@@ -61,7 +61,6 @@ def surveys(request, *args, **kwargs):
             free_text=free_text,
             is_active=False)
         surveys = active_surveys if surveys_state == "active" else inactive_surveys
-        surveys = surveys.order_by("library.name")
 
     # Triggering lazy loading of the list of surveys before iterating over it in the
     # template seems to give significant performance gains. Unknown why.
