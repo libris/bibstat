@@ -85,7 +85,7 @@
                                             {% if not status %}
                                             selected="selected"
                                             {% endif %}>
-                                        Alla statusar
+                                        Oavsett status
                                     </option>
                                     {% for status_choice in statuses %}
                                         <option value="{{ status_choice.0 }}"
@@ -93,6 +93,16 @@
                                                 selected="selected"
                                                 {% endifequal %}>
                                             {{ status_choice.1 }}
+                                        </option>
+                                    {% endfor %}
+                                </select>
+                                <select name="email" class="form-control" value="{{ email }}">
+                                    {% for email_choice in email_choices %}
+                                        <option value="{{ email_choice.0 }}"
+                                                {% ifequal email email_choice.0 %}
+                                                    selected="selected"
+                                                {% endifequal %}>
+                                            {{ email_choice.1 }}
                                         </option>
                                     {% endfor %}
                                 </select>
@@ -184,9 +194,12 @@
                 {% if survey_responses %}
                     {% csrf_token %}
                     <input type="hidden" name="sample_year" value="{{ sample_year }}"/>
+                    <input type="hidden" name="municipality_code" value="{{ municipality_code }}"/>
                     <input type="hidden" name="target_group" value="{{ target_group }}"/>
                     <input type="hidden" name="status" value="{{ status }}"/>
+                    <input type="hidden" name="email" value="{{ email }}"/>
                     <input type="hidden" name="free_text" value="{{ free_text }}"/>
+                    <input type="hidden" name="surveys_state" value="{{ surveys_state }}"/>
                 {% endif %}
                 <table class="table survey_responses">
                     <thead>
