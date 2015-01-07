@@ -14,12 +14,18 @@ define(['jquery', 'jquery.tablesorter'], function($) {
                 $(".table.survey_responses").addClass("tablesorter").tablesorter({
                     headers: {
                         0: { sorter: false },
-                        7: { sorter: false}
+                        7: { sorter: false }
                     }
                 });
                 $(".table.libraries").addClass("tablesorter").tablesorter({
                     headers: {
                         0: { sorter: false }
+                    }
+                });
+                $(".table.table-dispatches").addClass("tablesorter").tablesorter({
+                    headers: {
+                        0: { sorter: false },
+                        5: { sorter: false }
                     }
                 });
             });

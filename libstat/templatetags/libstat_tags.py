@@ -64,14 +64,12 @@ def as_json(o):
     return json.dumps(o)
 
 
-def analytics_enabled(ignored):
+def analytics_enabled(_):
     return settings.ANALYTICS_ENABLED
 
 
 def debug_enabled(_):
-    print(settings.DEBUG)
     return settings.DEBUG
-
 
 register.filter('utc_tz', utc_tz)
 register.filter('tg_label', tg_label)
