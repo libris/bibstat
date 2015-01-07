@@ -40,6 +40,7 @@
                 </div>
             </div>
 
+            {% if not debug_enabled %}
             <div class="row">
               <div class="col-xs-12 col-sm-11 col-lg-8">
                   {% if sample_years|length > 0 %}
@@ -164,6 +165,15 @@
                   {% endif %}
               </div>
             </div>
+            {% else %}
+                <div class="row row-inside">
+                    <div class="col-xs-12 col-sm-10 col-lg-8 col-inside">
+                        <div class="alert alert-danger alert-reports" role="alert">
+                            <p><i class='fa fa-warning fa-fw'></i>Denna funktion är under konstruktion och fungerar därför (antagligen) inte som förväntat.</p>
+                        </div>
+                    </div>
+                </div>
+            {% endif %}
         </div>
 
         <footer>

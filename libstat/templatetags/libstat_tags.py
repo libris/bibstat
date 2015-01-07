@@ -67,6 +67,9 @@ def as_json(o):
 def analytics_enabled(ignored):
     return settings.ANALYTICS_ENABLED
 
+def debug_enabled():
+    return settings.DEBUG
+
 register.filter('utc_tz', utc_tz)
 register.filter('tg_label', tg_label)
 register.filter('srs_label', srs_label)
@@ -75,4 +78,5 @@ register.filter('municipality_name', municipality_name)
 register.filter('split_into_number_and_body', split_into_number_and_body)
 register.filter('as_json', as_json)
 register.filter('analytics_enabled', analytics_enabled)
+register.simple_tag(debug_enabled)
 register.simple_tag(dispatches_count)
