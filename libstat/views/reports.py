@@ -24,7 +24,7 @@ def report(request):
 
     context = get_report(surveys, sample_year)
     context["previous_url"] = previous_url
-
+    
     return render(request, 'libstat/report.html', context)
 
 

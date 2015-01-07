@@ -34,7 +34,6 @@ def tg_label(value):
     return ", ".join(display_names)
 
 
-
 def srs_label(key):
     return next((status[1] for status in Survey.STATUSES if status[0] == key))
 
@@ -60,6 +59,7 @@ def split_into_number_and_body(description):
 def municipality_name(municipality_code):
     return municipalities.get(municipality_code, None)
 
+
 def as_json(o):
     return json.dumps(o)
 
@@ -67,9 +67,11 @@ def as_json(o):
 def analytics_enabled(ignored):
     return settings.ANALYTICS_ENABLED
 
+
 def debug_enabled(_):
     print(settings.DEBUG)
     return settings.DEBUG
+
 
 register.filter('utc_tz', utc_tz)
 register.filter('tg_label', tg_label)

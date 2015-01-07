@@ -133,16 +133,20 @@
         margin-bottom: 5px;
     }
 
+    .library-section {
+        padding-left: 15px;
+    }
+
     .libraries {
-        border-left: 8px solid black !important;
+        border-left: 4px solid black !important;
         padding-left: 15px;
         margin-bottom: 30px;
     }
 
     .libraries .library {
-        padding-bottom: 7px;
-        padding-top: 7px;
-        font-size: 20px;
+        padding-bottom: 3px;
+        padding-top: 3px;
+        font-size: 10px;
         font-family: helvetica;
     }
 
@@ -163,12 +167,26 @@
 </style>
 <div class="report">
     <div class="report-title scroll-start">Verksamhetsrapport för året {{ year }}</div>
-
-    <div>
-        <div class="libraries-label">Serviceställen:</div>
-        <div class="libraries">
+    <div class="libraries-label">Rapporten avser följande bibliotek:</div>
+    <div class="row library-section">
+        <div class="col-md-6 libraries">
             {% for library in libraries %}
-                <div class="library">{{ library.name }} ({{ library.city }}, {{ library.address }})</div>
+                {% if not forloop.counter|divisibleby:"2" %}
+                    <div class="library">
+                        {{ library.name }}{% if library.address %} | {{ library.address }}{% endif %}
+                        {% if library.city %} |
+                            {{ library.city }}{% endif %}</div>
+                {% endif %}
+            {% endfor %}
+        </div>
+        <div class="col-md-6 libraries">
+            {% for library in libraries %}
+                {% if forloop.counter|divisibleby:"2" %}
+                    <div class="library">
+                        {{ library.name }}{% if library.address %} | {{ library.address }}{% endif %}
+                        {% if library.city %} |
+                            {{ library.city }}{% endif %}</div>
+                {% endif %}
             {% endfor %}
         </div>
     </div>
