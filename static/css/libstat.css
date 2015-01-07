@@ -139,25 +139,10 @@ a[disabled] {
     color: #ccc;
 }
 
-.edit-survey-observations-form .form-group ul {
-    list-style: none outside none;
-    display: block;
-    margin-bottom: 10px;
-    margin-top: 10px;
-    min-height: 20px;
-    padding-left: 20px;
-}
-
-.edit-survey-observations-form .form-group ul label {
-    cursor: pointer;
-    display: inline;
-    font-weight: 400;
-}
-
-.edit-survey-observations-form .form-group ul input[type="radio"],
-.edit-survey-observations-form .form-group ul input[type="checkbox"] {
-    float: left;
-    margin-left: -20px;
+.edit-variable-form .checkbox input[type="checkbox"] {
+    position: inherit;
+    margin-left: 0;
+    margin-right: 5px;
 }
 
 /* Edit survey */

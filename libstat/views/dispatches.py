@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+import logging
 
 from django.contrib.auth.decorators import permission_required
 from django.core.mail import send_mass_mail
@@ -8,6 +9,7 @@ from django.shortcuts import render, redirect
 from bibstat import settings
 from libstat.models import Dispatch, Survey
 
+logger = logging.getLogger(__name__)
 
 def _rendered_template(template, survey):
     survey_url = settings.API_BASE_URL + reverse('survey', args=(survey.id,))
@@ -89,7 +91,9 @@ def dispatches_send(request):
 
             try:
                 sent += send_mass_mail(messages)
+                logger.info(u"Sent {} messages successfully.".format(len(messages)))
             except Exception:
+                logger.error(u"There was an error while trying to send {} messages.".format(len(messages)))
                 continue
 
             message_ids = [dispatch.id for dispatch in dispatches_with_email_chunk]

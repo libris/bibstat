@@ -23,7 +23,9 @@ _survey_template_2014 = SurveyTemplate(
                         Row(cells=[Cell(variable_key=u"BokbussHP01", types=['required', 'integer'])]),
                         Row(cells=[Cell(variable_key=u"Bokbil01", types=['integer'])])]),
                     Group(rows=[
-                        Row(cells=[Cell(variable_key=u"Population01", types=['integer'])])])]),
+                        Row(cells=[Cell(variable_key=u"Population01", types=['integer'])]),
+                        Row(cells=[Cell(variable_key=u"Population02", types=['integer'])]),
+                        Row(cells=[Cell(variable_key=u"Population03", types=['integer'])])])]),
         Section(title=u"Frågor om bemanning och personal",
                 groups=[
                     Group(rows=[
