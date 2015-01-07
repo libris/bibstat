@@ -38,6 +38,9 @@ def surveys(request, *args, **kwargs):
     free_text = request.GET.get("free_text", "").strip()
     surveys_state = request.GET.get("surveys_state", "active")
 
+    email_choices = [("all", "Oavsett email"), ("with", "Med email"), ("without", "Utan email")]
+    email = request.GET.get("email", "all")
+
     surveys = []
     active_surveys = []
     inactive_surveys = []
@@ -52,6 +55,8 @@ def surveys(request, *args, **kwargs):
             status=status,
             municipality_code=municipality_code,
             free_text=free_text,
+            with_email=(email == "with"),
+            without_email=(email == "without"),
             is_active=True)
         inactive_surveys = Survey.objects.by(
             sample_year=sample_year,
@@ -59,6 +64,8 @@ def surveys(request, *args, **kwargs):
             status=status,
             municipality_code=municipality_code,
             free_text=free_text,
+            with_email=(email == "with"),
+            without_email=(email == "without"),
             is_active=False)
         surveys = active_surveys if surveys_state == "active" else inactive_surveys
 
@@ -77,6 +84,8 @@ def surveys(request, *args, **kwargs):
         'status': status,
         'statuses': Survey.STATUSES,
         'free_text': free_text,
+        'email': email,
+        'email_choices': email_choices,
         'surveys_state': surveys_state,
         'survey_responses': surveys,
         'message': message,
@@ -97,7 +106,7 @@ def surveys_activate(request):
         survey_ids = request.POST.getlist("survey-response-ids", [])
         Survey.objects.filter(pk__in=survey_ids).update(set__is_active=True)
         request.session["message"] = "Aktiverade {} stycken enkäter.".format(len(survey_ids))
-        return redirect("{}?surveys_state=inactive".format(reverse("surveys")))
+        return _surveys_redirect(request)
 
 
 @permission_required('is_superuser', login_url='index')
@@ -106,7 +115,7 @@ def surveys_inactivate(request):
         survey_ids = request.POST.getlist("survey-response-ids", [])
         Survey.objects.filter(pk__in=survey_ids).update(set__is_active=False)
         request.session["message"] = "Inaktiverade {} stycken enkäter.".format(len(survey_ids))
-        return redirect("{}?surveys_state=active".format(reverse("surveys")))
+        return _surveys_redirect(request)
 
 
 def _surveys_redirect(request):
@@ -115,17 +124,18 @@ def _surveys_redirect(request):
     elif request.method == "POST":
         method = request.POST
 
-    target_group = method.get("target_group", "")
     sample_year = method.get("sample_year", "")
+    municipality_code = method.get("municipality_code", "")
+    target_group = method.get("target_group", "")
     status = method.get("status", "")
+    email = method.get("email", "")
     free_text = method.get("free_text", "")
+    surveys_state = method.get("surveys_state", "")
+
     return HttpResponseRedirect(u"{}{}".format(
         reverse("surveys"),
-        u"?action=list&target_group={}&sample_year={}&status={}&free_text={}".format(target_group, sample_year, status,
-                                                                                     free_text)))
-
-
-
+        u"?action=list&sample_year={}&municipality_code={}&target_group={}&status={}&email={}&free_text={}&surveys_state={}".
+            format(sample_year, municipality_code, target_group, status, email, free_text, surveys_state)))
 
 
 @permission_required('is_superuser', login_url='index')
