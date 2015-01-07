@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+from pprint import pprint
 from django.core.urlresolvers import reverse
 
 from django.shortcuts import render, redirect
@@ -24,7 +25,7 @@ def report(request):
 
     context = get_report(surveys, sample_year)
     context["previous_url"] = previous_url
-    
+
     return render(request, 'libstat/report.html', context)
 
 

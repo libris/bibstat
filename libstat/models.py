@@ -88,7 +88,10 @@ class Variable(VariableBase):
     meta = {
         'collection': 'libstat_variables',
         'ordering': ['key'],
-        'queryset_class': VariableQuerySet
+        'queryset_class': VariableQuerySet,
+        'indexes': [
+            'key'
+        ]
     }
 
     @classmethod

@@ -30,6 +30,8 @@ class Group():
 
 class Row():
     def compute(self, values):
+        if values is None:
+            return None
         if None in values:
             return None
         try:

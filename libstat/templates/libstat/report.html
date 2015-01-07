@@ -126,21 +126,15 @@
 
     }
 
-    .libraries-label {
-        font-size: 17px;
-        font-family: helvetica;
-        margin-top: 30px;
-        margin-bottom: 5px;
-    }
-
     .library-section {
+        padding-top: 30px;
         padding-left: 15px;
+        margin-bottom: 30px;
     }
 
     .libraries {
         border-left: 4px solid black !important;
         padding-left: 15px;
-        margin-bottom: 30px;
     }
 
     .libraries .library {
@@ -160,6 +154,21 @@
         font-weight: bold;
     }
 
+    .incomplete-data {
+        font-weight: bold !important;
+        color: red;
+    }
+
+    .report-legend {
+        margin-bottom: 20px;
+    }
+
+    .report-legend p {
+        font-size: 14px;
+        margin: auto;
+        text-align: right;
+    }
+
     tr.empty {
         height: 30px;
     }
@@ -167,7 +176,6 @@
 </style>
 <div class="report">
     <div class="report-title scroll-start">Verksamhetsrapport för året {{ year }}</div>
-    <div class="libraries-label">Rapporten avser följande bibliotek:</div>
     <div class="row library-section">
         <div class="col-md-6 libraries">
             {% for library in libraries %}
@@ -190,86 +198,110 @@
             {% endfor %}
         </div>
     </div>
-    {% for group in measurements %}
-        <div class="observation-group">
-            <table class="observation">
-                <tr>
-                    <th class="observation-label">{{ group.title }}</th>
-                    <th class="observation-previous-previous-year">{{ group.years.0 }}</th>
-                    <th class="observation-previous-year">{{ group.years.1 }}</th>
-                    <th class="observation-sample-year">{{ group.years.2 }}</th>
-                    <th class="observation-difference">Utveckling {{ group.years.1 }} - {{ group.years.2 }}</th>
-                    <th class="observation-difference-total">Andel av riket</th>
-                    <th class="observation-extra">{{ group.extra|default:"" }}</th>
-                </tr>
-                {% for row in group|access:"rows" %}
-                    {% if row.label_only %}
-                        {% if row.label %}
-                            <tr class="label-only">
-                                {% else %}
-                            <tr class="empty">
-                        {% endif %}
-                    <td class="observation-label">{{ row.label }}</td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    </tr>
-                    {% else %}
-                        <tr class="{% if forloop.counter|divisibleby:2 %}even{% else %}odd{% endif %}{% if row.is_sum %} sum{% endif %}">
-                            <td class="observation-label">{{ row|access:"label" }}</td>
-                            <td class="observation-previous-previous-year">
-                                {% if row|access:group.years.0 %}
-                                    {{ row|access:group.years.0|floatformat }}
-                                {% else %}
-                                    -
-                                {% endif %}
-                            </td>
-                            <td class="observation-previous-year">
-                                {% if row|access:group.years.1 %}
-                                    {{ row|access:group.years.1|floatformat }}
-                                {% else %}
-                                    -
-                                {% endif %}
-                            </td>
-                            <td class="observation-sample-year">
-                                {% if row|access:group.years.2 %}
-                                    {{ row|access:group.years.2|floatformat }}
-                                {% else %}
-                                    -
-                                {% endif %}
-                            </td>
-                            <td class="observation-difference">
-                                {% if row.diff %}
-                                    {{ row.diff|floatformat:"0"|default:"-" }}%
-                                {% else %}
-                                    -
-                                {% endif %}
-                            </td>
-                            <td class="observation-difference-total">
-                                {% if row.nation_diff >= 1 %}
-                                    {{ row.nation_diff|floatformat:"0"|default:"-" }}&permil;
-                                {% else %}
-                                    -
-                                {% endif %}
-                            </td>
-                            <td class="observation-extra">
-                                {% if row.extra %}
-                                    {{ row.extra|floatformat:"0"|default:"-" }}%
-                                {% else %}
-                                    -
-                                {% endif %}
-                            </td>
-                        </tr>
-                    {% endif %}
-                {% endfor %}
-            </table>
-        </div>
+    <div class="row report-legend">
+        <div class="pull-right">
+            <p>- = Värdet går inte att få fram</p>
 
-        <!--<div id="chart-{{ forloop.counter }}" class="chart" data-years="{{ group.years }}" data-chart="{{ group.rows|as_json }}"></div>-->
-    {% endfor %}
+            <p><i class="fa fa-asterisk incomplete-data"></i> = Värdet har inte angivits av alla bibliotek</p>
+        </div>
+    </div>
+    <div class="row">
+        {% for group in measurements %}
+            <div class="observation-group">
+                <table class="observation">
+                    <tr>
+                        <th class="observation-label">{{ group.title }}</th>
+                        <th class="observation-previous-previous-year">{{ group.years.0 }}</th>
+                        <th class="observation-previous-year">{{ group.years.1 }}</th>
+                        <th class="observation-sample-year">{{ group.years.2 }}</th>
+                        <th class="observation-difference">Utveckling {{ group.years.1 }} - {{ group.years.2 }}</th>
+                        <th class="observation-difference-total">Andel av riket</th>
+                        <th class="observation-extra">{{ group.extra|default:"" }}</th>
+                    </tr>
+                    {% for row in group|access:"rows" %}
+                        {% if row.label_only %}
+                            {% if row.label %}
+                                <tr class="label-only">
+                                    {% else %}
+                                <tr class="empty">
+                            {% endif %}
+                        <td class="observation-label">{{ row.label }}</td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        </tr>
+                        {% else %}
+                            <tr class="{% if forloop.counter|divisibleby:2 %}even{% else %}odd{% endif %}{% if row.is_sum %} sum{% endif %}">
+                                <td class="observation-label">{{ row|access:"label" }}</td>
+                                <td class="observation-previous-previous-year">
+                                    {% if row|access:group.years.0 != None %}
+                                        {{ row|access:group.years.0|floatformat }}
+                                        {% if group.years.0 in row|access:'incomplete_data' %}
+                                            <i class="fa fa-asterisk incomplete-data"></i>
+                                        {% endif %}
+                                    {% else %}
+                                        -
+                                    {% endif %}
+                                </td>
+                                <td class="observation-previous-year">
+                                    {% if row|access:group.years.1 != None %}
+                                        {{ row|access:group.years.1|floatformat }}
+                                        {% if group.years.1 in row|access:'incomplete_data' %}
+                                            <i class="fa fa-asterisk incomplete-data"></i>
+                                        {% endif %}
+                                    {% else %}
+                                        -
+                                    {% endif %}
+                                </td>
+                                <td class="observation-sample-year">
+                                    {% if row|access:group.years.2 != None %}
+                                        {{ row|access:group.years.2|floatformat }}
+                                        {% if group.years.2 in row|access:'incomplete_data' %}
+                                            <i class="fa fa-asterisk incomplete-data"></i>
+                                        {% endif %}
+                                    {% else %}
+                                        -
+                                    {% endif %}
+                                </td>
+                                <td class="observation-difference">
+                                    {% if row.diff != None %}
+                                        {{ row.diff|floatformat:"0" }}%
+                                        {% if group.years.2 in row|access:'incomplete_data' or group.years.1 in row|access:'incomplete_data' %}
+                                            <i class="fa fa-asterisk incomplete-data"></i>
+                                        {% endif %}
+                                    {% else %}
+                                        -
+                                    {% endif %}
+                                </td>
+                                <td class="observation-difference-total">
+                                    {% if row.nation_diff != None %}
+                                        {{ row.nation_diff|floatformat:"0" }}&permil;
+                                        {% if group.years.2 in row|access:'incomplete_data' %}
+                                            <i class="fa fa-asterisk incomplete-data"></i>
+                                        {% endif %}
+                                    {% else %}
+                                        -
+                                    {% endif %}
+                                </td>
+                                <td class="observation-extra">
+                                    {% if row.extra %}
+                                        {{ row.extra|floatformat:"0"|default:"-" }}%
+                                    {% else %}
+                                        -
+                                    {% endif %}
+                                </td>
+                            </tr>
+                        {% endif %}
+                    {% endfor %}
+                </table>
+            </div>
+
+            <!--<div id="chart-{{ forloop.counter }}" class="chart" data-years="{{ group.years }}" data-chart="{{ group.rows|as_json }}"></div>-->
+        {% endfor %}
+    </div>
 
     <!--<div id="chart-unique" class="chart" style="width: 100%; height: 500px; font-size: 11px;"
          data-years="[2013,2014,2015]"
