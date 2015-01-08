@@ -1,5 +1,4 @@
 # -*- coding: utf-8 -*-
-from pprint import pprint
 from libstat.models import Survey, Variable, OpenData
 from libstat.report_templates import report_template_2014
 
@@ -44,9 +43,9 @@ def generate_report(report_template, year, observations):
             "total": None,
             "extra": None,
             "incomplete_data": None,
-            "is_sum": template_row.is_sum,
+            "is_sum": template_row.is_sum if template_row.is_sum else None,
             "label": template_row.description,
-            "label_only": template_row.label_only,
+            "label_only": template_row.label_only if template_row.label_only else None,
         }
 
     def clear_nones(a_dict):
@@ -65,7 +64,7 @@ def generate_report(report_template, year, observations):
                 row[year - 1] = observation.get(year - 1, None)
                 row[year - 2] = observation.get(year - 2, None)
                 row["total"] = observation.get("total", None)
-                row["incomplete_data"] = observations[template_row.variable_key]["incomplete_data"]
+                row["incomplete_data"] = observations.get(template_row.variable_key, {}).get("incomplete_data", None)
                 if template_row.computation:
                     row["extra"] = template_row.compute(values_for(template_row.variable_keys, year))
                     row["extra"] = row["extra"] * 100 if row["extra"] is not None else None
@@ -85,6 +84,7 @@ def generate_report(report_template, year, observations):
             elif row[year] is not None and row["total"]:
                 row["nation_diff"] = (row[year] / row["total"]) * 1000
 
+            row["total"] = None
             group["rows"].append(clear_nones(row))
         report.append(clear_nones(group))
     return report

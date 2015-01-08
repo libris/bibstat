@@ -37,16 +37,19 @@ class TestReportGeneration(MongoTestCase):
                 2012: 19.0,
                 2013: 5.0,
                 2014: 7.0,
-                "total": 31.0
+                "total": 31.0,
+                "incomplete_data": []
             },
             "key2": {
                 2013: 11.0,
                 2014: 13.0,
-                "total": 47.0
+                "total": 47.0,
+                "incomplete_data": [2012]
             },
             "key4": {
                 2014: 3.0,
-                2012: 17.0
+                2012: 17.0,
+                "incomplete_data": [2013]
             }
         }
 
@@ -63,6 +66,7 @@ class TestReportGeneration(MongoTestCase):
                         2014: 7.0,
                         "diff": ((7.0 / 5.0) - 1) * 100,
                         "nation_diff": (7.0 / 31.0) * 1000,
+                        "incomplete_data": []
                     }
                 ]
             },
@@ -77,7 +81,8 @@ class TestReportGeneration(MongoTestCase):
                         2014: 13.0,
                         "diff": ((13.0 / 11.0) - 1) * 100,
                         "nation_diff": (13.0 / 47.0) * 1000,
-                        "extra": (7.0 / 13.0) * 100
+                        "extra": (7.0 / 13.0) * 100,
+                        "incomplete_data": [2012]
                     },
                     {
                         "label": "only_a_label",
@@ -96,7 +101,8 @@ class TestReportGeneration(MongoTestCase):
                         "label": "some_description5",
                         2012: 17.0,
                         2014: 3.0,
-                        "is_sum": True
+                        "is_sum": True,
+                        "incomplete_data": [2013]
                     },
                     {
                         "label": "some_description6"
@@ -166,8 +172,6 @@ class TestReportGeneration(MongoTestCase):
             Group(rows=[Row(variable_key="key1")]),
             Group(rows=[Row(variable_key="key2"),
                         Row(variable_keys=["key3", "key2"]),
-                        Row(variable_key="does_not_exist1"),
-                        Row(variable_keys=["does_not_exist2", "does_not_exist3"]),
             ])
         ])
 
@@ -177,19 +181,22 @@ class TestReportGeneration(MongoTestCase):
                 2014: 19.0,
                 2015: 7.0,
                 2016: (1.0 + 3.0),
-                "total": (1.0 + 3.0)
+                "total": (1.0 + 3.0),
+                "incomplete_data": []
             },
             "key2": {
                 2014: 23.0,
                 2015: 11.0,
                 2016: 2.0,
-                "total": (2.0 + 13.0)
+                "total": (2.0 + 13.0),
+                "incomplete_data": [2016]
             },
             "key3": {
-                2014: 0.0,
-                2015: 0.0,
+                2014: None,
+                2015: None,
                 2016: 5.0,
-                "total": (5.0 + 17.0)
+                "total": (5.0 + 17.0),
+                "incomplete_data": [2016, 2015, 2014]
             }
         }
 
