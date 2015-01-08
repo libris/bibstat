@@ -14,12 +14,11 @@ def report(request):
     if request.method == "GET":
         return redirect(reverse("reports"))
 
-    sample_year = int(request.POST.get("sample_year", None))
-
     previous_url = request.POST.get("previous_url", reverse("reports"))
     if not is_safe_url(url=previous_url, host=request.get_host()):
         return redirect(reverse("reports"))
 
+    sample_year = int(request.POST.get("sample_year", None))
     sigels = request.POST.getlist("surveys", [])
     surveys = list(Survey.objects.filter(sample_year=sample_year, library__sigel__in=sigels))
 
@@ -30,67 +29,62 @@ def report(request):
 
 
 def reports(request):
-    if request.method == "GET":
-        surveys = Survey.objects.filter(_status=u"published")
+    def all_sample_years(surveys):
+        _sample_years = surveys.distinct("sample_year")
+        _sample_years.sort()
+        _sample_years.reverse()
+        return _sample_years
 
-        sample_year = request.GET.get("sample_year", "")
-        sample_years = surveys.distinct("sample_year")
-        sample_years.sort()
+    def all_municipality_codes(surveys):
+        _municipality_codes = surveys.distinct("library.municipality_code")
+        _municipality_codes = [(municipalities[code], code) for code in _municipality_codes if code in municipalities]
+        _municipality_codes += list(get_counties(_municipality_codes))
+        _municipality_codes.sort()
+        return _municipality_codes
 
-        municipality_code = request.GET.get("municipality_code", "")
-        municipality_codes = surveys.distinct("library.municipality_code")
-        municipality_codes = [(municipalities[code], code) for code in municipality_codes if code in municipalities]
-        municipality_codes += list(get_counties(municipality_codes))
-        municipality_codes.sort()
-
-        def filter_municipality_code(surveys):
-            if municipality_code.endswith(u"00"):  # County codes end with double zero
-                return surveys.filter(library__municipality_code__startswith=municipality_code[0:2])
-            else:
-                return surveys.filter(library__municipality_code=municipality_code)
-
-        principal = request.GET.get("principal", "")
-        principals = list(set(
+    def all_principals(surveys):
+        _principals = list(set(
             [principal_for_library_type[library_type] for library_type in surveys.distinct("library.library_type") if
              library_type in principal_for_library_type]))
-        principals = [(name_for_principal[p], p) for p in principals]
-        principals.sort()
+        _principals = [(name_for_principal[p], p) for p in _principals]
+        _principals.sort()
+        return _principals
 
-        def filter_with_parameters(surveys):
-            surveys = surveys.filter(sample_year=sample_year)
-            if municipality_code:
-                surveys = filter_municipality_code(surveys)
-            if principal:
-                surveys = surveys.filter(library__library_type__in=library_types_for_principal[principal])
+    if request.method == "GET":
+        surveys = Survey.objects.filter(_status=u"published").exclude("observations")
 
-            return surveys
+        sample_year = request.GET.get("sample_year", "")
+        municipality_code = request.GET.get("municipality_code", "")
+        principal = request.GET.get("principal", "")
+
+        sample_years = all_sample_years(surveys)
+        municipality_codes = all_municipality_codes(surveys)
+        principals = all_principals(surveys)
 
         message = None
+        library_name_for_sigel = {}
         filtered_surveys = []
-        library_name_for_sigel = None
-        submit = request.GET.get("submit", False)
 
-        if submit:
-            if sample_year:
-                filtered_surveys = list(filter_with_parameters(surveys).exclude("observations"))
-                if len(filtered_surveys) > 0:
-                    sigels = []
-                    for survey in filtered_surveys:
-                        for sigel in survey.selected_libraries:
-                            sigels.append(sigel)
-
-                    library_name_for_sigel = {}
-                    surveys_with_sigels = Survey.objects.filter(library__sigel__in=sigels)
-                    for survey in surveys_with_sigels.only("library.sigel", "library.name"):
-                        library_name_for_sigel[survey.library.sigel] = survey.library.name
+        if sample_year:
+            filtered_surveys = surveys.filter(sample_year=sample_year)
+            if municipality_code:
+                if municipality_code.endswith(u"00"):  # County code
+                    filtered_surveys = filtered_surveys.filter(
+                        library__municipality_code__startswith=municipality_code[0:2])
                 else:
-                    message = u"Det finns inga bibliotek att visa för den valda verksamheten."
+                    filtered_surveys = filtered_surveys.filter(library__municipality_code=municipality_code)
+            if principal:
+                filtered_surveys = filtered_surveys.filter(
+                    library__library_type__in=library_types_for_principal[principal])
 
+            if len(surveys) == 0:
+                message = u"Det finns inga bibliotek att visa för den valda verksamheten."
             else:
-                message = u"Du måste välja ett verksamhetsår för att visa bibliotek."
+                sigels = [sigel for survey in filtered_surveys for sigel in survey.selected_libraries]
+                for survey in Survey.objects.filter(library__sigel__in=sigels).only("library.sigel", "library.name"):
+                    library_name_for_sigel[survey.library.sigel] = survey.library.name
 
         context = {
-            "nav_reports_css": "active",
             "sample_year": sample_year,
             "sample_years": sample_years,
             "message": message,
