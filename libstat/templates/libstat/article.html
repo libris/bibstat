@@ -6,24 +6,30 @@
     <div class="container">
         <div class="panel panel-default">
             <div class="panel-heading panel-top">
-                <span class="panel-title">Inlägg</span>
+                <span class="panel-title">
+                    {% if form.article %}
+                        Redigera inlägg
+                    {% else %}
+                        Nytt inlägg
+                    {% endif %}
+                </span>
                 <span class="panel-subtitle">
                     {% if form.article %}
-                        Här redigerar du ett existerande inlägg.
+                        Här kan du redigera ett existerande inlägg.
                     {% else %}
-                        Här är skapar du ett nytt inlägg.
+                        Här har du möjlighet att skapa ett nytt inlägg.
                     {% endif %}
                 </span>
             </div>
+
             {% if form.article %}
-            <form id="delete-article" method="post" action="{% url 'articles_delete' form.article.pk %}">{% csrf_token %}</form>
+                <form id="delete-article" method="post" action="{% url 'articles_delete' form.article.pk %}">{% csrf_token %}</form>
             {% endif %}
+
             <div class="panel-body">
-                <form id="article-form" method="post"
-                      action="{% if form.article %} {% url 'article' form.article.pk %}
-                                  {% else %} {% url 'article' %}
-                                  {% endif %}">
+                <form id="article-form" method="post" action="{% if form.article %} {% url 'article' form.article.pk %} {% else %} {% url 'article' %} {% endif %}">
                     {% csrf_token %}
+
                     <div class="row">
                         <div class="title col-md-6">
                             {{ form.title.label_tag }}
@@ -39,19 +45,117 @@
                 </form>
                 <div class="row">
                     <div class="col-md-6">
-                        <button type="submit" class="btn btn-primary" form="article-form" style="margin-top: 15px;">
-                            Spara
-                        </button>
+                        <button class="btn btn-default btn-cancel-article" style="margin-top: 15px;">Avbryt</button>
                         {% if form.article %}
-                            <button form="delete-article" type="submit" class="btn btn-danger"
-                                    style="margin-top: 15px;">
-                                Ta bort
-                            </button>
+                            <button class="btn btn-primary" data-toggle="modal" data-target="#modal-save-article" style="margin-top: 15px;">Spara</button>
+                            <button class="btn btn-danger" data-toggle="modal" data-target="#modal-delete-article" style="margin-top: 15px;">Ta bort</button>
+                        {% else %}
+                            <button class="btn btn-primary" data-toggle="modal" data-target="#modal-create-article" style="margin-top: 15px;">Skapa</button>
                         {% endif %}
                     </div>
                 </div>
             </div>
+        </div>
+    </div>
 
+    <div id="modal-create-article" class="modal fade" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal">
+                        <span aria-hidden="true">&times;</span>
+                        <span class="sr-only">Close</span>
+                    </button>
+                    <h4 class="modal-title">Bekräfta: Skapa</h4>
+                </div>
+
+                <div class="modal-body">
+                    <b>Är du säker på att du vill skapa det nya inlägget?</b>
+                    <br>Inlägget kommer omedelbart att bli synligt för allmänheten.
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Avbryt</button>
+                    <button type="button" class="btn btn-primary btn-confirm" data-dismiss="modal">Skapa</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="modal-save-article" class="modal fade" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal">
+                        <span aria-hidden="true">&times;</span>
+                        <span class="sr-only">Close</span>
+                    </button>
+                    <h4 class="modal-title">Bekräfta: Spara</h4>
+                </div>
+
+                <div class="modal-body">
+                    <b>Är du säker på att du vill spara ändringarna för inlägget?</b>
+                    <br>Ändringarna kommer omedelbart att bli synliga för allmänheten.
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Avbryt</button>
+                    <button type="button" class="btn btn-primary btn-confirm" data-dismiss="modal">Spara</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="modal-delete-article" class="modal fade" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal">
+                        <span aria-hidden="true">&times;</span>
+                        <span class="sr-only">Close</span>
+                    </button>
+                    <h4 class="modal-title">Bekräfta: Ta bort</h4>
+                </div>
+
+                <div class="modal-body">
+                    <b>Är du säker på att du vill ta bort inlägget?</b>
+                    <br>Inlägget kommer inte längre vara synligt för allmänheten.
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Avbryt</button>
+                    <button type="button" class="btn btn-danger btn-confirm" data-dismiss="modal">Ta bort</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="modal-cancel-article" class="modal fade" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal">
+                        <span aria-hidden="true">&times;</span>
+                        <span class="sr-only">Close</span>
+                    </button>
+                    <h4 class="modal-title">Bekräfta: Avbryt</h4>
+                </div>
+
+                <div class="modal-body">
+                    {% if form.article %}
+                        <b>Är du säker på att du vill avbryta redigeringen?</b>
+                        <br>Det finns ändringar för inlägget som inte sparats.
+                    {% else %}
+                        <b>Är du säker på att du vill avbryta skapandet?</b>
+                        <br>Du har angett text för inlägget som inte sparats.
+                    {% endif %}
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Stäng</button>
+                    <button type="button" class="btn btn-primary btn-confirm" data-dismiss="modal">Avbryt</button>
+                </div>
+            </div>
         </div>
     </div>
 {% endblock %}

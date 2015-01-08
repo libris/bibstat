@@ -32,6 +32,7 @@
         paths: {
 
             /* App */
+            'article': ['app/article'],
             'charts': ['app/charts'],
             'dispatches': ['app/dispatches'],
             'index': ['app/index'],
