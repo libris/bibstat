@@ -47,11 +47,20 @@
                     <div class="col-md-6">
                         <button class="btn btn-default btn-cancel-article" style="margin-top: 15px;">Avbryt</button>
                         {% if form.article %}
-                            <button class="btn btn-primary" data-toggle="modal" data-target="#modal-save-article" style="margin-top: 15px;">Spara</button>
+                            <button class="btn btn-primary btn-validate-article" data-modal="#modal-save-article" style="margin-top: 15px;">Spara</button>
                             <button class="btn btn-danger" data-toggle="modal" data-target="#modal-delete-article" style="margin-top: 15px;">Ta bort</button>
                         {% else %}
-                            <button class="btn btn-primary" data-toggle="modal" data-target="#modal-create-article" style="margin-top: 15px;">Skapa</button>
+                            <button class="btn btn-primary btn-validate-article" data-modal="#modal-create-article" style="margin-top: 15px;">Skapa</button>
                         {% endif %}
+
+
+                        <div class="row row-inside row-alert hidden" style="margin-top: 15px;">
+                            <div class="col-xs-12 col-inside">
+                                <div class="alert alert-danger alert-reports" role="alert" style="margin-bottom: 0;">
+                                    <p><i class='fa fa-warning fa-fw'></i> Du måste ange både en rubrik och innehåll för inlägget.</p>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>

@@ -8,6 +8,21 @@ define(['jquery'], function() {
             $('#modal-delete-article .btn-confirm').click(function() { $('#delete-article').submit(); });
             $('#modal-cancel-article .btn-confirm').click(function() { window.location.href = Urls.articles(); });
 
+            $('.btn-validate-article').click(function() {
+                var modal = $($(this).attr('data-modal'));
+                var emptyInputs = $('.form-article-input').filter(function() {
+                   return $(this).val().trim().length == 0;
+                });
+
+                if(emptyInputs.length == 0) {
+                    $('.row-alert').addClass('hidden');
+                    modal.modal('show');
+                } else {
+                    $('.row-alert').removeClass('hidden');
+                    emptyInputs[0].focus();
+                }
+            });
+
             $(".form-article-input").on('change', function() {
                unsavedChanges = true;
             });
