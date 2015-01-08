@@ -34,6 +34,14 @@ define(['jquery'], function() {
                     window.location.href = Urls.articles()
                 }
             });
+
+            // Prevent form submission with enter key.
+            $("input.form-article-input").keydown(function(event){
+                if(event.keyCode == 13) {
+                    event.preventDefault();
+                    return false;
+                }
+            });
         }
     }
 });
