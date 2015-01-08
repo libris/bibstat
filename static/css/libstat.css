@@ -351,3 +351,7 @@ a[title="JavaScript charts"] {
     vertical-align: middle;
     text-align: center;
 }
+
+.input-group-btn {
+    cursor: not-allowed;
+}
