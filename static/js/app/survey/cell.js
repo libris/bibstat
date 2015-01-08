@@ -8,7 +8,7 @@ define(['jquery'], function($) {
                 $('#survey-form').data('bootstrapValidator')
                     .resetField(element)
                     .enableFieldValidators(element.attr('name'), false);
-                element.next(".input-group-btn").children(".btn-dropdown").addClass("hidden");
+                element.next(".input-group-btn").children(".btn-dropdown").prop("disabled", true);
                 element.prop('disabled', true);
             }
         },
@@ -17,7 +17,7 @@ define(['jquery'], function($) {
             var element = $(element);
 
             if(element.length > 0) {
-                element.next(".input-group-btn").children(".btn-dropdown").removeClass("hidden");
+                element.next(".input-group-btn").children(".btn-dropdown").prop("disabled", false);
                 element.prop('disabled', false);
 
                 $('#survey-form').data('bootstrapValidator')
