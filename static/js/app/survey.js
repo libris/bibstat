@@ -116,13 +116,13 @@ define(['jquery', 'survey.sum', 'survey.cell', 'surveys.dispatch', 'bootstrap.va
             var disableDropdown = function (input) {
                 if (input.attr('data-is-child')) {
                     var dropdown = input.next(".input-group-btn").children(".btn-dropdown");
-                    dropdown.addClass("hidden");
+                    dropdown.prop('disabled', true);
                 }
             };
             var enableDropdown = function (input) {
                 if (!input.attr('data-sum-of')) {
                     var dropdown = input.next(".input-group-btn").children(".btn-dropdown");
-                    dropdown.removeClass("hidden");
+                    dropdown.prop('disabled', false);
 
                     var enable = dropdown.siblings('.dropdown-menu').find(".menu-enable");
                     setActive(enable);
