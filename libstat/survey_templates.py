@@ -257,11 +257,7 @@ _survey_template_2014 = SurveyTemplate(
                             Cell(variable_key=u"Fjarr202", types=["integer"]),
                             Cell(variable_key=u"Fjarr398", types=["integer"],
                                  sum_of=[u"Fjarr102", u"Fjarr202"])]),
-                        Row(cells=[
-                            Cell(variable_key=u"Fjarr199", types=["integer", "required"]),
-                            Cell(variable_key=u"Fjarr299", types=["integer", "required"]),
-                            Cell(variable_key=u"Fjarr399", types=["integer"],
-                                 sum_of=[u"Fjarr199", u"Fjarr299"])])]),
+                        ]),
                     Group(rows=[
                         Row(cells=[Cell(variable_key=u"Bestandkomm", types=["comment"])])])]),
         Section(title=u"Omsättningen av elektroniska medier, användning och lån",
