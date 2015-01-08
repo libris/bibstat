@@ -591,12 +591,14 @@ class Survey(SurveyBase):
     def publish(self):
         def update_existing_open_data(self, publishing_date):
             for observation in self.observations:
-                for open_data in OpenData.objects.filter(source_survey=self.pk, variable=observation.variable):
-                    if observation.value != open_data.value:
-                        open_data.value = observation.value
-                        open_data.date_modified = publishing_date
-                    open_data.is_active = True
-                    open_data.save()
+                open_datas = OpenData.objects.filter(source_survey=self.pk, variable=observation.variable)
+                if open_datas:
+                    for open_data in open_datas:
+                        if observation.value != open_data.value:
+                            open_data.value = observation.value
+                            open_data.date_modified = publishing_date
+                        open_data.is_active = True
+                    OpenData.objects.insert(open_datas, load_bulk=False)
 
         def create_new_open_data(self, publishing_date):
             existing_open_data_variables = [open_data.variable for open_data in
@@ -607,18 +609,21 @@ class Survey(SurveyBase):
                             observation.value is not None and
                             observation.value != "" and
                             not observation.variable in existing_open_data_variables]
-
-            for observation in observations:
-                OpenData(source_survey=self,
-                         sample_year=self.sample_year,
-                         library_name=self.library.name,
-                         sigel=self.library.sigel,
-                         value=observation.value,
-                         variable=observation.variable,
-                         target_group=self.library.library_type,
-                         date_created=publishing_date,
-                         date_modified=publishing_date,
-                ).save()
+            if observations:
+                open_datas = []
+                for observation in observations:
+                    open_datas.append(
+                        OpenData(source_survey=self,
+                                 sample_year=self.sample_year,
+                                 library_name=self.library.name,
+                                 sigel=self.library.sigel,
+                                 value=observation.value,
+                                 variable=observation.variable,
+                                 target_group=self.library.library_type,
+                                 date_created=publishing_date,
+                                 date_modified=publishing_date,
+                        ))
+                OpenData.objects.insert(open_datas, load_bulk=False)
 
         publishing_date = datetime.utcnow()
 
