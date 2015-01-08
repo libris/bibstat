@@ -7,6 +7,7 @@ import re
 from django import template
 from bibstat import settings
 from libstat.models import Dispatch, Survey
+import locale
 
 from libstat.utils import targetGroups, ALL_TARGET_GROUPS_label
 from data.municipalities import municipalities
@@ -71,6 +72,15 @@ def analytics_enabled(_):
 def debug_enabled(_):
     return settings.DEBUG
 
+def format_number(number, digits=1):
+    if number == int(number):
+        number_format = "%d"
+    else:
+        number_format = "%.{}f".format(digits)
+
+    locale.setlocale(locale.LC_NUMERIC, 'sv_SE')
+    return locale.format(number_format, number, grouping=True)
+
 register.filter('utc_tz', utc_tz)
 register.filter('tg_label', tg_label)
 register.filter('srs_label', srs_label)
@@ -80,4 +90,5 @@ register.filter('split_into_number_and_body', split_into_number_and_body)
 register.filter('as_json', as_json)
 register.filter('analytics_enabled', analytics_enabled)
 register.filter('debug_enabled', debug_enabled)
+register.filter('format_number', format_number)
 register.simple_tag(dispatches_count)

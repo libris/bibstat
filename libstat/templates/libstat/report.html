@@ -150,12 +150,13 @@
 
     tr.label-only td {
         color: white;
-        background-color: rgb(255, 163, 56) !important;
+        background-color: rgb(212, 104, 102) !important;
         font-weight: bold;
     }
 
     .incomplete-data {
         font-weight: bold !important;
+        vertical-align: top;
         color: red;
     }
 
@@ -173,6 +174,18 @@
         height: 30px;
     }
 
+    .fa.fa-small {
+        font-size: 7px;
+    }
+
+    td.observation-previous-previous-year,
+    td.observation-previous-year,
+    td.observation-sample-year,
+    td.observation-difference,
+    td.observation-difference-total,
+    td.observation-extra {
+        white-space: nowrap;
+    }
 </style>
 <div class="report">
     <div class="report-title scroll-start">Verksamhetsrapport för året {{ year }}</div>
@@ -200,9 +213,9 @@
     </div>
     <div class="row report-legend">
         <div class="pull-right">
-            <p>- = Värdet går inte att få fram</p>
+            <p>&mdash; = Värdet går inte att få fram</p>
 
-            <p><i class="fa fa-asterisk incomplete-data"></i> = Värdet har inte angivits av alla bibliotek</p>
+            <p><i class="fa fa-asterisk fa-small incomplete-data"></i> = Värdet har inte angivits av alla bibliotek</p>
         </div>
     </div>
     <div class="row">
@@ -238,59 +251,59 @@
                                 <td class="observation-label">{{ row|access:"label" }}</td>
                                 <td class="observation-previous-previous-year">
                                     {% if row|access:group.years.0 != None %}
-                                        {{ row|access:group.years.0|floatformat }}
+                                        {{ row|access:group.years.0|format_number }}
                                         {% if group.years.0 in row|access:'incomplete_data' %}
-                                            <i class="fa fa-asterisk incomplete-data"></i>
+                                            <i class="fa fa-asterisk fa-small incomplete-data"></i>
                                         {% endif %}
                                     {% else %}
-                                        -
+                                        &mdash;
                                     {% endif %}
                                 </td>
                                 <td class="observation-previous-year">
                                     {% if row|access:group.years.1 != None %}
-                                        {{ row|access:group.years.1|floatformat }}
+                                        {{ row|access:group.years.1|format_number }}
                                         {% if group.years.1 in row|access:'incomplete_data' %}
-                                            <i class="fa fa-asterisk incomplete-data"></i>
+                                            <i class="fa fa-asterisk fa-small incomplete-data"></i>
                                         {% endif %}
                                     {% else %}
-                                        -
+                                        &mdash;
                                     {% endif %}
                                 </td>
                                 <td class="observation-sample-year">
                                     {% if row|access:group.years.2 != None %}
-                                        {{ row|access:group.years.2|floatformat }}
+                                        {{ row|access:group.years.2|format_number }}
                                         {% if group.years.2 in row|access:'incomplete_data' %}
-                                            <i class="fa fa-asterisk incomplete-data"></i>
+                                            <i class="fa fa-asterisk fa-small incomplete-data"></i>
                                         {% endif %}
                                     {% else %}
-                                        -
+                                        &mdash;
                                     {% endif %}
                                 </td>
                                 <td class="observation-difference">
                                     {% if row.diff != None %}
                                         {{ row.diff|floatformat:"0" }}%
                                         {% if group.years.2 in row|access:'incomplete_data' or group.years.1 in row|access:'incomplete_data' %}
-                                            <i class="fa fa-asterisk incomplete-data"></i>
+                                            <i class="fa fa-asterisk fa-small incomplete-data"></i>
                                         {% endif %}
                                     {% else %}
-                                        -
+                                        &mdash;
                                     {% endif %}
                                 </td>
                                 <td class="observation-difference-total">
                                     {% if row.nation_diff != None %}
                                         {{ row.nation_diff|floatformat:"0" }}&permil;
                                         {% if group.years.2 in row|access:'incomplete_data' %}
-                                            <i class="fa fa-asterisk incomplete-data"></i>
+                                            <i class="fa fa-asterisk fa-small incomplete-data"></i>
                                         {% endif %}
                                     {% else %}
-                                        -
+                                        &mdash;
                                     {% endif %}
                                 </td>
                                 <td class="observation-extra">
                                     {% if row.extra %}
                                         {{ row.extra|floatformat:"0"|default:"-" }}%
                                     {% else %}
-                                        -
+                                        &mdash;
                                     {% endif %}
                                 </td>
                             </tr>
