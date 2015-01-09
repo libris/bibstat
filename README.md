@@ -61,7 +61,7 @@ För att kunna göra en deploy krävs anslutning till det lokala nätverket.
 Båda miljöerna går att komma åt med SSH på det lokala nätverket.  
 Inloggningsuppgifterna till maskinerna går att få genom att fråga IT.
 
-**Sökvägar**
+**Sökvägar**  
 Konfiguration för Django: `/data/appl/config/bibstat_local.py`.  
 Konfiguration för Apache: `/etc/httpd/conf.d/bibstat.conf`.  
 Felmeddelanden loggas till: `/var/log/httpd/bibstat-error_log`.  
@@ -71,9 +71,9 @@ Varje deploy får en egen tids- och datumstämplad mapp i `/data/appl/`.
 Den senaste versionen som används länkas in till `/data/appl/bibstat`.  
 Tidigare versioner tas inte bort automatiskt, utan måste tas bort manuellt.
 
-**Backup**
-Båda miljöerna körs i var sin egen virtuell maskin med Red Hat Linux.
-Version: `Red Hat Enterprise Linux Server release 6.6 (Santiago)`.
+**Backup**  
+Båda miljöerna körs i var sin egen virtuell maskin med Red Hat Linux.  
+Version: `Red Hat Enterprise Linux Server release 6.6 (Santiago)`.  
 
 Backup sker genom att varje natt ta en kopia på den virtuella maskinen.  
 IT kan hjälpa till med driften och återställning om det skulle behövas.  
@@ -81,21 +81,21 @@ IT kan hjälpa till med driften och återställning om det skulle behövas.
 
 ### Stage
 
-Adress: [bibstat-stg.libris.kb.se](http://bibstat-stg.libris.kb.se)
-Hårdvara: 2 GB Minne, 80 GB Hårddisk
-Deploy: `fab conf.stgbibstat app.bibstat.deploy`
+Adress: [bibstat-stg.libris.kb.se](http://bibstat-stg.libris.kb.se)  
+Hårdvara: 2 GB Minne, 80 GB Hårddisk  
+Deploy: `fab conf.stgbibstat app.bibstat.deploy`  
 Inloggning: `super / super` för att kunna administrera.
 
 ### Produktion
 
-Adress: [bibstat.libris.kb.se](http://bibstat.libris.kb.se)
-Hårdvara: 16 GB Minne, 80 GB Hårddisk
-Deploy: `fab conf.prodbibstat app.bibstat.deploy`
+Adress: [bibstat.libris.kb.se](http://bibstat.libris.kb.se)  
+Hårdvara: 16 GB Minne, 80 GB Hårddisk  
+Deploy: `fab conf.prodbibstat app.bibstat.deploy`  
 Inloggning: Fråga en involverad utvecklare efter uppgifterna.
 
 ## Import
 
-**Termer**
+**Termer**  
 Tidigare års statistiktermer kan importeras på följande sett.  
 Filerna finns att hitta i projektkatalogen [`data/variables`](data/variables).
 
@@ -104,7 +104,7 @@ Filerna finns att hitta i projektkatalogen [`data/variables`](data/variables).
 	$ python manage.py import_variables --file=data/variables/skol_termer.xlsx --target_group=skolbib
 	$ python manage.py import_variables --file=data/variables/sjukhus_termer.xlsx --target_group=sjukbib
 
-**Enkäter**
+**Enkäter**  
 Tidigare års enkäter med de inlämnade värdena kan importeras på följande sett.  
 En exekvering av ett kommando importerar ett års värden för en viss bibliotekstyp.
 Filerna finns på både stage- och produktionsmiljön i `/data/appl/old_bibstat_data`.
