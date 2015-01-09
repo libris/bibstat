@@ -271,7 +271,7 @@ _survey_template_2014 = SurveyTemplate(
                                  sum_of=[u"Fjarr102", u"Fjarr202"])]),
                         ]),
                     Group(rows=[
-                        Row(cells=[Cell(variable_key=u"Bestandkomm", types=["comment"])])])]),
+                        Row(cells=[Cell(variable_key=u"Utlankomm", types=["comment"])])])]),
         Section(title=u"Omsättningen av elektroniska medier, användning och lån",
                 groups=[
                     Group(rows=[
