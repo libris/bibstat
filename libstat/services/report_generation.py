@@ -9,20 +9,12 @@ REPORT_CACHE_LIMIT = 500
 
 
 def get_cached_report(surveys, year):
-    reports = CachedReport.objects.all()
-    open_datas = OpenData.objects.all()
-
-    if reports and open_datas and open_datas[0].date_modified > reports[0].date_created:
-        CachedReport.objects.all().delete()
+    if (CachedReport.objects.count() != 0 and OpenData.objects.count() != 0
+        and OpenData.objects.first().date_modified > CachedReport.objects.first().date_created):
+        CachedReport.drop_collection()
 
     reports = CachedReport.objects.filter(surveys__all=surveys, surveys__size=len(surveys), year=str(year))
     report = reports[0].report if reports.count() == 1 else None
-
-    if report:
-        # MongoEngine doesn't serialize Library objects properly, reconstruct them
-        sigels = [sigel for survey in surveys for sigel in survey.selected_libraries]
-        report["libraries"] = [survey.library for survey in
-                               Survey.objects.filter(sample_year=year, library__sigel__in=sigels)]
 
     return report
 
@@ -40,18 +32,24 @@ def get_report(surveys, year):
     if cached_report:
         return cached_report
     else:
-        sigels = [sigel for survey in surveys for sigel in survey.selected_libraries]
-        libraries = [survey.library for survey in Survey.objects.filter(sample_year=year, library__sigel__in=sigels)]
-
         # This should of course be updated when (and if) more templates are added
         report_template = report_template_2014()
 
         observations = pre_cache_observations(report_template, surveys, year)
 
+        sigels = [sigel for survey in surveys for sigel in survey.selected_libraries]
+        libraries = [survey.library for survey in Survey.objects.filter(sample_year=year, library__sigel__in=sigels)]
+
         report = {
             "id": str(uuid.uuid1()),
             "year": year,
-            "libraries": libraries,
+            "libraries": [
+                {
+                    "sigel": library.sigel,
+                    "name": library.name,
+                    "address": library.address,
+                    "city": library.city
+                } for library in libraries],
             "measurements": generate_report(report_template, year, observations)
         }
 
@@ -73,10 +71,12 @@ def generate_report(report_template, year, observations):
         return values
 
     def group_skeleton(template_group):
-        return {"title": template_group.title,
-                "years": [year2, year1, year0],
-                "rows": [],
-                "extra": template_group.extra}
+        return {
+            "title": template_group.title,
+            "years": [year2, year1, year0],
+            "rows": [],
+            "extra": template_group.extra
+        }
 
     def row_skeleton(template_row):
         return {
