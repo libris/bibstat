@@ -87,6 +87,9 @@ def format_email(email, limit=30):
 
     return email[:limit - 3] + "..."
 
+def footer():
+    return "&copy; Kungliga Biblioteket 2014-" + str(datetime.now().year)
+
 register.filter('utc_tz', utc_tz)
 register.filter('tg_label', tg_label)
 register.filter('srs_label', srs_label)
@@ -99,3 +102,4 @@ register.filter('debug_enabled', debug_enabled)
 register.filter('format_number', format_number)
 register.filter('format_email', format_email)
 register.simple_tag(dispatches_count)
+register.simple_tag(footer)
