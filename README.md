@@ -1,139 +1,122 @@
-KB bibstat - Biblioteksstatistiken
-==================================
+# Biblioteksstatistiken
 
-## Förkrav ##
+Sveriges officiella biblioteksstatistik.
 
-* Python 2.7
-* pip och virtualenv
-* Mongodb 2.6
+## Beroenden
 
-### Installera mongodb 2.6 på Red Hat 64 bit ###
+* Python 2.7.x (Django)
+* MongoDB 2.6.x
 
-Se instruktioner på http://docs.mongodb.org/manual/tutorial/install-mongodb-on-red-hat-centos-or-fedora-linux/
+Pakethanteraren [pip](http://pip-installer.org) används för att hantera beroenden i Python.  
+Denna finns inkluderad tillsammans med Python 2.7.9 eller senare.
 
-1. Skapa en yum konfigurationsfil för mongodb `/etc/yum.repos.d/mongodb.repo` med följande innehåll:
+## Installation
 
-	[mongodb]
-	name=MongoDB Repository
-	baseurl=http://downloads-distro.mongodb.org/repo/redhat/os/x86_64/
-	gpgcheck=0
-	enabled=1
+Nedan är ett exempel på en minimal installation för Mac OS X.  
+Detta kräver att du redan har installerat [Homebrew](http://brew.sh) sedan tidigare.
 
-2. Installera senaste mongodb
+	# Installera beroenden
+	$ brew install git mongodb python
+	$ pip install virtualenvwrapper
 
-	$ sudo yum install mongodb-org
+	# Klona projektet
+	$ git clone git@github.com:libris/bibstat
+	$ cd bibstat
 
-3. Konfigurera användare och access för mongodb
+	# Starta MongoDB
+	$ mkdir mongodb
+	$ mongod --dbpath $(pwd)/mongodb
 
-För lokala miljöer är det enklast att hoppa över detta steg om man vill kunna köra testerna. 
-Annars måste man sätta upp en databasanvändare som har behörighet att skapa och radera databaser.
-Glöm inte att ersätta exempellösenorden nedan med riktiga lösenord...
-
-Skapa admin-användare	
-
+	# Skapa en användare för databasen
 	$ mongo
-	$> use admin
-	$> db.createUser({user:"admin", pwd:"admin", roles: ["root"]})
-	$> db.runCommand({usersInfo:"admin", showPrivileges:true })
+	$ use bibstat
+	$ db.createUser({user:"bibstat", pwd:"bibstat", roles:["readWrite"]})
+	$ exit
 
-Aktivera autenticering och starta om mongod
-	
-	$ sudo vi /etc/mongod.conf
+	# Skapa en virtuell miljö för Python
+	$ source /usr/local/bin/virtualenvwrapper.sh
+	$ mkvirtualenv -p /usr/local/bin/python bibstat
+	$ workon bibstat
 
-Se till att följande rader är avkommenterade:
+	# Installera paket och konfigurera
+	$ pip install -r requirements.txt
+	$ cp bibstat/settings_local.py.example bibstat/settings_local.py
+	$ python manage.py createsuperuser --username=super --email=a@b.c
 
-	bind_ip = 127.0.0.1
-	auth = true
-	
-Starta om mongodb
-
-	$ sudo service mongod restart
-	
-Testa autenticeringen
-	
-	$ mongo admin
-	$> db.auth("admin", "admin")
-
-Skapa användare för bibstat (inloggad i mongodb som admin)
-
-	$> use bibstat
-	$> db.createUser({user:"bibstat", pwd:"bibstat", roles:["readWrite"]})
-	$> db.runCommand({usersInfo:"bibstat", showPrivileges:true })
-	
-## Skapa lokal Python-miljö ##
-
-Stå i Django-applikationens rotkatalog.
-
-Skapa en virtualenv:
-
-    $ mkvirtualenv bibstat
-
-Installera beroenden:
-
-    $ pip install -r requirements.txt
-
-Skapa lokal settings-fil från exempel. Modifiera sedan settings_local enligt din egen miljö:
-
-    $ cp bibstat/settings_local.py.example bibstat/settings_local.py
-
-Starta server:
-
+	# Starta servern
 	$ python manage.py runserver
-	
-Skapa superanvändare:
-	
-	$ python manage.py createsuperuser --username=super --email=noone@example.org 
-	passwd: super
-    
-Läs in statistiktermer (finns incheckade):
-	
-	$ python manage.py import_variables --file=data/folk_termer.xlsx --target_group=public	
-	$ python manage.py import_variables --file=data/forsk_termer.xlsx --target_group=research
-	$ python manage.py import_variables --file=data/skol_termer.xlsx --target_group=school
-	$ python manage.py import_variables --file=data/sjukhus_termer.xlsx --target_group=hospital
 
-Läs in statistikdata, exempelvis folkbibliotekfil som innehåller åren 2010 t o m 2013 (finns på ...?)
-	
-	$ python manage.py import_survey_responses --file=/tmp/Folkbiblioteksexport_superfil_20140625_ver2.xlsx --target_group=public --year=2013
-	$ python manage.py import_survey_responses --file=/tmp/Folkbiblioteksexport_superfil_20140625_ver2.xlsx --target_group=public --year=2012
-	$ python manage.py import_survey_responses --file=/tmp/Folkbiblioteksexport_superfil_20140625_ver2.xlsx --target_group=public --year=2011
-	$ python manage.py import_survey_responses --file=/tmp/Folkbiblioteksexport_superfil_20140625_ver2.xlsx --target_group=public --year=2010
+## Testning
 
-### Kör tester ###
+Testerna kan köras genom att använda följande kommando.  
+Både enhetstesterna och integrationstesterna kommer köras.
 
 	$ python manage.py test
 
-## OS X
+## Deploy
 
-Minimal installation för OS X. Installera [Homebrew](http://brew.sh) om du inte har det sedan tidigare.
+Det gemensamma verktyget [DevOps](https://github.com/libris/devops) används för att sköta deploy.  
+För att kunna göra en deploy krävs anslutning till det lokala nätverket.
 
-	# Install prerequisites
-	brew install git mongodb python
-	pip install virtualenvwrapper
+Båda miljöerna går att komma åt med SSH på det lokala nätverket.  
+Inloggningsuppgifterna till maskinerna går att få genom att fråga IT.
 
-	# Clone bibstat repository
-	git clone git@github.com:libris/bibstat
-	cd bibstat
+**Sökvägar**
+Konfiguration för Django: `/data/appl/config/bibstat_local.py`.  
+Konfiguration för Apache: `/etc/httpd/conf.d/bibstat.conf`.  
+Felmeddelanden loggas till: `/var/log/httpd/bibstat-error_log`.  
+Inkommande requests loggas till: `/var/log/httpd/bibstat-access_log`.
 
-	# Launch mongodb
-	mkdir mongodb
-	mongod --dbpath $(pwd)/mongodb
+Varje deploy får en egen tids- och datumstämplad mapp i `/data/appl/`.  
+Den senaste versionen som används länkas in till `/data/appl/bibstat`.  
+Tidigare versioner tas inte bort automatiskt, utan måste tas bort manuellt.
 
-	# Create login
-	mongo
-	use bibstat
-	db.createUser({user:"bibstat", pwd:"bibstat", roles:["readWrite"]})
-	exit
+**Backup**
+Båda miljöerna körs i var sin egen virtuell maskin med Red Hat Linux.
+Version: `Red Hat Enterprise Linux Server release 6.6 (Santiago)`.
 
-	# Setup virtualenv
-	source /usr/local/bin/virtualenvwrapper.sh
-	mkvirtualenv -p /usr/local/bin/python bibstat
-	workon bibstat
+Backup sker genom att varje natt ta en kopia på den virtuella maskinen.  
+IT kan hjälpa till med driften och återställning om det skulle behövas.  
+[Mikko Yletyinen](mailto:mikko.yletyinen@kb.se) har tidigare varit kontaktperson gällande driften.
 
-	# Setup bibstat
-	pip install -r requirements.txt
-	cp bibstat/settings_local.py.example bibstat/settings_local.py
-	python manage.py createsuperuser --username=super --email=a@b.c
+### Stage
 
-	# Run bibstat
-	python manage.py runserver
+Adress: [bibstat-stg.libris.kb.se](http://bibstat-stg.libris.kb.se)
+Hårdvara: 2 GB Minne, 80 GB Hårddisk
+Deploy: `fab conf.stgbibstat app.bibstat.deploy`
+Inloggning: `super / super` för att kunna administrera.
+
+### Produktion
+
+Adress: [bibstat.libris.kb.se](http://bibstat.libris.kb.se)
+Hårdvara: 16 GB Minne, 80 GB Hårddisk
+Deploy: `fab conf.prodbibstat app.bibstat.deploy`
+Inloggning: Fråga en involverad utvecklare efter uppgifterna.
+
+## Import
+
+**Termer**
+Tidigare års statistiktermer kan importeras på följande sett.  
+Filerna finns att hitta i projektkatalogen [`data/variables`](data/variables).
+
+	$ python manage.py import_variables --file=data/variables/folk_termer.xlsx --target_group=folkbib	
+	$ python manage.py import_variables --file=data/variables/forsk_termer.xlsx --target_group=specbib
+	$ python manage.py import_variables --file=data/variables/skol_termer.xlsx --target_group=skolbib
+	$ python manage.py import_variables --file=data/variables/sjukhus_termer.xlsx --target_group=sjukbib
+
+**Enkäter**
+Tidigare års enkäter med de inlämnade värdena kan importeras på följande sett.  
+En exekvering av ett kommando importerar ett års värden för en viss bibliotekstyp.
+Filerna finns på både stage- och produktionsmiljön i `/data/appl/old_bibstat_data`.
+
+	$ python manage.py import_survey_responses --file=/data/appl/old_bibstat_data/Folkbibliotek.xlsx --target_group=folkbib --year=2013
+	$ python manage.py import_survey_responses --file=/data/appl/old_bibstat_data/Folkbibliotek.xlsx --target_group=folkbib --year=2012
+	$ python manage.py import_survey_responses --file=/data/appl/old_bibstat_data/Folkbibliotek.xlsx --target_group=folkbib --year=2011
+	$ python manage.py import_survey_responses --file=/data/appl/old_bibstat_data/Folkbibliotek.xlsx --target_group=folkbib --year=2010
+
+## Analytics
+
+[Google Analytics](http://www.google.com/analytics) används för att spåra hur externa användare använder tjänsten.  
+Kontot som används delas tillsammans med de andra utvecklade systemen i Libris.
+
+Inloggningsuppgifterna kan fås genom att fråga en involverad utvecklare.
