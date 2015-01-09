@@ -106,7 +106,7 @@ Filerna finns att hitta i projektkatalogen [`data/variables`](data/variables).
 
 **Enkäter**  
 Tidigare års enkäter med de inlämnade värdena kan importeras på följande sett.  
-En exekvering av ett kommando importerar ett års värden för en viss bibliotekstyp.
+En exekvering av ett kommando importerar ett års värden för en viss bibliotekstyp.  
 Filerna finns på både stage- och produktionsmiljön i `/data/appl/old_bibstat_data`.
 
 	$ python manage.py import_survey_responses --file=/data/appl/old_bibstat_data/Folkbibliotek.xlsx --target_group=folkbib --year=2013
