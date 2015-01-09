@@ -1,6 +1,6 @@
 from django.conf.urls import patterns, url
 from django.core.urlresolvers import reverse_lazy
-from django.views.generic import RedirectView
+from django.views.generic import RedirectView, TemplateView
 from django.contrib.auth.views import logout
 
 from django.contrib import admin
@@ -31,6 +31,8 @@ from libstat.views.variables import (variables,
 admin.autodiscover()
 
 urlpatterns = patterns('',
+
+    url(r'^robots\.txt$', TemplateView.as_view(template_name='robots.txt', content_type='text/plain'), name="robots"),
 
     # APIs
     url(r'^data$', data_api, name="data_api"),
