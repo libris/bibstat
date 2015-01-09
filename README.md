@@ -59,7 +59,8 @@ Det gemensamma verktyget [DevOps](https://github.com/libris/devops) används fö
 För att kunna göra en deploy krävs anslutning till det lokala nätverket.
 
 Båda miljöerna går att komma åt med SSH på det lokala nätverket.  
-Inloggningsuppgifterna till maskinerna går att få genom att fråga IT.
+Inloggningsuppgifterna till maskinerna går att få genom att fråga IT.  
+Notera att `sudo` är trasigt på maskinerna, så `root` måste användas.
 
 **Sökvägar**  
 Konfiguration för Django: `/data/appl/config/bibstat_local.py`.  
