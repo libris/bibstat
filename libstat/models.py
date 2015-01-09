@@ -745,8 +745,7 @@ class Cell(EmbeddedDocument):
 
     @property
     def variable(self):
-        if not self._variable:
-            self._variable = Variable.objects.get(key=self.variable_key)
+        self._variable = Variable.objects.no_cache().get(key=self.variable_key)
         return self._variable
 
     @property
