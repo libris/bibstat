@@ -244,8 +244,12 @@
                                 <td>
                                     {{ sr.library.library_type|tg_label|default:"" }}
                                 </td>
-                                <td>
-                                    {{ sr.library.email|default:"" }}
+                                <td nowrap>
+                                    {% if sr.library.email %}
+                                        <a title="" class="survey-popover" data-placement="top"
+                                           data-toggle="tooltip" href="mailto:{{ sr.library.email }}"
+                                           data-original-title="{{ sr.library.email }} ">{{ sr.library.email|format_email }}</a>
+                                    {% endif %}
                                 </td>
                                 <td nowrap>
                                     {{ sr.status|srs_label|default:"" }}

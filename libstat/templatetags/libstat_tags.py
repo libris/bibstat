@@ -81,6 +81,12 @@ def format_number(number, digits=1):
     locale.setlocale(locale.LC_NUMERIC, 'sv_SE')
     return locale.format(number_format, number, grouping=True)
 
+def format_email(email, limit=30):
+    if len(email) <= limit:
+        return email
+
+    return email[:limit - 3] + "..."
+
 register.filter('utc_tz', utc_tz)
 register.filter('tg_label', tg_label)
 register.filter('srs_label', srs_label)
@@ -91,4 +97,5 @@ register.filter('as_json', as_json)
 register.filter('analytics_enabled', analytics_enabled)
 register.filter('debug_enabled', debug_enabled)
 register.filter('format_number', format_number)
+register.filter('format_email', format_email)
 register.simple_tag(dispatches_count)
