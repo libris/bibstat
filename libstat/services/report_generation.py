@@ -1,27 +1,70 @@
 # -*- coding: utf-8 -*-
-from libstat.models import Survey, Variable, OpenData
+import uuid
+
+from libstat.models import Survey, Variable, OpenData, CachedReport
 from libstat.report_templates import report_template_2014
 
 
-def get_report(surveys, year):
-    sigels = [sigel for survey in surveys for sigel in survey.selected_libraries]
-    libraries = [survey.library for survey in Survey.objects.filter(sample_year=year, library__sigel__in=sigels)]
+REPORT_CACHE_LIMIT = 500
 
-    # This should of course be updated when (and if) more templates are added
-    report_template = report_template_2014()
 
-    observations = pre_cache_observations(report_template, surveys, year)
+def get_cached_report(surveys, year):
+    reports = CachedReport.objects.all()
+    open_datas = OpenData.objects.all()
 
-    report = {
-        "year": year,
-        "libraries": libraries,
-        "measurements": generate_report(report_template, year, observations)
-    }
+    if reports and open_datas and open_datas[0].date_modified > reports[0].date_created:
+        CachedReport.objects.all().delete()
+
+    reports = CachedReport.objects.filter(surveys__all=surveys, surveys__size=len(surveys), year=str(year))
+    report = reports[0].report if reports.count() == 1 else None
+
+    if report:
+        # MongoEngine doesn't serialize Library objects properly, reconstruct them
+        sigels = [sigel for survey in surveys for sigel in survey.selected_libraries]
+        report["libraries"] = [survey.library for survey in
+                               Survey.objects.filter(sample_year=year, library__sigel__in=sigels)]
 
     return report
 
 
+def store_cached_report(report, surveys, year):
+    if not get_cached_report(surveys, year):
+        cached_report = CachedReport(report=report, surveys=surveys, year=str(year))
+        cached_report.save()
+    CachedReport.objects[REPORT_CACHE_LIMIT:].filter().delete()
+
+
+def get_report(surveys, year):
+    cached_report = get_cached_report(surveys, year)
+
+    if cached_report:
+        return cached_report
+    else:
+        sigels = [sigel for survey in surveys for sigel in survey.selected_libraries]
+        libraries = [survey.library for survey in Survey.objects.filter(sample_year=year, library__sigel__in=sigels)]
+
+        # This should of course be updated when (and if) more templates are added
+        report_template = report_template_2014()
+
+        observations = pre_cache_observations(report_template, surveys, year)
+
+        report = {
+            "id": str(uuid.uuid1()),
+            "year": year,
+            "libraries": libraries,
+            "measurements": generate_report(report_template, year, observations)
+        }
+
+        store_cached_report(report, surveys, year)
+
+        return report
+
+
 def generate_report(report_template, year, observations):
+    year0 = str(year)
+    year1 = str(year - 1)
+    year2 = str(year - 2)
+
     def values_for(variable_keys, year):
         values = []
         for key in variable_keys:
@@ -31,15 +74,15 @@ def generate_report(report_template, year, observations):
 
     def group_skeleton(template_group):
         return {"title": template_group.title,
-                "years": [year - 2, year - 1, year],
+                "years": [year2, year1, year0],
                 "rows": [],
                 "extra": template_group.extra}
 
     def row_skeleton(template_row):
         return {
-            year: None,
-            (year - 1): None,
-            (year - 2): None,
+            year0: None,
+            year1: None,
+            year2: None,
             "total": None,
             "extra": None,
             "incomplete_data": None,
@@ -60,29 +103,31 @@ def generate_report(report_template, year, observations):
 
             if template_row.variable_key:
                 observation = observations.get(template_row.variable_key, {})
-                row[year] = observation.get(year, None)
-                row[year - 1] = observation.get(year - 1, None)
-                row[year - 2] = observation.get(year - 2, None)
+                row[year0] = observation.get(year, None)
+                row[year1] = observation.get(year - 1, None)
+                row[year2] = observation.get(year - 2, None)
                 row["total"] = observation.get("total", None)
                 row["incomplete_data"] = observations.get(template_row.variable_key, {}).get("incomplete_data", None)
+                if row["incomplete_data"]:
+                    row["incomplete_data"] = [str(a) for a in row["incomplete_data"]]
                 if template_row.computation:
                     row["extra"] = template_row.compute(values_for(template_row.variable_keys, year))
                     row["extra"] = row["extra"] * 100 if row["extra"] is not None else None
 
             elif template_row.variable_keys:
-                row[year] = template_row.compute(values_for(template_row.variable_keys, year))
-                row[year - 1] = template_row.compute(values_for(template_row.variable_keys, year - 1))
-                row[year - 2] = template_row.compute(values_for(template_row.variable_keys, year - 2))
+                row[year0] = template_row.compute(values_for(template_row.variable_keys, year))
+                row[year1] = template_row.compute(values_for(template_row.variable_keys, year - 1))
+                row[year2] = template_row.compute(values_for(template_row.variable_keys, year - 2))
 
-            if row[year] == 0 and row[year - 1] == 0:
+            if row[year0] == 0 and row[year1] == 0:
                 row["diff"] = 0.0
-            elif row[year] is not None and row[year - 1]:
-                row["diff"] = ((row[year] / row[year - 1]) - 1) * 100
+            elif row[year0] is not None and row[year1]:
+                row["diff"] = ((row[year0] / row[year1]) - 1) * 100
 
-            if row[year] == 0 and row[year - 1] == 0:
+            if row[year0] == 0 and row[year1] == 0:
                 row["nation_diff"] = 0.0
-            elif row[year] is not None and row["total"]:
-                row["nation_diff"] = (row[year] / row["total"]) * 1000
+            elif row[year0] is not None and row["total"]:
+                row["nation_diff"] = (row[year0] / row["total"]) * 1000
 
             row["total"] = None
             group["rows"].append(clear_nones(row))
@@ -125,7 +170,10 @@ def pre_cache_observations(template, surveys, year):
 
     observations = {}
     for key in template.all_variable_keys:
-        variables = [Variable.objects.get(key=key)]
+        variables = Variable.objects.filter(key=key)
+        if variables.count() != 1:
+            continue
+        variables = [variables[0]]
         if len(variables[0].replaces) == 1:
             variables.append(variables[0].replaces[0])  # Assume only one variable is replaced
 

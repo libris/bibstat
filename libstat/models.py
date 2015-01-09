@@ -704,7 +704,8 @@ class OpenData(Document):
             "is_active",
             "source_survey",
             "variable",
-            "sample_year"
+            "sample_year",
+            "date_modified"
         ]
     }
 
@@ -812,6 +813,22 @@ class SurveyTemplate(Document):
             if cell.variable_key == variable_key:
                 return cell
         return None
+
+
+class CachedReport(Document):
+    surveys = ListField(ReferenceField(Survey))
+    report = DictField()
+    year = IntField()
+    date_created = DateTimeField(default=datetime.utcnow)
+
+    meta = {
+        'collection': 'libstat_reports',
+        'ordering': ['-date_created'],
+        'indexes': [
+            '-date_created',
+            'year',
+        ],
+    }
 
 
 signals.pre_save.connect(Survey.pre_save, sender=Survey)

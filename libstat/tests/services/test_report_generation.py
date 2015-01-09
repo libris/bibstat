@@ -1,8 +1,10 @@
 # -*- coding: utf-8 -*-
-from pprint import pprint
-from libstat.report_templates import ReportTemplate, Group, Row
-from libstat.services.report_generation import generate_report, pre_cache_observations
 from libstat.tests import MongoTestCase
+from libstat.models import CachedReport
+from libstat.report_templates import ReportTemplate, Group, Row
+
+from libstat.services.report_generation import generate_report, pre_cache_observations, get_report
+from libstat.services import report_generation
 
 
 class TestReportGeneration(MongoTestCase):
@@ -57,13 +59,13 @@ class TestReportGeneration(MongoTestCase):
         expected_report = [
             {
                 "title": "some_title1",
-                "years": [2012, 2013, 2014],
+                "years": ["2012", "2013", "2014"],
                 "rows": [
                     {
                         "label": "some_description1",
-                        2012: 19.0,
-                        2013: 5.0,
-                        2014: 7.0,
+                        "2012": 19.0,
+                        "2013": 5.0,
+                        "2014": 7.0,
                         "diff": ((7.0 / 5.0) - 1) * 100,
                         "nation_diff": (7.0 / 31.0) * 1000,
                         "incomplete_data": []
@@ -73,16 +75,16 @@ class TestReportGeneration(MongoTestCase):
             {
                 "title": "some_title2",
                 "extra": "some_extra_description",
-                "years": [2012, 2013, 2014],
+                "years": ["2012", "2013", "2014"],
                 "rows": [
                     {
                         "label": "some_description2",
-                        2013: 11.0,
-                        2014: 13.0,
+                        "2013": 11.0,
+                        "2014": 13.0,
                         "diff": ((13.0 / 11.0) - 1) * 100,
                         "nation_diff": (13.0 / 47.0) * 1000,
                         "extra": (7.0 / 13.0) * 100,
-                        "incomplete_data": [2012]
+                        "incomplete_data": ["2012"]
                     },
                     {
                         "label": "only_a_label",
@@ -90,8 +92,8 @@ class TestReportGeneration(MongoTestCase):
                     },
                     {
                         "label": "some_description3",
-                        2013: (5.0 / 11.0) / 15,
-                        2014: (7.0 / 13.0) / 15,
+                        "2013": (5.0 / 11.0) / 15,
+                        "2014": (7.0 / 13.0) / 15,
                         "diff": (((7.0 / 13.0) / 15) / ((5.0 / 11.0) / 15) - 1) * 100
                     },
                     {
@@ -99,10 +101,10 @@ class TestReportGeneration(MongoTestCase):
                     },
                     {
                         "label": "some_description5",
-                        2012: 17.0,
-                        2014: 3.0,
+                        "2012": 17.0,
+                        "2014": 3.0,
                         "is_sum": True,
-                        "incomplete_data": [2013]
+                        "incomplete_data": ["2013"]
                     },
                     {
                         "label": "some_description6"
@@ -255,3 +257,114 @@ class TestReportTemplate(MongoTestCase):
         row = Row(computation=(lambda a, b: (a / b)))
 
         self.assertEqual(row.compute([3.0, 0]), None)
+
+
+class TestReportCaching(MongoTestCase):
+    def test_stores_cached_report_after_generation(self):
+        survey1 = self._dummy_survey(sample_year=2014, publish=True)
+        survey2 = self._dummy_survey(sample_year=2014, publish=True)
+
+        surveys = [survey1, survey2]
+
+        get_report(surveys, 2014)
+
+        self.assertEqual(CachedReport.objects.count(), 1)
+
+    def test_does_not_cache_same_report_twice(self):
+        survey1 = self._dummy_survey(sample_year=2014, publish=True)
+        survey2 = self._dummy_survey(sample_year=2014, publish=True)
+
+        surveys = [survey1, survey2]
+
+        get_report(surveys, 2014)
+        get_report(surveys, 2014)
+
+        self.assertEqual(CachedReport.objects.count(), 1)
+
+    def test_returns_new_report_from_subset_of_surveys_of_cached_report(self):
+        survey1 = self._dummy_survey(sample_year=2014, publish=True)
+        survey2 = self._dummy_survey(sample_year=2014, publish=True)
+
+        report1 = get_report([survey1, survey2], 2014)
+        report2 = get_report([survey1], 2014)
+
+        self.assertNotEqual(report1["id"], report2["id"])
+
+    def test_generates_unique_id_for_different_reports(self):
+        survey1 = self._dummy_survey(sample_year=2014, publish=True)
+        survey2 = self._dummy_survey(sample_year=2014, publish=True)
+
+        report1 = get_report([survey1], 2014)
+        report2 = get_report([survey2], 2014)
+
+        self.assertNotEqual(report1["id"], report2["id"])
+
+    def test_caching_does_not_break_report(self):
+        survey1 = self._dummy_survey(sample_year=2014, publish=True)
+        survey2 = self._dummy_survey(sample_year=2014, publish=True)
+
+        surveys = [survey1, survey2]
+
+        report = get_report(surveys, 2014)
+
+        cached_report = get_report(surveys, 2014)
+
+        self.assertEqual(report, cached_report)
+
+    def test_returns_cached_report_when_cache_hit(self):
+        survey1 = self._dummy_survey(sample_year=2014, publish=True)
+        survey2 = self._dummy_survey(sample_year=2014, publish=True)
+
+        surveys = [survey1, survey2]
+
+        get_report(surveys, 2014)
+        report = get_report(surveys, 2014)
+
+        self.assertEqual(CachedReport.objects.all()[0].report["id"], report["id"])
+
+    def test_removes_all_reports_after_a_survey_has_been_published(self):
+        survey1 = self._dummy_survey(sample_year=2014, publish=True, observations=[self._dummy_observation()])
+        survey2 = self._dummy_survey(sample_year=2014, publish=True, observations=[self._dummy_observation()])
+
+        get_report([survey1], 2014)
+        get_report([survey2], 2014)
+
+        survey3 = self._dummy_survey(sample_year=2014, publish=True, observations=[self._dummy_observation()])
+
+        report = get_report([survey3], 2014)
+
+        self.assertEqual(CachedReport.objects.count(), 1)
+        self.assertEqual(CachedReport.objects.all()[0].report["id"], report["id"])
+
+    def test_removes_all_reports_after_a_survey_has_been_republished(self):
+        survey1 = self._dummy_survey(sample_year=2014, publish=True, observations=[self._dummy_observation()])
+        survey2 = self._dummy_survey(sample_year=2014, publish=True, observations=[self._dummy_observation()])
+
+        get_report([survey1], 2014)
+        get_report([survey2], 2014)
+
+        survey1.observations[0].value = u"new_value"
+        survey1.publish()
+
+        report = get_report([survey2], 2014)
+
+        self.assertEqual(CachedReport.objects.count(), 1)
+        self.assertEqual(CachedReport.objects.all()[0].report["id"], report["id"])
+
+    def test_removes_older_reports_when_limit_reached(self):
+        survey1 = self._dummy_survey(sample_year=2014, publish=True, observations=[self._dummy_observation()])
+        survey2 = self._dummy_survey(sample_year=2014, publish=True, observations=[self._dummy_observation()])
+        survey3 = self._dummy_survey(sample_year=2014, publish=True, observations=[self._dummy_observation()])
+        survey4 = self._dummy_survey(sample_year=2014, publish=True, observations=[self._dummy_observation()])
+
+        report_generation.REPORT_CACHE_LIMIT = 3
+
+        report1 = get_report([survey1], 2014)
+        report2 = get_report([survey2], 2014)
+        report3 = get_report([survey3], 2014)
+        report4 = get_report([survey4], 2014)
+
+        self.assertEqual(CachedReport.objects.count(), 3)
+        self.assertEqual(CachedReport.objects.all()[0].report["id"], report4["id"])
+        self.assertEqual(CachedReport.objects.all()[1].report["id"], report3["id"])
+        self.assertEqual(CachedReport.objects.all()[2].report["id"], report2["id"])
