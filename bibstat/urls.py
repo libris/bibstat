@@ -33,6 +33,7 @@ admin.autodiscover()
 urlpatterns = patterns('',
 
     url(r'^robots\.txt$', TemplateView.as_view(template_name='robots.txt', content_type='text/plain'), name="robots"),
+    url(r'^humans\.txt$', TemplateView.as_view(template_name='humans.txt', content_type='text/plain; charset=utf-8'), name="humans"),
 
     # APIs
     url(r'^data$', data_api, name="data_api"),
