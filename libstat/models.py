@@ -598,7 +598,7 @@ class Survey(SurveyBase):
                             open_data.value = observation.value
                             open_data.date_modified = publishing_date
                         open_data.is_active = True
-                    OpenData.objects.insert(open_datas, load_bulk=False)
+                        open_data.save()
 
         def create_new_open_data(self, publishing_date):
             existing_open_data_variables = [open_data.variable for open_data in
