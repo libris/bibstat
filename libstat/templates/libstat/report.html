@@ -57,6 +57,11 @@
         padding-top: 30px;
     }
 
+    .report .row {
+        margin-left: 0px;
+        margin-right: 0px;
+    }
+
     th {
         color: white !important;
         text-align: center;
@@ -149,7 +154,7 @@
     }
 
     tr.label-only td {
-        color: white;
+        color: white !important;
         background-color: rgb(212, 104, 102) !important;
         font-weight: bold;
     }
@@ -162,12 +167,17 @@
 
     .report-legend {
         margin-bottom: 20px;
+        width: 900px;
     }
 
     .report-legend p {
         font-size: 14px;
         margin: auto;
         text-align: right;
+    }
+
+    .measurements {
+        width: 900px;
     }
 
     tr.empty {
@@ -218,7 +228,7 @@
             <p><i class="fa fa-asterisk fa-small incomplete-data"></i> = Värdet har inte angivits av alla bibliotek</p>
         </div>
     </div>
-    <div class="row">
+    <div class="row measurements">
         {% for group in measurements %}
             <div class="observation-group">
                 <table class="observation">
