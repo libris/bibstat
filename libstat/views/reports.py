@@ -20,7 +20,7 @@ def report(request):
 
     sample_year = int(request.POST.get("sample_year", None))
     sigels = request.POST.getlist("surveys", [])
-    surveys = list(Survey.objects.filter(sample_year=sample_year, library__sigel__in=sigels))
+    surveys = list(Survey.objects.filter(_status=u"published", sample_year=sample_year, library__sigel__in=sigels))
 
     context = get_report(surveys, sample_year)
     context["previous_url"] = previous_url

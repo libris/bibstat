@@ -16,6 +16,10 @@ define(['jquery', 'scroll'], function($, scroll) {
                }
            });
 
+           $('.report-explanation').click(function(e) {
+               e.preventDefault();
+           });
+
            var scrollStart = $('.scroll-start');
            if(scrollStart.length > 0)
                scroll.to(scrollStart);

@@ -258,7 +258,12 @@
                         </tr>
                         {% else %}
                             <tr class="{% if forloop.counter|divisibleby:2 %}even{% else %}odd{% endif %}{% if row.is_sum %} sum{% endif %}">
-                                <td class="observation-label">{{ row|access:"label" }}</td>
+                                <td class="observation-label">
+                                    {{ row|access:"label" }}
+                                    {% if row|access:"description" %}
+                                        <a class="survey-popover report-explanation" data-toggle="popover" data-original-title="{{ row|access:"description" }}" href="#"><i class="fa fa-question-circle"></i></a>
+                                    {% endif %}
+                                </td>
                                 <td class="observation-previous-previous-year">
                                     {% if row|access:group.years.0 != None %}
                                         {{ row|access:group.years.0|format_number }}
