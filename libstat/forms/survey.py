@@ -12,7 +12,7 @@ from libstat.survey_templates import survey_template
 
 class SurveyForm(forms.Form):
 
-    def _cell_to_input_field(self, cell, observation):
+    def _cell_to_input_field(self, cell, observation, authenticated):
         attrs = {"class": "form-control",
                  "id": cell.variable_key,
                  "name": cell.variable_key}
@@ -54,6 +54,12 @@ class SurveyForm(forms.Form):
 
         if observation.value_unknown:
             attrs["class"] = "{} value-unknown".format(attrs["class"])
+
+        if authenticated:
+            attrs["class"] = "{} survey-popover".format(attrs["class"])
+            attrs["data-toggle"] = "tooltip"
+            attrs["data-placement"] = "top"
+            attrs["data-original-title"] = cell.variable_key
 
         attrs["data-original-value"] = observation.value if observation.value is not None else ""
 
@@ -228,7 +234,7 @@ class SurveyForm(forms.Form):
                 cell.previous_value = survey.previous_years_value(observation.variable, previous_survey)
             if not observation:
                 survey.observations.append(SurveyObservation(variable=variables[variable_key]))
-            self.fields[variable_key] = self._cell_to_input_field(cell, observation)
+            self.fields[variable_key] = self._cell_to_input_field(cell, observation, authenticated)
 
         if self.is_read_only:
             self.fields["read_only"].initial = "true"
