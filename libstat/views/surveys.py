@@ -38,7 +38,7 @@ def surveys(request, *args, **kwargs):
     free_text = request.GET.get("free_text", "").strip()
     surveys_state = request.GET.get("surveys_state", "active")
 
-    email_choices = [("all", "Oavsett email"), ("with", "Med email"), ("without", "Utan email")]
+    email_choices = [("all", "Oavsett email"), ("with", "Med email"), ("invalid", "Med ogiltig email"), ("without", "Utan email")]
     email = request.GET.get("email", "all")
 
     surveys = []
@@ -57,6 +57,7 @@ def surveys(request, *args, **kwargs):
             free_text=free_text,
             with_email=(email == "with"),
             without_email=(email == "without"),
+            invalid_email=(email == "invalid"),
             is_active=True)
         inactive_surveys = Survey.objects.by(
             sample_year=sample_year,
@@ -66,6 +67,7 @@ def surveys(request, *args, **kwargs):
             free_text=free_text,
             with_email=(email == "with"),
             without_email=(email == "without"),
+            invalid_email=(email == "invalid"),
             is_active=False)
         surveys = active_surveys if surveys_state == "active" else inactive_surveys
 

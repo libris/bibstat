@@ -5,7 +5,7 @@ from data.municipalities import MUNICIPALITIES
 
 class SurveyQuerySet(QuerySet):
     def by(self, sample_year=None, target_group=None, status=None, municipality_code=None, free_text=None,
-           is_active=None, with_email=False, without_email=False):
+           is_active=None, with_email=False, without_email=False, invalid_email=False):
         target_group_query = Q(library__library_type=target_group) if target_group else Q()
         sample_year_query = Q(sample_year=sample_year) if sample_year else Q()
         status_query = Q(_status=status) if status else Q()
@@ -18,6 +18,11 @@ class SurveyQuerySet(QuerySet):
             email_query = Q(library__email__exists=True) & Q(library__email__ne="")
         if without_email:
             email_query = Q(library__email__exists=False) | Q(library__email="")
+        if invalid_email:
+            email_exists = Q(library__email__exists=True) & Q(library__email__ne="")
+            email_invalid = Q(library__email__not__contains="@")
+            email_query = email_exists & email_invalid
+
 
         free_text_query = Q()
         if free_text:
