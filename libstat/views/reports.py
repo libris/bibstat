@@ -84,6 +84,11 @@ def reports(request):
                 for survey in Survey.objects.filter(library__sigel__in=sigels).only("library.sigel", "library.name"):
                     library_name_for_sigel[survey.library.sigel] = survey.library.name
 
+        filtered_surveys = list(filtered_surveys)
+        def sort_key(survey):
+            return survey.library.name.lower()
+        filtered_surveys.sort(key=sort_key)
+
         context = {
             "sample_year": sample_year,
             "sample_years": sample_years,

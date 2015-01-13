@@ -40,6 +40,10 @@ def get_report(surveys, year):
         sigels = [sigel for survey in surveys for sigel in survey.selected_libraries]
         libraries = [survey.library for survey in Survey.objects.filter(sample_year=year, library__sigel__in=sigels)]
 
+        def sort_key(library):
+            return library.name.lower()
+        libraries.sort(key=sort_key)
+
         report = {
             "id": str(uuid.uuid1()),
             "year": year,

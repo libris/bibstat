@@ -90,6 +90,35 @@ def format_email(email, limit=30):
 def footer():
     return "&copy; Kungliga Biblioteket 2014-" + str(datetime.now().year)
 
+@register.filter
+def partition(thelist, n):
+    """
+    Break a list into ``n`` pieces. The last list may be larger than the rest if
+    the list doesn't break cleanly. That is::
+
+        >>> l = range(10)
+
+        >>> partition(l, 2)
+        [[0, 1, 2, 3, 4], [5, 6, 7, 8, 9]]
+
+        >>> partition(l, 3)
+        [[0, 1, 2], [3, 4, 5], [6, 7, 8, 9]]
+
+        >>> partition(l, 4)
+        [[0, 1], [2, 3], [4, 5], [6, 7, 8, 9]]
+
+        >>> partition(l, 5)
+        [[0, 1], [2, 3], [4, 5], [6, 7], [8, 9]]
+
+    """
+    try:
+        n = int(n)
+        thelist = list(thelist)
+    except (ValueError, TypeError):
+        return [thelist]
+    p = len(thelist) / n
+    return [thelist[p*i:p*(i+1)] for i in range(n - 1)] + [thelist[p*(i+1):]]
+
 register.filter('utc_tz', utc_tz)
 register.filter('tg_label', tg_label)
 register.filter('srs_label', srs_label)
