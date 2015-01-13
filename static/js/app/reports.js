@@ -2,6 +2,7 @@ define(['jquery', 'scroll'], function ($, scroll) {
     return {
         'init': function () {
             $('.checkbox-survey').change(function () {
+                $('.row-alert').addClass('hidden');
                 if ($('.checkbox-survey:not(:checked)').length > 0) {
                     $('.btn-checked').text("Markera alla");
                 } else {

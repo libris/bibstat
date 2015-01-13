@@ -40,8 +40,9 @@
             <h2 class="section-title"><i class="fa fa-line-chart fa-fw color-reports"></i> Rapporter</h2>
 
             <p class="subsection-text">Här finns möjligheten att ta ut rapporter för biblioteksverksamheten.
-                Verksamhetsrapporter kan tas fram för hela landet, för en kommun eller för ett län. Kom igång genom att
-                göra ett val för den biblioteksverksamhet som intresserar dig.</p>
+                Verksamhetsrapporter kan tas fram för hela riket, för en kommun eller för ett län. Det är även möjligt
+                att skapa rapporter utifrån enskilda bibliotek. Kom igång genom att
+                göra ett val för den verksamhet som intresserar dig.</p>
         </div>
     </div>
 
@@ -149,6 +150,14 @@
                                     verksamhetsrapport
                                 </button>
                             </div>
+                            <div class="row row-inside row-alert hidden">
+                                <div class="col-xs-12 col-sm-10 col-lg-8 col-inside">
+                                    <div class="alert alert-danger alert-reports" role="alert">
+                                        <p><i class='fa fa-warning fa-fw'></i> Du måste välja minst ett
+                                            biblioteken i listan.</p>
+                                    </div>
+                                </div>
+                            </div>
                             <table id="reports-library-list" class="table table-hover table-condensed">
                                 <tbody>
                                 {% for survey in surveys %}
@@ -167,14 +176,6 @@
                                 {% endfor %}
                                 </tbody>
                             </table>
-                            <div class="row row-inside row-alert hidden">
-                                <div class="col-xs-12 col-sm-10 col-lg-8 col-inside">
-                                    <div class="alert alert-danger alert-reports" role="alert">
-                                        <p><i class='fa fa-warning fa-fw'></i> Du måste välja åtminstone ett av
-                                            biblioteken i listan.</p>
-                                    </div>
-                                </div>
-                            </div>
                         </form>
                     </div>
                 {% endif %}
