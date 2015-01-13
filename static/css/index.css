@@ -187,8 +187,26 @@ a:hover, a:focus {
     border-left: 10px solid rgb(185, 203, 0);
 }
 
+.reports-selection-group {
+    border-left: 10px solid rgb(185, 203, 0);
+}
+
 .subsection-reports .subsection-text {
     margin-bottom: 0;
+}
+
+#reports-filter-info {
+    margin-top: 0px;
+    margin-bottom: 10px;
+}
+
+#reports-filter-selection {
+    margin-bottom: 10px;
+}
+
+#reports-library-selection {
+    margin-top: 15px;
+    margin-bottom: 5px;
 }
 
 .subsection-articles {
