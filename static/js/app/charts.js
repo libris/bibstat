@@ -22,6 +22,11 @@ define(['jquery', 'amcharts.theme'], function($, AmCharts) {
                 "gridPosition": "start",
                 "position": "left"
             },
+            numberFormatter: {
+                precision: 1,
+                decimalSeparator: ',',
+                thousandsSeparator: ' '
+            },
             "legend": {
                 "markerSize": 10,
                 "position": "top",
