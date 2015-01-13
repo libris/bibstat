@@ -188,6 +188,11 @@
         font-size: 7px;
     }
 
+    a[title="JavaScript charts"] {
+        display: none;
+        visibility: hidden;
+    }
+
     td.observation-previous-previous-year,
     td.observation-previous-year,
     td.observation-sample-year,
@@ -322,7 +327,6 @@
                     {% endfor %}
                 </table>
             </div>
-
             <div id="chart-{{ forloop.counter }}"
                  class="chart"
                  style="width: 100%; height: 500px; font-size: 11px;"
