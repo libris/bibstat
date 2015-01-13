@@ -209,6 +209,10 @@ a:hover, a:focus {
     margin-bottom: 5px;
 }
 
+#reports-library-list {
+    margin-top: 20px;
+}
+
 .subsection-articles {
     border-left: 10px solid rgb(0, 158, 224);
 }

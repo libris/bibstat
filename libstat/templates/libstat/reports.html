@@ -142,31 +142,31 @@
                             <h2 class="subsection-title">Välj de bibliotek som ska ingå i rapporten</h2>
 
                             <div id="reports-library-selection" class="form-group">
-                                    <button type="button" class="btn btn-default btn-checked">
-                                        Markera alla
-                                    </button>
-                                    <button id="form-libraries-submit" type="submit" class="btn btn-reports">Visa verksamhetsrapport
-                                    </button>
+                                <button type="button" class="btn btn-default btn-checked">
+                                    Markera alla
+                                </button>
+                                <button id="form-libraries-submit" type="submit" class="btn btn-reports">Visa
+                                    verksamhetsrapport
+                                </button>
                             </div>
-                            {% for survey in surveys %}
-                                <div class="row row-inside">
-                                    <div class="col-xs-12 col-sm-8 col-inside">
-                                        <div class="panel panel-default panel-report" style="
-                                                {% if forloop.first %} margin-top: 10px; {% endif %}
-                                                {% if forloop.last %} margin-bottom: 10px; {% endif %}
-                                                ">
-                                            <div class="panel-heading">
-                                                <input type="checkbox" name="surveys" class="checkbox-survey"
-                                                       value="{{ survey.library.sigel }}" style="margin-right: 5px;">
-                                                {% for sigel in survey.selected_libraries %}
-                                                    {{ library_name_for_sigel|access:sigel }}{% if not forloop.last %},
-                                                    {% endif %}
-                                                {% endfor %}
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            {% endfor %}
+                            <table id="reports-library-list" class="table table-hover table-condensed">
+                                <tbody>
+                                {% for survey in surveys %}
+                                    <tr>
+                                        <td width="20px">
+                                            <input type="checkbox" name="surveys" class="checkbox-survey"
+                                                   value="{{ survey.library.sigel }}" style="margin-right: 5px;">
+                                        </td>
+                                        <td>
+                                            {% for sigel in survey.selected_libraries %}
+                                                {{ library_name_for_sigel|access:sigel }}{% if not forloop.last %},
+                                                {% endif %}
+                                            {% endfor %}
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+                                </tbody>
+                            </table>
                             <div class="row row-inside row-alert hidden">
                                 <div class="col-xs-12 col-sm-10 col-lg-8 col-inside">
                                     <div class="alert alert-danger alert-reports" role="alert">
