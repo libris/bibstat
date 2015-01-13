@@ -323,13 +323,17 @@
                 </table>
             </div>
 
-            <!--<div id="chart-{{ forloop.counter }}" class="chart" data-years="{{ group.years }}" data-chart="{{ group.rows|as_json }}"></div>-->
+            <div id="chart-{{ forloop.counter }}"
+                 class="chart"
+                 style="width: 100%; height: 500px; font-size: 11px;"
+                 data-years="{{ group.years|as_json }}"
+                 data-chart='{{ group.rows|as_json }}'></div>
         {% endfor %}
     </div>
 
-    <!--<div id="chart-unique" class="chart" style="width: 100%; height: 500px; font-size: 11px;"
+    <div id="chart-unique" class="chart" style="width: 100%; height: 500px; font-size: 11px;"
          data-years="[2013,2014,2015]"
-         data-chart='[{"label":"Antal anställda bibliotekarier","2013":3062,"2014":3077,"2015":3089},{"label":"Antal övriga anställda","2013":2488,"2014":2478,"2015":2391},{"label":"Antal årsverken bibliotekarier","2013":2706,"2014":2727,"2015":2756},{"label":"Antal årsverken övriga anställda","2013":1959,"2014":1931,"2015":1872},{"label":"varav antal årsverken som är avsatta för barn och unga","2013":962,"2014":937,"2015":975}]'></div>-->
+         data-chart='[{"label":"Antal anställda bibliotekarier","2013":3062,"2014":3077,"2015":3089},{"label":"Antal övriga anställda","2013":2488,"2014":2478,"2015":2391},{"label":"Antal årsverken bibliotekarier","2013":2706,"2014":2727,"2015":2756},{"label":"Antal årsverken övriga anställda","2013":1959,"2014":1931,"2015":1872},{"label":"varav antal årsverken som är avsatta för barn och unga","2013":962,"2014":937,"2015":975}]'></div>
 </div>
 
 <footer>

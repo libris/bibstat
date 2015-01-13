@@ -72,6 +72,7 @@ def analytics_enabled(_):
 def debug_enabled(_):
     return settings.DEBUG
 
+
 def format_number(number, digits=1):
     if number == int(number):
         number_format = "%d"
@@ -81,14 +82,17 @@ def format_number(number, digits=1):
     locale.setlocale(locale.LC_NUMERIC, 'sv_SE')
     return locale.format(number_format, number, grouping=True)
 
+
 def format_email(email, limit=30):
     if len(email) <= limit:
         return email
 
     return email[:limit - 3] + "..."
 
+
 def footer():
     return "&copy; Kungliga Biblioteket 2014-" + str(datetime.now().year)
+
 
 @register.filter
 def partition(thelist, n):
@@ -117,7 +121,8 @@ def partition(thelist, n):
     except (ValueError, TypeError):
         return [thelist]
     p = len(thelist) / n
-    return [thelist[p*i:p*(i+1)] for i in range(n - 1)] + [thelist[p*(i+1):]]
+    return [thelist[p * i:p * (i + 1)] for i in range(n - 1)] + [thelist[p * (i + 1):]]
+
 
 register.filter('utc_tz', utc_tz)
 register.filter('tg_label', tg_label)
