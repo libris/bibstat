@@ -201,23 +201,19 @@
     <div class="report-title scroll-start">Verksamhetsrapport för året {{ year }}</div>
     <div class="row library-section">
         <div class="col-md-6 libraries">
-            {% for library in libraries %}
-                {% if not forloop.counter|divisibleby:"2" %}
-                    <div class="library">
-                        {{ library.name }}{% if library.address %} | {{ library.address }}{% endif %}
-                        {% if library.city %} |
-                            {{ library.city }}{% endif %}</div>
-                {% endif %}
+            {% for library in libraries|partition:"2"|first %}
+                <div class="library">
+                    {{ library.name }}{% if library.address %} | {{ library.address }}{% endif %}
+                    {% if library.city %} |
+                        {{ library.city }}{% endif %}</div>
             {% endfor %}
         </div>
         <div class="col-md-6 libraries">
-            {% for library in libraries %}
-                {% if forloop.counter|divisibleby:"2" %}
+            {% for library in libraries|partition:"2"|last %}
                     <div class="library">
                         {{ library.name }}{% if library.address %} | {{ library.address }}{% endif %}
                         {% if library.city %} |
                             {{ library.city }}{% endif %}</div>
-                {% endif %}
             {% endfor %}
         </div>
     </div>
