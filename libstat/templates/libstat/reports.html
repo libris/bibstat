@@ -39,17 +39,26 @@
         <div class="col-xs-12 col-sm-10 col-lg-8 subsection-reports">
             <h2 class="section-title"><i class="fa fa-line-chart fa-fw color-reports"></i> Rapporter</h2>
 
-            <p class="subsection-text">Här finns möjligheten att ta ut rapporter för biblioteksverksamheten.
+            <p class="subsection-text">Här finns möjligheten att ta ut rapporter för biblioteksverksamheten på årsbasis.
                 Verksamhetsrapporter kan tas fram för hela riket, för en kommun eller för ett län. Det är även möjligt
-                att skapa rapporter utifrån enskilda bibliotek. Kom igång genom att
-                göra ett val för den verksamhet som intresserar dig.</p>
+                att skapa rapporter utifrån enskilda bibliotek.
+                <br>
+                <br>
+                Vissa bibliotek har valt att redovisa sin verksamhet gemensamt. Vill man ta ut en rapport för ett sådant
+                bibliotek så kan man därför endast se de totala värdena som biblioteken redovisat tillsammans. I
+                de fall där biblitotek redovisat sin verksamhet i grupp kommer alla de inblandade biblioteken synas
+                på samma rad i listan nedan.
+                <br>
+                <br>
+                Kom igång genom att göra ett val för den verksamhet som intresserar dig!
+            </p>
         </div>
     </div>
 
 
     {% if not sample_years %}
         <div class="row row-inside">
-            <div class="col-xs-12 col-sm-10 col-lg-8 col-inside">
+            <div class="col-xs-12 col-sm-10 col-lg-8 col-inside reports-selection-group">
                 <div class="alert alert-danger alert-reports" role="alert">
                     <p><i class='fa fa-warning fa-fw'></i>Det finns ingen publicerad data att generera rapporter
                         utifrån.</p>
@@ -120,7 +129,7 @@
                                 <button type="submit" class="btn btn-reports">Visa bibliotek</button>
                             </div>
                             {% if surveys|length > 0 %}
-                                <div id="reports-filter-info" class="subsection-text">Visar {{ surveys|length }}
+                                <div id="reports-filter-info" class="subsection-text">Visar de {{ surveys|length }}
                                     bibliotek som
                                     svarat för
                                     <i>{{ sample_year }}</i>{% if municipality_name %} i
