@@ -35,11 +35,14 @@ def library_from_json(json_data):
 
 def fetch_libraries():
     libraries = []
-    # bibdb api paginated by 200 and had ca. 2800 responses when this was written
-    for start_index in range(0, 10000, 200):
+    # bibdb api pages by 200, let 30 000 be upper limit in case api is broken
+    for start_index in range(0, 30000, 200):
         response = requests.get(
             url="http://bibdb.libris.kb.se/api/lib?dump=true&start=%d" % start_index,
             headers={"APIKEY_AUTH_HEADER": "bibstataccess"})
+
+        if not response.json().get("libraries", None):
+            break
 
         for json_data in response.json()["libraries"]:
             library = library_from_json(json_data)
