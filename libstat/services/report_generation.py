@@ -91,6 +91,7 @@ def generate_report(report_template, year, observations):
             "extra": None,
             "description": None,
             "incomplete_data": None,
+            "show_in_chart": None,
             "is_sum": template_row.is_sum if template_row.is_sum else None,
             "label": template_row.description,
             "label_only": template_row.label_only if template_row.label_only else None,
@@ -112,6 +113,7 @@ def generate_report(report_template, year, observations):
                 row[year1] = observation.get(year - 1, None)
                 row[year2] = observation.get(year - 2, None)
                 row["total"] = observation.get("total", None)
+                row["show_in_chart"] = True
                 row["description"] = observation.get("description", None)
                 row["incomplete_data"] = observations.get(template_row.variable_key, {}).get("incomplete_data", None)
                 if row["incomplete_data"]:

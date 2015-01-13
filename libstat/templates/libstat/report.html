@@ -327,7 +327,7 @@
                  class="chart"
                  style="width: 100%; height: 500px; font-size: 11px;"
                  data-years="{{ group.years|as_json }}"
-                 data-chart='{{ group.rows|as_json }}'></div>
+                 data-chart='{{ group.rows|show_in_chart|as_json }}'></div>
         {% endfor %}
     </div>
 

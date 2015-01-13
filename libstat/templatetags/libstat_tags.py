@@ -124,6 +124,11 @@ def partition(thelist, n):
     return [thelist[p * i:p * (i + 1)] for i in range(n - 1)] + [thelist[p * (i + 1):]]
 
 
+@register.filter
+def show_in_chart(rows):
+    return [row for row in rows if "show_in_chart" in row]
+
+
 register.filter('utc_tz', utc_tz)
 register.filter('tg_label', tg_label)
 register.filter('srs_label', srs_label)
