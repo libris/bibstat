@@ -51,7 +51,7 @@ def reports(request):
         return _principals
 
     if request.method == "GET":
-        surveys = Survey.objects.filter(_status=u"published").exclude("observations")
+        surveys = Survey.objects.filter(_status=u"published").exclude("observations").order_by("library.name")
 
         sample_year = request.GET.get("sample_year", "")
         municipality_code = request.GET.get("municipality_code", "")
