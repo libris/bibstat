@@ -40,6 +40,11 @@
     .intro, footer, .report-explanation {
         display: none;
     }
+
+    .chart {
+        page-break-inside: avoid !important;
+        page-break-after: always !important;
+    }
 </style>
 
 <style>
@@ -201,6 +206,12 @@
     td.observation-extra {
         white-space: nowrap;
     }
+
+    .chart {
+        width: 100%;
+        height: 500px;
+        font-size: 11px;
+    }
 </style>
 <div class="report">
     <div class="report-title scroll-start">Verksamhetsrapport för året {{ year }}</div>
@@ -329,7 +340,6 @@
             </div>
             <div id="chart-{{ forloop.counter }}"
                  class="chart"
-                 style="width: 100%; height: 500px; font-size: 11px;"
                  data-years="{{ group.years|as_json }}"
                  data-chart='{{ group.rows|show_in_chart|as_json }}'></div>
         {% endfor %}
