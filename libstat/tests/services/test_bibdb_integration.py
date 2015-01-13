@@ -81,3 +81,11 @@ class TestBibdbIntegration(MongoTestCase):
         library = library_from_json(json_data)
 
         self.assertEquals(library.name, "a b c")
+
+    def test_does_not_library_import_if_no_municipality_code(self):
+        json_data = self._dummy_json_data
+        json_data.pop("municipality_code")
+
+        library = library_from_json(json_data)
+
+        self.assertEquals(library, None)

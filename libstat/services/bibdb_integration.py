@@ -14,6 +14,9 @@ def library_from_json(json_data):
     if json_data.get("library_type", None) == "busbib":
         return None
 
+    if not json_data.get("municipality_code", None):
+        return None
+
     library = Library()
     library.sigel = json_data.get("sigel", None)
     library.name = json_data.get("name", None)
@@ -33,7 +36,7 @@ def library_from_json(json_data):
 def fetch_libraries():
     libraries = []
     # bibdb api paginated by 200 and had ca. 2800 responses when this was written
-    for start_index in range(0, 6000, 200):
+    for start_index in range(0, 10000, 200):
         response = requests.get(
             url="http://bibdb.libris.kb.se/api/lib?dump=true&start=%d" % start_index,
             headers={"APIKEY_AUTH_HEADER": "bibstataccess"})
@@ -43,3 +46,4 @@ def fetch_libraries():
             if library:
                 libraries.append(library)
     return libraries
+
