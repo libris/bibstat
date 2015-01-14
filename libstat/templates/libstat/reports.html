@@ -68,7 +68,7 @@
     {% else %}
         {% if ""|debug_enabled %}
             <div class="row">
-                <div class="col-xs-12 col-sm-11 col-lg-8 reports-selection-group">
+                <div class="col-xs-12 col-sm-11 col-lg-8 reports-selection-group {% if sample_year %}scroll-start{% endif %}">
                     {% if sample_years|length > 0 %}
                         <h2 class="subsection-title">Välj den biblioteksverksamhet som ska ingå i rapporten</h2>
                         {% if message %}
