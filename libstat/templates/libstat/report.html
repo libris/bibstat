@@ -46,26 +46,41 @@
 
 <div class="report">
     <div class="report-title scroll-start">Verksamhetsrapport för året {{ year }}</div>
-    <div class="row library-section">
-        <div class="col-md-6 libraries">
-            {% for library in libraries|two_parts|first %}
-                <div class="library">
-                    {{ library.name }}{% if library.address %} | {{ library.address }}{% endif %}
-                    {% if library.city %} |
-                        {{ library.city }}{% endif %}</div>
-            {% endfor %}
+    {% if municipality_code or principal %}
+        <div class="row report-selection-summary">
+            Denna rapport gäller för alla bibliotek
+            {% if municipality_code and not principal %}
+                i <strong>{{ municipality_code|municipality_name|upper }}</strong>.
+            {% elif not municipality_code and principal %}
+                med huvudman <strong>{{ principal|upper }}</strong>.
+            {% else %}
+                i <strong>{{ municipality_code|municipality_name|upper }}</strong> med huvudman
+                <strong>{{ principal|upper }}</strong>.
+            {% endif %}
         </div>
-        {% if libraries|two_parts|last|length > 0 %}
+    {% else %}
+        <div class="row library-section">
             <div class="col-md-6 libraries">
-                {% for library in libraries|two_parts|last %}
+                {% for library in libraries|two_parts|first %}
                     <div class="library">
                         {{ library.name }}{% if library.address %} | {{ library.address }}{% endif %}
                         {% if library.city %} |
                             {{ library.city }}{% endif %}</div>
                 {% endfor %}
             </div>
-        {% endif %}
-    </div>
+            {% if libraries|two_parts|last|length > 0 %}
+                <div class="col-md-6 libraries">
+                    {% for library in libraries|two_parts|last %}
+                        <div class="library">
+                            {{ library.name }}{% if library.address %} | {{ library.address }}{% endif %}
+                            {% if library.city %} |
+                                {{ library.city }}{% endif %}</div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        </div>
+    {% endif %}
+
     <div class="row report-legend">
         <div class="pull-right">
             <p>&mdash; = Värdet går inte att få fram</p>

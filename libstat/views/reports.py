@@ -20,10 +20,19 @@ def report(request):
 
     sample_year = int(request.POST.get("sample_year", None))
     sigels = request.POST.getlist("surveys", [])
+    number_of_sigel_choices = int(request.POST.get("number_of_sigel_choices", 0))
+    municipality_code = request.POST.get("municipality_code", None)
+    principal = request.POST.get("principal", None)
+
     surveys = list(Survey.objects.filter(_status=u"published", sample_year=sample_year, library__sigel__in=sigels))
 
     context = get_report(surveys, sample_year)
     context["previous_url"] = previous_url
+
+    if len(sigels) == number_of_sigel_choices:
+        context["principal"] = principal
+        context["municipality_code"] = u"hela riket" if len(sigels) == len(
+            Survey.objects.filter(_status=u"published", sample_year=sample_year)) else municipality_code
 
     return render(request, 'libstat/report.html', context)
 
@@ -64,7 +73,7 @@ def reports(request):
         message = None
         library_name_for_sigel = {}
         filtered_surveys = []
-
+        sigels = []
         if sample_year:
             filtered_surveys = surveys.filter(sample_year=sample_year)
             if municipality_code:
@@ -88,6 +97,7 @@ def reports(request):
             "sample_years": sample_years,
             "message": message,
             "surveys": sorted(list(filtered_surveys), key=lambda _survey: _survey.library.name.lower()),
+            "number_of_sigel_choices": len(sigels),
             "library_name_for_sigel": library_name_for_sigel,
             "municipality_code": municipality_code,
             "municipality_name": municipalities[municipality_code] if municipality_code in municipalities else None,

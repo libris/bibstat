@@ -62,7 +62,7 @@ def split_into_number_and_body(description):
 
 @register.filter
 def municipality_name(municipality_code):
-    return municipalities.get(municipality_code, None)
+    return municipalities.get(municipality_code, municipality_code)
 
 
 @register.filter

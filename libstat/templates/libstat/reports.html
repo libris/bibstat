@@ -148,6 +148,9 @@
                         <form id="form-libraries" class="form" method="post" action="{% url 'report' %}">
                             {% csrf_token %}
                             <input type="hidden" name="sample_year" value="{{ sample_year }}">
+                            <input type="hidden" name="municipality_code" value="{{ municipality_code }}">
+                            <input type="hidden" name="principal" value="{{ principal }}">
+                            <input type="hidden" name="number_of_sigel_choices" value="{{ number_of_sigel_choices }}">
 
                             <h2 class="subsection-title">Välj de bibliotek som ska ingå i rapporten</h2>
 
