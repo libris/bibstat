@@ -233,21 +233,23 @@
     <div class="report-title scroll-start">Verksamhetsrapport för året {{ year }}</div>
     <div class="row library-section">
         <div class="col-md-6 libraries">
-            {% for library in libraries|partition:"2"|first %}
+            {% for library in libraries|two_parts|first %}
                 <div class="library">
                     {{ library.name }}{% if library.address %} | {{ library.address }}{% endif %}
                     {% if library.city %} |
                         {{ library.city }}{% endif %}</div>
             {% endfor %}
         </div>
-        <div class="col-md-6 libraries">
-            {% for library in libraries|partition:"2"|last %}
-                    <div class="library">
-                        {{ library.name }}{% if library.address %} | {{ library.address }}{% endif %}
-                        {% if library.city %} |
-                            {{ library.city }}{% endif %}</div>
-            {% endfor %}
-        </div>
+        {% if libraries|two_parts|last|length > 0 %}
+            <div class="col-md-6 libraries">
+                {% for library in libraries|two_parts|last %}
+                        <div class="library">
+                            {{ library.name }}{% if library.address %} | {{ library.address }}{% endif %}
+                            {% if library.city %} |
+                                {{ library.city }}{% endif %}</div>
+                {% endfor %}
+            </div>
+        {% endif %}
     </div>
     <div class="row report-legend">
         <div class="pull-right">
