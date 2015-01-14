@@ -16,7 +16,7 @@ define(['jquery', 'amcharts.theme'], function($, AmCharts) {
         AmCharts.makeChart(id, {
             "rotate": true,
             "type": "serial",
-            "startDuration": 1,
+            "startDuration": 0,
             "categoryField": "label",
             "categoryAxis": {
                 "gridPosition": "start",
@@ -43,6 +43,8 @@ define(['jquery', 'amcharts.theme'], function($, AmCharts) {
                 var container = $(this);
                 var years = JSON.parse(container.attr('data-years'));
                 var chart = JSON.parse(container.attr('data-chart'));
+
+                container.css("height", 250 + 50 * chart.length + "px");
 
                 makeChart(container.attr("id"), years, chart)
             });

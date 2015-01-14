@@ -1,6 +1,7 @@
 # -*- coding: UTF-8 -*-
 from datetime import datetime
 import json
+import textwrap
 
 import pytz
 import re
@@ -126,7 +127,12 @@ def partition(thelist, n):
 
 @register.filter
 def show_in_chart(rows):
-    return [row for row in rows if "show_in_chart" in row]
+    rows = [row for row in rows if "show_in_chart" in row]
+
+    for row in rows:
+        row["label"] = "<br>".join(textwrap.wrap(row["label"], 50))
+
+    return rows
 
 
 register.filter('utc_tz', utc_tz)
