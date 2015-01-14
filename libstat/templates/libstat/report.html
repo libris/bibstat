@@ -13,10 +13,10 @@
     <link href="/static/js/plugins/bootstrap/3.2.0/css/bootstrap.min.css" rel="stylesheet"/>
     <link href="/static/css/font-awesome.min.css" rel="stylesheet"/>
     <link href="/static/css/index.css" rel="stylesheet"/>
+    <link href="/static/css/report.css" rel="stylesheet"/>
 
     {% include "libstat/analytics.html" %}
 </head>
-
 <body>
 <header class="intro intro-fixed">
     <div class="intro-body">
@@ -44,191 +44,6 @@
     </div>
 </header>
 
-<style media="print">
-    body {
-        -webkit-print-color-adjust: exact;
-    }
-    .intro, footer, .report-explanation {
-        display: none;
-    }
-
-    .chart {
-        page-break-inside: avoid !important;
-        page-break-after: always !important;
-    }
-</style>
-
-<style>
-    .observation-group {
-        margin-bottom: 50px;
-    }
-
-    .observation-group:last-child {
-        margin-bottom: 0;
-    }
-
-    .report {
-        width: 900px;
-        margin: 0px auto;
-        padding-top: 30px;
-    }
-
-    .report .row {
-        margin-left: 0px;
-        margin-right: 0px;
-    }
-
-    th {
-        color: white !important;
-        text-align: center;
-        padding-top: 5px;
-        padding-bottom: 5px;
-    }
-
-    th, td {
-        padding-left: 15px;
-        padding-right: 15px;
-    }
-
-    td {
-        padding-top: 5px;
-        padding-bottom: 5px;
-    }
-
-    .even td:not(.observation-data-missing) {
-        background-color: #f2f2f2 !important;
-    }
-
-    th.observation-label {
-        text-align: left;
-        background-color: rgb(255, 163, 56) !important;
-    }
-
-    th.observation-previous-previous-year {
-        background-color: rgb(239, 131, 24) !important;
-        width: 85px;
-    }
-
-    th.observation-previous-year {
-        background-color: rgb(220, 110, 16) !important;
-        width: 85px;
-    }
-
-    th.observation-sample-year {
-        background-color: rgb(206, 93, 26) !important;
-        width: 85px;
-    }
-
-    th.observation-difference {
-        background-color: rgb(42, 176, 204) !important;
-        width: 110px;
-    }
-
-    th.observation-difference-total {
-        background-color: rgb(37, 146, 188) !important;
-        width: 100px;
-    }
-
-    th.observation-extra {
-        width: 250px;
-        background-color: rgb(27, 124, 173) !important;
-    }
-
-    .observation-label {
-        width: 500px;
-    }
-
-    .report-title {
-        border-bottom: 5px solid black !important;
-        font-size: 40px;
-        font-family: helvetica;
-        width: auto;
-        text-align: center;
-
-    }
-
-    .library-section {
-        padding-top: 30px;
-        padding-left: 15px;
-        margin-bottom: 30px;
-    }
-
-    .libraries {
-        border-left: 4px solid black !important;
-        padding-left: 15px;
-    }
-
-    .libraries .library {
-        padding-bottom: 3px;
-        padding-top: 3px;
-        font-size: 10px;
-        font-family: helvetica;
-    }
-
-    tr.sum td:not(.observation-label) {
-        background-color: rgb(166, 224, 148) !important;
-    }
-
-    tr.label-only td {
-        color: white !important;
-        background-color: rgb(212, 104, 102) !important;
-        font-weight: bold;
-    }
-
-    .incomplete-data {
-        font-weight: bold !important;
-        vertical-align: top;
-        color: red;
-    }
-
-    .report-legend {
-        margin-bottom: 20px;
-        width: 900px;
-    }
-
-    .report-legend p {
-        font-size: 14px;
-        margin: auto;
-        text-align: right;
-    }
-
-    .measurements {
-        width: 900px;
-    }
-
-    tr.empty {
-        height: 30px;
-    }
-
-    .fa.fa-small {
-        font-size: 7px;
-    }
-
-    a[title="JavaScript charts"] {
-        display: none;
-        visibility: hidden;
-    }
-
-    td.observation-previous-previous-year,
-    td.observation-previous-year,
-    td.observation-sample-year,
-    td.observation-difference,
-    td.observation-difference-total,
-    td.observation-extra {
-        white-space: nowrap;
-    }
-
-    .chart {
-        width: 100%;
-        font-size: 11px;
-        margin-bottom: 50px;
-    }
-
-    .chart:last-child {
-        margin-bottom: 0;
-    }
-
-</style>
 <div class="report">
     <div class="report-title scroll-start">Verksamhetsrapport för året {{ year }}</div>
     <div class="row library-section">
@@ -243,10 +58,10 @@
         {% if libraries|two_parts|last|length > 0 %}
             <div class="col-md-6 libraries">
                 {% for library in libraries|two_parts|last %}
-                        <div class="library">
-                            {{ library.name }}{% if library.address %} | {{ library.address }}{% endif %}
-                            {% if library.city %} |
-                                {{ library.city }}{% endif %}</div>
+                    <div class="library">
+                        {{ library.name }}{% if library.address %} | {{ library.address }}{% endif %}
+                        {% if library.city %} |
+                            {{ library.city }}{% endif %}</div>
                 {% endfor %}
             </div>
         {% endif %}
@@ -291,7 +106,9 @@
                                 <td class="observation-label">
                                     {{ row|access:"label" }}
                                     {% if row|access:"description" %}
-                                        <a class="survey-popover report-explanation" data-toggle="popover" data-original-title="{{ row|access:"description" }}" href="#"><i class="fa fa-question-circle"></i></a>
+                                        <a class="survey-popover report-explanation" data-toggle="popover"
+                                           data-original-title="{{ row|access:"description" }}" href="#"><i
+                                                class="fa fa-question-circle"></i></a>
                                     {% endif %}
                                 </td>
                                 <td class="observation-previous-previous-year">
@@ -362,10 +179,6 @@
                  data-chart='{{ group.rows|show_in_chart|as_json }}'></div>
         {% endfor %}
     </div>
-
-    <!--<div id="chart-unique" class="chart" style="width: 100%; height: 500px; font-size: 11px;"
-         data-years="[2013,2014,2015]"
-         data-chart='[{"label":"Antal anställda bibliotekarier","2013":3062,"2014":3077,"2015":3089},{"label":"Antal övriga anställda","2013":2488,"2014":2478,"2015":2391},{"label":"Antal årsverken bibliotekarier","2013":2706,"2014":2727,"2015":2756},{"label":"Antal årsverken övriga anställda","2013":1959,"2014":1931,"2015":1872},{"label":"varav antal årsverken som är avsatta för barn och unga","2013":962,"2014":937,"2015":975}]'></div>-->
 </div>
 
 <footer>
