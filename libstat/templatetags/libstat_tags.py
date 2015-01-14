@@ -1,25 +1,28 @@
 # -*- coding: UTF-8 -*-
-from datetime import datetime
 import json
 import textwrap
-
 import pytz
 import re
+import locale
+
+from datetime import datetime
+
 from django import template
 from bibstat import settings
 from libstat.models import Dispatch, Survey
-import locale
-
 from libstat.utils import targetGroups, ALL_TARGET_GROUPS_label
 from data.municipalities import municipalities
+
 
 register = template.Library()
 
 
+@register.filter
 def utc_tz(value):
     return value.replace(tzinfo=pytz.utc) if value and isinstance(value, datetime) else value
 
 
+@register.filter
 def tg_label(value):
     display_names = []
     if value:
@@ -36,10 +39,12 @@ def tg_label(value):
     return ", ".join(display_names)
 
 
+@register.filter
 def srs_label(key):
     return next((status[1] for status in Survey.STATUSES if status[0] == key))
 
 
+@register.filter
 def access(value, arg):
     try:
         return value[arg]
@@ -47,52 +52,46 @@ def access(value, arg):
         return None
 
 
-def dispatches_count():
-    return Dispatch.objects.count()
-
-
+@register.filter
 def split_into_number_and_body(description):
     if re.compile("^[0-9]+\.").match(description):
         return description.split(" ", 1)
     else:
-        return ("", description)
+        return "", description
 
 
+@register.filter
 def municipality_name(municipality_code):
     return municipalities.get(municipality_code, None)
 
 
+@register.filter
 def as_json(o):
     return json.dumps(o)
 
 
+@register.filter
 def analytics_enabled(_):
     return settings.ANALYTICS_ENABLED
 
 
+@register.filter
 def debug_enabled(_):
     return settings.DEBUG
 
 
+@register.filter
 def format_number(number, digits=1):
-    if number == int(number):
-        number_format = "%d"
-    else:
-        number_format = "%.{}f".format(digits)
-
     locale.setlocale(locale.LC_NUMERIC, 'sv_SE')
-    return locale.format(number_format, number, grouping=True)
+    return locale.format("%d" if number == int(number) else "%.{}f".format(digits), number, grouping=True)
 
 
+@register.filter
 def format_email(email, limit=30):
     if len(email) <= limit:
         return email
 
     return email[:limit - 3] + "..."
-
-
-def footer():
-    return "&copy; Kungliga Biblioteket 2014-" + str(datetime.now().year)
 
 
 @register.filter
@@ -102,7 +101,8 @@ def two_parts(thelist):
     if len(thelist) % 2 == 0:
         return [thelist[middle:], thelist[:middle]]
     else:
-        return [thelist[:middle+1], thelist[middle+1:]]
+        return [thelist[:middle + 1], thelist[middle + 1:]]
+
 
 @register.filter
 def show_in_chart(rows):
@@ -114,16 +114,11 @@ def show_in_chart(rows):
     return rows
 
 
-register.filter('utc_tz', utc_tz)
-register.filter('tg_label', tg_label)
-register.filter('srs_label', srs_label)
-register.filter('access', access)
-register.filter('municipality_name', municipality_name)
-register.filter('split_into_number_and_body', split_into_number_and_body)
-register.filter('as_json', as_json)
-register.filter('analytics_enabled', analytics_enabled)
-register.filter('debug_enabled', debug_enabled)
-register.filter('format_number', format_number)
-register.filter('format_email', format_email)
-register.simple_tag(dispatches_count)
-register.simple_tag(footer)
+@register.simple_tag
+def footer():
+    return "&copy; Kungliga Biblioteket 2014-" + str(datetime.now().year)
+
+
+@register.simple_tag()
+def dispatches_count():
+    return Dispatch.objects.count()
