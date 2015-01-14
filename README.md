@@ -80,6 +80,8 @@ Backup sker genom att varje natt ta en kopia på den virtuella maskinen.
 IT kan hjälpa till med driften och återställning om det skulle behövas.  
 [Mikko Yletyinen](mailto:mikko.yletyinen@kb.se) har tidigare varit kontaktperson gällande driften.
 
+En sammanfattning av hur produktionsmiljön sattes upp finns på [`doc/setup-of-prod.txt`](doc/setup-of-prod.txt).
+
 ### Stage
 
 Adress: [bibstat-stg.libris.kb.se](http://bibstat-stg.libris.kb.se)  
