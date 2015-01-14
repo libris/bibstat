@@ -44,6 +44,8 @@ define(['jquery', 'amcharts.theme'], function($, AmCharts) {
                 var years = JSON.parse(container.attr('data-years'));
                 var chart = JSON.parse(container.attr('data-chart'));
 
+                container.css("height", 250 + 50 * chart.length + "px");
+
                 makeChart(container.attr("id"), years, chart)
             });
         }
