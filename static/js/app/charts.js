@@ -16,7 +16,7 @@ define(['jquery', 'amcharts.theme'], function($, AmCharts) {
         AmCharts.makeChart(id, {
             "rotate": true,
             "type": "serial",
-            "startDuration": 1,
+            "startDuration": 0,
             "categoryField": "label",
             "categoryAxis": {
                 "gridPosition": "start",
