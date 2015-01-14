@@ -317,12 +317,6 @@ label.sub-label {
     display: inline-block;
 }
 
-.chart {
-    width: 100%;
-    height: 500px;
-    font-size: 11px;
-}
-
 .loading,.saving{
     display: table;
     position: absolute;
