@@ -26,10 +26,18 @@
                     <img class="intro-logo" src="/static/img/kb.svg">
 
                     <h1 class="intro-title">Sveriges officiella biblioteksstatistik</h1>
-                    <a href="{{ previous_url }}" class="btn btn-reports btn-lg"><i
-                            class="fa fa-arrow-circle-left fa-fw"></i> Tillbaka till rapportvalen</a>
-                    <a href="{% url "index" %}" class="btn btn-reports btn-lg"><i
-                            class="fa fa-arrow-circle-left fa-fw"></i> Till startsidan</a>
+                    <a href="{{ previous_url }}" class="btn btn-reports btn-lg">
+                        <i class="fa fa-arrow-circle-left fa-fw"></i>
+                        Tillbaka till rapportvalen
+                    </a>
+                    <a href="{% url "index" %}" class="btn btn-reports btn-lg">
+                        <i class="fa fa-arrow-circle-left fa-fw"></i>
+                        Till startsidan
+                    </a>
+                    <a class="btn btn-reports btn-print btn-lg" href="javascript:if(window.print)window.print()">
+                        <i class="fa fa-print fa-inline"></i>
+                        Skriv ut
+                    </a>
                 </div>
             </div>
         </div>

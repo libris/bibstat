@@ -305,12 +305,24 @@ dd:last-child {
     background-color: transparent;
 }
 
+.btn-reports.btn-print {
+    color: white;
+    border-color: white;
+}
+
 .btn-reports:hover,
 .btn-reports:focus {
     border: 1px solid rgb(185, 203, 0);
     outline: 0;
     color: white;
     background-color: rgb(185, 203, 0);
+}
+
+.btn-reports.btn-print:hover,
+.btn-reports.btn-print:focus {
+    color: black;
+    border-color: black;
+    background-color: white;
 }
 
 .btn-opendata {
