@@ -68,32 +68,26 @@ def reports(request):
         if sample_year:
             filtered_surveys = surveys.filter(sample_year=sample_year)
             if municipality_code:
-                if municipality_code.endswith(u"00"):  # County code
-                    filtered_surveys = filtered_surveys.filter(
-                        library__municipality_code__startswith=municipality_code[0:2])
-                else:
-                    filtered_surveys = filtered_surveys.filter(library__municipality_code=municipality_code)
+                filtered_surveys = filtered_surveys.filter(
+                    library__municipality_code__startswith=(municipality_code[0:2]
+                                                            if municipality_code.endswith(u"00")
+                                                            else municipality_code))
             if principal:
                 filtered_surveys = filtered_surveys.filter(
                     library__library_type__in=library_types_for_principal[principal])
 
-            if len(surveys) == 0:
-                message = u"Det finns inga bibliotek att visa för den valda verksamheten."
-            else:
-                sigels = [sigel for survey in filtered_surveys for sigel in survey.selected_libraries]
-                for survey in Survey.objects.filter(library__sigel__in=sigels).only("library.sigel", "library.name"):
-                    library_name_for_sigel[survey.library.sigel] = survey.library.name
+            sigels = [sigel for survey in filtered_surveys for sigel in survey.selected_libraries]
+            for survey in Survey.objects.filter(library__sigel__in=sigels).only("library.sigel", "library.name"):
+                library_name_for_sigel[survey.library.sigel] = survey.library.name
 
-        filtered_surveys = list(filtered_surveys)
-        def sort_key(survey):
-            return survey.library.name.lower()
-        filtered_surveys.sort(key=sort_key)
+            if len(filtered_surveys) == 0:
+                message = u"Det finns inga bibliotek att visa för den valda verksamheten."
 
         context = {
             "sample_year": sample_year,
             "sample_years": sample_years,
             "message": message,
-            "surveys": filtered_surveys,
+            "surveys": sorted(list(filtered_surveys), key=lambda _survey: _survey.library.name.lower()),
             "library_name_for_sigel": library_name_for_sigel,
             "municipality_code": municipality_code,
             "municipality_name": municipalities[municipality_code] if municipality_code in municipalities else None,
