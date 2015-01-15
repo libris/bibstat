@@ -106,7 +106,7 @@ def two_parts(thelist):
 
 @register.filter
 def show_in_chart(rows):
-    rows = [row for row in rows if "show_in_chart" in row]
+    rows = [row for row in rows if row.get("show_in_chart", False)]
 
     for row in rows:
         row["label"] = "<br>".join(textwrap.wrap(row["label"], 50))

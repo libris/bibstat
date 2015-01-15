@@ -46,11 +46,17 @@ class Row():
         self.description = kwargs.pop("description", None)
         self.is_sum = kwargs.pop("is_sum", False)
         self.label_only = kwargs.pop("label_only", False)
+        self.show_in_chart = kwargs.pop("show_in_chart", True)
 
         if self.description is None and self.variable_key is not None:
             variables = Variable.objects.filter(key=self.variable_key)
             self.description = variables[0].question_part if len(variables) == 1 else None
 
+    @property
+    def explanation(self):
+        if self.variable_key:
+            return Variable.objects.get(key=self.variable_key).description
+        return None
 
 def report_template_2014():
     return ReportTemplate(groups=[
@@ -59,13 +65,20 @@ def report_template_2014():
                   Row(variable_key=u"BemanService01"),
                   Row(variable_key=u"Integrerad01"),
                   Row(variable_key=u"Obeman01"),
-                  Row(variable_key=u"ObemanLan01"),
-                  Row(variable_key=u"Bokbuss01"),
-                  Row(variable_key=u"BokbussHP01"),
-                  Row(variable_key=u"Bokbil01"),
-                  Row(variable_key=u"Population01"),
-                  Row(variable_key=u"Population02"),
-                  Row(variable_key=u"Population03"),
+                  Row(variable_key=u"ObemanLan01",
+                      show_in_chart=False),
+                  Row(variable_key=u"Bokbuss01",
+                      show_in_chart=False),
+                  Row(variable_key=u"BokbussHP01",
+                      show_in_chart=False),
+                  Row(variable_key=u"Bokbil01",
+                      show_in_chart=False),
+                  Row(variable_key=u"Population01",
+                      show_in_chart=False),
+                  Row(variable_key=u"Population02",
+                      show_in_chart=False),
+                  Row(variable_key=u"Population03",
+                      show_in_chart=False),
                   Row(description=u"Antal bemannade serviceställen per 1000 invånare",
                       computation=(lambda a, b: a / (b / 1000)),
                       variable_keys=[u"BemanService01", u"Population01"]),
