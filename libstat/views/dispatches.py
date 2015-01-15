@@ -2,14 +2,16 @@
 import logging
 
 from django.contrib.auth.decorators import permission_required
-from django.core.mail import send_mass_mail
+from django.core.mail import get_connection, EmailMultiAlternatives
 from django.core.urlresolvers import reverse
 from django.shortcuts import render, redirect
+from django.template.loader import render_to_string
 
 from bibstat import settings
 from libstat.models import Dispatch, Survey
 
 logger = logging.getLogger(__name__)
+
 
 def _rendered_template(template, survey):
     survey_url = settings.API_BASE_URL + reverse('survey', args=(survey.id,))
@@ -80,40 +82,44 @@ def dispatches_send(request):
 
         def chunks(l, n):
             for i in xrange(0, len(l), n):
-                yield l[i:i+n]
+                yield l[i:i + n]
 
-        sent = 0
+        sent_ids = []
         for dispatches_with_email_chunk in chunks(dispatches_with_email, 50):
-            messages = [
-                (dispatch.title, dispatch.message, settings.EMAIL_SENDER, [dispatch.library_email])
-                for dispatch in dispatches_with_email_chunk
-            ]
+            connection = get_connection()
+            connection.open()
+            for dispatch in dispatches_with_email_chunk:
+                message = EmailMultiAlternatives(
+                    dispatch.title,
+                    dispatch.message,
+                    settings.EMAIL_SENDER,
+                    [dispatch.library_email])
+                html_content = render_to_string("libstat/email_template.html", {"message": dispatch.message})
+                message.attach_alternative(html_content, "text/html")
+                try:
+                    message.send()
+                    sent_ids.append(dispatch.id)
+                except:
+                    pass
+            connection.close()
 
-            try:
-                sent += send_mass_mail(messages)
-                logger.info(u"Sent {} messages successfully.".format(len(messages)))
-            except Exception:
-                logger.error(u"There was an error while trying to send {} messages.".format(len(messages)))
-                continue
-
-            message_ids = [dispatch.id for dispatch in dispatches_with_email_chunk]
-            Dispatch.objects.filter(id__in=message_ids).delete()
+        Dispatch.objects.filter(id__in=sent_ids).delete()
 
         def get_message(total, sent):
             message = ""
             if sent > 0:
-                message = "Det har nu skickats iväg totalt {} {}.".\
+                message = "Det har nu skickats iväg totalt {} {}.". \
                     format(sent, "e-postmeddelande" if sent == 1 else "e-postmeddelanden")
 
             failed = total - sent
             if failed > 0:
                 if len(message) > 0:
                     message = message + "\n"
-                message = message + "Det fanns {} utskick utan e-postadress; {} har inte skickats.".\
+                message = message + "Det fanns {} utskick utan e-postadress; {} har inte skickats.". \
                     format(failed, "detta" if failed == 1 else "dessa")
 
             return message
 
-        request.session["message"] = get_message(len(dispatches), sent)
+        request.session["message"] = get_message(len(dispatches), len(sent_ids))
 
     return redirect(reverse("dispatches"))
