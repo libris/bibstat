@@ -89,7 +89,6 @@ def generate_report(report_template, year, observations):
             year2: None,
             "total": None,
             "extra": None,
-            "description": None,
             "incomplete_data": None,
             "show_in_chart": None,
             "is_sum": template_row.is_sum if template_row.is_sum else None,
@@ -114,7 +113,6 @@ def generate_report(report_template, year, observations):
                 row[year2] = observation.get(year - 2, None)
                 row["total"] = observation.get("total", None)
                 row["show_in_chart"] = True
-                row["description"] = observation.get("description", None)
                 row["incomplete_data"] = observations.get(template_row.variable_key, {}).get("incomplete_data", None)
                 if row["incomplete_data"]:
                     row["incomplete_data"] = [str(a) for a in row["incomplete_data"]]
@@ -170,7 +168,6 @@ def pre_cache_observations(template, surveys, year):
             (year - 1): None,
             (year - 2): None,
             "incomplete_data": [],
-            "description": variables[0].description if len(variables) == 1 else None,
             "total": float(OpenData.objects.filter(sample_year=year, is_active=True,
                                                    variable__in=variables).sum("value"))
         }

@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+from pprint import pprint
 from libstat.tests import MongoTestCase
 from libstat.models import CachedReport
 from libstat.report_templates import ReportTemplate, Group, Row
@@ -63,6 +64,7 @@ class TestReportGeneration(MongoTestCase):
                 "rows": [
                     {
                         "label": "some_description1",
+                        "show_in_chart": True,
                         "2012": 19.0,
                         "2013": 5.0,
                         "2014": 7.0,
@@ -79,6 +81,7 @@ class TestReportGeneration(MongoTestCase):
                 "rows": [
                     {
                         "label": "some_description2",
+                        "show_in_chart": True,
                         "2013": 11.0,
                         "2014": 13.0,
                         "diff": ((13.0 / 11.0) - 1) * 100,
@@ -97,10 +100,12 @@ class TestReportGeneration(MongoTestCase):
                         "diff": (((7.0 / 13.0) / 15) / ((5.0 / 11.0) / 15) - 1) * 100
                     },
                     {
-                        "label": "some_description4"
+                        "label": "some_description4",
+                        "show_in_chart": True,
                     },
                     {
                         "label": "some_description5",
+                        "show_in_chart": True,
                         "2012": 17.0,
                         "2014": 3.0,
                         "is_sum": True,
