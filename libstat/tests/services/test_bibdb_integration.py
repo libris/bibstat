@@ -8,6 +8,7 @@ class TestBibdbIntegration(MongoTestCase):
         self._dummy_json_data = {
             "country_code": "se",
             "sigel": "lib1_sigel",
+            "statistics": "true",
             "name": "lib1",
             "library_type": "sjukbib",
             "municipality_code": "1793",
@@ -22,6 +23,11 @@ class TestBibdbIntegration(MongoTestCase):
                         "address_type": "ill",
                         "city": "ill_lib1_city",
                         "street": "ill_street1"
+                    },
+                    {
+                        "address_type": "stat",
+                        "city": "stat_lib1_city",
+                        "street": "stat_street1"
                     }
                 ],
             "contact":
@@ -44,8 +50,8 @@ class TestBibdbIntegration(MongoTestCase):
 
         self.assertEquals(library.sigel, "lib1_sigel")
         self.assertEquals(library.name, "lib1")
-        self.assertEquals(library.city, "lib1_city")
-        self.assertEquals(library.address, "street1")
+        self.assertEquals(library.city, "stat_lib1_city")
+        self.assertEquals(library.address, "stat_street1")
         self.assertEquals(library.email, "lib1@dom.top")
         self.assertEquals(library.municipality_code, "1793")
         self.assertEquals(library.library_type, "sjukbib")
@@ -85,6 +91,14 @@ class TestBibdbIntegration(MongoTestCase):
     def test_does_not_library_import_if_no_municipality_code(self):
         json_data = self._dummy_json_data
         json_data.pop("municipality_code")
+
+        library = library_from_json(json_data)
+
+        self.assertEquals(library, None)
+
+    def test_does_not_import_non_statistics_library(self):
+        json_data = self._dummy_json_data
+        json_data.pop("statistics")
 
         library = library_from_json(json_data)
 

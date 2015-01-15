@@ -8,6 +8,9 @@ def library_from_json(json_data):
     if not json_data["country_code"] == "se":
         return None
 
+    if not json_data.get("statistics", None):
+        return None
+
     if json_data.get("library_type", None) not in [g[0] for g in SURVEY_TARGET_GROUPS]:
         return None
 
@@ -24,7 +27,7 @@ def library_from_json(json_data):
         library.name = library.name.strip()
     library.municipality_code = json_data.get("municipality_code", None)
     library.library_type = json_data.get("library_type", None)
-    location = next((a for a in json_data["address"] if a["address_type"] == "gen"), None)
+    location = next((a for a in json_data["address"] if a["address_type"] == "stat"), None)
     library.address = location["street"] if location and location["street"] else None
     library.city = location["city"] if location and location["city"] else None
     library.email = next((c["email"] for c in json_data["contact"]
