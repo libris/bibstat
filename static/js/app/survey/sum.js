@@ -1,14 +1,18 @@
 define(['jquery', 'survey.cell'], function($, cell) {
-    var sumOf = function(elements) {
-        var sum = 0;
+    var sumOf = function (elements) {
+        var sum = null;
 
-        $.each(elements, function(index, element) {
+        $.each(elements, function (index, element) {
             var number = cell.number(element);
-            if(!isNaN(number))
+            if (!isNaN(number) && cell.value(element) != "") {
+                if(sum == null){
+                    sum = 0;
+                }
                 sum += number
+            }
         });
 
-        return sum ? sum : '';
+        return sum != null ? sum : '';
     };
 
     var validateSetup = function(setup) {
