@@ -1,209 +1,182 @@
+{% extends "libstat/base/index.html" %}
 {% load libstat_tags %}
 
-<!doctype html>
-<html lang="sv">
-<head>
-    <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+{% block content %}
+    <header class="intro intro-fixed">
+        <div class="intro-body">
+            <div class="container">
+                <div class="row">
+                    <div class="col-md-10 col-md-offset-1">
+                        <img class="intro-logo" src="/static/img/kb.svg">
 
-    <title>Biblioteksstatistiken</title>
-
-    <link href="/static/js/plugins/bootstrap/3.2.0/css/bootstrap.min.css" rel="stylesheet"/>
-    <link href="/static/css/font-awesome.min.css" rel="stylesheet"/>
-    <link href="/static/css/index.css" rel="stylesheet"/>
-    <link href="/static/css/report.css" rel="stylesheet"/>
-
-    {% include "libstat/analytics.html" %}
-</head>
-<body>
-<header class="intro intro-fixed">
-    <div class="intro-body">
-        <div class="container">
-            <div class="row">
-                <div class="col-md-10 col-md-offset-1">
-                    <img class="intro-logo" src="/static/img/kb.svg">
-
-                    <h1 class="intro-title">Sveriges officiella biblioteksstatistik</h1>
-                    <a href="{{ previous_url }}" class="btn btn-reports btn-lg">
-                        <i class="fa fa-arrow-circle-left fa-fw"></i>
-                        Tillbaka till rapportvalen
-                    </a>
-                    <a href="{% url "index" %}" class="btn btn-reports btn-lg">
-                        <i class="fa fa-arrow-circle-left fa-fw"></i>
-                        Till startsidan
-                    </a>
-                    <a class="btn btn-reports btn-print btn-lg" href="javascript:if(window.print)window.print()">
-                        <i class="fa fa-print fa-inline"></i>
-                        Skriv ut
-                    </a>
+                        <h1 class="intro-title">Sveriges officiella biblioteksstatistik</h1>
+                        <a href="{{ previous_url }}" class="btn btn-reports btn-lg">
+                            <i class="fa fa-arrow-circle-left fa-fw"></i>
+                            Tillbaka till rapportvalen
+                        </a>
+                        <a href="{% url "index" %}" class="btn btn-reports btn-lg">
+                            <i class="fa fa-arrow-circle-left fa-fw"></i>
+                            Till startsidan
+                        </a>
+                        <a class="btn btn-reports btn-print btn-lg" href="javascript:if(window.print)window.print()">
+                            <i class="fa fa-print fa-inline"></i>
+                            Skriv ut
+                        </a>
+                    </div>
                 </div>
             </div>
         </div>
-    </div>
-</header>
+    </header>
 
-<div class="report">
-    <div class="report-title scroll-start">Verksamhetsrapport för året {{ year }}</div>
-    {% if municipality_code or principal %}
-        <div class="row report-selection-summary">
-            Denna rapport gäller för alla bibliotek
-            {% if municipality_code and not principal %}
-                i <strong>{{ municipality_code|municipality_name|upper }}</strong>.
-            {% elif not municipality_code and principal %}
-                med huvudman <strong>{{ principal|upper }}</strong>.
-            {% else %}
-                i <strong>{{ municipality_code|municipality_name|upper }}</strong> med huvudman
-                <strong>{{ principal|upper }}</strong>.
-            {% endif %}
-        </div>
-    {% else %}
-        <div class="row library-section">
-            <div class="col-md-6 libraries">
-                {% for library in libraries|two_parts|first %}
-                    <div class="library">
-                        {{ library.name }}{% if library.address %} | {{ library.address }}{% endif %}
-                        {% if library.city %} |
-                            {{ library.city }}{% endif %}</div>
-                {% endfor %}
+    <div class="report">
+        <div class="report-title scroll-start">Verksamhetsrapport för året {{ year }}</div>
+        {% if municipality_code or principal %}
+            <div class="row report-selection-summary">
+                Denna rapport gäller för alla bibliotek
+                {% if municipality_code and not principal %}
+                    i <strong>{{ municipality_code|municipality_name|upper }}</strong>.
+                {% elif not municipality_code and principal %}
+                    med huvudman <strong>{{ principal|upper }}</strong>.
+                {% else %}
+                    i <strong>{{ municipality_code|municipality_name|upper }}</strong> med huvudman
+                    <strong>{{ principal|upper }}</strong>.
+                {% endif %}
             </div>
-            {% if libraries|two_parts|last|length > 0 %}
+        {% else %}
+            <div class="row library-section">
                 <div class="col-md-6 libraries">
-                    {% for library in libraries|two_parts|last %}
+                    {% for library in libraries|two_parts|first %}
                         <div class="library">
                             {{ library.name }}{% if library.address %} | {{ library.address }}{% endif %}
                             {% if library.city %} |
                                 {{ library.city }}{% endif %}</div>
                     {% endfor %}
                 </div>
-            {% endif %}
-        </div>
-    {% endif %}
-
-    <div class="row report-legend">
-        <div class="pull-right">
-            <p>&mdash; = Värdet går inte att få fram</p>
-
-            <p><i class="fa fa-asterisk fa-small incomplete-data"></i> = Värdet har inte angivits av alla bibliotek</p>
-        </div>
-    </div>
-    <div class="row measurements">
-        {% for group in measurements %}
-            <div class="observation-group">
-                <table class="observation">
-                    <tr>
-                        <th class="observation-label">{{ group.title }}</th>
-                        <th class="observation-previous-previous-year">{{ group.years.0 }}</th>
-                        <th class="observation-previous-year">{{ group.years.1 }}</th>
-                        <th class="observation-sample-year">{{ group.years.2 }}</th>
-                        <th class="observation-difference">Utveckling {{ group.years.1 }} - {{ group.years.2 }}</th>
-                        <th class="observation-difference-total">Andel av riket</th>
-                        <th class="observation-extra">{{ group.extra|default:"" }}</th>
-                    </tr>
-                    {% for row in group|access:"rows" %}
-                        {% if row.label_only %}
-                            {% if row.label %}
-                                <tr class="label-only">
-                                    {% else %}
-                                <tr class="empty">
-                            {% endif %}
-                        <td class="observation-label">{{ row.label }}</td>
-                        <td></td>
-                        <td></td>
-                        <td></td>
-                        <td></td>
-                        <td></td>
-                        <td></td>
-                        </tr>
-                        {% else %}
-                            <tr class="{% if forloop.counter|divisibleby:2 %}even{% else %}odd{% endif %}{% if row.is_sum %} sum{% endif %}">
-                                <td class="observation-label">
-                                    {{ row|access:"label" }}
-                                    {% if row|access:"description" %}
-                                        <a class="survey-popover report-explanation" data-toggle="popover"
-                                           data-original-title="{{ row|access:"description" }}" href="#"><i
-                                                class="fa fa-question-circle"></i></a>
-                                    {% endif %}
-                                </td>
-                                <td class="observation-previous-previous-year">
-                                    {% if row|access:group.years.0 != None %}
-                                        {{ row|access:group.years.0|format_number }}
-                                        {% if group.years.0 in row|access:'incomplete_data' %}
-                                            <i class="fa fa-asterisk fa-small incomplete-data"></i>
-                                        {% endif %}
-                                    {% else %}
-                                        &mdash;
-                                    {% endif %}
-                                </td>
-                                <td class="observation-previous-year">
-                                    {% if row|access:group.years.1 != None %}
-                                        {{ row|access:group.years.1|format_number }}
-                                        {% if group.years.1 in row|access:'incomplete_data' %}
-                                            <i class="fa fa-asterisk fa-small incomplete-data"></i>
-                                        {% endif %}
-                                    {% else %}
-                                        &mdash;
-                                    {% endif %}
-                                </td>
-                                <td class="observation-sample-year">
-                                    {% if row|access:group.years.2 != None %}
-                                        {{ row|access:group.years.2|format_number }}
-                                        {% if group.years.2 in row|access:'incomplete_data' %}
-                                            <i class="fa fa-asterisk fa-small incomplete-data"></i>
-                                        {% endif %}
-                                    {% else %}
-                                        &mdash;
-                                    {% endif %}
-                                </td>
-                                <td class="observation-difference">
-                                    {% if row.diff != None %}
-                                        {{ row.diff|floatformat:"0" }}%
-                                        {% if group.years.2 in row|access:'incomplete_data' or group.years.1 in row|access:'incomplete_data' %}
-                                            <i class="fa fa-asterisk fa-small incomplete-data"></i>
-                                        {% endif %}
-                                    {% else %}
-                                        &mdash;
-                                    {% endif %}
-                                </td>
-                                <td class="observation-difference-total">
-                                    {% if row.nation_diff != None %}
-                                        {{ row.nation_diff|floatformat:"0" }}&permil;
-                                        {% if group.years.2 in row|access:'incomplete_data' %}
-                                            <i class="fa fa-asterisk fa-small incomplete-data"></i>
-                                        {% endif %}
-                                    {% else %}
-                                        &mdash;
-                                    {% endif %}
-                                </td>
-                                <td class="observation-extra">
-                                    {% if row.extra %}
-                                        {{ row.extra|floatformat:"0"|default:"-" }}%
-                                    {% else %}
-                                        &mdash;
-                                    {% endif %}
-                                </td>
-                            </tr>
-                        {% endif %}
-                    {% endfor %}
-                </table>
+                {% if libraries|two_parts|last|length > 0 %}
+                    <div class="col-md-6 libraries">
+                        {% for library in libraries|two_parts|last %}
+                            <div class="library">
+                                {{ library.name }}{% if library.address %} | {{ library.address }}{% endif %}
+                                {% if library.city %} |
+                                    {{ library.city }}{% endif %}</div>
+                        {% endfor %}
+                    </div>
+                {% endif %}
             </div>
-            <div id="chart-{{ forloop.counter }}"
-                 class="chart"
-                 data-years="{{ group.years|as_json }}"
-                 data-chart='{{ group.rows|show_in_chart|as_json }}'></div>
-        {% endfor %}
-    </div>
-</div>
+        {% endif %}
 
-<footer>
-    <hr>
-    <div class="container text-center">
-        <p>{% footer %}</p>
-    </div>
-</footer>
+        <div class="row report-legend">
+            <div class="pull-right">
+                <p>&mdash; = Värdet går inte att få fram</p>
 
-<script src="/static/js/plugins/requirejs/require.js"></script>
-<script src="/static/js/main.js"></script>
-</body>
-</html>
+                <p><i class="fa fa-asterisk fa-small incomplete-data"></i> = Värdet har inte angivits av alla bibliotek</p>
+            </div>
+        </div>
+        <div class="row measurements">
+            {% for group in measurements %}
+                <div class="observation-group">
+                    <table class="observation">
+                        <tr>
+                            <th class="observation-label">{{ group.title }}</th>
+                            <th class="observation-previous-previous-year">{{ group.years.0 }}</th>
+                            <th class="observation-previous-year">{{ group.years.1 }}</th>
+                            <th class="observation-sample-year">{{ group.years.2 }}</th>
+                            <th class="observation-difference">Utveckling {{ group.years.1 }} - {{ group.years.2 }}</th>
+                            <th class="observation-difference-total">Andel av riket</th>
+                            <th class="observation-extra">{{ group.extra|default:"" }}</th>
+                        </tr>
+                        {% for row in group|access:"rows" %}
+                            {% if row.label_only %}
+                                {% if row.label %}
+                                    <tr class="label-only">
+                                        {% else %}
+                                    <tr class="empty">
+                                {% endif %}
+                            <td class="observation-label">{{ row.label }}</td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            </tr>
+                            {% else %}
+                                <tr class="{% if forloop.counter|divisibleby:2 %}even{% else %}odd{% endif %}{% if row.is_sum %} sum{% endif %}">
+                                    <td class="observation-label">
+                                        {{ row|access:"label" }}
+                                        {% if row|access:"description" %}
+                                            <a class="survey-popover report-explanation" data-toggle="popover"
+                                               data-original-title="{{ row|access:"description" }}" href="#"><i
+                                                    class="fa fa-question-circle"></i></a>
+                                        {% endif %}
+                                    </td>
+                                    <td class="observation-previous-previous-year">
+                                        {% if row|access:group.years.0 != None %}
+                                            {{ row|access:group.years.0|format_number }}
+                                            {% if group.years.0 in row|access:'incomplete_data' %}
+                                                <i class="fa fa-asterisk fa-small incomplete-data"></i>
+                                            {% endif %}
+                                        {% else %}
+                                            &mdash;
+                                        {% endif %}
+                                    </td>
+                                    <td class="observation-previous-year">
+                                        {% if row|access:group.years.1 != None %}
+                                            {{ row|access:group.years.1|format_number }}
+                                            {% if group.years.1 in row|access:'incomplete_data' %}
+                                                <i class="fa fa-asterisk fa-small incomplete-data"></i>
+                                            {% endif %}
+                                        {% else %}
+                                            &mdash;
+                                        {% endif %}
+                                    </td>
+                                    <td class="observation-sample-year">
+                                        {% if row|access:group.years.2 != None %}
+                                            {{ row|access:group.years.2|format_number }}
+                                            {% if group.years.2 in row|access:'incomplete_data' %}
+                                                <i class="fa fa-asterisk fa-small incomplete-data"></i>
+                                            {% endif %}
+                                        {% else %}
+                                            &mdash;
+                                        {% endif %}
+                                    </td>
+                                    <td class="observation-difference">
+                                        {% if row.diff != None %}
+                                            {{ row.diff|floatformat:"0" }}%
+                                            {% if group.years.2 in row|access:'incomplete_data' or group.years.1 in row|access:'incomplete_data' %}
+                                                <i class="fa fa-asterisk fa-small incomplete-data"></i>
+                                            {% endif %}
+                                        {% else %}
+                                            &mdash;
+                                        {% endif %}
+                                    </td>
+                                    <td class="observation-difference-total">
+                                        {% if row.nation_diff != None %}
+                                            {{ row.nation_diff|floatformat:"0" }}&permil;
+                                            {% if group.years.2 in row|access:'incomplete_data' %}
+                                                <i class="fa fa-asterisk fa-small incomplete-data"></i>
+                                            {% endif %}
+                                        {% else %}
+                                            &mdash;
+                                        {% endif %}
+                                    </td>
+                                    <td class="observation-extra">
+                                        {% if row.extra %}
+                                            {{ row.extra|floatformat:"0"|default:"-" }}%
+                                        {% else %}
+                                            &mdash;
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                            {% endif %}
+                        {% endfor %}
+                    </table>
+                </div>
+                <div id="chart-{{ forloop.counter }}"
+                     class="chart"
+                     data-years="{{ group.years|as_json }}"
+                     data-chart='{{ group.rows|show_in_chart|as_json }}'></div>
+            {% endfor %}
+        </div>
+    </div>
+{% endblock %}
