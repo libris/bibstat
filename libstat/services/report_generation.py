@@ -190,7 +190,7 @@ def pre_cache_observations(template, surveys, year):
                                                 is_active=True)
             value = open_data.sum("value")
             if is_number(value) and open_data.count() != 0:
-                observations[key][y] = value
+                observations[key][y] = float(value)
             if open_data.count() < len(survey_ids[y]):
                 observations[key]["incomplete_data"].append(y)
 
