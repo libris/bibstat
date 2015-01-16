@@ -14,6 +14,8 @@ define(['jquery', 'scroll'], function($, scroll) {
 
                 section.removeClass("hidden");
                 scroll.to(section.find(".section-title"));
+            }).click(function() {
+                $('.subsection-article').css('border-left', '10px solid rgb(102, 102, 103)');
             });
 
             $('.btn.btn-articles-expand').click(function(e) {
@@ -22,6 +24,8 @@ define(['jquery', 'scroll'], function($, scroll) {
                 $(this).closest('.row').addClass('hidden');
                 scroll.to($('.row-article .subsection-title'))
             });
+
+
         }
     };
 });

@@ -1,13 +1,13 @@
 # -*- coding: UTF-8 -*-
 import json
 import textwrap
-import pytz
 import re
 import locale
-
 from datetime import datetime
 
+import pytz
 from django import template
+
 from bibstat import settings
 from libstat.models import Dispatch, Survey
 from libstat.utils import targetGroups, ALL_TARGET_GROUPS_label
@@ -102,6 +102,11 @@ def two_parts(thelist):
         return [thelist[middle:], thelist[:middle]]
     else:
         return [thelist[:middle + 1], thelist[middle + 1:]]
+
+@register.filter
+def chunks(l, n):
+    for i in xrange(0, len(l), n):
+        yield l[i:i+n]
 
 
 @register.filter

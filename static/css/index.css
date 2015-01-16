@@ -299,6 +299,20 @@ dd:last-child {
     background-color: rgb(0, 158, 224);
 }
 
+.btn-articles-expand {
+    border: 1px solid rgb(102, 102, 103);
+    color: rgb(102, 102, 103);
+    background-color: transparent;
+}
+
+.btn-articles-expand:hover,
+.btn-articles-expand:focus {
+    border: 1px solid rgb(102, 102, 103);
+    outline: 0;
+    color: white;
+    background-color: rgb(102, 102, 103);
+}
+
 .btn-reports {
     border: 1px solid rgb(185, 203, 0);
     color: rgb(185, 203, 0);
