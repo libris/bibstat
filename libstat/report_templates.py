@@ -55,7 +55,9 @@ class Row():
     @property
     def explanation(self):
         if self.variable_key:
-            return Variable.objects.get(key=self.variable_key).description
+            variables = Variable.objects.filter(key=self.variable_key)
+            if len(variables) == 1:
+                return variables[0].description
         return None
 
 def report_template_2014():
