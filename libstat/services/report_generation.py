@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+from pprint import pprint
 import uuid
 
 from libstat.models import Survey, Variable, OpenData, CachedReport
@@ -42,6 +43,7 @@ def get_report(surveys, year):
 
         def sort_key(library):
             return library.name.lower()
+
         libraries.sort(key=sort_key)
 
         report = {
@@ -89,7 +91,7 @@ def generate_report(report_template, year, observations):
             year2: None,
             "total": None,
             "extra": None,
-            "incomplete_data": None,
+            "incomplete_data": [],
             "description": template_row.explanation,
             "show_in_chart": template_row.show_in_chart if template_row.variable_key else False,
             "is_sum": template_row.is_sum if template_row.is_sum else None,
@@ -114,16 +116,17 @@ def generate_report(report_template, year, observations):
                 row[year2] = observation.get(year - 2, None)
                 row["total"] = observation.get("total", None)
                 row["incomplete_data"] = observations.get(template_row.variable_key, {}).get("incomplete_data", None)
-                if row["incomplete_data"]:
-                    row["incomplete_data"] = [str(a) for a in row["incomplete_data"]]
                 if template_row.computation:
                     row["extra"] = template_row.compute(values_for(template_row.variable_keys, year))
                     row["extra"] = row["extra"] * 100 if row["extra"] is not None else None
 
             elif template_row.variable_keys:
-                row[year0] = template_row.compute(values_for(template_row.variable_keys, year))
-                row[year1] = template_row.compute(values_for(template_row.variable_keys, year - 1))
-                row[year2] = template_row.compute(values_for(template_row.variable_keys, year - 2))
+                for y in (year0, year1, year2):
+                    row[y] = template_row.compute(values_for(template_row.variable_keys, int(y)))
+                    for key in template_row.variable_keys:
+                        if int(y) in observations.get(key, {}).get("incomplete_data", []) and int(y) not in row[
+                            "incomplete_data"]:
+                            row["incomplete_data"].append(int(y))
 
             if row[year0] == 0 and row[year1] == 0:
                 row["diff"] = 0.0
@@ -134,6 +137,8 @@ def generate_report(report_template, year, observations):
                 row["nation_diff"] = 0.0
             elif row[year0] is not None and row["total"]:
                 row["nation_diff"] = (row[year0] / row["total"]) * 1000
+
+            row["incomplete_data"] = [str(a) for a in row["incomplete_data"]] if row["incomplete_data"] else None
 
             row["total"] = None
             group["rows"].append(clear_nones(row))
