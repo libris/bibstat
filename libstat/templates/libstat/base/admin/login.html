@@ -1,5 +1,3 @@
-{% load i18n %}
-
 <div class="modal fade" id="loginModal" tabindex="-1" role="dialog" aria-labelledby="loginLabel" aria-hidden="true">
     <form role="form" class="login-form" method="post" action="">
         {% csrf_token %}
@@ -15,17 +13,17 @@
                             Close
                         </span>
                     </button>
-                    <h4 class="modal-title">{% trans "Logga in i Biblioteksstatistiken" %}</h4>
+                    <h4 class="modal-title">Logga in i Biblioteksstatistiken</h4>
                 </div>
                 <div class="modal-body">
                     <div class="form-group">
-                        <label for="username">{% trans "Användarnamn" %}</label>
+                        <label for="username">Användarnamn</label>
                         <input id="username" name="username" type="text" value="{{ form.instance.username }}"
                                class="form-control"/>
                         <span class="text-danger errors username"></span>
                     </div>
                     <div class="form-group">
-                        <label for="password">{% trans "Lösenord" %}</label>
+                        <label for="password">Lösenord</label>
                         <input id="password" name="password" type="password" value="{{ form.instance.password }}"
                                class="form-control"/>
                         <span class="text-danger errors password"></span>
@@ -36,7 +34,7 @@
                 </div>
                 <div class="modal-footer">
                     <input type="hidden" name="next" value="{{ next }}"/>
-                    <input type="submit" class="btn btn-primary" value="{% trans 'Logga in' %}"/>
+                    <input type="submit" class="btn btn-primary" value="Logga in"/>
                 </div>
             </div>
         </div>
