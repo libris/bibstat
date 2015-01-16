@@ -437,7 +437,7 @@
                     Klicka på skicka-knappen för att lämna in enkäten.
                 </div>
             </div>
-            {% if not form.is_read_only %}
+            {% if not form.is_read_only and not hide_bottom_bar%}
                 <div class="navbar navbar-default navbar-fixed-bottom" role="navigation">
                     <div class="container">
                         <div class="navbar-left">

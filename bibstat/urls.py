@@ -23,7 +23,8 @@ from libstat.views.surveys import (surveys,
                                    import_and_create)
 from libstat.views.survey import (survey,
                                   survey_status,
-                                  survey_notes)
+                                  survey_notes,
+                                  example_survey)
 from libstat.views.variables import (variables,
                                      edit_variable,
                                      create_variable)
@@ -65,6 +66,7 @@ urlpatterns = patterns('',
 
     # Survey
     url(r'^surveys$', surveys, name='surveys'),
+    url(r'^surveys/example$', example_survey, name='example_survey'),
     url(r'^surveys/activate$', surveys_activate, name='surveys_activate'),
     url(r'^surveys/inactivate$', surveys_inactivate, name='surveys_inactivate'),
     url(r'^surveys/export$', surveys_export, name='surveys_export'),

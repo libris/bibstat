@@ -6,11 +6,35 @@ from django.shortcuts import render, redirect
 from django.http import HttpResponseNotFound
 from django.contrib.auth.decorators import permission_required
 
-from libstat.models import Survey
+from libstat.models import Survey, Variable, SurveyObservation, Library
 from libstat.forms.survey import SurveyForm
+from libstat.survey_templates import survey_template
 
 
 logger = logging.getLogger(__name__)
+
+
+def example_survey(request):
+    sample_year = 2014
+
+    context = {
+        "hide_navbar": True,
+        "hide_bottom_bar": True,
+        "form": SurveyForm(survey=Survey(
+            sample_year=sample_year,
+            library=Library(
+                name=u"Exempelbiblioteket",
+                sigel=u"exempel_sigel",
+                email=u"exempel@email.com",
+                city=u"Exempelstaden",
+                municipality_code=180,
+                address=u"Exempelgatan 14B",
+                library_type=u"folkbib"
+            ),
+            observations=[SurveyObservation(variable=Variable.objects.get(key=cell.variable_key))
+                          for cell in survey_template(sample_year).cells])),
+    }
+    return render(request, 'libstat/survey.html', context)
 
 
 def _save_survey_response_from_form(survey, form):
@@ -41,7 +65,6 @@ def _save_survey_response_from_form(survey, form):
 
 
 def survey(request, survey_id):
-
     def has_password():
         return request.method == "GET" and "p" in request.GET or request.method == "POST"
 
@@ -98,6 +121,7 @@ def survey_status(request, survey_id):
         survey.save()
 
     return redirect(reverse('survey', args=(survey_id,)))
+
 
 @permission_required('is_superuser', login_url='index')
 def survey_notes(request, survey_id):
