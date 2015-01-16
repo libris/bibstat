@@ -1,219 +1,192 @@
+{% extends "libstat/base/index.html" %}
 {% load libstat_tags %}
 
-<!doctype html>
-<html lang="sv">
-<head>
-    <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+{% block content %}
+    <header class="intro intro-fixed">
+        <div class="intro-body">
+            <div class="container">
+                <div class="row">
+                    <div class="col-md-10 col-md-offset-1">
+                        <img class="intro-logo" src="/static/img/kb.svg">
 
-    <title>Biblioteksstatistiken</title>
-
-    <link href="/static/js/plugins/bootstrap/3.2.0/css/bootstrap.min.css" rel="stylesheet"/>
-    <link href="/static/css/font-awesome.min.css" rel="stylesheet"/>
-    <link href="/static/css/index.css" rel="stylesheet"/>
-
-    {% include "libstat/analytics.html" %}
-</head>
-
-<body>
-<header class="intro intro-fixed">
-    <div class="intro-body">
-        <div class="container">
-            <div class="row">
-                <div class="col-md-10 col-md-offset-1">
-                    <img class="intro-logo" src="/static/img/kb.svg">
-
-                    <h1 class="intro-title">Sveriges officiella biblioteksstatistik</h1>
-                    <a href="{% url "index" %}" class="btn btn-reports btn-lg"><i
-                            class="fa fa-arrow-circle-left fa-fw"></i> Tillbaka till startsidan</a>
-                </div>
-            </div>
-        </div>
-    </div>
-</header>
-
-<div class="container section">
-    <div class="row">
-        <div class="col-xs-12 col-sm-10 col-lg-8 subsection-reports">
-            <h2 class="section-title"><i class="fa fa-line-chart fa-fw color-reports"></i> Rapporter</h2>
-
-            <p class="subsection-text">Här finns möjligheten att ta ut rapporter för biblioteksverksamheten på årsbasis.
-                Verksamhetsrapporter kan tas fram för hela riket, för en kommun eller för ett län. Det är även möjligt
-                att skapa rapporter utifrån enskilda bibliotek.
-                <br>
-                <br>
-                Vissa bibliotek har valt att redovisa sin verksamhet gemensamt. Vill man ta ut en rapport för ett sådant
-                bibliotek så kan man därför endast se de totala värdena som biblioteken redovisat tillsammans. I
-                de fall där biblitotek redovisat sin verksamhet i grupp kommer alla de inblandade biblioteken synas
-                på samma rad i listan nedan.
-                <br>
-                <br>
-                Kom igång genom att göra ett val för den verksamhet som intresserar dig!
-            </p>
-        </div>
-    </div>
-
-
-    {% if not sample_years %}
-        <div class="row row-inside">
-            <div class="col-xs-12 col-sm-10 col-lg-8 col-inside reports-selection-group">
-                <div class="alert alert-danger alert-reports" role="alert">
-                    <p><i class='fa fa-warning fa-fw'></i>Det finns ingen publicerad data att generera rapporter
-                        utifrån.</p>
-                </div>
-            </div>
-        </div>
-    {% else %}
-        {% if ""|debug_enabled %}
-            <div class="row">
-                <div class="col-xs-12 col-sm-11 col-lg-8 reports-selection-group {% if sample_year %}scroll-start{% endif %}">
-                    {% if sample_years|length > 0 %}
-                        <h2 class="subsection-title">Välj den biblioteksverksamhet som ska ingå i rapporten</h2>
-                        {% if message %}
-                            <div class="row row-inside">
-                                <div class="col-xs-12 col-sm-10 col-lg-8 col-inside">
-                                    <div class="alert alert-danger alert-reports" role="alert">
-                                        <p><i class='fa fa-warning fa-fw'></i> {{ message|linebreaksbr }}</p>
-                                    </div>
-                                </div>
-                            </div>
-                        {% endif %}
-                        <form class="form form-inline" action="" method="get">
-                            {% csrf_token %}
-
-                            <div id="reports-filter-selection" class="form-group">
-                                <select name="sample_year" class="form-control">
-                                    {% for year in sample_years %}
-                                        <option value="{{ year }}"
-                                                {% ifequal year|slugify sample_year %}
-                                                selected="selected"
-                                                {% endifequal %}>
-                                            {{ year }}
-                                        </option>
-                                    {% endfor %}
-                                </select>
-                                <select name="municipality_code" class="form-control">
-                                    <option value=""
-                                            {% if not municipality_codes or not municipality_code %}
-                                            selected="selected"
-                                            {% endif %} >
-                                        Riket
-                                    </option>
-                                    {% for name, code in municipality_codes %}
-                                        <option value="{{ code }}"
-                                                {% ifequal code|slugify municipality_code %}
-                                                selected="selected"
-                                                {% endifequal %}>
-                                            {{ name }}
-                                        </option>
-                                    {% endfor %}
-                                </select>
-                                <select name="principal" class="form-control">
-                                    <option value=""
-                                            {% if not principals or not principal %}
-                                            selected="selected"
-                                            {% endif %} >
-                                        Alla huvudmän
-                                    </option>
-                                    {% for name, code in principals %}
-                                        <option value="{{ code }}"
-                                                {% ifequal code|slugify principal %}
-                                                selected="selected"
-                                                {% endifequal %}>
-                                            {{ name }}
-                                        </option>
-                                    {% endfor %}
-                                </select>
-                                <button type="submit" class="btn btn-reports">Visa bibliotek</button>
-                            </div>
-                            {% if surveys|length > 0 %}
-                                <div id="reports-filter-info" class="subsection-text">Visar de {{ surveys|length }}
-                                    bibliotek som
-                                    svarat år
-                                    <i>{{ sample_year }}</i>{% if municipality_name %} i
-                                        <i>{{ municipality_name }}</i>{% endif %}{% if principal %} och har
-                                        <i>{{ principal }}</i> som huvudman{% endif %}.</div>
-                            {% endif %}
-                        </form>
-                    {% else %}
-                        <p class="subsection-text">Det finns inga verksamhetsrapporter att visa för tillfället.</p>
-                    {% endif %}
-                </div>
-                {% if surveys|length > 0 %}
-                    <div class="col-xs-12 col-sm-11 col-lg-8 reports-selection-group">
-
-
-                        <form id="form-libraries" class="form" method="post" action="{% url 'report' %}">
-                            {% csrf_token %}
-                            <input type="hidden" name="sample_year" value="{{ sample_year }}">
-                            <input type="hidden" name="municipality_code" value="{{ municipality_code }}">
-                            <input type="hidden" name="principal" value="{{ principal }}">
-                            <input type="hidden" name="number_of_sigel_choices" value="{{ number_of_sigel_choices }}">
-
-                            <h2 class="subsection-title">Välj de bibliotek som ska ingå i rapporten</h2>
-
-                            <div id="reports-library-selection" class="form-group">
-                                <button type="button" class="btn btn-default btn-checked">
-                                    Markera alla
-                                </button>
-                                <button id="form-libraries-submit" type="submit" class="btn btn-reports">Visa
-                                    verksamhetsrapport
-                                </button>
-                            </div>
-                            <div class="row row-inside row-alert hidden">
-                                <div class="col-xs-12 col-sm-10 col-lg-8 col-inside">
-                                    <div class="alert alert-danger alert-reports" role="alert">
-                                        <p><i class='fa fa-warning fa-fw'></i> Du måste välja minst ett
-                                            biblioteken i listan.</p>
-                                    </div>
-                                </div>
-                            </div>
-                            <table id="reports-library-list" class="table table-hover table-condensed">
-                                <tbody>
-                                {% for survey in surveys %}
-                                    <tr>
-                                        <td width="20px">
-                                            <input type="checkbox" name="surveys" class="checkbox-survey"
-                                                   value="{{ survey.library.sigel }}" style="margin-right: 5px;">
-                                        </td>
-                                        <td>
-                                            {% for sigel in survey.selected_libraries %}
-                                                {{ library_name_for_sigel|access:sigel }}{% if not forloop.last %},
-                                                {% endif %}
-                                            {% endfor %}
-                                        </td>
-                                    </tr>
-                                {% endfor %}
-                                </tbody>
-                            </table>
-                        </form>
+                        <h1 class="intro-title">Sveriges officiella biblioteksstatistik</h1>
+                        <a href="{% url "index" %}" class="btn btn-reports btn-lg"><i
+                                class="fa fa-arrow-circle-left fa-fw"></i> Tillbaka till startsidan</a>
                     </div>
-                {% endif %}
+                </div>
             </div>
+        </div>
+    </header>
+
+    <div class="container section">
+        <div class="row">
+            <div class="col-xs-12 col-sm-10 col-lg-8 subsection-reports">
+                <h2 class="section-title"><i class="fa fa-line-chart fa-fw color-reports"></i> Rapporter</h2>
+
+                <p class="subsection-text">Här finns möjligheten att ta ut rapporter för biblioteksverksamheten på årsbasis.
+                    Verksamhetsrapporter kan tas fram för hela riket, för en kommun eller för ett län. Det är även möjligt
+                    att skapa rapporter utifrån enskilda bibliotek.
+                    <br>
+                    <br>
+                    Vissa bibliotek har valt att redovisa sin verksamhet gemensamt. Vill man ta ut en rapport för ett sådant
+                    bibliotek så kan man därför endast se de totala värdena som biblioteken redovisat tillsammans. I
+                    de fall där biblitotek redovisat sin verksamhet i grupp kommer alla de inblandade biblioteken synas
+                    på samma rad i listan nedan.
+                    <br>
+                    <br>
+                    Kom igång genom att göra ett val för den verksamhet som intresserar dig!
+                </p>
+            </div>
+        </div>
+
+
+        {% if not sample_years %}
+            <div class="row row-inside">
+                <div class="col-xs-12 col-sm-10 col-lg-8 col-inside reports-selection-group">
+                    <div class="alert alert-danger alert-reports" role="alert">
+                        <p><i class='fa fa-warning fa-fw'></i>Det finns ingen publicerad data att generera rapporter
+                            utifrån.</p>
+                    </div>
+                </div>
             </div>
         {% else %}
-            <div class="row row-inside">
-                <div class="col-xs-12 col-sm-10 col-lg-8 col-inside">
-                    <div class="alert alert-danger alert-reports" role="alert">
-                        <p><i class='fa fa-warning fa-fw'></i>Denna funktion är under konstruktion och fungerar därför
-                            (antagligen) inte som förväntat.</p>
+            {% if ""|debug_enabled %}
+                <div class="row">
+                    <div class="col-xs-12 col-sm-11 col-lg-8 reports-selection-group {% if sample_year %}scroll-start{% endif %}">
+                        {% if sample_years|length > 0 %}
+                            <h2 class="subsection-title">Välj den biblioteksverksamhet som ska ingå i rapporten</h2>
+                            {% if message %}
+                                <div class="row row-inside">
+                                    <div class="col-xs-12 col-sm-10 col-lg-8 col-inside">
+                                        <div class="alert alert-danger alert-reports" role="alert">
+                                            <p><i class='fa fa-warning fa-fw'></i> {{ message|linebreaksbr }}</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            {% endif %}
+                            <form class="form form-inline" action="" method="get">
+                                {% csrf_token %}
+
+                                <div id="reports-filter-selection" class="form-group">
+                                    <select name="sample_year" class="form-control">
+                                        {% for year in sample_years %}
+                                            <option value="{{ year }}"
+                                                    {% ifequal year|slugify sample_year %}
+                                                    selected="selected"
+                                                    {% endifequal %}>
+                                                {{ year }}
+                                            </option>
+                                        {% endfor %}
+                                    </select>
+                                    <select name="municipality_code" class="form-control">
+                                        <option value=""
+                                                {% if not municipality_codes or not municipality_code %}
+                                                selected="selected"
+                                                {% endif %} >
+                                            Riket
+                                        </option>
+                                        {% for name, code in municipality_codes %}
+                                            <option value="{{ code }}"
+                                                    {% ifequal code|slugify municipality_code %}
+                                                    selected="selected"
+                                                    {% endifequal %}>
+                                                {{ name }}
+                                            </option>
+                                        {% endfor %}
+                                    </select>
+                                    <select name="principal" class="form-control">
+                                        <option value=""
+                                                {% if not principals or not principal %}
+                                                selected="selected"
+                                                {% endif %} >
+                                            Alla huvudmän
+                                        </option>
+                                        {% for name, code in principals %}
+                                            <option value="{{ code }}"
+                                                    {% ifequal code|slugify principal %}
+                                                    selected="selected"
+                                                    {% endifequal %}>
+                                                {{ name }}
+                                            </option>
+                                        {% endfor %}
+                                    </select>
+                                    <button type="submit" class="btn btn-reports">Visa bibliotek</button>
+                                </div>
+                                {% if surveys|length > 0 %}
+                                    <div id="reports-filter-info" class="subsection-text">Visar de {{ surveys|length }}
+                                        bibliotek som
+                                        svarat år
+                                        <i>{{ sample_year }}</i>{% if municipality_name %} i
+                                            <i>{{ municipality_name }}</i>{% endif %}{% if principal %} och har
+                                            <i>{{ principal }}</i> som huvudman{% endif %}.</div>
+                                {% endif %}
+                            </form>
+                        {% else %}
+                            <p class="subsection-text">Det finns inga verksamhetsrapporter att visa för tillfället.</p>
+                        {% endif %}
+                    </div>
+                    {% if surveys|length > 0 %}
+                        <div class="col-xs-12 col-sm-11 col-lg-8 reports-selection-group">
+
+
+                            <form id="form-libraries" class="form" method="post" action="{% url 'report' %}">
+                                {% csrf_token %}
+                                <input type="hidden" name="sample_year" value="{{ sample_year }}">
+                                <input type="hidden" name="municipality_code" value="{{ municipality_code }}">
+                                <input type="hidden" name="principal" value="{{ principal }}">
+                                <input type="hidden" name="number_of_sigel_choices" value="{{ number_of_sigel_choices }}">
+
+                                <h2 class="subsection-title">Välj de bibliotek som ska ingå i rapporten</h2>
+
+                                <div id="reports-library-selection" class="form-group">
+                                    <button type="button" class="btn btn-default btn-checked">
+                                        Markera alla
+                                    </button>
+                                    <button id="form-libraries-submit" type="submit" class="btn btn-reports">Visa
+                                        verksamhetsrapport
+                                    </button>
+                                </div>
+                                <div class="row row-inside row-alert hidden">
+                                    <div class="col-xs-12 col-sm-10 col-lg-8 col-inside">
+                                        <div class="alert alert-danger alert-reports" role="alert">
+                                            <p><i class='fa fa-warning fa-fw'></i> Du måste välja minst ett
+                                                biblioteken i listan.</p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <table id="reports-library-list" class="table table-hover table-condensed">
+                                    <tbody>
+                                    {% for survey in surveys %}
+                                        <tr>
+                                            <td width="20px">
+                                                <input type="checkbox" name="surveys" class="checkbox-survey"
+                                                       value="{{ survey.library.sigel }}" style="margin-right: 5px;">
+                                            </td>
+                                            <td>
+                                                {% for sigel in survey.selected_libraries %}
+                                                    {{ library_name_for_sigel|access:sigel }}{% if not forloop.last %},
+                                                    {% endif %}
+                                                {% endfor %}
+                                            </td>
+                                        </tr>
+                                    {% endfor %}
+                                    </tbody>
+                                </table>
+                            </form>
+                        </div>
+                    {% endif %}
+                </div>
+                </div>
+            {% else %}
+                <div class="row row-inside">
+                    <div class="col-xs-12 col-sm-10 col-lg-8 col-inside">
+                        <div class="alert alert-danger alert-reports" role="alert">
+                            <p><i class='fa fa-warning fa-fw'></i>Denna funktion är under konstruktion och fungerar därför
+                                (antagligen) inte som förväntat.</p>
+                        </div>
                     </div>
                 </div>
-            </div>
+            {% endif %}
         {% endif %}
-    {% endif %}
-</div>
-
-<footer>
-    <hr>
-    <div class="container text-center">
-        <p>{% footer %}</p>
     </div>
-</footer>
-
-<script src="/static/js/plugins/requirejs/require.js"></script>
-<script src="/static/js/main.js"></script>
-</body>
-</html>
+{% endblock %}
