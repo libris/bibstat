@@ -20,6 +20,7 @@ def example_survey(request):
     context = {
         "hide_navbar": True,
         "hide_bottom_bar": True,
+        "hide_admin_panel": True,
         "form": SurveyForm(survey=Survey(
             sample_year=sample_year,
             library=Library(

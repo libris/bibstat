@@ -206,7 +206,7 @@
             </div>
         </div>
     </div>
-    {% if user.is_authenticated %}
+    {% if user.is_authenticated and not hide_admin_panel%}
         {% include 'libstat/survey/header_admin.html' %}
     {% endif %}
     <div class="container container-survey">
