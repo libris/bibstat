@@ -1,0 +1,40 @@
+{% load libstat_tags %}
+{% load compress %}
+
+<!doctype html>
+<html lang="sv">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+
+        <title>Biblioteksstatistiken</title>
+
+        {% compress css %}
+            <link href="/static/js/plugins/bootstrap/3.2.0/css/bootstrap.min.css" rel="stylesheet"/>
+            <link href="/static/css/font-awesome.min.css" rel="stylesheet"/>
+            <link href="/static/css/index.css" rel="stylesheet"/>
+        {% endcompress %}
+
+        {% compress js %}
+            <script src="/static/js/plugins/requirejs/require.js"></script>
+            <script src="/static/js/main.js"></script>
+            {% include "libstat/analytics.html" %}
+        {% endcompress %}
+
+        <link href="/humans.txt" rel="author" type="text/plain">
+    </head>
+
+    <body>
+        {% block content %}
+        {% endblock %}
+
+        <footer>
+            <hr>
+            <div class="container text-center">
+                <p>{% footer %}<br>{% block footer %}{% endblock %}</p>
+            </div>
+        </footer>
+    </body>
+</html>
