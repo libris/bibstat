@@ -158,7 +158,11 @@
                                 </td>
                                 <td class="observation-difference">
                                     {% if row.diff != None %}
-                                        {{ row.diff|floatformat:"0" }}%
+                                        {% if row.diff < 0 and row.diff > -1 %}
+                                            0%
+                                        {% else %}
+                                            {{ row.diff|floatformat:"0" }}%
+                                        {% endif %}
                                         {% if group.years.2 in row|access:'incomplete_data' or group.years.1 in row|access:'incomplete_data' %}
                                             <i class="fa fa-asterisk fa-small incomplete-data"></i>
                                         {% endif %}
