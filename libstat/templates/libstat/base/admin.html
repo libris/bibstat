@@ -1,6 +1,4 @@
-{% load libstat_tags %}
 {% load compress %}
-{% load i18n %}
 
 <!doctype html>
 <html lang="sv">
@@ -33,67 +31,10 @@
     </head>
 
     <body>
-        {% if not hide_navbar %}
-            <div class="navbar navbar-inverse navbar-static-top" role="navigation">
-                <div class="container-fluid">
-                    <div class="container">
-                        <div class="navbar-header">
-                            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#top-main-nav">
-                                <span class="sr-only">Toggle navigation</span>
-                                <span class="icon-bar"></span>
-                                <span class="icon-bar"></span>
-                                <span class="icon-bar"></span>
-                            </button>
-                        </div>
-                        <div class="collapse navbar-collapse" id="top-main-nav">
-                            <ul class="nav navbar-nav navbar-right">
-                                {% if user.is_authenticated %}
-                                    <li class="{{ nav_articles_css }}">
-                                        <a href="{% url 'articles' %}">
-                                            {% trans "Publiceringar" %}
-                                        </a>
-                                    </li>
-                                    <li class="{{ nav_variables_css }}">
-                                        <a href="{% url 'variables' %}">
-                                            {% trans "Termer" %}
-                                        </a>
-                                    </li>
-                                    <li class="{{ nav_surveys_css }}">
-                                        <a href="{% url 'surveys' %}">
-                                            {% trans "Enkäter" %}
-                                        </a>
-                                    </li>
-                                    <li class="{{ nav_dispatches_css }}">
-                                        <a href="{% url 'dispatches' %}">
-                                            {% trans "Utkorg" %}
-                                            <span class="badge">{% dispatches_count %}</span>
-                                        </a>
-                                    </li>
-                                    <li>
-                                        <a href="{% url 'logout' %}">
-                                            {% trans "Logga ut" %}
-                                        </a>
-                                    </li>
-                                {% else %}
-                                    <li>
-                                        <a class="show-login-modal" href="#" data-toggle="modal" data-target="#loginModal">Logga in</a>
-                                    </li>
-                                {% endif %}
-                            </ul>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        {% endif %}
+        {% include "libstat/base/admin/navbar.html" %}
+        {% include "libstat/base/admin/login.html" %}
 
-        <div id="content">
-            {% block content %}
-            {% endblock %}
-        </div>
-
-        <!-- Login modal -->
-        <div class="modal fade" id="loginModal" tabindex="-1" role="dialog" aria-labelledby="loginLabel" aria-hidden="true">
-            {% include "libstat/modals/login.html" %}
-        </div>
+        {% block content %}
+        {% endblock %}
     </body>
 </html>
