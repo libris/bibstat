@@ -1,111 +1,99 @@
-{% load i18n %}
 {% load libstat_tags %}
+{% load compress %}
+{% load i18n %}
 
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-    <meta name="description" content="">
-    <meta name="author" content="">
+<!doctype html>
+<html lang="sv">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
 
-    <title>{% trans "Biblioteksstatistiken" %}</title>
+        <title>Biblioteksstatistiken</title>
 
-    <!-- Bootstrap core CSS -->
-    <link href="/static/js/plugins/bootstrap/3.2.0/css/bootstrap.min.css" rel="stylesheet"/>
+        {% compress css %}
+            <link href="/static/js/plugins/bootstrap/3.2.0/css/bootstrap.min.css" rel="stylesheet"/>
+            <link href="/static/js/plugins/bootstrap-validator/0.5.3/css/bootstrapValidator.css" rel="stylesheet"/>
+            <link href="/static/js/plugins/bootstrap-tokenfield/0.12.0/css/tokenfield-typeahead.css" rel="stylesheet"/>
+            <link href="/static/js/plugins/bootstrap-tokenfield/0.12.0/css/bootstrap-tokenfield.css" rel="stylesheet"/>
+            <link href="/static/js/plugins/bootstrap-datepicker/1.3.0/css/datepicker3.css" rel="stylesheet"/>
+            <link href="/static/css/font-awesome.min.css" rel="stylesheet"/>
+            <link href="/static/css/libstat.css" rel="stylesheet"/>
+        {% endcompress %}
 
-    <!-- Bootstrap Validator -->
-    <link href="/static/js/plugins/bootstrap-validator/0.5.3/css/bootstrapValidator.css" rel="stylesheet"/>
+        {% compress js %}
+            <script src="/static/js/ie-fixes.js" type="text/javascript"></script>
+            <script src="/static/js/plugins/respond/1.4.2/respond.min.js" type="text/javascript"></script>
+            <script src="/static/js/plugins/requirejs/require.js"></script>
+            <script src="/static/js/main.js"></script>
+        {% endcompress %}
 
-    <!-- Tokenfield plugin with Typeahead support, order is important for these two! -->
-    <link href="/static/js/plugins/bootstrap-tokenfield/0.12.0/css/tokenfield-typeahead.css" rel="stylesheet"/>
-    <link href="/static/js/plugins/bootstrap-tokenfield/0.12.0/css/bootstrap-tokenfield.css" rel="stylesheet"/>
+        <script src="{% url 'js_reverse' %}" type="text/javascript"></script>
+    </head>
 
-    <!-- Bootstrap Datepicker -->
-    <link href="/static/js/plugins/bootstrap-datepicker/1.3.0/css/datepicker3.css" rel="stylesheet"/>
-
-    <!-- Font Awesome -->
-    <link href="/static/css/font-awesome.min.css" rel="stylesheet"/>
-
-    <!-- Libstat customizations -->
-    <link href="/static/css/libstat.css" rel="stylesheet"/>
-
-    <!-- IE fixes needs to be included first of all javascript files -->
-    <script src="/static/js/ie-fixes.js" type="text/javascript"></script>
-
-    <!-- Respond.js needs to be referenced after all other css to work properly -->
-    <script src="/static/js/plugins/respond/1.4.2/respond.min.js" type="text/javascript"></script>
-</head>
-
-<body class="libstat" vocab="http://schema.org/">
-
-{% if not hide_navbar %}
-<div class="navbar navbar-inverse navbar-static-top" role="navigation">
-    <div class="container-fluid">
-        <div class="container">
-            <div class="navbar-header">
-                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#top-main-nav">
-                    <span class="sr-only">Toggle navigation</span>
-                    <span class="icon-bar"></span>
-                    <span class="icon-bar"></span>
-                    <span class="icon-bar"></span>
-                </button>
+    <body>
+        {% if not hide_navbar %}
+            <div class="navbar navbar-inverse navbar-static-top" role="navigation">
+                <div class="container-fluid">
+                    <div class="container">
+                        <div class="navbar-header">
+                            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#top-main-nav">
+                                <span class="sr-only">Toggle navigation</span>
+                                <span class="icon-bar"></span>
+                                <span class="icon-bar"></span>
+                                <span class="icon-bar"></span>
+                            </button>
+                        </div>
+                        <div class="collapse navbar-collapse" id="top-main-nav">
+                            <ul class="nav navbar-nav navbar-right">
+                                {% if user.is_authenticated %}
+                                    <li class="{{ nav_articles_css }}">
+                                        <a href="{% url 'articles' %}">
+                                            {% trans "Publiceringar" %}
+                                        </a>
+                                    </li>
+                                    <li class="{{ nav_variables_css }}">
+                                        <a href="{% url 'variables' %}">
+                                            {% trans "Termer" %}
+                                        </a>
+                                    </li>
+                                    <li class="{{ nav_surveys_css }}">
+                                        <a href="{% url 'surveys' %}">
+                                            {% trans "Enkäter" %}
+                                        </a>
+                                    </li>
+                                    <li class="{{ nav_dispatches_css }}">
+                                        <a href="{% url 'dispatches' %}">
+                                            {% trans "Utkorg" %}
+                                            <span class="badge">{% dispatches_count %}</span>
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a href="{% url 'logout' %}">
+                                            {% trans "Logga ut" %}
+                                        </a>
+                                    </li>
+                                {% else %}
+                                    <li>
+                                        <a class="show-login-modal" href="#" data-toggle="modal" data-target="#loginModal">Logga in</a>
+                                    </li>
+                                {% endif %}
+                            </ul>
+                        </div>
+                    </div>
+                </div>
             </div>
-            <div class="collapse navbar-collapse" id="top-main-nav">
-                <ul class="nav navbar-nav navbar-right">
-                    {% if user.is_authenticated %}
-                        <li class="{{ nav_articles_css }}">
-                            <a href="{% url 'articles' %}">
-                                {% trans "Publiceringar" %}
-                            </a>
-                        </li>
-                        <li class="{{ nav_variables_css }}">
-                            <a href="{% url 'variables' %}">
-                                {% trans "Termer" %}
-                            </a>
-                        </li>
-                        <li class="{{ nav_surveys_css }}">
-                            <a href="{% url 'surveys' %}">
-                                {% trans "Enkäter" %}
-                            </a>
-                        </li>
-                        <li class="{{ nav_dispatches_css }}">
-                            <a href="{% url 'dispatches' %}">
-                                {% trans "Utkorg" %}
-                                <span class="badge">{% dispatches_count %}</span>
-                            </a>
-                        </li>
-                        <li>
-                            <a href="{% url 'logout' %}">
-                                {% trans "Logga ut" %}
-                            </a>
-                        </li>
-                    {% else %}
-                        <li>
-                            <a class="show-login-modal" href="#" data-toggle="modal" data-target="#loginModal">Logga in</a>
-                        </li>
-                    {% endif %}
-                </ul>
-            </div>
+        {% endif %}
+
+        <div id="content">
+            {% block content %}
+            {% endblock %}
         </div>
-    </div>
-</div>
-{% endif %}
-<div id="content">
-    {% block content %}
-    {% endblock %}
-</div>
 
-<!-- Login modal -->
-<div class="modal fade" id="loginModal" tabindex="-1" role="dialog" aria-labelledby="loginLabel" aria-hidden="true">
-    {% include "libstat/modals/login.html" %}
-</div>
-
-<script src="{% url 'js_reverse' %}" type="text/javascript"></script>
-<script src="/static/js/plugins/requirejs/require.js"></script>
-<script src="/static/js/main.js"></script>
-
-</body>
+        <!-- Login modal -->
+        <div class="modal fade" id="loginModal" tabindex="-1" role="dialog" aria-labelledby="loginLabel" aria-hidden="true">
+            {% include "libstat/modals/login.html" %}
+        </div>
+    </body>
 </html>
