@@ -431,7 +431,7 @@ class SurveyBase(Document):
             library__municipality_code=self.library.municipality_code,
             library__library_type__in=get_library_types_with_same_principal(self.library),
             library__sigel__ne=self.library.sigel
-        )
+        ).only("selected_libraries")
 
         selected_sigels = Set()
         for survey in surveys:
