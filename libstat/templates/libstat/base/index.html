@@ -1,5 +1,4 @@
 {% load libstat_tags %}
-{% load compress %}
 
 <!doctype html>
 <html lang="sv">
@@ -11,18 +10,14 @@
 
         <title>Biblioteksstatistiken</title>
 
-        {% compress css %}
-            <link href="/static/js/plugins/bootstrap/3.2.0/css/bootstrap.min.css" rel="stylesheet"/>
-            <link href="/static/css/font-awesome.min.css" rel="stylesheet"/>
-            <link href="/static/css/report.css" rel="stylesheet"/>
-            <link href="/static/css/index.css" rel="stylesheet"/>
-        {% endcompress %}
+        <link href="/static/js/plugins/bootstrap/3.2.0/css/bootstrap.min.css" rel="stylesheet"/>
+        <link href="/static/css/font-awesome.min.css" rel="stylesheet"/>
+        <link href="/static/css/report.css" rel="stylesheet"/>
+        <link href="/static/css/index.css" rel="stylesheet"/>
 
-        {% compress js %}
-            <script src="/static/js/plugins/requirejs/require.js" type="text/javascript"></script>
-            <script src="/static/js/main.js" type="text/javascript"></script>
-            {% include "libstat/analytics.html" %}
-        {% endcompress %}
+        <script src="/static/js/plugins/requirejs/require.js" type="text/javascript"></script>
+        <script src="/static/js/main.js" type="text/javascript"></script>
+        {% include "libstat/analytics.html" %}
 
         <link href="/humans.txt" rel="author" type="text/plain">
     </head>
