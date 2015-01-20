@@ -48,6 +48,8 @@ def reports(request):
         _municipality_codes = surveys.distinct("library.municipality_code")
         _municipality_codes = [(municipalities[code], code) for code in _municipality_codes if code in municipalities]
         _municipality_codes += list(get_counties(_municipality_codes))
+        _municipality_codes = set(_municipality_codes)
+        _municipality_codes = list(_municipality_codes)
         _municipality_codes.sort()
         return _municipality_codes
 
