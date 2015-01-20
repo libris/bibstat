@@ -15,8 +15,6 @@
         <link href="/static/css/report.css" rel="stylesheet"/>
         <link href="/static/css/index.css" rel="stylesheet"/>
 
-        <script src="/static/js/plugins/requirejs/require.js" type="text/javascript"></script>
-        <script src="/static/js/main.js" type="text/javascript"></script>
         {% include "libstat/analytics.html" %}
 
         <link href="/humans.txt" rel="author" type="text/plain">
@@ -32,5 +30,8 @@
                 <p>{% footer %}<br>{% block footer %}{% endblock %}</p>
             </div>
         </footer>
+
+        <script src="/static/js/plugins/requirejs/require.js"></script>
+        <script src="/static/js/main.js"></script>
     </body>
 </html>
