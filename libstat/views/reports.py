@@ -31,8 +31,7 @@ def report(request):
 
     if len(sigels) == number_of_sigel_choices:
         context["principal"] = principal
-        context["municipality_code"] = u"hela riket" if len(sigels) == len(
-            Survey.objects.filter(_status=u"published", sample_year=sample_year)) else municipality_code
+        context["municipality_code"] = u"hela riket" if len(sigels) == Survey.objects.filter(_status=u"published", sample_year=sample_year).count() else municipality_code
 
     return render(request, 'libstat/report.html', context)
 
