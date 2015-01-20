@@ -41,7 +41,11 @@ define(['jquery', 'amcharts.theme'], function($, AmCharts) {
         'init': function() {
             $(".chart").each(function() {
                 var container = $(this);
+
                 var years = JSON.parse(container.attr('data-years'));
+                years.sort();
+                years.reverse();
+
                 var chart = JSON.parse(container.attr('data-chart'));
 
                 container.css("height", 250 + 50 * chart.length + "px");
