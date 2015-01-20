@@ -36,7 +36,8 @@ define(['jquery', 'amcharts.theme'], function($, AmCharts) {
             "legend": {
                 "markerSize": 10,
                 "position": "top",
-                "useGraphSettings": true
+                "useGraphSettings": true,
+                "switchable": false
             },
             "graphs": graphs,
             "dataProvider": chart
