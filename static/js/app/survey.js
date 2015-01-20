@@ -389,6 +389,8 @@ define(['jquery', 'survey.sum', 'survey.cell', 'surveys.dispatch', 'bootstrap.va
                 survey.form("#save-survey-btn").click(function (e) {
                     e.preventDefault();
 
+                    $("#submit_action").val("save");
+
                     var saveButton = $(this);
                     var saveButtonHtml = saveButton.html();
                     var otherButtons = $('#submit-survey-btn,#print-survey-btn');
@@ -397,7 +399,6 @@ define(['jquery', 'survey.sum', 'survey.cell', 'surveys.dispatch', 'bootstrap.va
                     otherButtons.addClass('disabled');
 
                     setTimeout(function () {
-                        $("#submit_action").val("save");
                         var empty = survey.emptyInputs();
                         empty.addClass("disable-validation");
 
@@ -417,6 +418,8 @@ define(['jquery', 'survey.sum', 'survey.cell', 'surveys.dispatch', 'bootstrap.va
 
                 survey.form("#submit-survey-btn").click(function (e) {
                     e.preventDefault();
+
+                    $("#submit_action").val("");
 
                     var submitButton = $(this);
                     var submitButtonHtml = submitButton.html();
@@ -439,8 +442,12 @@ define(['jquery', 'survey.sum', 'survey.cell', 'surveys.dispatch', 'bootstrap.va
 
                 $("#confirm-submit-survey-btn").click(function (e) {
                     e.preventDefault();
+
                     $("#submit_action").val("submit");
-                    survey.validator().validate();
+
+                    setTimeout(function () {
+                        survey.validator().validate();
+                    }, 100);
                 });
 
                 cell.onChange(survey.changeableInputs(), function () {
