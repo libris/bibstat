@@ -182,12 +182,12 @@ a[title="JavaScript charts"] {
     visibility: hidden;
 }
 
-.observation-previous-previous-year,
-.observation-previous-year,
-.observation-sample-year,
-.observation-difference,
-.observation-difference-total,
-.observation-extra {
+td.observation-previous-previous-year,
+td.observation-previous-year,
+td.observation-sample-year,
+td.observation-difference,
+td.observation-difference-total,
+td.observation-extra {
     white-space: nowrap;
 }
 
