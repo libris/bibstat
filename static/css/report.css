@@ -76,6 +76,7 @@ th.observation-sample-year {
 th.observation-difference {
     background-color: rgb(42, 176, 204) !important;
     width: 110px;
+    white-space: nowrap;
 }
 
 th.observation-difference-total {
