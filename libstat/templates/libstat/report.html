@@ -114,9 +114,14 @@
                                     <td class="observation-label">
                                         {{ row|access:"label" }}
                                         {% if row|access:"description" %}
-                                            <a class="survey-popover report-explanation" data-toggle="popover"
-                                               data-original-title="{{ row|access:"description" }}" href="#"><i
-                                                    class="fa fa-question-circle"></i></a>
+                                            <a type="button" class="report-explanation btn-help"
+                                               href="#"
+                                               tabindex="-1"
+                                               data-toggle="popover" data-placement="top"
+                                               data-content="{{ row|access:"description" }}"
+                                               data-trigger="click">
+                                                <i class="fa fa-question-circle"></i>
+                                            </a>
                                         {% endif %}
                                     </td>
                                     <td class="observation-previous-previous-year">
