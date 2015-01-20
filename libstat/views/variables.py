@@ -72,7 +72,7 @@ def create_variable(request):
         form = VariableForm()
 
     context['form'] = form
-    return render(request, 'libstat/modals/edit_variable.html', context)
+    return render(request, 'libstat/variable/edit.html', context)
 
 
 @permission_required('is_superuser', login_url='login')
@@ -125,4 +125,4 @@ def edit_variable(request, variable_id):
         form = VariableForm(instance=v)
 
     context['form'] = form
-    return render(request, 'libstat/modals/edit_variable.html', context)
+    return render(request, 'libstat/variable/edit.html', context)

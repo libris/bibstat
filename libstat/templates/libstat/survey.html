@@ -207,17 +207,17 @@
         </div>
     </div>
     {% if user.is_authenticated and not hide_admin_panel%}
-        {% include 'libstat/survey/header_admin.html' %}
+        {% include 'libstat/survey/headers/admin.html' %}
     {% endif %}
     <div class="container container-survey">
         {% if form.is_user_read_only %}
-            {% include "libstat/survey/header_submitted.html" %}
+            {% include "libstat/survey/headers/submitted.html" %}
         {% endif %}
 
         <div class="row">
             <div class="col-xs-11 col-sm-10 col-md-7">
                 <h2 class="section-title">Läs detta först!</h2>
-                {% include "libstat/survey/help.html" %}
+                {% include "libstat/survey/questions.html" %}
             </div>
             <div class="col-xs-1 pull-right">
                 <img src="/static/img/kb-survey.svg" alt="Kungl. Biblioteket">
