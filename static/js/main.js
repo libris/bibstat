@@ -3,6 +3,7 @@
 
     requirejs.config({
         baseUrl: '/static/js/',
+        urlArgs: "bust=v2",
         shim: {
             'amcharts.serial': {
                 deps: ['amcharts'],
