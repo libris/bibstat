@@ -54,7 +54,7 @@ def login(request):
         'next': redirect_to,
     }
 
-    return render(request, 'libstat/modals/../templates/libstat/base/admin/login.html', context)
+    return render(request, 'libstat/templates/libstat/base/admin/login.html', context)
 
 
 def _get_listview_from_modalview(relative_url=""):
