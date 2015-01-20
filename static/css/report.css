@@ -3,8 +3,8 @@
         -webkit-print-color-adjust: exact;
     }
 
-    .intro, footer, .report-explanation {
-        display: none;
+    header, footer, .report-explanation {
+        display: none !important;
     }
 
     .chart {
@@ -123,6 +123,10 @@ tr.sum td:not(.observation-label) {
     background-color: rgb(166, 224, 148) !important;
 }
 
+tr.key-figure td:not(.observation-label) {
+    background-color: pink !important;
+}
+
 tr.label-only td {
     color: white !important;
     background-color: rgb(212, 104, 102) !important;
@@ -132,18 +136,33 @@ tr.label-only td {
 .incomplete-data {
     font-weight: bold !important;
     vertical-align: top;
-    color: red;
+    color: red !important;
 }
 
 .report-legend {
     margin-bottom: 20px;
-    width: 900px;
+    margin-right: 4px;
+    width: 896px;
 }
 
 .report-legend p {
     font-size: 14px;
     margin: auto;
     text-align: right;
+}
+
+.report-legend span {
+    width: 3em;
+    height: 1em;
+    display: inline-block;
+}
+
+.report-legend .example-key-figure {
+    background-color: pink !important;
+}
+
+.report-legend .example-total {
+    background-color: rgb(166, 224, 148) !important;
 }
 
 .measurements {

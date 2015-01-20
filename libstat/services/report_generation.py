@@ -94,6 +94,7 @@ def generate_report(report_template, year, observations):
             "incomplete_data": [],
             "description": template_row.explanation,
             "show_in_chart": template_row.show_in_chart if template_row.variable_key else False,
+            "is_key_figure": None,
             "is_sum": template_row.is_sum if template_row.is_sum else None,
             "label": template_row.description,
             "label_only": template_row.label_only if template_row.label_only else None,
@@ -121,6 +122,7 @@ def generate_report(report_template, year, observations):
                     row["extra"] = row["extra"] * 100 if row["extra"] is not None else None
 
             elif template_row.variable_keys:
+                row["is_key_figure"] = True
                 for y in (year0, year1, year2):
                     row[y] = template_row.compute(values_for(template_row.variable_keys, int(y)))
                     for key in template_row.variable_keys:

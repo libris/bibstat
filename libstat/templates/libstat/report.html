@@ -69,7 +69,11 @@
             <div class="pull-right">
                 <p>&mdash; = Värdet går inte att få fram</p>
 
-                <p><i class="fa fa-asterisk fa-small incomplete-data"></i> = Värdet har inte angivits av alla bibliotek</p>
+                <p><i class="fa fa-asterisk fa-small incomplete-data"></i> = Värdet har inte angivits av alla bibliotek
+
+                <p><span class="example-key-figure"></span> = Beräknat nyckeltal</p>
+
+                <p><span class="example-total"></span> = Totalbelopp</p>
             </div>
         </div>
         <div class="row measurements">
@@ -101,7 +105,12 @@
                             <td></td>
                             </tr>
                             {% else %}
-                                <tr class="{% if forloop.counter|divisibleby:2 %}even{% else %}odd{% endif %}{% if row.is_sum %} sum{% endif %}">
+                                <tr class="{% if row.is_key_figure %} key-figure
+                                           {% elif row.is_sum %} sum
+                                           {% endif %}
+                                           {% if forloop.counter|divisibleby:2 %} even
+                                           {% else %} odd
+                                           {% endif %}">
                                     <td class="observation-label">
                                         {{ row|access:"label" }}
                                         {% if row|access:"description" %}
