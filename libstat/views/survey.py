@@ -5,6 +5,7 @@ from django.core.urlresolvers import reverse
 from django.shortcuts import render, redirect
 from django.http import HttpResponseNotFound
 from django.contrib.auth.decorators import permission_required
+from bibstat import settings
 
 from libstat.models import Survey, Variable, SurveyObservation, Library
 from libstat.forms.survey import SurveyForm
@@ -100,6 +101,9 @@ def survey(request, survey_id):
         if not request.user.is_authenticated() and survey.status == "not_viewed":
             survey.status = "initiated"
             survey.save()
+
+        if not request.user.is_authenticated() and settings.BLOCK_SURVEY:
+            return render(request, "libstat/survey_blocked.html")
 
         context["form"] = SurveyForm(survey=survey, authenticated=request.user.is_authenticated())
         return render(request, 'libstat/survey.html', context)

@@ -217,3 +217,5 @@ mongoengine.connect(MONGODB_NAME, host=MONGODB_DATABASE_HOST)
 
 # Use custom test runner to skip setup/teardown of fixtures for test database
 TEST_RUNNER = 'libstat.tests.MongoEngineTestRunner'
+
+BLOCK_SURVEY = False
