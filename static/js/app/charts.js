@@ -23,7 +23,6 @@ define(['jquery', 'amcharts.theme'], function($, AmCharts) {
                 "position": "left"
             },
             numberFormatter: {
-                precision: 1,
                 decimalSeparator: ',',
                 thousandsSeparator: ' '
             },
@@ -37,6 +36,32 @@ define(['jquery', 'amcharts.theme'], function($, AmCharts) {
         });
     };
 
+    var round = function(n) {
+        return Math.round(n * 10) / 10;
+    };
+
+    var clean = function(n) {
+        if(n !== Math.round(n)) {
+            return n;
+        }
+
+        return Math.round(n);
+    };
+
+    var cleanupChart = function(chart, years) {
+        for(var i = 0; i < chart.length; i++) {
+            var entry = chart[i];
+
+            for(var j = 0; j < years.length; j++) {
+                var year = years[j];
+
+                if(entry.hasOwnProperty(year)) {
+                    entry[year] = clean(round(entry[year]));
+                }
+            }
+        }
+    };
+
     return {
         'init': function() {
             $(".chart").each(function() {
@@ -47,6 +72,7 @@ define(['jquery', 'amcharts.theme'], function($, AmCharts) {
                 years.reverse();
 
                 var chart = JSON.parse(container.attr('data-chart'));
+                cleanupChart(chart, years);
 
                 container.css("height", 250 + 50 * chart.length + "px");
 
