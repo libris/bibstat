@@ -693,6 +693,7 @@ class OpenData(Document):
     sample_year = IntField(required=True)
     target_group = StringField(required=True, choices=SURVEY_TARGET_GROUPS)
     variable = ReferenceField(Variable, required=True)
+    variable_key = StringField()
     value = DynamicField()
     date_created = DateTimeField(required=True, default=datetime.utcnow)
     date_modified = DateTimeField(required=True, default=datetime.utcnow)
@@ -704,6 +705,7 @@ class OpenData(Document):
             "is_active",
             "source_survey",
             "variable",
+            "variable_key",
             "sample_year",
             "date_modified"
         ]
@@ -734,6 +736,11 @@ class OpenData(Document):
         return u"{} {} {} {} {}".format(self.library_name, self.sample_year, self.target_group, self.variable.key,
                                         self.value)
 
+    def __init__(self, *args, **kwargs):
+        variable = kwargs.pop("variable", None)
+        super(OpenData, self).__init__(*args, **kwargs)
+        if variable:
+            self.variable_key = variable.key
 
 class Cell(EmbeddedDocument):
     variable_key = StringField()

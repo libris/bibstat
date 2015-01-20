@@ -12,7 +12,7 @@ from bibstat import settings
 from libstat import utils
 from libstat.services.bibdb_integration import fetch_libraries
 from libstat.models import Survey, SurveyObservation, Variable
-from libstat.services.excel_export import surveys_to_excel_workbook
+from libstat.services.excel_export import surveys_to_excel_workbook, public_excel_export
 from libstat.survey_templates import survey_template
 from data.municipalities import municipalities
 
@@ -150,6 +150,15 @@ def surveys_export(request):
         response = HttpResponse(save_virtual_workbook(workbook), content_type='application/vnd.ms-excel')
         response['Content-Disposition'] = u'attachment; filename="{}"'.format(filename)
         return response
+
+
+def surveys_public_export(request, sample_year):
+    filename = u"Exporterade enkätsvar ({}).xlsx".format(strftime("%Y-%m-%d %H.%M.%S"))
+    workbook = public_excel_export(sample_year)
+
+    response = HttpResponse(save_virtual_workbook(workbook), content_type='application/vnd.ms-excel')
+    response['Content-Disposition'] = u'attachment; filename="{}"'.format(filename)
+    return response
 
 
 @permission_required('is_superuser', login_url='index')
