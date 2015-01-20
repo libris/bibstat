@@ -79,12 +79,14 @@
                                         {% endfor %}
                                     </select>
                                     <select name="municipality_code" class="form-control">
-                                        <option value=""
-                                                {% if not municipality_codes or not municipality_code %}
-                                                selected="selected"
-                                                {% endif %} >
-                                            Riket
-                                        </option>
+                                        {% comment %}
+                                            <option value=""
+                                                    {% if not municipality_codes or not municipality_code %}
+                                                    selected="selected"
+                                                    {% endif %} >
+                                                Riket
+                                            </option>
+                                        {% endcomment %}
                                         {% for name, code in municipality_codes %}
                                             <option value="{{ code }}"
                                                     {% ifequal code|slugify municipality_code %}
