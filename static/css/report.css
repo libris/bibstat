@@ -196,6 +196,16 @@ td.observation-extra {
     width: 100%;
     font-size: 11px;
     margin-bottom: 50px;
+    overflow: visible !important;
+    padding-right: 40px;
+}
+
+.chart svg {
+    overflow: visible !important;
+}
+
+.chart div {
+    overflow: visible !important;
 }
 
 .chart:last-child {

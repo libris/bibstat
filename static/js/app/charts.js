@@ -1,5 +1,11 @@
 define(['jquery', 'amcharts.theme'], function($, AmCharts) {
     var makeChart = function(id, years, chart) {
+        var yearColors = { };
+        var colors = ["#53bafa", "#2caf43", "#5f0009"];
+        for(var i = 0; i < years.length; i++) {
+            yearColors[years[i]] = colors[i];
+        }
+
         var graphs = $.map(years, function(year) {
             return {
                 "id": "graph-" + year,
@@ -9,7 +15,8 @@ define(['jquery', 'amcharts.theme'], function($, AmCharts) {
                 "fillAlphas": 0.8,
                 "lineAlpha": 0.2,
                 "type": "column",
-                "labelText": "[[value]]"
+                "labelText": "[[value]]",
+                "lineColor": yearColors[year]
             }
         });
 
