@@ -55,8 +55,6 @@ MONGODB_PASSWD = 'bibstat'
 # Email details
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 EMAIL_SENDER = 'biblioteksstatistik@kb.se'
-# EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-# EMAIL_HOST = 'smtp.kb.se'
 
 LOG_LEVEL = 'WARNING'
 
@@ -82,7 +80,6 @@ INSTALLED_APPS = (
 
     # Bibstat specific apps
     'mongoengine.django.mongo_auth',
-    'compressor',
     'libstat'
 )
 
@@ -94,18 +91,6 @@ MIDDLEWARE_CLASSES = (
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 )
-
-STATICFILES_FINDERS = (
-    'django.contrib.staticfiles.finders.FileSystemFinder',
-    'django.contrib.staticfiles.finders.AppDirectoriesFinder',
-    'compressor.finders.CompressorFinder',
-)
-
-COMPRESS_ENABLED = False
-
-COMPRESS_OUTPUT_DIR = "cache"
-
-COMPRESS_ROOT = "static/"
 
 ROOT_URLCONF = 'bibstat.urls'
 
