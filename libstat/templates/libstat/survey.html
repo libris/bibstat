@@ -207,11 +207,11 @@
         </div>
     </div>
     {% if user.is_authenticated and not hide_admin_panel%}
-        {% include 'libstat/survey/header_admin.html' %}
+        {% include 'libstat/survey/headers/admin.html' %}
     {% endif %}
     <div class="container container-survey">
         {% if form.is_user_read_only %}
-            {% include "libstat/survey/header_submitted.html" %}
+            {% include "libstat/survey/headers/submitted.html" %}
         {% endif %}
 
         <div class="row">
