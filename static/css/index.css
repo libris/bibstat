@@ -244,6 +244,12 @@ a:hover, a:focus {
     margin-bottom: 0;
 }
 
+.subsection-text-opendata {
+    font-size: 16px;
+    margin-bottom: 15px;
+    color: #2a2a2a;
+}
+
 dt {
     color: #6d6d6d;
     font-size: 18px;
