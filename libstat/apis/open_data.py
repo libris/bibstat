@@ -2,12 +2,15 @@
 import datetime
 import json
 import logging
+from time import strftime
 
-from django.http import HttpResponse, Http404
+from django.http import HttpResponse, Http404, HttpResponseBadRequest, HttpResponseNotFound
 from mongoengine import Q
+from openpyxl.writer.excel import save_virtual_workbook
 
 from bibstat import settings
 from libstat.models import Variable, OpenData
+from libstat.services.excel_export import public_excel_export
 from libstat.utils import parse_datetime_from_isodate_str
 
 logger = logging.getLogger(__name__)
@@ -96,3 +99,27 @@ def observation_api(request, observation_id):
     observation.update(open_data.to_dict())
     observation["dataSet"] = data_set["@id"]
     return HttpResponse(json.dumps(observation), content_type="application/ld+json")
+
+
+def export_api(request):
+    if request.method == "GET":
+
+        sample_year = request.GET.get("sample_year", None)
+        if not sample_year:
+            return HttpResponseBadRequest()
+
+        try:
+            sample_year = int(sample_year)
+        except ValueError:
+            return HttpResponseBadRequest()
+
+        valid_sample_years = set(OpenData.objects.distinct("sample_year"))
+        if sample_year not in valid_sample_years:
+            return HttpResponseNotFound()
+
+        filename = u"Biblioteksstatistik för {} ({}).xlsx".format(sample_year, strftime("%Y-%m-%d %H.%M.%S"))
+        workbook = public_excel_export(sample_year)
+
+        response = HttpResponse(save_virtual_workbook(workbook), content_type='application/vnd.ms-excel')
+        response['Content-Disposition'] = u'attachment; filename="{}"'.format(filename)
+        return response

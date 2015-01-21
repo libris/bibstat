@@ -5,7 +5,7 @@ from django.contrib.auth.views import logout
 
 from django.contrib import admin
 import libstat
-from libstat.apis.open_data import data_api, observation_api
+from libstat.apis.open_data import data_api, observation_api, export_api
 from libstat.apis.terms import term_api, terms_api
 
 from libstat.views.auth import login
@@ -20,7 +20,7 @@ from libstat.views.surveys import (surveys,
                                    surveys_activate,
                                    surveys_inactivate,
                                    surveys_overview,
-                                   import_and_create, surveys_public_export)
+                                   import_and_create)
 from libstat.views.survey import (survey,
                                   survey_status,
                                   survey_notes,
@@ -41,6 +41,7 @@ urlpatterns = patterns('',
     url(r'^data/(?P<observation_id>\w+)$', observation_api, name="observation_api"),
     url(r'^def/terms$', terms_api, name="terms_api"),
     url(r'^def/terms/(?P<term_key>\w+)$', term_api, name="term_api"),
+    url(r'^export$', export_api, name='export_api'),
 
     # Auth
     url(r'^login$', login, name='login'),
@@ -70,7 +71,6 @@ urlpatterns = patterns('',
     url(r'^surveys/activate$', surveys_activate, name='surveys_activate'),
     url(r'^surveys/inactivate$', surveys_inactivate, name='surveys_inactivate'),
     url(r'^surveys/export$', surveys_export, name='surveys_export'),
-    url(r'^surveys/public_export/(?P<sample_year>\w+)$', surveys_public_export, name='surveys_public_export'),
     url(r'^surveys/import_and_create$', import_and_create, name='surveys_import_and_create'),
     url(r'^surveys/status$', surveys_statuses, name='surveys_statuses'),
     url(r'^surveys/overview/(?P<sample_year>\w+)$', surveys_overview, name='surveys_overview'),
