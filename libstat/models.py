@@ -739,8 +739,9 @@ class OpenData(Document):
     def __init__(self, *args, **kwargs):
         variable = kwargs.pop("variable", None)
         super(OpenData, self).__init__(*args, **kwargs)
-        if variable:
-            self.variable_key = variable.key
+        self.variable = variable
+        if self.variable:
+            self.variable_key = self.variable.key
 
 class Cell(EmbeddedDocument):
     variable_key = StringField()
