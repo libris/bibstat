@@ -35,15 +35,12 @@ def _cache_workbook(workbook, year):
 
 
 def public_excel_workbook(year):
-    if _cached_workbook_exists_and_is_valid(year):
-        return load_workbook(sorted(glob.glob(_cache_path(year)))[-1])
-    else:
-        workbook = published_open_data_as_workbook(year)
-        _cache_workbook(workbook, year)
-        return workbook
+    if not _cached_workbook_exists_and_is_valid(year):
+        _cache_workbook(_published_open_data_as_workbook(year), year)
+    return sorted(glob.glob(_cache_path(year)))[-1]
 
 
-def published_open_data_as_workbook(year):
+def _published_open_data_as_workbook(year):
     workbook = Workbook(encoding="utf-8")
     worksheet = workbook.active
 

@@ -5,6 +5,7 @@ import logging
 from time import strftime
 
 from django.http import HttpResponse, Http404, HttpResponseBadRequest, HttpResponseNotFound
+from django.core.servers.basehttp import FileWrapper
 from mongoengine import Q
 from openpyxl.writer.excel import save_virtual_workbook
 
@@ -118,8 +119,8 @@ def export_api(request):
             return HttpResponseNotFound()
 
         filename = u"Biblioteksstatistik för {} ({}).xlsx".format(sample_year, strftime("%Y-%m-%d %H.%M.%S"))
-        workbook = public_excel_workbook(sample_year)
+        path = public_excel_workbook(sample_year)
 
-        response = HttpResponse(save_virtual_workbook(workbook), content_type='application/vnd.ms-excel')
+        response = HttpResponse(FileWrapper(file(path)), content_type='application/vnd.ms-excel')
         response['Content-Disposition'] = u'attachment; filename="{}"'.format(filename)
         return response
