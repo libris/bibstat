@@ -175,6 +175,7 @@
                 <h3 class="subsection-title">Excel <small>BETA</small></h3>
                 <p class="subsection-text-opendata">Utöver möjligheten att använda Kungliga Bibliotekets API:er, så kan öppna data hämtas i Excel-format. Genom att välja ett verksamhetsår nedan, så kan alla öppna data för det valda året laddas ned genom att trycka på Hämta-knappen.</p>
 
+                {% if open_data_years %}
                 <form class="form form-inline" method="get" action="{% url "export_api" %}">
                     <select name="sample_year" class="form-control">
                         {% for year in open_data_years %}
@@ -184,6 +185,9 @@
 
                     <button type="submit" class="btn btn-opendata">Hämta</button>
                 </form>
+                {% else %}
+                    <p><strong>Det finns i nuläget ingen öppen data att hämta.</strong></p>
+                {% endif %}
             </div>
         </div>
     </section>

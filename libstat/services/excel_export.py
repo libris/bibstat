@@ -66,7 +66,7 @@ def _published_open_data_as_workbook(year):
         library = Survey.objects.get(library__sigel=sigel).library
         row = [""] * len(header)
         row[0] = library.name
-        row[1] = sigel if year >= 2014 else "" # Do not show auto-generated sigels (used before 2014)
+        row[1] = sigel if year >= 2014 else ""  # Do not show auto-generated sigels (used before 2014)
         row[2] = library.library_type
         row[3] = library.municipality_code
         row[4] = library.city
