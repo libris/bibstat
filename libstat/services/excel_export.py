@@ -8,7 +8,7 @@ from openpyxl import Workbook, load_workbook
 from openpyxl.writer.excel import save_virtual_workbook
 
 from data.principals import principal_for_library_type
-from libstat.models import Survey, OpenData
+from libstat.models import Survey, OpenData, Variable
 
 
 DATE_FORMAT = "%Y_%m_%d_%H_%M_%S"
@@ -43,6 +43,7 @@ def public_excel_workbook(year):
 def _published_open_data_as_workbook(year):
     workbook = Workbook(encoding="utf-8")
     worksheet = workbook.active
+    worksheet.title = u"Värden"
 
     variable_keys = list(OpenData.objects.filter(is_active=True, sample_year=year).distinct("variable_key"))
     sigels = list(OpenData.objects.filter(is_active=True, sample_year=year).distinct("sigel"))
@@ -75,6 +76,11 @@ def _published_open_data_as_workbook(year):
         for key in variable_keys:
             row[variable_index[key]] = libraries[sigel][key]
         worksheet.append(row)
+
+    variable_sheet = workbook.create_sheet()
+    variable_sheet.title = u"Definitioner"
+    for variable in Variable.objects.filter(key__in=variable_keys):
+        variable_sheet.append([variable.key, variable.description])
 
     return workbook
 
