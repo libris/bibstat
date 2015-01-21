@@ -30,6 +30,7 @@ def library_from_json(json_data):
     location = next((a for a in json_data["address"] if a["address_type"] == "stat"), None)
     library.address = location["street"] if location and location["street"] else None
     library.city = location["city"] if location and location["city"] else None
+    library.zip_code = location["zip_code"] if location and location["zip_code"] else None
     library.email = next((c["email"] for c in json_data["contact"]
                           if "email" in c and c["contact_type"] == "statans"), None)
 

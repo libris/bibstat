@@ -273,6 +273,7 @@ class Library(EmbeddedDocument):
     city = StringField()
     municipality_code = StringField()
     address = StringField()
+    zip_code = StringField()
     library_type = StringField(choices=SURVEY_TARGET_GROUPS)
 
     meta = {

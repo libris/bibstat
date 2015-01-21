@@ -56,10 +56,10 @@ def _published_open_data_as_workbook(year):
                                                                                     "sigel", "value"):
         libraries[open_data.sigel][open_data.variable_key] = open_data.value
 
-    header = ["Bibliotek", "Sigel", "Bibliotekstyp", "Kommunkod", "Stad", "Adress"]
+    header = ["Bibliotek", "Sigel", "Bibliotekstyp", "Kommunkod", "Stad", "Adress", "Postkod"]
     variable_index = {}
     for index, key in enumerate(variable_keys):
-        variable_index[key] = index + 6
+        variable_index[key] = index + 7
         header.append(key)
     worksheet.append(header)
 
@@ -72,6 +72,7 @@ def _published_open_data_as_workbook(year):
         row[3] = library.municipality_code
         row[4] = library.city
         row[5] = library.address
+        row[6] = library.zip_code
 
         for key in variable_keys:
             row[variable_index[key]] = libraries[sigel][key]
@@ -97,6 +98,7 @@ def surveys_to_excel_workbook(survey_ids):
         "Kommunkod",
         "Stad",
         "Adress",
+        "Postkod",
         "Huvudman",
         "Kan publiceras?"
     ]
@@ -116,6 +118,7 @@ def surveys_to_excel_workbook(survey_ids):
             survey.library.municipality_code,
             survey.library.city,
             survey.library.address,
+            survey.library.zip_code,
             principal_for_library_type[survey.library.library_type]
             if survey.library.library_type in principal_for_library_type else None,
             "Ja" if survey.can_publish() else "Nej: " + survey.reasons_for_not_able_to_publish()

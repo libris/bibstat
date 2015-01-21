@@ -27,7 +27,8 @@ class TestBibdbIntegration(MongoTestCase):
                     {
                         "address_type": "stat",
                         "city": "stat_lib1_city",
-                        "street": "stat_street1"
+                        "street": "stat_street1",
+                        "zip_code": "123 45"
                     }
                 ],
             "contact":
@@ -55,6 +56,7 @@ class TestBibdbIntegration(MongoTestCase):
         self.assertEquals(library.email, "lib1@dom.top")
         self.assertEquals(library.municipality_code, "1793")
         self.assertEquals(library.library_type, "sjukbib")
+        self.assertEquals(library.zip_code, "123 45")
 
     def test_does_not_import_non_swedish_libraries(self):
         json_data = self._dummy_json_data
