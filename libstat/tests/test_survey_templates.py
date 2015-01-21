@@ -50,12 +50,12 @@ class TestSurveyTemplate(MongoTestCase):
     def test_returns_template_for_2014(self):
         template = survey_template(2014)
 
-        self.assertEquals(template, _survey_template_2014)
+        self.assertEquals(template, _survey_template_2014())
 
     def test_returns_2014_template_for_2015(self):
         template = survey_template(2015)
 
-        self.assertEquals(template, _survey_template_2014)
+        self.assertEquals(template, _survey_template_2014())
 
     def test_returns_default_template_for_2013(self):
         survey = self._dummy_survey(observations=[

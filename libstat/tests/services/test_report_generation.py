@@ -70,7 +70,6 @@ class TestReportGeneration(MongoTestCase):
                         "2014": 7.0,
                         "diff": ((7.0 / 5.0) - 1) * 100,
                         "nation_diff": (7.0 / 31.0) * 1000,
-                        "incomplete_data": []
                     }
                 ]
             },
@@ -91,13 +90,17 @@ class TestReportGeneration(MongoTestCase):
                     },
                     {
                         "label": "only_a_label",
-                        "label_only": True
+                        "label_only": True,
+                        "show_in_chart": False
                     },
                     {
                         "label": "some_description3",
                         "2013": (5.0 / 11.0) / 15,
                         "2014": (7.0 / 13.0) / 15,
-                        "diff": (((7.0 / 13.0) / 15) / ((5.0 / 11.0) / 15) - 1) * 100
+                        "diff": (((7.0 / 13.0) / 15) / ((5.0 / 11.0) / 15) - 1) * 100,
+                        "incomplete_data": ["2012"],
+                        "is_key_figure": True,
+                        "show_in_chart": False
                     },
                     {
                         "label": "some_description4",
@@ -112,7 +115,9 @@ class TestReportGeneration(MongoTestCase):
                         "incomplete_data": ["2013"]
                     },
                     {
-                        "label": "some_description6"
+                        "label": "some_description6",
+                        "is_key_figure": True,
+                        "show_in_chart": False
                     }
                 ]
             }
