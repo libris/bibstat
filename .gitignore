@@ -67,3 +67,6 @@ dump/
 
 # Sublime text editor
 *.sublime*
+
+# Cached export files
+data/public_exports

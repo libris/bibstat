@@ -1,11 +1,49 @@
 # -*- coding: utf-8 -*-
-from time import time
-from openpyxl import Workbook
+import glob
+import os
+import datetime
+from django.core.files import File
+
+from openpyxl import Workbook, load_workbook
+from openpyxl.writer.excel import save_virtual_workbook
+
 from data.principals import principal_for_library_type
 from libstat.models import Survey, OpenData
 
 
-def public_excel_export(year):
+DATE_FORMAT = "%Y_%m_%d_%H_%M_%S"
+
+
+def _cache_path(year, date_str=None):
+    return "data/public_exports/public_export_{} {}.xslx".format(year, date_str if date_str else "*")
+
+
+def _cached_workbook_exists_and_is_valid(year):
+    paths = sorted(glob.glob("{}/{}".format(os.getcwd(), _cache_path(year))))
+    if not paths:
+        return False
+
+    cache_date = datetime.datetime.strptime(paths[-1].split(" ")[-1].split(".")[0], DATE_FORMAT)
+    latest_publication = OpenData.objects.first().date_modified
+
+    return cache_date > latest_publication
+
+
+def _cache_workbook(workbook, year):
+    with open(_cache_path(year, datetime.datetime.utcnow().strftime(DATE_FORMAT)), "w") as f:
+        File(f).write(save_virtual_workbook(workbook))
+
+
+def public_excel_workbook(year):
+    if _cached_workbook_exists_and_is_valid(year):
+        return load_workbook(sorted(glob.glob(_cache_path(year)))[-1])
+    else:
+        workbook = published_open_data_as_workbook(year)
+        _cache_workbook(workbook, year)
+        return workbook
+
+
+def published_open_data_as_workbook(year):
     workbook = Workbook(encoding="utf-8")
     worksheet = workbook.active
 
