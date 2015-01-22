@@ -13,6 +13,9 @@
                     </button>
                 </div>
                 <div class="collapse navbar-collapse" id="top-main-nav">
+                    <ul class="nav navbar-nav navbar-left">
+                        <li style="font-size: 20px;"><a href="{% url 'index' %}">Biblioteksstatistiken</a></li>
+                    </ul>
                     <ul class="nav navbar-nav navbar-right">
                         {% if user.is_authenticated %}
                             <li class="{{ nav_articles_css }}"><a href="{% url 'articles' %}">Publiceringar</a></li>
