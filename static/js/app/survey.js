@@ -280,7 +280,7 @@ define(['jquery', 'survey.sum', 'survey.cell', 'surveys.dispatch', 'bootstrap.va
                     if (!$("#submit_action").val())
                         return;
 
-                    $("#altered_fields").val(survey.inputs().filter(function () {
+                    $("#altered_fields").val(survey.changeableInputs().filter(function () {
                         return $(this).val() != $(this).attr("data-original-value");
                     }).map(function () {
                        return $(this).attr("id");
