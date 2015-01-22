@@ -6,6 +6,7 @@ from django.core.files import File
 
 from openpyxl import Workbook, load_workbook
 from openpyxl.writer.excel import save_virtual_workbook
+from bibstat import settings
 
 from data.principals import principal_for_library_type
 from libstat.models import Survey, OpenData, Variable
@@ -15,11 +16,15 @@ DATE_FORMAT = "%Y_%m_%d_%H_%M_%S"
 
 
 def _cache_path(year, date_str=None):
-    return "data/public_exports/public_export_{} {}.xslx".format(year, date_str if date_str else "*")
+    file_name = "public_export_{} {}.xslx".format(year, date_str if date_str else "*")
+    if settings.ENVIRONMENT == "local":
+        return "{}/data/public_exports/{}".format(os.getcwd(), file_name)
+    else:
+        return "/data/appl/public_exports/{}".format(file_name)
 
 
 def _cached_workbook_exists_and_is_valid(year):
-    paths = sorted(glob.glob("{}/{}".format(os.getcwd(), _cache_path(year))))
+    paths = sorted(glob.glob(_cache_path(year)))
     if not paths:
         return False
 
