@@ -529,3 +529,58 @@ class EditVariableViewTest(MongoTestCase):
             Variable.objects.get(pk=variable.id)
         except Variable.DoesNotExist as dne:
             self.fail(str(dne))
+
+class ReplaceableVariablesApiTest(MongoTestCase):
+
+    def setUp(self):
+        self.url = reverse("replaceable_variables")
+        self.client.login(username="admin", password="admin")
+
+    def test_view_requires_admin_login(self):
+        self.client.logout()
+        response = self.client.get(self.url)
+        self.assertEquals(response.status_code, 302)
+
+        self.client.login(username="library_user", password="secret")
+        response = self.client.get(self.url)
+        self.assertEquals(response.status_code, 302)
+
+        self.client.logout()
+        self.client.login(username="admin", password="admin")
+        response = self.client.get(self.url)
+        self.assertEquals(response.status_code, 200)
+
+    def test_should_return_replaceable_variables_as_json(self):
+        var1 = self._dummy_variable(key=u"key_1")
+        self._dummy_variable(key=u"key_2", is_draft=True)
+        self._dummy_variable(key=u"key_3", replaced_by=var1)
+        var4 = self._dummy_variable(key=u"key_4")
+
+        response = self.client.get(self.url)
+        self.assertEquals(response.status_code, 200)
+        data = json.loads(response.content)
+        self.assertEquals(data, [{"key": "key_1",
+                                  "id": str(var1.id),
+                                  "description": var1.description},
+                                 {"key": "key_4",
+                                  "id": str(var4.id),
+                                  "description": var4.description}])
+
+    def test_should_filter_replaceables_by_key(self):
+        var = self._dummy_variable(key=u"Folk28")
+
+        response = self.client.get("{}?q=fo".format(self.url))
+        self.assertEquals(response.status_code, 200)
+        data = json.loads(response.content)
+        self.assertEquals(data, [{"key": "Folk28",
+                                  "id": str(var.id),
+                                  "description": var.description}])
+
+    def test_should_filter_replaceables_by_description(self):
+        var = self._dummy_variable(key=u"Skol10", description=u"Postort", type="string")
+        response = self.client.get("{}?q=post".format(self.url))
+        self.assertEquals(response.status_code, 200)
+        data = json.loads(response.content)
+        self.assertEquals(data, [{"key": "Skol10",
+                                  "id": str(var.id),
+                                  "description": var.description}])

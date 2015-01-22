@@ -7,6 +7,7 @@ from django.core.urlresolvers import reverse
 from django.shortcuts import render
 from django.http import HttpResponseForbidden, HttpResponse, Http404
 from django.contrib.auth.decorators import permission_required
+from mongoengine import Q
 from mongoengine.errors import NotUniqueError
 
 from libstat.models import Variable
@@ -126,3 +127,18 @@ def edit_variable(request, variable_id):
 
     context['form'] = form
     return render(request, 'libstat/variable/edit.html', context)
+
+@permission_required('is_superuser', login_url='index')
+def replaceable_variables(request):
+    """
+        Helper Json API method to populate search field for replaceable variables. (Ajax call)
+    """
+    query = request.REQUEST.get("q", None)
+    if query:
+        key_query = Q(key__icontains=query)
+        description_query = Q(description__icontains=query)
+        variables = Variable.objects.replaceable().filter(key_query | description_query)
+    else:
+        variables = Variable.objects.replaceable()
+    data = [v.as_simple_dict() for v in variables]
+    return HttpResponse(json.dumps(data), content_type="application/json")

@@ -27,7 +27,7 @@ from libstat.views.survey import (survey,
                                   example_survey)
 from libstat.views.variables import (variables,
                                      edit_variable,
-                                     create_variable)
+                                     create_variable, replaceable_variables)
 
 admin.autodiscover()
 
@@ -86,6 +86,7 @@ urlpatterns = patterns('',
     # Variables
     url(r'^variables$', variables, name='variables'),
     url(r'^variables/new$', create_variable, name='create_variable'),
+    url(r'^variables/replaceable$', replaceable_variables, name='replaceable_variables'),
     url(r'^variables/(?P<variable_id>\w+)$', edit_variable, name='edit_variable'),
 
     # Other
