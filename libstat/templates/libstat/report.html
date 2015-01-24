@@ -25,16 +25,21 @@
     <div class="report">
         <div class="report-title scroll-start">Verksamhetsrapport {{ year }}</div>
         {% if municipality_code or principal %}
-            <div class="row report-selection-summary">
-                Denna rapport gäller för alla bibliotek
-                {% if municipality_code and not principal %}
-                    i <strong>{{ municipality_code|municipality_name|upper }}</strong>.
-                {% elif not municipality_code and principal %}
-                    med huvudman <strong>{{ principal|upper }}</strong>.
-                {% else %}
-                    i <strong>{{ municipality_code|municipality_name|upper }}</strong> med huvudman
-                    <strong>{{ principal|upper }}</strong>.
-                {% endif %}
+            <div class="libraries-header">Denna rapport gäller för:</div>
+            <div class="row library-section">
+                <div class="col-md-10 libraries">
+                    <div class="library">
+                        alla bibliotek
+                        {% if municipality_code and not principal %}
+                            i <strong>{{ municipality_code|municipality_name|upper }}</strong>.
+                        {% elif not municipality_code and principal %}
+                            med huvudman <strong>{{ principal|upper }}</strong>.
+                        {% else %}
+                            i <strong>{{ municipality_code|municipality_name|upper }}</strong> med huvudman
+                            <strong>{{ principal|upper }}</strong>.
+                        {% endif %}
+                    </div>
+                </div>
             </div>
         {% else %}
             <div class="libraries-header">Denna rapport gäller för bibliotek:</div>
