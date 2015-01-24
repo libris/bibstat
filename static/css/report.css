@@ -19,6 +19,35 @@ body {
     font-size: 13px;
 }
 
+.intro.intro-fixed.intro-report {
+    height: 120px;
+}
+
+.intro.intro-fixed.intro-report .intro-body {
+    padding-top: 20px;
+}
+
+.intro.intro-fixed.intro-report .container {
+    width: 900px;
+    padding-left: 0px;
+    text-align: left;
+}
+
+.intro-report span {
+    float: right;
+}
+
+.intro-header {
+    font-size: 40px;
+    font-weight: bold;
+}
+
+.intro-report .btn-reports {
+    background-color: rgb(112, 125, 81) !important;
+    border-color: rgb(84, 96, 46) !important;
+    color: white !important;
+}
+
 .observation-group {
     margin-bottom: 50px;
 }
