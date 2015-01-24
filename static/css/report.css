@@ -13,6 +13,12 @@
     }
 }
 
+body {
+    background-color: white !important;
+    font-weight: 300;
+    font-size: 13px;
+}
+
 .observation-group {
     margin-bottom: 50px;
 }
@@ -34,14 +40,16 @@
 
 th {
     color: white !important;
-    text-align: center;
+    text-align: left;
     padding-top: 5px;
     padding-bottom: 5px;
+    font-size: 14px;
 }
 
 th, td {
-    padding-left: 15px;
-    padding-right: 15px;
+    padding-left: 7px;
+    padding-right: 7px;
+    border-right: 1px solid white;
 }
 
 td {
@@ -50,43 +58,43 @@ td {
 }
 
 .even td:not(.observation-data-missing) {
-    background-color: #f2f2f2 !important;
+    background-color: rgb(233, 244, 249) !important;
 }
 
 th.observation-label {
     text-align: left;
-    background-color: rgb(255, 163, 56) !important;
+    background-color: rgb(0, 158, 224) !important;
 }
 
 th.observation-previous-previous-year {
-    background-color: rgb(239, 131, 24) !important;
-    width: 85px;
+    background-color: rgb(185, 203, 0) !important;
+    width: 130px;
 }
 
 th.observation-previous-year {
-    background-color: rgb(220, 110, 16) !important;
-    width: 85px;
+    background-color: rgb(152, 163, 56) !important;
+    width: 130px;
 }
 
 th.observation-sample-year {
-    background-color: rgb(206, 93, 26) !important;
-    width: 85px;
+    background-color: rgb(242, 148, 0) !important;
+    width: 130px;
 }
 
 th.observation-difference {
-    background-color: rgb(42, 176, 204) !important;
+    background-color: rgb(216, 136, 37) !important;
     width: 110px;
     white-space: nowrap;
 }
 
 th.observation-difference-total {
-    background-color: rgb(37, 146, 188) !important;
+    background-color: rgb(226, 0, 122) !important;
     width: 100px;
 }
 
 th.observation-extra {
     width: 250px;
-    background-color: rgb(27, 124, 173) !important;
+    background-color: rgb(186, 67, 129) !important;
 }
 
 .observation-label {
@@ -94,38 +102,55 @@ th.observation-extra {
 }
 
 .report-title {
-    border-bottom: 5px solid black !important;
     font-size: 40px;
     font-family: helvetica;
-    width: auto;
-    text-align: center;
+}
 
+.libraries-header {
+    font-weight: bold;
+    font-size: 14px;
+    margin-top: 20px;
 }
 
 .library-section {
-    padding-top: 30px;
-    padding-left: 15px;
-    margin-bottom: 30px;
+    padding-top: 10px;
+    padding-left: 0px;
+    margin-bottom: 50px;
 }
 
 .libraries {
-    border-left: 4px solid black !important;
+    border-left: 1px solid black !important;
     padding-left: 15px;
 }
 
 .libraries .library {
+    padding-top: 0px;
+    top: -2px;
+    font-size: 12px;
+}
+
+.libraries .library:not(:last-child) {
     padding-bottom: 3px;
-    padding-top: 3px;
-    font-size: 10px;
-    font-family: helvetica;
 }
 
 tr.sum td:not(.observation-label) {
-    background-color: rgb(166, 224, 148) !important;
+    background-color: rgb(200, 212, 229) !important;
+}
+
+.report-legend .example-total {
+    background-color: rgb(200, 212, 229) !important;
 }
 
 tr.key-figure td:not(.observation-label) {
-    background-color: pink !important;
+    background-color: rgb(224, 192, 216) !important;
+}
+
+tr.key-figure.even td:not(.observation-label) {
+    background-color: rgb(199, 167, 191) !important;
+}
+
+.report-legend .example-key-figure {
+    background-color: rgb(224, 192, 216) !important;
 }
 
 tr.label-only td {
@@ -141,29 +166,38 @@ tr.label-only td {
 }
 
 .report-legend {
-    margin-bottom: 20px;
+    margin-bottom: 10px;
     margin-right: 4px;
     width: 896px;
 }
 
-.report-legend p {
-    font-size: 14px;
-    margin: auto;
-    text-align: right;
+.report-legend > span {
+    width: auto;
+    height: 1em;
+    display: inline-block;
+    margin-right: 20px;
 }
 
-.report-legend span {
-    width: 3em;
+
+.report-legend > span > span {
+    width: 2em;
     height: 1em;
     display: inline-block;
 }
 
-.report-legend .example-key-figure {
-    background-color: pink !important;
+span.print-report {
+    float: right;
+    margin-right: 0px;
+    background-color: rgb(95, 96, 98) !important;
+    border-radius: 50%;
+    height: 28px;
+    width: 28px;
+    font-size: 20px;
+    text-align: center;
 }
 
-.report-legend .example-total {
-    background-color: rgb(166, 224, 148) !important;
+span.print-report > a {
+    color: white !important;
 }
 
 .measurements {

@@ -29,7 +29,7 @@
     </header>
 
     <div class="report">
-        <div class="report-title scroll-start">Verksamhetsrapport för året {{ year }}</div>
+        <div class="report-title scroll-start">Verksamhetsrapport {{ year }}</div>
         {% if municipality_code or principal %}
             <div class="row report-selection-summary">
                 Denna rapport gäller för alla bibliotek
@@ -43,9 +43,10 @@
                 {% endif %}
             </div>
         {% else %}
+            <div class="libraries-header">Denna rapport gäller för bibliotek:</div>
             <div class="row library-section">
                 <div class="col-md-6 libraries">
-                    {% for library in libraries|two_parts|first %}
+                    {% for library in libraries|two_parts|last %}
                         <div class="library">
                             {{ library.name }}{% if library.address %} | {{ library.address }}{% endif %}
                             {% if library.city %} |
@@ -54,7 +55,7 @@
                 </div>
                 {% if libraries|two_parts|last|length > 0 %}
                     <div class="col-md-6 libraries">
-                        {% for library in libraries|two_parts|last %}
+                        {% for library in libraries|two_parts|first %}
                             <div class="library">
                                 {{ library.name }}{% if library.address %} | {{ library.address }}{% endif %}
                                 {% if library.city %} |
@@ -66,15 +67,15 @@
         {% endif %}
 
         <div class="row report-legend">
-            <div class="pull-right">
-                <p>&mdash; = Värdet går inte att få fram</p>
+            <span>&mdash; = Värdet går inte att få fram</span>
 
-                <p><i class="fa fa-asterisk fa-small incomplete-data"></i> = Värdet har inte angivits av alla bibliotek
+            <span><i class="fa fa-asterisk fa-small incomplete-data"></i> = Värdet har inte angivits av alla bibliotek</span>
 
-                <p><span class="example-key-figure"></span> = Beräknat nyckeltal</p>
+            <span><span class="example-key-figure"></span> = Beräknat nyckeltal</span>
 
-                <p><span class="example-total"></span> = Totalbelopp</p>
-            </div>
+            <span><span class="example-total"></span> = Totalbelopp</span>
+
+            <span class="print-report"><a class="fa fa-print" href="javascript:if(window.print)window.print()"></a></span>
         </div>
         <div class="row measurements">
             {% for group in measurements %}
