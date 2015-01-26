@@ -13,12 +13,6 @@
     }
 }
 
-body {
-    background-color: white !important;
-    font-weight: 300;
-    font-size: 13px;
-}
-
 .intro.intro-fixed.intro-report {
     height: 120px;
 }
