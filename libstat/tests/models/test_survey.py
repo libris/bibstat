@@ -839,7 +839,6 @@ class TestPreviousYearsSurvey(MongoTestCase):
                                                library=self._dummy_library(name=u"Allingsås bibliotek"))
 
         previous_years_survey.publish()
-        this_years_survey.publish()
 
         self.assertEqual(previous_years_survey, this_years_survey.previous_years_survey())
 
@@ -848,8 +847,6 @@ class TestPreviousYearsSurvey(MongoTestCase):
                            library=self._dummy_library(name=u"BOTKYRKA BIBLIOTEK"))
         this_years_survey = self._dummy_survey(sample_year=2014,
                                                library=self._dummy_library(name=u"Allingsås bibliotek"))
-
-        this_years_survey.publish()
 
         self.assertEqual(None, this_years_survey.previous_years_survey())
 
@@ -861,7 +858,6 @@ class TestPreviousYearsSurvey(MongoTestCase):
                                                library=self._dummy_library(sigel="lib1",
                                                                            name="new_name"))
         previous_years_survey.publish()
-        this_years_survey.publish()
 
         self.assertEqual(this_years_survey.previous_years_survey(), previous_years_survey)
 
@@ -882,51 +878,65 @@ class TestPreviousYearsSurvey(MongoTestCase):
         this_years_survey = self._dummy_survey(sample_year=2015,
                                                library=self._dummy_library(sigel="lib2",
                                                                            name=u"Allingsås bibliotek"))
-        this_years_survey.publish()
 
         self.assertEqual(None, this_years_survey.previous_years_survey())
 
     def test_returns_previous_years_value_if_same_variable_both_years(self):
         variable = self._dummy_variable()
         library = self._dummy_library()
-        self._dummy_survey(sample_year=2014, library=library, observations=[
-            self._dummy_observation(variable=variable, value="old_value")]).publish()
-        this_years_survey = self._dummy_survey(sample_year=2015, library=library)
-        this_years_survey.publish()
+
+        self._dummy_survey(sample_year=2014,
+                           library=library,
+                           observations=[self._dummy_observation(variable=variable,
+                                                                 value="old_value")]).publish()
+
+        this_years_survey = self._dummy_survey(sample_year=2015,
+                                               library=library)
 
         self.assertEqual(this_years_survey.previous_years_value(variable), "old_value")
 
     def test_does_not_return_previous_years_value_if_no_previous_survey(self):
         variable = self._dummy_variable()
-        self._dummy_survey(sample_year=2014, library=self._dummy_library(), observations=[
-            self._dummy_observation(variable=variable, value="old_value")])
-        this_years_survey = self._dummy_survey(sample_year=2015, library=self._dummy_library())
+
+        self._dummy_survey(sample_year=2014,
+                           library=self._dummy_library(),
+                           observations=[self._dummy_observation(variable=variable,
+                                                                 value="old_value")])
+
+        this_years_survey = self._dummy_survey(sample_year=2015,
+                                               library=self._dummy_library())
 
         self.assertEqual(this_years_survey.previous_years_value(variable), None)
 
     def test_returns_previous_years_value_for_single_replaced_variable_with_same_target_groups(self):
         old_variable = self._dummy_variable(target_groups=["folkbib"])
-        new_variable = self._dummy_variable(target_groups=["folkbib"], replaces=[old_variable])
+        new_variable = self._dummy_variable(target_groups=["folkbib"],
+                                            replaces=[old_variable])
+
         library = self._dummy_library()
 
-        self._dummy_survey(sample_year=2014, library=library, observations=[
-            self._dummy_observation(variable=old_variable, value="old_value")]).publish()
-        this_years_survey = self._dummy_survey(sample_year=2015, library=library)
-
-        this_years_survey.publish()
+        self._dummy_survey(sample_year=2014,
+                           library=library,
+                           observations=[self._dummy_observation(variable=old_variable,
+                                                                 value="old_value")]).publish()
+        this_years_survey = self._dummy_survey(sample_year=2015,
+                                               library=library)
 
         self.assertEqual(this_years_survey.previous_years_value(new_variable), "old_value")
 
     def test_returns_previous_years_value_for_single_replaced_variable_with_different_target_groups(self):
         old_variable = self._dummy_variable(target_groups=["folkbib"])
-        new_variable = self._dummy_variable(target_groups=["sjukbib"], replaces=[old_variable])
+        new_variable = self._dummy_variable(target_groups=["sjukbib"],
+                                            replaces=[old_variable])
+
         library = self._dummy_library()
 
-        self._dummy_survey(sample_year=2014, library=library, observations=[
-            self._dummy_observation(variable=old_variable, value="old_value")]).publish()
-        this_years_survey = self._dummy_survey(sample_year=2015, library=library)
-
-        this_years_survey.publish()
+        self._dummy_survey(sample_year=2014,
+                           library=library,
+                           observations=[self._dummy_observation(variable=old_variable,
+                                                                 value="old_value")]).publish()
+        this_years_survey = self._dummy_survey(sample_year=2015,
+                                               library=library)
 
         self.assertEqual(this_years_survey.previous_years_value(new_variable), "old_value")
 
@@ -935,27 +945,51 @@ class TestPreviousYearsSurvey(MongoTestCase):
         old_variable1 = self._dummy_variable(target_groups=["folkbib"])
         old_variable2 = self._dummy_variable(target_groups=["folkbib"])
         new_variable = self._dummy_variable(replaces=[old_variable1, old_variable2])
+
         library = self._dummy_library()
 
-        self._dummy_survey(sample_year=2014, library=library, observations=[
-            self._dummy_observation(variable=old_variable1, value="old_value")]).publish()
-        this_years_survey = self._dummy_survey(sample_year=2015, library=library)
-
-        this_years_survey.publish()
+        self._dummy_survey(sample_year=2014,
+                           library=library,
+                           observations=[self._dummy_observation(variable=old_variable1,
+                                                                 value="old_value")]).publish()
+        this_years_survey = self._dummy_survey(sample_year=2015,
+                                               library=library)
 
         self.assertEqual(this_years_survey.previous_years_value(new_variable), None)
 
-    def test_returns_previous_years_value_for_multiple_replaced_variables_where_one_has_same_library_type(self):
+    def test_returns_previous_years_value_for_multiple_replaced_variables_where_one_has_same_library_type_as_this_years_survey(
+            self):
         old_variable1 = self._dummy_variable(target_groups=["folkbib"])
         old_variable2 = self._dummy_variable(target_groups=["sjukbib"])
-        new_variable = self._dummy_variable(target_groups=["folkbib"], replaces=[old_variable1, old_variable2])
-        library = self._dummy_library()
+        new_variable = self._dummy_variable(target_groups=["folkbib"],
+                                            replaces=[old_variable1, old_variable2])
 
-        self._dummy_survey(sample_year=2014, library=library, observations=[
-            self._dummy_observation(variable=old_variable1, value="old_value")]).publish()
-        this_years_survey = self._dummy_survey(sample_year=2015, library=library)
+        self._dummy_survey(sample_year=2014,
+                           library=self._dummy_library(sigel="abcd",
+                                                       library_type="specbib"),
+                           observations=[self._dummy_observation(variable=old_variable1,
+                                                                 value="old_value")]).publish()
+        this_years_survey = self._dummy_survey(sample_year=2015,
+                                               library=self._dummy_library(sigel="abcd",
+                                                                           library_type="folkbib"))
 
-        this_years_survey.publish()
+        self.assertEqual(this_years_survey.previous_years_value(new_variable), "old_value")
+
+    def test_returns_previous_years_value_for_multiple_replaced_variables_where_one_has_same_library_type_as_previous_years_survey(
+            self):
+        old_variable1 = self._dummy_variable(target_groups=["folkbib"])
+        old_variable2 = self._dummy_variable(target_groups=["sjukbib"])
+        new_variable = self._dummy_variable(target_groups=["folkbib"],
+                                            replaces=[old_variable1, old_variable2])
+
+        self._dummy_survey(sample_year=2014,
+                           library=self._dummy_library(sigel="abcd",
+                                                       library_type="folkbib"),
+                           observations=[self._dummy_observation(variable=old_variable1,
+                                                                 value="old_value")]).publish()
+        this_years_survey = self._dummy_survey(sample_year=2015,
+                                               library=self._dummy_library(sigel="abcd",
+                                                                           library_type="specbib"))
 
         self.assertEqual(this_years_survey.previous_years_value(new_variable), "old_value")
 

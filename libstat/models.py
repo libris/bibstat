@@ -505,7 +505,9 @@ class Survey(SurveyBase):
 
         replaces = variable.replaces
         if len(replaces) > 1:
-            replaces = [v for v in replaces if self.library.library_type in v.target_groups]
+            replaces = [v for v in replaces
+                        if self.library.library_type in v.target_groups
+                        or previous_years_survey.library.library_type in v.target_groups]
         if len(replaces) != 1:
             return None
 
