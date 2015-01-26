@@ -1,12 +1,11 @@
-define(['jquery', 'amcharts.theme'], function($, AmCharts) {
-    var makeChart = function(id, years, chart) {
-        var yearColors = { };
-        var colors = ["#53bafa", "#2caf43", "#5f0009"];
-        for(var i = 0; i < years.length; i++) {
-            yearColors[years[i]] = colors[i];
-        }
+define(['jquery', 'amcharts.theme'], function ($, AmCharts) {
+    var makeChart = function (id, years, chart) {
+        var colors = {};
+        colors[years[0]] = "#8F969A";
+        colors[years[1]] = "#AEBFBC";
+        colors[years[2]] = "#C9D9D5";
 
-        var graphs = $.map(years, function(year) {
+        var graphs = years.map(function (year) {
             return {
                 "id": "graph-" + year,
                 "title": "År " + year,
@@ -16,7 +15,7 @@ define(['jquery', 'amcharts.theme'], function($, AmCharts) {
                 "lineAlpha": 0.2,
                 "type": "column",
                 "labelText": "[[value]]",
-                "lineColor": yearColors[year]
+                "lineColor": colors[year]
             }
         });
 
@@ -44,43 +43,25 @@ define(['jquery', 'amcharts.theme'], function($, AmCharts) {
         });
     };
 
-    var round = function(n) {
-        return Math.round(n * 10) / 10;
-    };
-
-    var clean = function(n) {
-        if(n !== Math.round(n)) {
-            return n;
-        }
-
-        return Math.round(n);
-    };
-
-    var cleanupChart = function(chart, years) {
-        for(var i = 0; i < chart.length; i++) {
-            var entry = chart[i];
-
-            for(var j = 0; j < years.length; j++) {
-                var year = years[j];
-
-                if(entry.hasOwnProperty(year)) {
-                    entry[year] = clean(round(entry[year]));
-                }
-            }
-        }
+    var clean = function (chart, years) {
+        return chart.map(function (entry) {
+            Object.keys(entry).filter(function (key) {
+                return years.indexOf(key) !== -1;
+            }).forEach(function (key) {
+                entry[key] = Math.round(entry[key] * 10) / 10;
+            });
+            return entry;
+        });
     };
 
     return {
-        'init': function() {
-            $(".chart").each(function() {
+        'init': function () {
+            $(".chart").each(function () {
                 var container = $(this);
 
-                var years = JSON.parse(container.attr('data-years'));
-                years.sort();
-                years.reverse();
+                var years = JSON.parse(container.attr('data-years')).sort().reverse();
 
-                var chart = JSON.parse(container.attr('data-chart'));
-                cleanupChart(chart, years);
+                var chart = clean(JSON.parse(container.attr('data-chart')), years);
 
                 container.css("height", 250 + 50 * chart.length + "px");
 
