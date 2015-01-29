@@ -129,6 +129,10 @@ a[disabled] {
     background-color: #f5f5f5;
 }
 
+#co_reported_by_other {
+    margin-top: 15px;
+}
+
 /* Edit survey response */
 .survey-question-order {
     font-size: 120%;

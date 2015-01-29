@@ -37,8 +37,10 @@ def surveys(request, *args, **kwargs):
     message = request.session.pop("message", "")
     free_text = request.GET.get("free_text", "").strip()
     surveys_state = request.GET.get("surveys_state", "active")
+    co_reported_by_other = request.GET.get("co_reported_by_other", False)
 
-    email_choices = [("all", "Oavsett email"), ("with", "Med email"), ("invalid", "Med ogiltig email"), ("without", "Utan email")]
+    email_choices = [("all", "Oavsett email"), ("with", "Med email"), ("invalid", "Med ogiltig email"),
+                     ("without", "Utan email")]
     email = request.GET.get("email", "all")
 
     surveys = []
@@ -58,7 +60,8 @@ def surveys(request, *args, **kwargs):
             with_email=(email == "with"),
             without_email=(email == "without"),
             invalid_email=(email == "invalid"),
-            is_active=True)
+            is_active=True,
+            co_reported_by_other=co_reported_by_other)
         inactive_surveys = Survey.objects.by(
             sample_year=sample_year,
             target_group=target_group,
@@ -68,7 +71,8 @@ def surveys(request, *args, **kwargs):
             with_email=(email == "with"),
             without_email=(email == "without"),
             invalid_email=(email == "invalid"),
-            is_active=False)
+            is_active=False,
+            co_reported_by_other=co_reported_by_other)
         surveys = active_surveys if surveys_state == "active" else inactive_surveys
 
     # Triggering lazy loading of the list of surveys before iterating over it in the
@@ -89,14 +93,15 @@ def surveys(request, *args, **kwargs):
         'email': email,
         'email_choices': email_choices,
         'surveys_state': surveys_state,
+        'co_reported_by_other': co_reported_by_other,
         'survey_responses': surveys,
         'message': message,
         'survey_base_url': reverse("surveys"),
         'url_base': settings.API_BASE_URL,
         'bibdb_library_base_url': u"{}/library".format(settings.BIBDB_BASE_URL),
         'nav_surveys_css': 'active',
-        'num_active_surveys': active_surveys.count() if active_surveys else 0,
-        'num_inactive_surveys': inactive_surveys.count() if inactive_surveys else 0
+        'num_active_surveys': len(active_surveys),
+        'num_inactive_surveys': len(inactive_surveys)
     }
 
     return render(request, 'libstat/surveys.html', context)
@@ -137,7 +142,7 @@ def _surveys_redirect(request):
     return HttpResponseRedirect(u"{}{}".format(
         reverse("surveys"),
         u"?action=list&sample_year={}&municipality_code={}&target_group={}&status={}&email={}&free_text={}&surveys_state={}".
-            format(sample_year, municipality_code, target_group, status, email, free_text, surveys_state)))
+        format(sample_year, municipality_code, target_group, status, email, free_text, surveys_state)))
 
 
 @permission_required('is_superuser', login_url='index')
