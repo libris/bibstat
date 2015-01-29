@@ -496,13 +496,14 @@ def report_template_2014():
                       computation=(lambda a, b, c: ((a / b) / 2) / c),
                       variable_keys=[u"Laslan01", u"Laslan02", u"Open101"]),
               ]),
-        Group(title=u"Fjärrlån inom Sverige",
+        Group(title=u"Fjärrlån",
               rows=[
+                  Row(description=u"Inom Sverige",
+                      label_only=True),
                   Row(variable_key=u"Fjarr101"),
                   Row(variable_key=u"Fjarr102"),
-              ]),
-        Group(title=u"Fjärrlån utanför Sverige",
-              rows=[
+                  Row(description=u"Utanför Sverige",
+                      label_only=True),
                   Row(variable_key=u"Fjarr201"),
                   Row(variable_key=u"Fjarr202"),
               ]),
