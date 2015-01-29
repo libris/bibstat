@@ -90,12 +90,12 @@ th.observation-label {
 }
 
 th.observation-previous-previous-year {
-    background-color: rgb(185, 203, 0) !important;
+    background-color: rgb(152, 163, 56) !important;
     width: 130px;
 }
 
 th.observation-previous-year {
-    background-color: rgb(152, 163, 56) !important;
+    background-color: rgb(185, 203, 0) !important;
     width: 130px;
 }
 

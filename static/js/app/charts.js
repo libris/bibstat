@@ -1,9 +1,9 @@
 define(['jquery', 'amcharts.theme'], function ($, AmCharts) {
     var makeChart = function (id, years, chart) {
         var colors = {};
-        colors[years[0]] = "#8F969A";
-        colors[years[1]] = "#AEBFBC";
-        colors[years[2]] = "#C9D9D5";
+        colors[years[0]] = "#f29400";
+        colors[years[1]] = "#b9cb00";
+        colors[years[2]] = "#98a338";
 
         var graphs = years.map(function (year) {
             return {
@@ -29,7 +29,9 @@ define(['jquery', 'amcharts.theme'], function ($, AmCharts) {
                 "position": "left"
             },
             "valueAxes": [
-                {"integersOnly": true}
+                {
+                    "integersOnly": true
+                }
             ],
             numberFormatter: {
                 decimalSeparator: ',',
@@ -61,13 +63,10 @@ define(['jquery', 'amcharts.theme'], function ($, AmCharts) {
         'init': function () {
             $(".chart").each(function () {
                 var container = $(this);
-
                 var years = JSON.parse(container.attr('data-years')).sort().reverse();
-
                 var chart = clean(JSON.parse(container.attr('data-chart')), years);
 
                 container.css("height", 250 + 50 * chart.length + "px");
-
                 makeChart(container.attr("id"), years, chart)
             });
         }
