@@ -507,6 +507,7 @@ def report_template_2014():
                   Row(variable_key=u"Fjarr202"),
               ]),
         Group(title=u"Summering fjärrlån",
+              show_chart=False,
               rows=[
                   Row(variable_key=u"Fjarr397"),
                   Row(variable_key=u"Fjarr398"),
