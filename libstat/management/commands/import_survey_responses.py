@@ -86,7 +86,7 @@ class Command(BaseCommand):
             lib_col_value = row[library_name_column]
             # Research libraries file and hospital libraries file has summary rows mixed with library response rows
             if (lib_col_value and isinstance(lib_col_value, basestring)
-                    and not lib_col_value.startswith(("Summa", "summa", "Riket",))):
+                and not lib_col_value.startswith(("Summa", "summa", "Riket",))):
                 library_name = lib_col_value.strip()
             else:
                 continue
@@ -98,7 +98,17 @@ class Command(BaseCommand):
                 municipality_code = municipality_code_from(row[municipality_code_column])
             elif county_code_column != -1:
                 municipality_code = municipality_code_from_county_code(row[county_code_column])
-            library = Library(name=library_name, library_type=target_group)
+
+            if target_group == "specbib":
+                library_type = {
+                    u"Nationalbibliotek": u"natbib",
+                    u"Högskolebibliotek": u"univbib",
+                    u"Specialbibliotek": u"specbib"
+                }[row[2]]
+            else:
+                library_type = target_group
+
+            library = Library(name=library_name, library_type=library_type)
             if municipality_code is not None:
                 library.municipality_code = municipality_code
             survey = Survey(sample_year=year, library=library, selected_libraries=[library.sigel])
