@@ -28,6 +28,9 @@ define(['jquery', 'amcharts.theme'], function ($, AmCharts) {
                 "gridPosition": "start",
                 "position": "left"
             },
+            "valueAxes": [
+                {"integersOnly": true}
+            ],
             numberFormatter: {
                 decimalSeparator: ',',
                 thousandsSeparator: ' '
