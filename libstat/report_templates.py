@@ -26,6 +26,7 @@ class Group():
         self.title = kwargs.pop("title", None)
         self.extra = kwargs.pop("extra", None)
         self.rows = kwargs.pop("rows", None)
+        self.show_chart = kwargs.pop("show_chart", True)
 
 
 class Row():
@@ -461,6 +462,7 @@ def report_template_2014():
                       variable_keys=[u"Utlan301", u"Population02"]),
               ]),
         Group(title=u"Läsning på plats i biblioteket",
+              show_chart=False,
               rows=[
                   Row(variable_key=u"Laslan01"),
                   Row(variable_key=u"Laslan02"),

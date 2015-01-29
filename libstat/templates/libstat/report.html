@@ -190,10 +190,12 @@
                         {% endfor %}
                     </table>
                 </div>
-                <div id="chart-{{ forloop.counter }}"
-                     class="chart"
-                     data-years="{{ group.years|as_json }}"
-                     data-chart='{{ group.rows|show_in_chart|as_json }}'></div>
+                {% if group.show_chart %}
+                    <div id="chart-{{ forloop.counter }}"
+                         class="chart"
+                         data-years="{{ group.years|as_json }}"
+                         data-chart='{{ group.rows|show_in_chart|as_json }}'></div>
+                {% endif %}
             {% endfor %}
         </div>
     </div>

@@ -16,6 +16,7 @@ class TestReportGeneration(MongoTestCase):
                             variable_key="key1")]),
             Group(title="some_title2",
                   extra="some_extra_description",
+                  show_chart=False,
                   rows=[Row(description="some_description2",
                             variable_key="key2",
                             computation=(lambda a, b: (a / b)),
@@ -61,6 +62,7 @@ class TestReportGeneration(MongoTestCase):
             {
                 "title": "some_title1",
                 "years": ["2012", "2013", "2014"],
+                "show_chart": True,
                 "rows": [
                     {
                         "label": "some_description1",
@@ -75,6 +77,7 @@ class TestReportGeneration(MongoTestCase):
             },
             {
                 "title": "some_title2",
+                "show_chart": False,
                 "extra": "some_extra_description",
                 "years": ["2012", "2013", "2014"],
                 "rows": [

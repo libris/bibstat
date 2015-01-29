@@ -81,7 +81,8 @@ def generate_report(report_template, year, observations):
             "title": template_group.title,
             "years": [year2, year1, year0],
             "rows": [],
-            "extra": template_group.extra
+            "extra": template_group.extra,
+            "show_chart": template_group.show_chart
         }
 
     def row_skeleton(template_row):
