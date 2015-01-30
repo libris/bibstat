@@ -364,6 +364,21 @@ class TestReportCaching(MongoTestCase):
         self.assertEqual(CachedReport.objects.count(), 1)
         self.assertEqual(CachedReport.objects.all()[0].report["id"], report["id"])
 
+    def test_removes_all_reports_after_a_variable_has_been_updated(self):
+        variable = self._dummy_variable()
+        survey1 = self._dummy_survey(sample_year=2014, publish=True, observations=[self._dummy_observation()])
+        survey2 = self._dummy_survey(sample_year=2014, publish=True, observations=[self._dummy_observation()])
+
+        get_report([survey1], 2014)
+        get_report([survey2], 2014)
+
+        variable.description = u"something_new"
+        variable.save()
+        report = get_report([survey2], 2014)
+
+        self.assertEqual(CachedReport.objects.count(), 1)
+        self.assertEqual(CachedReport.objects.all()[0].report["id"], report["id"])
+
     def test_removes_older_reports_when_limit_reached(self):
         survey1 = self._dummy_survey(sample_year=2014, publish=True, observations=[self._dummy_observation()])
         survey2 = self._dummy_survey(sample_year=2014, publish=True, observations=[self._dummy_observation()])

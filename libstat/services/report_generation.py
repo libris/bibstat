@@ -10,8 +10,11 @@ REPORT_CACHE_LIMIT = 500
 
 
 def get_cached_report(surveys, year):
-    if (CachedReport.objects.count() != 0 and OpenData.objects.count() != 0
-        and OpenData.objects.first().date_modified > CachedReport.objects.first().date_created):
+    if (CachedReport.objects.count() != 0 and
+            ((OpenData.objects.count() != 0
+              and OpenData.objects.first().date_modified > CachedReport.objects.first().date_created) or
+                 (Variable.objects.count() != 0 and Variable.objects.all().order_by(
+                         "-date_modified").first().date_modified > CachedReport.objects.first().date_created))):
         CachedReport.drop_collection()
 
     reports = CachedReport.objects.filter(surveys__all=surveys, surveys__size=len(surveys), year=str(year))
