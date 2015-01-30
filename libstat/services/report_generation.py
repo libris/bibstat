@@ -191,8 +191,11 @@ def pre_cache_observations(template, surveys, year):
         if variables.count() != 1:
             continue
         variables = [variables[0]]
-        if len(variables[0].replaces) == 1:
-            variables.append(variables[0].replaces[0])  # Assume only one variable is replaced
+
+        if len(variables[0].replaces) > 0:
+            library_types = [target_group for variable in variables[0].replaces for target_group in variable.target_groups]
+            if len(library_types) == len(set(library_types)):
+                    variables += variables[0].replaces
 
         observations[key] = observation_skeleton(variables)
 
