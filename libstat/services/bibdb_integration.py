@@ -32,7 +32,10 @@ def library_from_json(json_data):
     library.city = location["city"] if location and location["city"] else None
     library.zip_code = location["zip_code"] if location and location["zip_code"] else None
     library.email = next((c["email"] for c in json_data["contact"]
-                          if "email" in c and c["contact_type"] == "statans"), None)
+    contact = json_data.get("contact", None)
+    if contact:
+        library.email = next((c["email"] for c in json_data["contact"]
+                            if "email" in c and c["contact_type"] == "statans"), None)
 
     return library
 
@@ -54,3 +57,20 @@ def fetch_libraries():
                 libraries.append(library)
     return libraries
 
+
+def fetch_library(sigel):
+    response = requests.get(
+        url="http://bibdb-stg.libris.kb.se/api/lib?sigel=%s" % sigel,
+        headers={"APIKEY_AUTH_HEADER": "bibstataccess"}
+    )
+    try:
+        json_response = response.json()["libraries"][0]
+    except:
+        return None
+
+    library = library_from_json(json_response)
+
+    if library:
+        return library
+
+    return None
