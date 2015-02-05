@@ -20,7 +20,8 @@ from libstat.views.surveys import (surveys,
                                    surveys_activate,
                                    surveys_inactivate,
                                    surveys_overview,
-                                   import_and_create)
+                                   import_and_create,
+                                   surveys_update_library)
 from libstat.views.survey import (survey,
                                   survey_status,
                                   survey_notes,
@@ -76,6 +77,7 @@ urlpatterns = patterns('',
     url(r'^surveys/overview/(?P<sample_year>\w+)$', surveys_overview, name='surveys_overview'),
     url(r'^surveys/status/(?P<survey_id>\w+)$', survey_status, name='survey_status'),
     url(r'^surveys/notes/(?P<survey_id>\w+)$', survey_notes, name='survey_notes'),
+    url(r'^surveys/update_library/(?P<sigel>\w+)$', surveys_update_library, name='surveys_update_library'),
     url(r'^surveys/(?P<survey_id>\w+)$', survey, name='survey'),
 
     # Dispatch

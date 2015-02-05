@@ -1,16 +1,18 @@
 # -*- coding: utf-8 -*-
 import logging
 from time import strftime
+from datetime import datetime
 
 from django.core.urlresolvers import reverse
 from django.shortcuts import render, redirect
-from django.http import HttpResponse, HttpResponseRedirect
+from django.http import HttpResponse, HttpResponseRedirect, HttpResponseNotFound, HttpResponseNotAllowed
 from django.contrib.auth.decorators import permission_required
+from django.views.decorators.csrf import csrf_exempt
 from openpyxl.writer.excel import save_virtual_workbook
 
 from bibstat import settings
 from libstat import utils
-from libstat.services.bibdb_integration import fetch_libraries
+from libstat.services.bibdb_integration import fetch_libraries, fetch_library
 from libstat.models import Survey, SurveyObservation, Variable
 from libstat.services.excel_export import surveys_to_excel_workbook, public_excel_workbook
 from libstat.survey_templates import survey_template
@@ -259,3 +261,21 @@ def import_and_create(request):
     sample_year = int(sample_year)
     _create_new_collection(sample_year)
     return redirect(reverse('surveys'))
+
+@csrf_exempt
+def surveys_update_library(request, sigel):
+    if request.method == "PUT":
+        libraries = []
+        library = fetch_library(sigel)
+
+        if library:
+            libraries.append(library)
+            year = datetime.now().year
+            _create_surveys(libraries, year)
+            return HttpResponse()
+
+        return HttpResponseNotFound()
+
+    return HttpResponseNotAllowed()
+
+
