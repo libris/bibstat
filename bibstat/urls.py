@@ -77,7 +77,7 @@ urlpatterns = patterns('',
     url(r'^surveys/overview/(?P<sample_year>\w+)$', surveys_overview, name='surveys_overview'),
     url(r'^surveys/status/(?P<survey_id>\w+)$', survey_status, name='survey_status'),
     url(r'^surveys/notes/(?P<survey_id>\w+)$', survey_notes, name='survey_notes'),
-    url(r'^surveys/update_library/(?P<sigel>\w+)$', surveys_update_library, name='surveys_update_library'),
+    url(r'^surveys/update_library$', surveys_update_library, name='surveys_update_library'),
     url(r'^surveys/(?P<survey_id>\w+)$', survey, name='survey'),
 
     # Dispatch

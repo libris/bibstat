@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from libstat.services.bibdb_integration import library_from_json
+from libstat.services.bibdb_integration import check_library_criteria, library_from_json
 from libstat.tests import MongoTestCase
 
 
@@ -46,8 +46,10 @@ class TestBibdbIntegration(MongoTestCase):
 
     def test_creates_library_from_dict(self):
         json_data = self._dummy_json_data
+        library = None
 
-        library = library_from_json(json_data)
+        if check_library_criteria(json_data):
+            library = library_from_json(json_data)
 
         self.assertEquals(library.sigel, "lib1_sigel")
         self.assertEquals(library.name, "lib1")
@@ -61,47 +63,62 @@ class TestBibdbIntegration(MongoTestCase):
     def test_does_not_import_non_swedish_libraries(self):
         json_data = self._dummy_json_data
         json_data["country_code"] = "dk"
+        library = None
 
-        library = library_from_json(json_data)
+        if check_library_criteria(json_data):
+            library = library_from_json(json_data)
 
         self.assertEquals(library, None)
 
     def test_does_not_import_busbib(self):
         json_data = self._dummy_json_data
         json_data["library_type"] = "busbib"
+        library = None
 
-        library = library_from_json(json_data)
+        if check_library_criteria(json_data):
+            library = library_from_json(json_data)
 
         self.assertEquals(library, None)
 
     def test_does_not_import_library_with_invalid_library_type(self):
         json_data = self._dummy_json_data
         json_data["library_type"] = "does_not_exist"
+        library = None
 
-        library = library_from_json(json_data)
+        if check_library_criteria(json_data):
+            library = library_from_json(json_data)
 
         self.assertEquals(library, None)
 
     def test_trims_blank_spaces_from_library_name(self):
         json_data = self._dummy_json_data
         json_data["name"] = "  a b c  "
+        library = None
 
-        library = library_from_json(json_data)
+        if check_library_criteria(json_data):
+            library = library_from_json(json_data)
 
         self.assertEquals(library.name, "a b c")
 
     def test_does_not_library_import_if_no_municipality_code(self):
         json_data = self._dummy_json_data
         json_data.pop("municipality_code")
+        library = None
 
-        library = library_from_json(json_data)
+        if check_library_criteria(json_data):
+            library = library_from_json(json_data)
 
         self.assertEquals(library, None)
 
     def test_does_not_import_non_statistics_library(self):
         json_data = self._dummy_json_data
         json_data.pop("statistics")
+        library = None
 
-        library = library_from_json(json_data)
+        if check_library_criteria(json_data):
+            library = library_from_json(json_data)
 
         self.assertEquals(library, None)
+
+    def test_fetch_library(self):
+        json_data = self

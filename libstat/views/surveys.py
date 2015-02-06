@@ -1,18 +1,19 @@
 # -*- coding: utf-8 -*-
 import logging
+import json
 from time import strftime
 from datetime import datetime
 
 from django.core.urlresolvers import reverse
 from django.shortcuts import render, redirect
-from django.http import HttpResponse, HttpResponseRedirect, HttpResponseNotFound, HttpResponseNotAllowed
+from django.http import HttpResponse, HttpResponseRedirect, HttpResponseNotFound, HttpResponseNotAllowed, HttpResponseServerError, HttpResponseBadRequest
 from django.contrib.auth.decorators import permission_required
 from django.views.decorators.csrf import csrf_exempt
 from openpyxl.writer.excel import save_virtual_workbook
 
 from bibstat import settings
 from libstat import utils
-from libstat.services.bibdb_integration import fetch_libraries, fetch_library
+from libstat.services.bibdb_integration import fetch_libraries, library_from_json
 from libstat.models import Survey, SurveyObservation, Variable
 from libstat.services.excel_export import surveys_to_excel_workbook, public_excel_workbook
 from libstat.survey_templates import survey_template
@@ -262,19 +263,29 @@ def import_and_create(request):
     _create_new_collection(sample_year)
     return redirect(reverse('surveys'))
 
+
 @csrf_exempt
-def surveys_update_library(request, sigel):
-    if request.method == "PUT":
-        libraries = []
-        library = fetch_library(sigel)
+def surveys_update_library(request):
 
-        if library:
-            libraries.append(library)
+    if request.method == "POST":
+        post_data = json.loads(request.body)
+        if post_data:
             year = datetime.now().year
-            _create_surveys(libraries, year)
-            return HttpResponse()
-
-        return HttpResponseNotFound()
+            sigel = post_data.get("sigel", None)
+            if sigel:
+                existing_surveys = Survey.objects.filter(sample_year=year, library__sigel=sigel).only("library")
+                if existing_surveys.count() != 0:
+                    library = library_from_json(post_data)
+                    survey = existing_surveys[0]
+                    survey.library = library
+                    survey.save()
+                    return HttpResponse("Updated survey for sigel %s" % sigel)
+                else:
+                    return HttpResponse("Tried to update survey for sigel %s, but no survey found for this sigel and current year." % sigel)
+            else:
+                return HttpResponseNotFound("Library not found")
+        else:
+            return HttpResponseBadRequest()
 
     return HttpResponseNotAllowed()
 

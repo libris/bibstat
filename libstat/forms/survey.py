@@ -49,19 +49,19 @@ class SurveyForm(forms.Form):
             attrs["data-bv-stringlength"] = ""
             attrs["data-bv-stringlength-min"] = "0"
 
-        if observation.disabled:
+        if not observation or observation.disabled:
             attrs["disabled"] = ""
 
-        if observation.value_unknown:
+        if not observation or observation.value_unknown:
             attrs["class"] = "{} value-unknown".format(attrs["class"])
+
+            attrs["data-original-value"] = observation.value if observation and observation.value is not None else ""
 
         if authenticated:
             attrs["class"] = "{} survey-popover".format(attrs["class"])
             attrs["data-toggle"] = "tooltip"
             attrs["data-placement"] = "top"
             attrs["data-original-title"] = cell.variable_key
-
-        attrs["data-original-value"] = observation.value if observation.value is not None else ""
 
         if "comment" in cell.types:
             field = forms.CharField(required=False, widget=forms.Textarea(attrs=attrs))
@@ -72,7 +72,7 @@ class SurveyForm(forms.Form):
         else:
             field = forms.CharField(required=False, widget=forms.TextInput(attrs=attrs))
 
-        field.initial = u"Värdet är okänt" if observation.value_unknown else observation.value
+        field.initial = u"Värdet är okänt" if not observation or observation.value_unknown else observation.value
 
         return field
 
@@ -228,10 +228,11 @@ class SurveyForm(forms.Form):
                 raise Exception("Can't find variable with key '{}'".format(variable_key))
             observation = survey.get_observation(variable_key)
 
-            cell.disabled = observation.disabled
-            cell.value_unknown = observation.value_unknown
-            if previous_survey:
-                cell.previous_value = survey.previous_years_value(observation.variable, previous_survey)
+            if observation:
+                cell.disabled = observation.disabled
+                cell.value_unknown = observation.value_unknown
+                if previous_survey:
+                    cell.previous_value = survey.previous_years_value(observation.variable, previous_survey)
             if not observation:
                 survey.observations.append(SurveyObservation(variable=variables[variable_key]))
             self.fields[variable_key] = self._cell_to_input_field(cell, observation, authenticated)
