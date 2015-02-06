@@ -72,56 +72,56 @@ def _survey_template_2014():
                     groups=[
                         Group(rows=[
                             Row(cells=[
-                                Cell(variable_key=u"Bestand101", types=['integer']),
+                                Cell(variable_key=u"Bestand101", types=['integer', 'required']),
                                 Cell(variable_key=u"Bestand201", types=['integer']),
-                                Cell(variable_key=u"Bestand301", types=['integer', 'required'])]),
+                                Cell(variable_key=u"Bestand301", types=['integer'])]),
                             Row(cells=[
                                 Cell(variable_key=u"Bestand102", types=['integer']),
                                 Cell(variable_key=u"Bestand202", types=['integer']),
                                 Cell(variable_key=u"Bestand302", types=['integer'])]),
                             Row(cells=[
-                                Cell(variable_key=u"Bestand103", types=['integer']),
+                                Cell(variable_key=u"Bestand103", types=['integer', 'required']),
                                 Cell(variable_key=u"Bestand203", types=['integer']),
-                                Cell(variable_key=u"Bestand303", types=['integer', 'required'])]),
+                                Cell(variable_key=u"Bestand303", types=['integer'])]),
                             Row(cells=[
-                                Cell(variable_key=u"Bestand104", types=['integer']),
+                                Cell(variable_key=u"Bestand104", types=['integer', 'required']),
                                 Cell(variable_key=u"Bestand204", types=['integer']),
-                                Cell(variable_key=u"Bestand304", types=['integer', 'required'])]),
+                                Cell(variable_key=u"Bestand304", types=['integer'])]),
                             Row(cells=[
-                                Cell(variable_key=u"Bestand105", types=['integer']),
+                                Cell(variable_key=u"Bestand105", types=['integer', 'required']),
                                 Cell(variable_key=u"Bestand205", types=['integer']),
-                                Cell(variable_key=u"Bestand305", types=['integer', 'required'])]),
+                                Cell(variable_key=u"Bestand305", types=['integer'])]),
                             Row(cells=[
-                                Cell(variable_key=u"Bestand106", types=['integer']),
+                                Cell(variable_key=u"Bestand106", types=['integer', 'required']),
                                 Cell(variable_key=u"Bestand206", types=['integer']),
-                                Cell(variable_key=u"Bestand306", types=['integer', 'required'])]),
+                                Cell(variable_key=u"Bestand306", types=['integer'])]),
                             Row(cells=[
-                                Cell(variable_key=u"Bestand107", types=['integer']),
+                                Cell(variable_key=u"Bestand107", types=['integer', 'required']),
                                 Cell(variable_key=u"Bestand207", types=['integer']),
-                                Cell(variable_key=u"Bestand307", types=['integer', 'required'])]),
+                                Cell(variable_key=u"Bestand307", types=['integer'])]),
                             Row(cells=[
-                                Cell(variable_key=u"Bestand108", types=['integer']),
+                                Cell(variable_key=u"Bestand108", types=['integer', 'required']),
                                 Cell(variable_key=u"Bestand208", types=['integer']),
-                                Cell(variable_key=u"Bestand308", types=['integer', 'required'])]),
+                                Cell(variable_key=u"Bestand308", types=['integer'])]),
                             Row(cells=[
-                                Cell(variable_key=u"Bestand109", types=['integer']),
+                                Cell(variable_key=u"Bestand109", types=['integer', 'required']),
                                 Cell(variable_key=u"Bestand209", types=['integer'])]),
                             Row(cells=[
-                                Cell(variable_key=u"Bestand110", types=['integer']),
+                                Cell(variable_key=u"Bestand110", types=['integer', 'required']),
                                 Cell(variable_key=u"Bestand210", types=['integer']),
-                                Cell(variable_key=u"Bestand310", types=['integer', 'required'])]),
+                                Cell(variable_key=u"Bestand310", types=['integer'])]),
                             Row(cells=[
-                                Cell(variable_key=u"Bestand111", types=['integer']),
+                                Cell(variable_key=u"Bestand111", types=['integer', 'required']),
                                 Cell(variable_key=u"Bestand211", types=['integer']),
-                                Cell(variable_key=u"Bestand311", types=['integer', 'required'])]),
+                                Cell(variable_key=u"Bestand311", types=['integer'])]),
                             Row(cells=[
-                                Cell(variable_key=u"Bestand112", types=['integer']),
+                                Cell(variable_key=u"Bestand112", types=['integer', 'required']),
                                 Cell(variable_key=u"Bestand212", types=['integer']),
-                                Cell(variable_key=u"Bestand312", types=['integer', 'required'])]),
+                                Cell(variable_key=u"Bestand312", types=['integer'])]),
                             Row(cells=[
-                                Cell(variable_key=u"Bestand113", types=['integer']),
+                                Cell(variable_key=u"Bestand113", types=['integer', 'required']),
                                 Cell(variable_key=u"Bestand213", types=['integer']),
-                                Cell(variable_key=u"Bestand313", types=['integer', 'required'])]),
+                                Cell(variable_key=u"Bestand313", types=['integer'])]),
                             Row(cells=[
                                 Cell(variable_key=u"Bestand199", types=['integer'],
                                      sum_of=['Bestand101', 'Bestand103',
