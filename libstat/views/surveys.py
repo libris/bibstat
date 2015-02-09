@@ -13,7 +13,7 @@ from openpyxl.writer.excel import save_virtual_workbook
 
 from bibstat import settings
 from libstat import utils
-from libstat.services.bibdb_integration import fetch_libraries, library_from_json
+from libstat.services.bibdb_integration import fetch_libraries
 from libstat.models import Survey, SurveyObservation, Variable
 from libstat.services.excel_export import surveys_to_excel_workbook, public_excel_workbook
 from libstat.survey_templates import survey_template
@@ -264,6 +264,38 @@ def import_and_create(request):
     return redirect(reverse('surveys'))
 
 
+def _update_library_from_json(survey, json_data):
+    sigel = json_data.get("sigel", None)
+    if sigel and sigel != "":
+        survey.library.sigel = sigel
+    name = json_data.get("name", None)
+    if name and name != "":
+        survey.library.name = name.strip()
+    municipality_code = json_data.get("municipality_code", None)
+    if municipality_code and municipality_code != "":
+        survey.library.municipality_code = municipality_code
+    library_type = json_data.get("library_type", None)
+    if library_type and library_type != "":
+        survey.library.library_type = library_type
+    location = next((a for a in json_data["address"] if a["address_type"] == "stat"), None)
+    address = location["street"] if location and location["street"] else None
+    if address and address != "":
+        survey.library.address = address
+    city = location["city"] if location and location["city"] else None
+    if city and city != "":
+        survey.library.city = city
+    zip_code = location["zip_code"] if location and location["zip_code"] else None
+    if zip_code and zip_code != "":
+        survey.library.zip_code = zip_code
+    contacts = json_data.get("contact", None)
+    if contacts:
+        email = next((c["email"] for c in contacts
+            if "email" in c and c["contact_type"] == "statans"), None)
+        if email and email != "":
+            survey.library.email = email
+    return survey
+
+
 @csrf_exempt
 def surveys_update_library(request):
 
@@ -275,8 +307,7 @@ def surveys_update_library(request):
                 existing_surveys = Survey.objects.filter(is_active=True, library__sigel=sigel).only("library")
                 if existing_surveys.count() != 0:
                     for survey in existing_surveys:
-                        library = library_from_json(post_data)
-                        survey.library = library
+                        survey = _update_library_from_json(survey, post_data)
                         survey.save()
                     return HttpResponse("Updated survey data for sigel %s" % sigel)
                 else:

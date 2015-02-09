@@ -119,6 +119,3 @@ class TestBibdbIntegration(MongoTestCase):
             library = library_from_json(json_data)
 
         self.assertEquals(library, None)
-
-    def test_fetch_library(self):
-        json_data = self
