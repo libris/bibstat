@@ -270,18 +270,17 @@ def surveys_update_library(request):
     if request.method == "POST":
         post_data = json.loads(request.body)
         if post_data:
-            year = datetime.now().year
             sigel = post_data.get("sigel", None)
             if sigel:
-                existing_surveys = Survey.objects.filter(sample_year=year, library__sigel=sigel).only("library")
+                existing_surveys = Survey.objects.filter(is_active=True, library__sigel=sigel).only("library")
                 if existing_surveys.count() != 0:
-                    library = library_from_json(post_data)
-                    survey = existing_surveys[0]
-                    survey.library = library
-                    survey.save()
-                    return HttpResponse("Updated survey for sigel %s" % sigel)
+                    for survey in existing_surveys:
+                        library = library_from_json(post_data)
+                        survey.library = library
+                        survey.save()
+                    return HttpResponse("Updated survey data for sigel %s" % sigel)
                 else:
-                    return HttpResponse("Tried to update survey for sigel %s, but no survey found for this sigel and current year." % sigel)
+                    return HttpResponse("Tried to update survey data for sigel %s, but couldn't find any active surveys." % sigel)
             else:
                 return HttpResponseNotFound("Library not found")
         else:
