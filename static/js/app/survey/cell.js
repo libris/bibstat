@@ -8,7 +8,6 @@ define(['jquery'], function($) {
                 $('#survey-form').data('bootstrapValidator')
                     .resetField(element)
                     .enableFieldValidators(element.attr('name'), false);
-                element.next(".input-group-btn").children(".btn-dropdown").prop("disabled", true);
                 element.prop('disabled', true);
             }
         },

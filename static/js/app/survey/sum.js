@@ -50,14 +50,6 @@ define(['jquery', 'survey.cell'], function($, cell) {
                 }
             });
         }
-
-        if(anyChildWithValue) {
-            for(child in reversed) {
-                var dropdown = $(child).next(".input-group-btn").children(".btn-dropdown");
-                dropdown.prop('disabled', true);
-
-            }
-        }
     };
 
     var setupSum = function(setup) {

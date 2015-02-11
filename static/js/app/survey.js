@@ -113,10 +113,12 @@ define(['jquery', 'survey.sum', 'survey.cell', 'surveys.dispatch', 'bootstrap.va
                 input.prop('disabled', false);
                 input.removeClass('value-unknown');
             };
-            var disableDropdown = function (input) {
-                if (input.attr('data-is-child')) {
+            var setActiveSiblings = function (input) {
+                if (!input.attr('data-sum-of')) {
                     var dropdown = input.next(".input-group-btn").children(".btn-dropdown");
-                    dropdown.prop('disabled', true);
+
+                    var disableInput = dropdown.siblings('.dropdown-menu').find(".menu-disable-input");
+                    setActive(disableInput);
                 }
             };
             var enableDropdown = function (input) {
@@ -129,7 +131,7 @@ define(['jquery', 'survey.sum', 'survey.cell', 'surveys.dispatch', 'bootstrap.va
                 }
             };
 
-            survey.form(".cell .input-group-btn .dropdown-menu .menu-disable").click(function (e) {
+            survey.form(".cell .input-group-btn .dropdown-menu .menu-disable-input").click(function (e) {
                 e.preventDefault();
 
                 var element = $(this);
@@ -143,11 +145,12 @@ define(['jquery', 'survey.sum', 'survey.cell', 'surveys.dispatch', 'bootstrap.va
 
                 for (var index in inputs) {
                     disableInput(inputs[index], element);
-                    disableDropdown(inputs[index]);
+                    setActiveSiblings(inputs[index])
                 }
 
                 updateProgress();
             });
+
             survey.form(".cell .input-group-btn .dropdown-menu .menu-enable").click(function (e) {
                 e.preventDefault();
 
