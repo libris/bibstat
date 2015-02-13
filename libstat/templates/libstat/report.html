@@ -16,7 +16,7 @@
                     </a></span>
                 </div>
 
-                <div class="intro-header">Sveriges officiella biblioteksstatistik</div>
+                <div class="intro-header">Biblioteksstatistik</div>
 
             </div>
         </div>
@@ -86,7 +86,7 @@
                             <th class="observation-previous-year">{{ group.years.1 }}</th>
                             <th class="observation-sample-year">{{ group.years.2 }}</th>
                             <th class="observation-difference">Utveckling<br>{{ group.years.1 }} - {{ group.years.2 }}</th>
-                            <th class="observation-difference-total">Andel av riket</th>
+                           <!-- <th class="observation-difference-total">Andel av riket</th> -->
                             <th class="observation-extra">{{ group.extra|default:"" }}</th>
                         </tr>
                         {% for row in group|access:"rows" %}
@@ -168,7 +168,7 @@
                                             &mdash;
                                         {% endif %}
                                     </td>
-                                    <td class="observation-difference-total">
+                                   <!-- <td class="observation-difference-total">
                                         {% if row.nation_diff != None %}
                                             {{ row.nation_diff|floatformat:"0" }}&permil;
                                             {% if group.years.2 in row|access:'incomplete_data' %}
@@ -177,7 +177,7 @@
                                         {% else %}
                                             &mdash;
                                         {% endif %}
-                                    </td>
+                                    </td>-->
                                     <td class="observation-extra">
                                         {% if row.extra %}
                                             {{ row.extra|floatformat:"0"|default:"-" }}%
