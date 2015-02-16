@@ -126,7 +126,12 @@
                                     </td>
                                     <td class="observation-previous-previous-year">
                                         {% if row|access:group.years.0 != None %}
-                                            {{ row|access:group.years.0|format_number }}
+                                            {{ row.percentage }}
+                                            {% if row.percentage %}
+                                                {{ row|access:group.years.0|format_percentage }}
+                                            {% else %}
+                                                {{ row|access:group.years.0|format_number }}
+                                            {% endif %}
                                             {% if group.years.0 in row|access:'incomplete_data' %}
                                                 <i class="fa fa-asterisk fa-small incomplete-data"></i>
                                             {% endif %}
@@ -136,7 +141,11 @@
                                     </td>
                                     <td class="observation-previous-year">
                                         {% if row|access:group.years.1 != None %}
-                                            {{ row|access:group.years.1|format_number }}
+                                            {% if row.percentage %}
+                                                {{ row|access:group.years.1|format_percentage }}
+                                            {% else %}
+                                                {{ row|access:group.years.1|format_number }}
+                                            {% endif %}
                                             {% if group.years.1 in row|access:'incomplete_data' %}
                                                 <i class="fa fa-asterisk fa-small incomplete-data"></i>
                                             {% endif %}
@@ -146,7 +155,11 @@
                                     </td>
                                     <td class="observation-sample-year">
                                         {% if row|access:group.years.2 != None %}
-                                            {{ row|access:group.years.2|format_number }}
+                                            {% if row.percentage %}
+                                                {{ row|access:group.years.2|format_percentage }}
+                                            {% else %}
+                                                {{ row|access:group.years.2|format_number }}
+                                            {% endif %}
                                             {% if group.years.2 in row|access:'incomplete_data' %}
                                                 <i class="fa fa-asterisk fa-small incomplete-data"></i>
                                             {% endif %}

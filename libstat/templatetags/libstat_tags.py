@@ -85,6 +85,10 @@ def format_number(number, digits=1):
     locale.setlocale(locale.LC_NUMERIC, 'sv_SE')
     return locale.format("%d" if number == int(number) else "%.{}f".format(digits), number, grouping=True)
 
+@register.filter
+def format_percentage(number):
+    percentage = number * 100
+    return format_number(percentage) + "%"
 
 @register.filter
 def format_email(email, limit=30):

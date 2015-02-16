@@ -102,6 +102,7 @@ def generate_report(report_template, year, observations):
             "is_sum": template_row.is_sum if template_row.is_sum else None,
             "label": template_row.description,
             "label_only": template_row.label_only if template_row.label_only else None,
+            "percentage": template_row.percentage if template_row.percentage else None
         }
 
     def clear_nones(a_dict):
