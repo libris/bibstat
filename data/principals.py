@@ -11,7 +11,7 @@ PRINCIPALS = (
     (u"myndbib", u"stat"),
     (u"folkhogbib", u"landsting"),
     (u"ovrbib", u"stat"),
-    (u"frigym", u"privat"),
+    (u"frisgym", u"privat"),
     (u"friskol", u"privat"),
     (u"skolbib", u"kommun"),
     (u"gymbib", u"kommun"),
