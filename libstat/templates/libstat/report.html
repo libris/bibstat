@@ -126,7 +126,6 @@
                                     </td>
                                     <td class="observation-previous-previous-year">
                                         {% if row|access:group.years.0 != None %}
-                                            {{ row.percentage }}
                                             {% if row.percentage %}
                                                 {{ row|access:group.years.0|format_percentage }}
                                             {% else %}
