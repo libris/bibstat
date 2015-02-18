@@ -348,7 +348,7 @@ def report_template_2014():
                       percentage=True),
                   Row(description=u"Andel anpassade medier av totala fysiska beståndet",
                       computation=(lambda a, b: a / b),
-                      variable_keys=[u"LasnedBest01", u"Bestand399"],
+                      variable_keys=[u"LasnedBest01", u"Bestand199"],
                       percentage=True),
               ]),
         Group(title=u"Medier på olika språk",
