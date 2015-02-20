@@ -234,7 +234,8 @@ class SurveyForm(forms.Form):
                 if previous_survey:
                     cell.previous_value = survey.previous_years_value(observation.variable, previous_survey)
             if not observation:
-                survey.observations.append(SurveyObservation(variable=variables[variable_key]))
+                observation = SurveyObservation(variable=variables[variable_key])
+                survey.observations.append(observation)
             self.fields[variable_key] = self._cell_to_input_field(cell, observation, authenticated)
 
         if self.is_read_only:
