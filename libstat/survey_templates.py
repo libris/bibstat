@@ -252,13 +252,30 @@ def _survey_template_2014():
                                 Cell(variable_key=u"Utlan313", types=["integer"],
                                      sum_of=[u"Inilan113", u"Omlan213"])]),
                             Row(cells=[
-                                Cell(variable_key=u"Inilan199", types=["integer"]),
-                                Cell(variable_key=u"Omlan299", types=["integer"]),
+                                Cell(variable_key=u"Inilan199", types=["integer"],
+                                     sum_of=[u"Inilan101", u"Inilan103", u"Inilan104",
+                                             u"Inilan105", u"Inilan106", u"Inilan107",
+                                             u"Inilan108", u"Inilan109", u"Inilan110",
+                                             u"Inilan111", u"Inilan112", u"Inilan113"]),
+                                Cell(variable_key=u"Omlan299", types=["integer"],
+                                     sum_of=[u"Omlan101", u"Omlan103", u"Omlan104",
+                                             u"Omlan105", u"Omlan106", u"Omlan107",
+                                             u"Omlan108", u"Omlan109", u"Omlan110",
+                                             u"Omlan111", u"Omlan112", u"Omlan113"]),
                                 Cell(variable_key=u"Utlan399", types=["integer"],
                                      sum_of=[u"Inilan199", u"Omlan299"])])]),
                         Group(rows=[
-                            Row(cells=[Cell(variable_key=u"Laslan01", types=["integer"])]),
-                            Row(cells=[Cell(variable_key=u"Laslan02", types=["integer"])])]),
+                            Row(cells=[
+                                Cell(variable_key=u"Laslan01", types=["integer"])
+                            ]),
+                            Row(cells=[
+                                Cell(variable_key=u"Laslan02", types=["integer"])
+                            ]),
+                            Row(cells=[
+                                Cell(variable_key=u"Laslan99", types=["integer"],
+                                sum_of=[u"Laslan01", u"Laslan02"])
+                            ])
+                        ]),
                         Group(rows=[
                             Row(cells=[
                                 Cell(variable_key=u"Fjarr101", types=["integer"]),
