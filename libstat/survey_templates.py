@@ -271,10 +271,9 @@ def _survey_template_2014():
                             Row(cells=[
                                 Cell(variable_key=u"Laslan02", types=["integer"])
                             ]),
-                           # Row(cells=[
-                                #Cell(variable_key=u"Laslan99", types=["integer"],
-                                #sum_of=[u"Laslan01", u"Laslan02"])
-                            #])
+                            Row(cells=[
+                                Cell(variable_key=u"Laslan99", types=["integer"])
+                            ])
                         ]),
                         Group(rows=[
                             Row(cells=[
