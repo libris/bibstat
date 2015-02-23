@@ -310,7 +310,7 @@ class SurveyObservation(EmbeddedDocument):
 
 class SurveyQuerySet(QuerySet):
     def by(self, sample_year=None, target_group=None, status=None, municipality_code=None, free_text=None,
-           is_active=None, with_email=False, without_email=False, invalid_email=False, co_reported_by_other=False):
+           is_active=None, with_email=False, without_email=False, invalid_email=False, exclude_co_reported_by_other=False):
         target_group_query = Q(library__library_type=target_group) if target_group else Q()
         sample_year_query = Q(sample_year=sample_year) if sample_year else Q()
         status_query = Q(_status=status) if status else Q()
@@ -340,14 +340,14 @@ class SurveyQuerySet(QuerySet):
             free_text_query = (free_text_municipality_code_query | free_text_email_query | free_text_library_name_query
                                | free_text_municipality_name_query)
 
-        co_reported_by_other_query = Q()
-        if co_reported_by_other:
-            co_reported_by_other_query = Q(selected_libraries__size=0) & \
-                                         Q(library__sigel__in=Survey.objects.all().distinct("selected_libraries"))
+        exclude_co_reported_by_other_query = Q()
+        if exclude_co_reported_by_other == True:
+            exclude_co_reported_by_other_query = Q(selected_libraries__size=0) & \
+                                         Q(library__sigel__nin=Survey.objects.all().distinct("selected_libraries"))
 
         return self.filter(target_group_query & sample_year_query & status_query &
                            municipality_code_query & email_query & free_text_query &
-                           is_active_query & co_reported_by_other_query).exclude("observations")
+                           is_active_query & exclude_co_reported_by_other_query).exclude("observations")
 
 
 class SurveyBase(Document):

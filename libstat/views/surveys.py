@@ -40,7 +40,7 @@ def surveys(request, *args, **kwargs):
     message = request.session.pop("message", "")
     free_text = request.GET.get("free_text", "").strip()
     surveys_state = request.GET.get("surveys_state", "active")
-    co_reported_by_other = request.GET.get("co_reported_by_other", False)
+    exclude_co_reported_by_other = request.GET.get("exclude_co_reported_by_other", False)
 
     email_choices = [("all", "Oavsett email"), ("with", "Med email"), ("invalid", "Med ogiltig email"),
                      ("without", "Utan email")]
@@ -64,7 +64,7 @@ def surveys(request, *args, **kwargs):
             without_email=(email == "without"),
             invalid_email=(email == "invalid"),
             is_active=True,
-            co_reported_by_other=co_reported_by_other)
+            exclude_co_reported_by_other=exclude_co_reported_by_other)
         inactive_surveys = Survey.objects.by(
             sample_year=sample_year,
             target_group=target_group,
@@ -75,7 +75,7 @@ def surveys(request, *args, **kwargs):
             without_email=(email == "without"),
             invalid_email=(email == "invalid"),
             is_active=False,
-            co_reported_by_other=co_reported_by_other)
+            exclude_co_reported_by_other=exclude_co_reported_by_other)
         surveys = active_surveys if surveys_state == "active" else inactive_surveys
 
     # Triggering lazy loading of the list of surveys before iterating over it in the
@@ -96,7 +96,7 @@ def surveys(request, *args, **kwargs):
         'email': email,
         'email_choices': email_choices,
         'surveys_state': surveys_state,
-        'co_reported_by_other': co_reported_by_other,
+        'exclude_co_reported_by_other': exclude_co_reported_by_other,
         'survey_responses': surveys,
         'message': message,
         'survey_base_url': reverse("surveys"),
