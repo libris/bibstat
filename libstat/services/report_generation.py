@@ -175,14 +175,18 @@ def pre_cache_observations(template, surveys, year):
         return survey_ids
 
     def observation_skeleton(variables):
-        return {
+        try:
+            total = float(OpenData.objects.filter(sample_year=year, is_active=True, variable__in=variables).sum("value"))
+        except Exception as e:
+            total = None
+        returns = {
             year: None,
             (year - 1): None,
             (year - 2): None,
             "incomplete_data": [],
-            "total": float(OpenData.objects.filter(sample_year=year, is_active=True,
-                                                   variable__in=variables).sum("value"))
+            "total": total
         }
+        return returns
 
     survey_ids = survey_ids_three_latest_years()
 
