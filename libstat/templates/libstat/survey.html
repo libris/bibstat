@@ -406,13 +406,15 @@
                                                             {% endif %}
 
                                                             {% if group.columns != 4 %}
-                                                                <button class="btn btn-default btn-value disabled" tabindex="-1">
+                                                                <div class="tooltip-wrapper" data-title="Föregående års värde">
+                                                                <button class="btn btn-default disabled" tabindex="-1">
                                                                     {% if cell.previous_value %}
                                                                         {{ cell.previous_value|floatformat:"-2" }}
                                                                     {% else %}
                                                                         &mdash;
                                                                     {% endif %}
                                                                 </button>
+                                                                </div>
                                                             {% endif %}
                                                         </div>
                                                     </div>

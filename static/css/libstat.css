@@ -349,3 +349,7 @@ label.sub-label {
     cursor: not-allowed;
 }
 
+.tooltip-wrapper {
+    display: inline-block;
+    cursor: default;
+}

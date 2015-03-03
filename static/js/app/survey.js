@@ -286,7 +286,7 @@ define(['jquery', 'survey.sum', 'survey.cell', 'surveys.dispatch', 'bootstrap.va
                     $("#altered_fields").val(survey.changeableInputs().filter(function () {
                         return $(this).val() != $(this).attr("data-original-value");
                     }).map(function () {
-                       return $(this).attr("id");
+                        return $(this).attr("id");
                     }).get().join(" "));
 
                     var unknownInputs = $(".value-unknown");
@@ -498,6 +498,8 @@ define(['jquery', 'survey.sum', 'survey.cell', 'surveys.dispatch', 'bootstrap.va
                         $('#scroll_position').val(position);
                     });
                 }
+
+                $('.tooltip-wrapper').tooltip({position: "bottom"});
 
                 // Prevent form submission with enter key.
                 $(document).ready(function() {
