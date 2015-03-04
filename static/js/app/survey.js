@@ -100,6 +100,19 @@ define(['jquery', 'survey.sum', 'survey.cell', 'surveys.dispatch', 'bootstrap.va
 
                 return [input].concat(getSiblings(input)).concat(getChildren(input));
             };
+            var getParent = function(input) {
+                var parent = {};
+                 $.each($("input[data-sum-of]"), function () {
+                     var children = $(this).attr('data-sum-of').split(' ');
+                     for (var index in children) {
+                         if (children[index] === input.attr("name")) {
+                             parent = $(this);
+                             return false;
+                         }
+                     }
+                });
+                return parent;
+            };
             var disableInput = function (input, element) {
                 survey.validator().updateStatus(input.attr("name"), "NOT_VALIDATED");
                 input.css("padding-right", "0px");
@@ -122,13 +135,11 @@ define(['jquery', 'survey.sum', 'survey.cell', 'surveys.dispatch', 'bootstrap.va
                 }
             };
             var enableDropdown = function (input) {
-                if (!input.attr('data-sum-of')) {
-                    var dropdown = input.next(".input-group-btn").children(".btn-dropdown");
-                    dropdown.prop('disabled', false);
+                var dropdown = input.next(".input-group-btn").children(".btn-dropdown");
+                dropdown.prop('disabled', false);
 
-                    var enable = dropdown.siblings('.dropdown-menu').find(".menu-enable");
-                    setActive(enable);
-                }
+                var enable = dropdown.siblings('.dropdown-menu').find(".menu-enable");
+                setActive(enable);
             };
 
             survey.form(".cell .input-group-btn .dropdown-menu .menu-disable-input").click(function (e) {
@@ -162,6 +173,12 @@ define(['jquery', 'survey.sum', 'survey.cell', 'surveys.dispatch', 'bootstrap.va
 
                 var input = getInput(element);
                 var inputs = getInputs(input);
+                var parent = getParent(input);
+
+                if (parent.length > 0 && parent.prop('disabled')) {
+                    enableDropdown(parent);
+                    enableInput(parent);
+                }
 
                 for (var index in inputs) {
                     enableInput(inputs[index]);
