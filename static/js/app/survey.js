@@ -1,5 +1,5 @@
-define(['jquery', 'survey.sum', 'survey.cell', 'surveys.dispatch', 'bootstrap.validator.sv', 'jquery.placeholder'],
-    function ($, sum, cell, dispatch) {
+define(['jquery', 'bootbox', 'survey.sum', 'survey.cell', 'surveys.dispatch', 'bootstrap.validator.sv', 'jquery.placeholder'],
+    function ($, bootbox, sum, cell, dispatch) {
         var survey = {
             form: function (selector) {
                 if (selector) return $('#survey-form ' + selector);
@@ -141,25 +141,37 @@ define(['jquery', 'survey.sum', 'survey.cell', 'surveys.dispatch', 'bootstrap.va
                 var enable = dropdown.siblings('.dropdown-menu').find(".menu-enable");
                 setActive(enable);
             };
-
-            survey.form(".cell .input-group-btn .dropdown-menu .menu-disable-input").click(function (e) {
-                e.preventDefault();
-
-                var element = $(this);
-                if (!isActive(element))
-                    showChangesNotSaved();
-
-                setActive(element);
-
-                var input = getInput(element);
-                var inputs = getInputs(input);
-
+            var disable = function(inputs, element) {
                 for (var index in inputs) {
                     disableInput(inputs[index], element);
                     setActiveSiblings(inputs[index])
                 }
 
+                if (!isActive(element))
+                    showChangesNotSaved();
+
+                setActive(element);
+
                 updateProgress();
+            };
+
+            survey.form(".cell .input-group-btn .dropdown-menu .menu-disable-input").click(function (e) {
+                e.preventDefault();
+
+                var element = $(this);
+                var input = getInput(element);
+                var inputs = getInputs(input);
+
+                if (inputs.length > 1 ) {
+                    bootbox.confirm("Åtgärden kommer påverka alla fält i denna grupp och eventuella inmatade värden kan gå förlorade. Är du säkert på att du vill fortsätta?", function (result) {
+                        if (result) {
+                            disable(inputs, element);
+                        }
+                    });
+                } else {
+                    disable(inputs, element);
+                }
+
             });
 
             survey.form(".cell .input-group-btn .dropdown-menu .menu-enable").click(function (e) {
@@ -188,7 +200,6 @@ define(['jquery', 'survey.sum', 'survey.cell', 'surveys.dispatch', 'bootstrap.va
                 updateProgress();
                 showChangesNotSaved();
             });
-            survey.form(".cell .input-group-btn .dropdown-menu.value-unknown li.active a").click();
         };
         var updateProgress = function () {
             var total = survey.enabledInputs().length;
@@ -517,6 +528,7 @@ define(['jquery', 'survey.sum', 'survey.cell', 'surveys.dispatch', 'bootstrap.va
                 }
 
                 $('.tooltip-wrapper').tooltip({position: "bottom"});
+                bootbox.setLocale("sv");
 
                 // Prevent form submission with enter key.
                 $(document).ready(function() {

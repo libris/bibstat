@@ -63,7 +63,8 @@
             'jquery.textrange': ['plugins/jquery/textrange/1.3.0/jquery-textrange'],
             'jquery.placeholder': ['plugins/jquery/placeholder/jquery.placeholder'],
             'typeahead': ['plugins/typeaheadjs/0.10.5/typeahead.bundle'],
-            'underscore': ['plugins/underscorejs/1.7.0/underscore-min']
+            'underscore': ['plugins/underscorejs/1.7.0/underscore-min'],
+            'bootbox': ['plugins/bootbox']
         },
 
         deps: ['app/main']
