@@ -226,7 +226,7 @@ define(['jquery', 'bootbox', 'survey.sum', 'survey.cell', 'surveys.dispatch', 'b
             } else if (boostedPercent <= requiredPercent) {
                 setPercentAndText(Math.min(boostedPercent, requiredPercent));
             } else {
-                percent = (correct == total) ? 100 : Math.min(99, Math.ceil(percent));
+                percent = (correct == total) ? 100 : Math.ceil(percent);
                 setPercentAndText(Math.max(percent, requiredPercent));
             }
         };
