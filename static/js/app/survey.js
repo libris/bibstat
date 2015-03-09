@@ -440,6 +440,7 @@ define(['jquery', 'bootbox', 'survey.sum', 'survey.cell', 'surveys.dispatch', 'b
                             saveButton.html(saveButtonHtml).removeClass('disabled');
                             otherButtons.removeClass('disabled');
                         } else {
+                            $("#unsaved-changes-label").text("");
                             saveButton.html('<i class="fa fa-spinner fa-spin"></i> Sparar...')
                         }
 
