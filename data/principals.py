@@ -28,11 +28,14 @@ name_for_principal = {
 }
 
 principal_for_library_type = dict(PRINCIPALS)
-library_types_with_principals = [library_type for library_type, principal in principal_for_library_type.iteritems()]
+library_types_with_principals = [u'univbib', u'muslan', u'muskom', u'vuxbib', u'frisgym', u'skolbib', u'sjukbib', u'myndbib', u'statskol', u'folkbib', u'musstat', u'specbib', u'folkhogbib', u'friskol', u'ovrbib', u'natbib', u'gymbib']
 
-library_types_for_principal = {}
-for k, v in principal_for_library_type.iteritems():
-    library_types_for_principal.setdefault(v, []).append(k)
+library_types_for_principal = {
+    u'stat': [u'univbib', u'myndbib', u'statskol', u'musstat', u'specbib', u'ovrbib', u'natbib'],
+    u'landsting': [u'muslan', u'sjukbib', u'folkhogbib'],
+    u'privat': [u'frisgym', u'friskol'],
+    u'kommun': [u'muskom', u'vuxbib', u'skolbib', u'folkbib', u'gymbib']
+}
 
 def get_library_types_with_same_principal(library):
     if library.library_type is None or library.library_type not in principal_for_library_type:

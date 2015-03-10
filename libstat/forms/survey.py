@@ -1,5 +1,7 @@
 # coding=utf-8
 from sets import Set
+import logging
+import time
 
 from django import forms
 from django.core.urlresolvers import reverse
@@ -9,6 +11,7 @@ from data.municipalities import municipalities
 from libstat.models import Survey, Variable, SurveyObservation
 from libstat.survey_templates import survey_template
 
+logger = logging.getLogger(__name__)
 
 class SurveyForm(forms.Form):
 
@@ -80,6 +83,7 @@ class SurveyForm(forms.Form):
         other_surveys_selected_sigels = current_survey.selected_sigels(self.sample_year)
 
         def set_library(self, library, current_library=False):
+
             checkbox_id = str(library.sigel)
 
             attrs = {
@@ -127,6 +131,7 @@ class SurveyForm(forms.Form):
 
         self.libraries = []
         set_library(self, current_survey.library, current_library=True)
+
         for library in current_survey.selectable_libraries():
             set_library(self, library)
 
@@ -210,6 +215,7 @@ class SurveyForm(forms.Form):
         self.mailto = self._mailto_link()
 
         self._set_libraries(survey, survey.selected_libraries, authenticated)
+
         if hasattr(self, 'library_selection_conflict') and self.library_selection_conflict:
             self.conflicting_surveys = survey.get_conflicting_surveys()
             for conflicting_survey in self.conflicting_surveys:
@@ -220,8 +226,9 @@ class SurveyForm(forms.Form):
 
             self.can_submit = False
 
-
         previous_survey = survey.previous_years_survey()
+
+        #TODO: speed up cell iteration
         for cell in template.cells:
             variable_key = cell.variable_key
             if not variable_key in variables:

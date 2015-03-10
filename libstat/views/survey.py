@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 import logging
+import time
 
 from django.core.urlresolvers import reverse
 from django.shortcuts import render, redirect
@@ -67,6 +68,8 @@ def _save_survey_response_from_form(survey, form):
 
 
 def survey(request, survey_id):
+    start_time = time.time()
+
     def has_password():
         return request.method == "GET" and "p" in request.GET or request.method == "POST"
 
@@ -106,6 +109,10 @@ def survey(request, survey_id):
             return render(request, "libstat/survey_blocked.html")
 
         context["form"] = SurveyForm(survey=survey, authenticated=request.user.is_authenticated())
+
+        total_request_time = time.time() - start_time
+        logger.debug("Total time to process request %0.10f" % total_request_time)
+
         return render(request, 'libstat/survey.html', context)
 
     if has_password():

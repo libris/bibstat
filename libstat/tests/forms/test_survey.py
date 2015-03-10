@@ -1,6 +1,5 @@
 # -*- coding: UTF-8 -*-
 from sets import Set
-from data.principals import PRINCIPALS
 
 from libstat.forms.survey import SurveyForm
 from libstat.tests import MongoTestCase

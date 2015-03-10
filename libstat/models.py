@@ -11,7 +11,7 @@ from django.conf import settings
 from datetime import datetime
 from mongoengine.context_managers import no_dereference
 from data.municipalities import MUNICIPALITIES
-from data.principals import get_library_types_with_same_principal, PRINCIPALS, principal_for_library_type
+from data.principals import get_library_types_with_same_principal, principal_for_library_type
 from libstat.query_sets.variable import VariableQuerySet
 
 from libstat.utils import ISO8601_utc_format
@@ -458,12 +458,16 @@ class SurveyBase(Document):
         if not self.library.municipality_code:
             return []
 
-        return [survey.library for survey in Survey.objects.filter(
+        surveys = Survey.objects.filter(
             sample_year=self.sample_year,
             library__municipality_code=self.library.municipality_code,
             library__library_type__in=get_library_types_with_same_principal(self.library),
             library__sigel__ne=self.library.sigel
-        )]
+        )
+
+        selectable_libs = surveys.values_list('library')
+
+        return selectable_libs
 
     def selected_sigels(self, sample_year):
         if not self.library.municipality_code:
