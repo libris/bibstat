@@ -2,6 +2,7 @@
 from sets import Set
 import logging
 import time
+import json
 
 from django import forms
 from django.core.urlresolvers import reverse
@@ -43,6 +44,11 @@ class SurveyForm(forms.Form):
             attrs["data-bv-greaterthan-value"] = "0"
             attrs["data-bv-greaterthan-inclusive"] = ""
             attrs["max"] = "99999999"
+            attrs["data-bv-regexp"] = ""
+            attrs["data-bv-regexp-regexp"] = "^\d+(\,\d{1,2})?$"
+            attrs["data-bv-regexp-message"] = "Vänligen mata in ett nummer med max 2 decimaler (tex 12,50)"
+
+
 
         if "email" in cell.types:
             attrs["data-bv-emailaddress"] = ""
@@ -169,7 +175,7 @@ class SurveyForm(forms.Form):
     def __init__(self, *args, **kwargs):
         survey = kwargs.pop('survey', None)
         authenticated = kwargs.pop('authenticated', False)
-        super(SurveyForm, self).__init__(*args, **kwargs)
+        super(SurveyForm, self).__init__(*args, **kwargs)        
 
         # Cache variables for performance
         variables = {}
@@ -239,6 +245,8 @@ class SurveyForm(forms.Form):
             if not variable_key in variables:
                 raise Exception("Can't find variable with key '{}'".format(variable_key))
             observation = survey.get_observation(variable_key)
+            logger.debug(observation)
+            json.loads(json.dumps(args))[0]['Epost01']
 
             if observation:
                 cell.disabled = observation.disabled

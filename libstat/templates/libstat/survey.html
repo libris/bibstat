@@ -12,6 +12,9 @@
     </style>
 
     <style>
+        .loading {
+            position: fixed;
+        }
         .input-group.expanded {
             border-radius: 3px;
             box-shadow: 0 0 0 2px #428bca;
@@ -270,7 +273,7 @@
             {{ form.read_only }}
 
             {% if not user.is_authenticated %}
-                <input type="hidden" name="scroll_position" id="scroll_position" value="{{ scroll_position }}">
+                <!-- <input type="hidden" name="scroll_position" id="scroll_position" value="{{ scroll_position }}"> -->
             {% endif %}
 
             <h2 class="section-title">Svarande organisation/bibliotek</h2>
@@ -490,8 +493,7 @@
                             </div>
                         </div>
                         <div class="navbar-right navbar-submit">
-                            <!-- <a id="print-survey-btn" class="btn btn-default" href="javascript:if(window.print)window.print()"><i class="fa fa-print fa-inline"></i>Skriv ut</a> -->
-                            <a id="print-survey-btn" class="btn btn-default"><i class="fa fa-print fa-inline"></i>Skriv ut</a>
+                            <a id="print-survey-btn" class="btn btn-default" href="javascript:if(window.print)window.print()"><i class="fa fa-print fa-inline"></i>Skriv ut</a>
                             <div id="unsaved-changes-label" class="navbar-text"></div>
                             <a href="#" id="save-survey-btn" class="btn btn-primary navbar-btn">Spara</a>
                             {% if form.can_submit %}
