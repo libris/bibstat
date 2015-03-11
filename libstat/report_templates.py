@@ -335,8 +335,8 @@ def report_template_2014():
               ]),
         Group(title=u"",
               rows=[
-                  Row(variable_key=u"HCG01"),
-                  Row(variable_key=u"Ref01"),
+                  Row(variable_key=u"HCG04"),
+                  Row(variable_key=u"Ref05"),
               ]),
         Group(title=u"Personer med läsnedsättning",
               rows=[
