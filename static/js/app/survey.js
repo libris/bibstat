@@ -1,15 +1,20 @@
 define(['jquery', 'bootbox', 'survey.sum', 'survey.cell', 'surveys.dispatch', 'bootstrap.validator.sv', 'jquery.placeholder'],
     function ($, bootbox, sum, cell, dispatch) {
+    	var _form = $('#survey-form');
+    	var _inputs = null;
         var survey = {
             form: function (selector) {
-                if (selector) return $('#survey-form ' + selector);
-                else return $('#survey-form');
+                if (selector) return _form.find(selector)
+                else return _form;
+                // if (selector) return $('#survey-form ' + selector)
+                // else return $('#survey-form');
             },
             validator: function () {
                 return survey.form().data('bootstrapValidator');
             },
             inputs: function () {
-                return survey.form("input:not([type='checkbox'])").not("[type='hidden']");
+            	if(!_inputs) _inputs = survey.form("input:not([type='checkbox'])").not("[type='hidden']");
+                return _inputs;
             },
             changeableInputs: function () {
                 return survey.form("input:not([type='checkbox']),textarea").not("[type='hidden']").not('.form-excluded')
@@ -289,19 +294,23 @@ define(['jquery', 'bootbox', 'survey.sum', 'survey.cell', 'surveys.dispatch', 'b
         };
         return {
             init: function () {
+
+                var start = new Date().getTime();
+
                 readOnlyInit();
                 if ($("#read_only").val()) {
                     return;
                 }
-
                 survey.form().bootstrapValidator({
                     excluded: ['.disable-validation', ':disabled', ':hidden', ':not(:visible)'],
-                    trigger: 'keyup change paste',
-                    feedbackIcons: {
-                        valid: 'fa fa-check',
-                        invalid: 'fa fa-ban',
-                        validating: 'fa fa-refresh'
-                    }
+                    trigger: 'change',
+                    // feedbackIcons: {
+                    //     valid: 'fa fa-check',
+                    //     invalid: 'fa fa-ban',
+                    //     validating: 'fa fa-refresh'
+                    // }
+                    feedbackIcons: null
+
                 }).on('error.validator.bv', function (e, data) { // http://bootstrapvalidator.com/examples/changing-default-behaviour/#showing-one-message-each-time
                     data.element
                         .data('bv.messages')
@@ -343,6 +352,7 @@ define(['jquery', 'bootbox', 'survey.sum', 'survey.cell', 'surveys.dispatch', 'b
                         scrollTop: invalidField.offset().top - 10
                     }, 300);
                 });
+
 
                 var submitTo = function (action, submit) {
                     submit = submit || false
@@ -407,15 +417,36 @@ define(['jquery', 'bootbox', 'survey.sum', 'survey.cell', 'surveys.dispatch', 'b
                     });
                 });
 
-                /* Move feedback icons to the right side of the input field. */
-                $.each(survey.form(".cell .form-control-feedback"), function () {
-                    var element = $(this), input = element.prev(".input-group").children("input");
-                    var left = input.outerWidth() - element.width();
+				$('.col-sm-2 .form-control').focus(function()
+				{
+					if($(window).width() <= 992) {
+						var inputGroup = $(this).parent('.input-group');
 
-                    element.css("right", "inherit");
-                    element.css("left", left + "px");
-                    element.css("top", "10px");
-                });
+						inputGroup
+							.css('width', (inputGroup.outerWidth()*1.5))
+							.addClass('expanded');
+					}
+				}).blur(function(){
+					var inputGroup = $(this).parent('.input-group');
+
+					inputGroup
+						.css('width', '')
+						.removeClass('expanded');
+				});
+
+
+                /* Move feedback icons to the right side of the input field. */
+                // $.each(survey.form(".cell .form-control-feedback"), function () {
+
+                //     var element = $(this), input = element.prev(".input-group").children("input");
+                //     var left = input.outerWidth() - element.width();
+
+                //     element.css("right", "inherit");
+                //     element.css("left", left + "px");
+                //     element.css("top", "10px");
+                // });
+
+
 
                 survey.form("#save-survey-btn").click(function (e) {
                     e.preventDefault();

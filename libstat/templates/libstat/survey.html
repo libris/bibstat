@@ -12,6 +12,41 @@
     </style>
 
     <style>
+        .input-group.expanded {
+            border-radius: 3px;
+            box-shadow: 0 0 0 2px #428bca;
+            z-index: 999;
+        }
+        .col-sm-2 .input-group,
+        .col-sm-3 .input-group {
+            -webkit-transition: width 3s;
+            transition: width 3s;
+        }
+        .col-sm-2 .form-control,
+        .col-sm-3 .form-control {
+            padding-left: 5px !important;
+            padding-right: 5px !important;
+            background-image: none !important; 
+        }
+        .col-sm-2 .form-group .input-group-btn .btn,
+        .col-sm-3 .form-group .input-group-btn .btn {
+            padding-left: 5px;
+            padding-right: 5px;
+        }
+        .form-group.has-error input, .form-group.has-success input {
+            background-repeat: no-repeat;
+            background-size: 14px 14px;
+            background-position: right 5px center;
+        }
+        .form-group.has-error input {
+            background-image: url(/static/img/ban.png);
+        }
+        .form-group.has-success input {
+            background-image: url(/static/img/check.png);
+        }
+
+
+
         .sum-description {
             font-weight: bold;
         }
@@ -84,7 +119,8 @@
         }
 
         .cell .input-group input {
-            padding-right: 34px;
+            padding-right: 20px;
+            padding-left: 8px;
         }
 
         .btn-dropdown {
@@ -454,7 +490,8 @@
                             </div>
                         </div>
                         <div class="navbar-right navbar-submit">
-                            <a id="print-survey-btn" class="btn btn-default" href="javascript:if(window.print)window.print()"><i class="fa fa-print fa-inline"></i>Skriv ut</a>
+                            <!-- <a id="print-survey-btn" class="btn btn-default" href="javascript:if(window.print)window.print()"><i class="fa fa-print fa-inline"></i>Skriv ut</a> -->
+                            <a id="print-survey-btn" class="btn btn-default"><i class="fa fa-print fa-inline"></i>Skriv ut</a>
                             <div id="unsaved-changes-label" class="navbar-text"></div>
                             <a href="#" id="save-survey-btn" class="btn btn-primary navbar-btn">Spara</a>
                             {% if form.can_submit %}

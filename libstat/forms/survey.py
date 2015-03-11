@@ -34,6 +34,7 @@ class SurveyForm(forms.Form):
             attrs["data-bv-greaterthan"] = ""
             attrs["data-bv-greaterthan-value"] = "0"
             attrs["data-bv-greaterthan-inclusive"] = ""
+            attrs["max"] = "99999999"
 
         if "numeric" in cell.types:
             attrs["data-bv-numeric"] = ""
@@ -41,6 +42,7 @@ class SurveyForm(forms.Form):
             attrs["data-bv-greaterthan"] = ""
             attrs["data-bv-greaterthan-value"] = "0"
             attrs["data-bv-greaterthan-inclusive"] = ""
+            attrs["max"] = "99999999"
 
         if "email" in cell.types:
             attrs["data-bv-emailaddress"] = ""
@@ -51,6 +53,9 @@ class SurveyForm(forms.Form):
         if "text" in cell.types:
             attrs["data-bv-stringlength"] = ""
             attrs["data-bv-stringlength-min"] = "0"
+
+        if "Utgift" in cell.variable_key or "Intakt" in cell.variable_key:
+            attrs["max"] = "999999999"
 
         if not observation or observation.disabled:
             attrs["disabled"] = ""
