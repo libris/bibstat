@@ -19,7 +19,8 @@ class SurveyForm(forms.Form):
     def _cell_to_input_field(self, cell, observation, authenticated):
         attrs = {"class": "form-control",
                  "id": cell.variable_key,
-                 "name": cell.variable_key}
+                 "name": cell.variable_key,
+                 "aria-labelledby": cell.variable_key}
 
         if cell.sum_of:
             attrs["data-sum-of"] = " ".join(map(lambda s: s, cell.sum_of))

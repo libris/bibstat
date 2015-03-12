@@ -77,7 +77,7 @@
             {% csrf_token %}
 
             <div class="form-group">
-                <textarea name="notes" class="form-control form-excluded textarea-vertical" rows="{{ form.notes_rows }}">{{ form.notes }}</textarea>
+                <textarea name="notes" class="form-control form-excluded textarea-vertical" rows="{{ form.notes_rows }}" title="Noteringar">{{ form.notes }}</textarea>
             </div>
             <button type="submit" class="btn btn-primary">Spara</button>
         </form>

@@ -300,7 +300,7 @@
                                     {% endwith %}
                                 </td>
                                 <td>
-                                    {{ library.name }}
+                                    <label for="id_{{library.checkbox_id}}">{{ library.name }}</label>
                                 </td>
                                 <td>
                                     {{ library.city }}
@@ -412,7 +412,8 @@
                                                                             data-toggle="dropdown"
                                                                             tabindex="-1"
                                                                             {% if form.is_read_only %}
-                                                                            disabled {% endif %}
+                                                                            disabled {% endif %} 
+                                                                            title="Visa alternativ"
                                                                             >
                                                                         <span class="caret"></span>
                                                                     </button>
@@ -439,7 +440,8 @@
                                                                    tabindex="-1"
                                                                    data-toggle="popover" data-placement="top"
                                                                    data-content="{{ cell.explanation }}"
-                                                                   data-trigger="click">
+                                                                   data-trigger="click"
+                                                                   title="Förklaring">
                                                                     <i class="fa fa-question"></i>
                                                                 </a>
                                                             {% endif %}
@@ -520,12 +522,12 @@
             {% endif %}
         </form>
     </div>
-    <div class="modal fade" id="submit-confirm-modal" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal fade" id="submit-confirm-modal" tabindex="-1" role="dialog" aria-hidden="true" aria-labelledby="confirm-submit-title">
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
                     <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Stäng</span></button>
-                    <h4 class="modal-title">Är du säker på att du vill skicka in din enkät?</h4>
+                    <h4 class="modal-title" id="confirm-submit-title">Är du säker på att du vill skicka in din enkät?</h4>
                 </div>
                 <div class="modal-body">
                     <p>
