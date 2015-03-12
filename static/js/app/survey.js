@@ -171,6 +171,8 @@ define(['jquery', 'bootbox', 'survey.sum', 'survey.cell', 'surveys.dispatch', 'b
                     bootbox.confirm("Åtgärden kommer påverka alla fält i denna grupp och eventuella inmatade värden kan gå förlorade. Är du säkert på att du vill fortsätta?", function (result) {
                         if (result) {
                             disable(inputs, element);
+                            // 
+                            sum.init();
                         }
                     });
                 } else {
@@ -198,8 +200,10 @@ define(['jquery', 'bootbox', 'survey.sum', 'survey.cell', 'surveys.dispatch', 'b
                 }
 
                 for (var index in inputs) {
-                    enableInput(inputs[index]);
-                    enableDropdown(inputs[index]);
+                    if(inputs[index].prop('disabled')) {
+                        enableInput(inputs[index]);
+                        enableDropdown(inputs[index]);
+                    }
                 }
 
                 updateProgress();
@@ -303,12 +307,7 @@ define(['jquery', 'bootbox', 'survey.sum', 'survey.cell', 'surveys.dispatch', 'b
                 }
                 survey.form().bootstrapValidator({
                     excluded: ['.disable-validation', ':disabled', ':hidden', ':not(:visible)'],
-                    trigger: 'change',
-                    // feedbackIcons: {
-                    //     valid: 'fa fa-check',
-                    //     invalid: 'fa fa-ban',
-                    //     validating: 'fa fa-refresh'
-                    // }
+                    trigger: 'keyup',
                     feedbackIcons: null
 
                 }).on('error.validator.bv', function (e, data) { // http://bootstrapvalidator.com/examples/changing-default-behaviour/#showing-one-message-each-time
@@ -317,7 +316,8 @@ define(['jquery', 'bootbox', 'survey.sum', 'survey.cell', 'surveys.dispatch', 'b
                         .find('.help-block[data-bv-for="' + data.field + '"]').hide()
                         .filter('[data-bv-validator="' + data.validator + '"]').show();
                 }).on('success.form.bv', function () {
-                    if (!$("#submit_action").val())
+                    var submit_action = $("#submit_action").val();
+                    if (!submit_action)
                         return;
 
                     $("#altered_fields").val(survey.changeableInputs().filter(function () {
@@ -332,20 +332,55 @@ define(['jquery', 'bootbox', 'survey.sum', 'survey.cell', 'surveys.dispatch', 'b
                         return $(this).attr("id");
                     }).get().join(" ");
                     $("#unknown_inputs").val(unknownInputIds);
-                    unknownInputs.val("");
+                    // unknownInputs.val("");
 
                     var disabledInputIds = survey.disabledInputs().map(function () {
                         return $(this).attr("id");
                     }).get().join(" ");
                     $("#disabled_inputs").val(disabledInputIds);
 
-                    survey.disabledInputs().prop("disabled", false);
+                    // survey.disabledInputs().prop("disabled", false);
 
 
                     $("#selected_libraries").val(survey.selectedLibraries());
 
                     survey.form().attr("action", Urls.survey(survey.form("#id_key").val()));
-                    survey.validator().defaultSubmit();
+                    // survey.validator().defaultSubmit();
+
+                    $.ajax({
+                        url : "/surveys/" + $("#id_key").val(),
+                        type : "POST", 
+                        data : $("#survey-form").serialize(),
+                        success : function(json) {
+                            $("#print-survey-btn, #save-survey-btn, #submit-survey-btn").removeClass("disabled");
+                            $("#save-survey-btn").html("Spara");
+
+                            if(submit_action=="save") {
+
+                                alert("Formuläret är sparat!");
+
+                            } else if(submit_action=="submit") {
+                                // Hide bootstrap modal
+                                $("#submit-confirm-modal").modal("hide");
+                                // Hide bootstrap navbar (footer)
+                                $(".navbar-fixed-bottom").hide();
+                                // Disable all inputs
+                                survey.inputs().attr('readonly', true);
+                                // Disable all dropdown-togglers
+                                $("input[type='checkbox']").attr("disabled", true);
+                                // Disable all dropdown-togglers
+                                $(".btn-dropdown").attr("disabled", true);
+
+                                alert("Formuläret är skickat!");
+                            }
+                            
+                        },
+                        error : function(xhr,errmsg,err) {
+                            alert("Ett fel uppstod! Var vänlig försök igen.");
+                            $("#print-survey-btn, #save-survey-btn, #submit-survey-btn").removeClass("disabled");
+                            $("#save-survey-btn").html("Spara");
+                        }
+                    });
                 }).on('error.form.bv', function () {
                     var invalidField = survey.validator().getInvalidFields().first();
                     $('html, body').animate({
@@ -433,20 +468,6 @@ define(['jquery', 'bootbox', 'survey.sum', 'survey.cell', 'surveys.dispatch', 'b
 						.css('width', '')
 						.removeClass('expanded');
 				});
-
-
-                /* Move feedback icons to the right side of the input field. */
-                // $.each(survey.form(".cell .form-control-feedback"), function () {
-
-                //     var element = $(this), input = element.prev(".input-group").children("input");
-                //     var left = input.outerWidth() - element.width();
-
-                //     element.css("right", "inherit");
-                //     element.css("left", left + "px");
-                //     element.css("top", "10px");
-                // });
-
-
 
                 survey.form("#save-survey-btn").click(function (e) {
                     e.preventDefault();

@@ -1,4 +1,4 @@
-<div class="modal fade" id="loginModal" tabindex="-1" role="dialog" aria-labelledby="loginLabel" aria-hidden="true">
+<div class="modal fade" id="loginModal" tabindex="-1" role="dialog" aria-labelledby="login-modal-title" aria-hidden="true">
     <form role="form" class="login-form" method="post" action="">
         {% csrf_token %}
 
@@ -13,7 +13,7 @@
                             Close
                         </span>
                     </button>
-                    <h4 class="modal-title">Logga in i Biblioteksstatistiken</h4>
+                    <h4 class="modal-title" id="login-modal-title">Logga in i Biblioteksstatistiken</h4>
                 </div>
                 <div class="modal-body">
                     <div class="form-group">

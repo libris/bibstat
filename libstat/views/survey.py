@@ -109,9 +109,7 @@ def survey(request, survey_id):
             _save_survey_response_from_form(survey, form)
 
         else:
-
             context["form"] = SurveyForm(survey=survey, authenticated=request.user.is_authenticated())
-
             return render(request, 'libstat/survey.html', context)
 
     if has_password():

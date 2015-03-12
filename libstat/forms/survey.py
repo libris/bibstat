@@ -176,7 +176,7 @@ class SurveyForm(forms.Form):
     def __init__(self, *args, **kwargs):
         survey = kwargs.pop('survey', None)
         authenticated = kwargs.pop('authenticated', False)
-        super(SurveyForm, self).__init__(*args, **kwargs)
+        super(SurveyForm, self).__init__(*args, **kwargs)        
 
         # Cache variables for performance
         variables = {}
