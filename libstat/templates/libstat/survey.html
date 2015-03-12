@@ -213,6 +213,11 @@
             opacity: 1 !important;
         }
 
+        .btn-prev-year {
+            border-radius: 0 3px 3px 0;
+            border-left: 0;
+        }
+
         .table tbody tr td {
             border-top-color: rgb(219, 136, 4);
         }
@@ -448,7 +453,7 @@
 
                                                             {% if group.columns != 4 %}
                                                                 <div class="tooltip-wrapper" data-title="Föregående års värde">
-                                                                <button class="btn btn-default disabled" tabindex="-1">
+                                                                <button class="btn btn-default disabled btn-prev-year" tabindex="-1">
                                                                     {% if cell.previous_value %}
                                                                         {{ cell.previous_value|floatformat:"-2" }}
                                                                     {% else %}
