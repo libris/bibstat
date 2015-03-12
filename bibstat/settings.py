@@ -22,8 +22,6 @@ BASE_DIR = os.path.dirname(os.path.dirname(__file__))
 Environment specific settings, hostnames, usernames e t c
 ----------------------------------------------------------
 """
-# SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = '3x%=t4cm@eszqbwuw@00f**ol@8^kqomtm8-%x&5_ydq9rm(nl'
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = False
