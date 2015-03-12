@@ -171,6 +171,8 @@ define(['jquery', 'bootbox', 'survey.sum', 'survey.cell', 'surveys.dispatch', 'b
                     bootbox.confirm("Åtgärden kommer påverka alla fält i denna grupp och eventuella inmatade värden kan gå förlorade. Är du säkert på att du vill fortsätta?", function (result) {
                         if (result) {
                             disable(inputs, element);
+                            // 
+                            sum.init();
                         }
                     });
                 } else {
@@ -198,8 +200,10 @@ define(['jquery', 'bootbox', 'survey.sum', 'survey.cell', 'surveys.dispatch', 'b
                 }
 
                 for (var index in inputs) {
-                    enableInput(inputs[index]);
-                    enableDropdown(inputs[index]);
+                    if(inputs[index].prop('disabled')) {
+                        enableInput(inputs[index]);
+                        enableDropdown(inputs[index]);
+                    }
                 }
 
                 updateProgress();
@@ -303,7 +307,7 @@ define(['jquery', 'bootbox', 'survey.sum', 'survey.cell', 'surveys.dispatch', 'b
                 }
                 survey.form().bootstrapValidator({
                     excluded: ['.disable-validation', ':disabled', ':hidden', ':not(:visible)'],
-                    trigger: 'change',
+                    trigger: 'keyup',
                     feedbackIcons: null
 
                 }).on('error.validator.bv', function (e, data) { // http://bootstrapvalidator.com/examples/changing-default-behaviour/#showing-one-message-each-time
@@ -346,7 +350,7 @@ define(['jquery', 'bootbox', 'survey.sum', 'survey.cell', 'surveys.dispatch', 'b
                     $.ajax({
                         url : "/surveys/" + $("#id_key").val(),
                         type : "POST", 
-                        data : $("#survey-form").serialize(), // data sent with the post request
+                        data : $("#survey-form").serialize(),
                         success : function(json) {
                             $("#print-survey-btn, #save-survey-btn, #submit-survey-btn").removeClass("disabled");
                             $("#save-survey-btn").html("Spara");
@@ -371,14 +375,10 @@ define(['jquery', 'bootbox', 'survey.sum', 'survey.cell', 'surveys.dispatch', 'b
                             }
                             
                         },
-                        // handle a non-successful response
                         error : function(xhr,errmsg,err) {
                             alert("Ett fel uppstod! Var vänlig försök igen.");
                             $("#print-survey-btn, #save-survey-btn, #submit-survey-btn").removeClass("disabled");
                             $("#save-survey-btn").html("Spara");
-
-                            // console.log("error"); 
-                            //console.log(xhr.status + ": " + xhr.responseText); 
                         }
                     });
                 }).on('error.form.bv', function () {

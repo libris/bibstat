@@ -17,6 +17,7 @@ define(['jquery', 'survey.cell'], function($, cell) {
 
     var setupSum = function(setup) {
         var childCallback = function(parent, child, children) {
+            $(parent).val(String(sumOf(children)).replace(".", ","));
             cell.onChange(child, function() {
                 $(parent).val(String(sumOf(children)).replace(".", ","));
                 $(parent).change();
@@ -38,6 +39,7 @@ define(['jquery', 'survey.cell'], function($, cell) {
     return {
         'init': function() {
             $.each($('input[data-sum-of]'), function() {
+
                 var parent = $(this);
                 var setup = { };
 
