@@ -41,6 +41,7 @@ def example_survey(request):
 
 
 def _save_survey_response_from_form(survey, form):
+
     if form.is_valid():
         disabled_inputs = form.cleaned_data.pop("disabled_inputs").split(" ")
         unknown_inputs = form.cleaned_data.pop("unknown_inputs").split(" ")
@@ -68,7 +69,6 @@ def _save_survey_response_from_form(survey, form):
 
 
 def survey(request, survey_id):
-    start_time = time.time()
 
     def has_password():
         return request.method == "GET" and "p" in request.GET or request.method == "POST"
@@ -95,25 +95,24 @@ def survey(request, survey_id):
     if not request.user.is_superuser:
         context["hide_navbar"] = True
 
+    if not request.user.is_authenticated() and settings.BLOCK_SURVEY:
+        return render(request, "libstat/survey_blocked.html")
+
     if can_view_survey(survey):
-        if request.method == "POST":
-            form = SurveyForm(request.POST, survey=survey)
-            _save_survey_response_from_form(survey, form)
-            context["scroll_position"] = request.POST.get("scroll_position", 0)
 
         if not request.user.is_authenticated() and survey.status == "not_viewed":
             survey.status = "initiated"
             survey.save()
 
-        if not request.user.is_authenticated() and settings.BLOCK_SURVEY:
-            return render(request, "libstat/survey_blocked.html")
+        if request.method == "POST":
+            form = SurveyForm(request.POST, survey=survey)
+            _save_survey_response_from_form(survey, form)
 
-        context["form"] = SurveyForm(survey=survey, authenticated=request.user.is_authenticated())
+        else:
 
-        total_request_time = time.time() - start_time
-        logger.debug("Total time to process request %0.10f" % total_request_time)
+            context["form"] = SurveyForm(survey=survey, authenticated=request.user.is_authenticated())
 
-        return render(request, 'libstat/survey.html', context)
+            return render(request, 'libstat/survey.html', context)
 
     if has_password():
         if get_password() == survey.password:

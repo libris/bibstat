@@ -2,6 +2,7 @@
 from sets import Set
 import logging
 import time
+import json
 
 from django import forms
 from django.core.urlresolvers import reverse
@@ -18,7 +19,8 @@ class SurveyForm(forms.Form):
     def _cell_to_input_field(self, cell, observation, authenticated):
         attrs = {"class": "form-control",
                  "id": cell.variable_key,
-                 "name": cell.variable_key}
+                 "name": cell.variable_key,
+                 "aria-labelledby": cell.variable_key}
 
         if cell.sum_of:
             attrs["data-sum-of"] = " ".join(map(lambda s: s, cell.sum_of))
@@ -43,6 +45,11 @@ class SurveyForm(forms.Form):
             attrs["data-bv-greaterthan-value"] = "0"
             attrs["data-bv-greaterthan-inclusive"] = ""
             attrs["max"] = "99999999"
+            attrs["data-bv-regexp"] = ""
+            attrs["data-bv-regexp-regexp"] = "^\d+(\,\d{1,2})?$"
+            attrs["data-bv-regexp-message"] = "Vänligen mata in ett nummer med max 2 decimaler (tex 12,50)"
+
+
 
         if "email" in cell.types:
             attrs["data-bv-emailaddress"] = ""
@@ -233,7 +240,6 @@ class SurveyForm(forms.Form):
 
         previous_survey = survey.previous_years_survey()
 
-        #TODO: speed up cell iteration
         for cell in template.cells:
             variable_key = cell.variable_key
             if not variable_key in variables:
