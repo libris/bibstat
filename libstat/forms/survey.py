@@ -245,8 +245,6 @@ class SurveyForm(forms.Form):
             if not variable_key in variables:
                 raise Exception("Can't find variable with key '{}'".format(variable_key))
             observation = survey.get_observation(variable_key)
-            logger.debug(observation)
-            json.loads(json.dumps(args))[0]['Epost01']
 
             if observation:
                 cell.disabled = observation.disabled
