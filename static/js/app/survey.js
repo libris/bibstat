@@ -469,20 +469,6 @@ define(['jquery', 'bootbox', 'survey.sum', 'survey.cell', 'surveys.dispatch', 'b
 						.removeClass('expanded');
 				});
 
-
-                /* Move feedback icons to the right side of the input field. */
-                // $.each(survey.form(".cell .form-control-feedback"), function () {
-
-                //     var element = $(this), input = element.prev(".input-group").children("input");
-                //     var left = input.outerWidth() - element.width();
-
-                //     element.css("right", "inherit");
-                //     element.css("left", left + "px");
-                //     element.css("top", "10px");
-                // });
-
-
-
                 survey.form("#save-survey-btn").click(function (e) {
                     e.preventDefault();
 
