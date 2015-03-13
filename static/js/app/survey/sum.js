@@ -11,23 +11,26 @@ define(['jquery', 'survey.cell'], function($, cell) {
                 sum += number
             }
         });
+        // Max 3 decimals
+        if(sum % 1 != 0) sum = sum.toFixed(3);
 
         return sum != null ? sum : '';
     };
 
     var setupSum = function(setup) {
         var childCallback = function(parent, child, children) {
-            $(parent).val(String(sumOf(children)).replace(".", ","));
             cell.onChange(child, function() {
-                $(parent).val(String(sumOf(children)).replace(".", ","));
-                $(parent).change();
+                if(!$(parent).prop("disabled")) {
+                    $(parent).val(String(sumOf(children)).replace(".", ","));
+                    $(parent).change();
+                }
             });
         };
-
         for(var parent in setup) {
             $.each(setup[parent], function(i, child) {
                 childCallback(parent, child, setup[parent]);
                 $(child).attr('data-is-child', true);
+                $(child).attr('parent', ($(child).attr('parent') ? $(child).attr('parent') : '') + parent + ',');
             });
         }
     };

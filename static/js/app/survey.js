@@ -1,19 +1,22 @@
 define(['jquery', 'bootbox', 'survey.sum', 'survey.cell', 'surveys.dispatch', 'bootstrap.validator.sv', 'jquery.placeholder'],
     function ($, bootbox, sum, cell, dispatch) {
-    	var _form = $('#survey-form');
-    	var _inputs = null;
+
+        var debug = false;
+        var _form = $('#survey-form');
+        var _inputs = null;
+
         var survey = {
             form: function (selector) {
-                if (selector) return _form.find(selector)
-                else return _form;
-                // if (selector) return $('#survey-form ' + selector)
-                // else return $('#survey-form');
+                if (selector) 
+                    return _form.find(selector)
+                else 
+                    return _form;
             },
             validator: function () {
                 return survey.form().data('bootstrapValidator');
             },
             inputs: function () {
-            	if(!_inputs) _inputs = survey.form("input:not([type='checkbox'])").not("[type='hidden']");
+                if(!_inputs) _inputs = survey.form("input:not([type='checkbox'])").not("[type='hidden']");
                 return _inputs;
             },
             changeableInputs: function () {
@@ -64,6 +67,7 @@ define(['jquery', 'bootbox', 'survey.sum', 'survey.cell', 'surveys.dispatch', 'b
                 return element.closest(".input-group-btn").prev("input");
             };
             var getInputs = function (input) {
+
                 var getAttributeInputs = function (input, attribute) {
                     var inputs = [];
 
@@ -127,17 +131,22 @@ define(['jquery', 'bootbox', 'survey.sum', 'survey.cell', 'surveys.dispatch', 'b
             };
             var enableInput = function (input) {
                 input.css("padding-right", "");
-                input.val("");
+
+                // Empty input if text and NOT A NUMBER               
+                if(!((input.val() - 0) == input.val() && (''+input.val()).trim().length > 0)) {
+                    input.val("");   
+                }
+                
                 input.prop('disabled', false);
                 input.removeClass('value-unknown');
             };
             var setActiveSiblings = function (input) {
-                if (!input.attr('data-sum-of')) {
+
                     var dropdown = input.next(".input-group-btn").children(".btn-dropdown");
 
                     var disableInput = dropdown.siblings('.dropdown-menu').find(".menu-disable-input");
                     setActive(disableInput);
-                }
+                
             };
             var enableDropdown = function (input) {
                 var dropdown = input.next(".input-group-btn").children(".btn-dropdown");
@@ -160,23 +169,67 @@ define(['jquery', 'bootbox', 'survey.sum', 'survey.cell', 'surveys.dispatch', 'b
                 updateProgress();
             };
 
+            var resetFields = function(elements) {
+                for(var i = 0;i<elements.length;i++) {
+                    if(!elements[i].prop("disabled")) {
+                        elements[i].val("");
+                        survey.validator().updateStatus(elements[i].attr("name"), "NOT_VALIDATED");
+                    }
+                }
+            };
+
             survey.form(".cell .input-group-btn .dropdown-menu .menu-disable-input").click(function (e) {
                 e.preventDefault();
 
                 var element = $(this);
                 var input = getInput(element);
-                var inputs = getInputs(input);
+                var children = [];
+                var resets = [];
 
-                if (inputs.length > 1 ) {
+                var hasParent = (input.attr("parent")) ? input.attr("parent").slice(0,-1) : null ;
+
+                if(hasParent!==null) {
+                    if(hasParent.split(',').length == 2) {
+                        // MATRIX 
+                        if(input.attr("data-sum-of")===undefined) {
+                            var panel = $(this).closest('.panel-body');
+                            
+                            // Loop all inputs in a div.panel-body!
+                            var inputs = panel.find("input").each(function(item, index) {
+                                var el = $(this);
+                                if(el.attr("data-sum-of")===undefined && el.attr("data-is-child")!==undefined) {
+                                    children.push(el);
+                                } else {
+                                    // Reset parent input (right and in the bottom)
+                                    resets.push(el);
+                                }
+                            }); 
+                        } 
+
+                    } else {
+                        // Disable entire column
+                        // Except sum/parent input
+                        var parent = $(input.attr("parent").slice(0,-1));
+                        var c = parent.attr("data-sum-of").split(' ');
+
+                        for(var i = 0; i<c.length; i++) {
+                            children.push($("#" + c[i]));
+                        }
+                    }
+                } else {
+                    children.push(input);
+                }
+
+                // Disable the children!
+                if(children.length > 1) {
                     bootbox.confirm("Åtgärden kommer påverka alla fält i denna grupp och eventuella inmatade värden kan gå förlorade. Är du säkert på att du vill fortsätta?", function (result) {
                         if (result) {
-                            disable(inputs, element);
-                            // 
-                            sum.init();
+                            disable(children, element);
+                            resetFields(resets);
                         }
                     });
                 } else {
-                    disable(inputs, element);
+                    disable(children, element);
                 }
 
             });
@@ -191,19 +244,41 @@ define(['jquery', 'bootbox', 'survey.sum', 'survey.cell', 'surveys.dispatch', 'b
                 setActive(element);
 
                 var input = getInput(element);
-                var inputs = getInputs(input);
-                var parent = getParent(input);
+                var children = [];
+                var resets = [];
 
-                if (parent.length > 0 && parent.prop('disabled')) {
-                    enableDropdown(parent);
-                    enableInput(parent);
-                }
+                var hasParent = (input.attr("parent")) ? input.attr("parent").slice(0,-1) : null ;
 
-                for (var index in inputs) {
-                    if(inputs[index].prop('disabled')) {
-                        enableInput(inputs[index]);
-                        enableDropdown(inputs[index]);
+                if(hasParent!==null) {
+                    if(hasParent.split(',').length == 2) {
+                        // MATRIX 
+                        if(input.attr("data-sum-of")===undefined) {
+                            var panel = $(this).closest('.panel-body');
+                            
+                            // Loop all inputs in a div.panel-body!
+                            var inputs = panel.find("input").each(function(item, index) {
+                                var el = $(this);
+                                if(el.attr("data-sum-of")===undefined && el.attr("data-is-child")!==undefined) {
+                                    enableInput(el);
+                                    enableDropdown(el);
+                                }
+                            });
+                        } 
+
+                    } else {
+                        // Disable entire column
+                        // Except sum/parent input
+                        var parent = $(input.attr("parent").slice(0,-1));
+                        var c = parent.attr("data-sum-of").split(' ');
+
+                        for(var i = 0; i<c.length; i++) {
+                            var el = $("#" + c[i]);
+                            enableInput(el);
+                            enableDropdown(el);
+                        }
                     }
+                } else {
+                    enableInput(input);
                 }
 
                 updateProgress();
@@ -246,10 +321,12 @@ define(['jquery', 'bootbox', 'survey.sum', 'survey.cell', 'surveys.dispatch', 'b
                 });
             });
 
-            var validator = survey.validator();
-            $.each(survey.filledInputs(), function () {
-                validator.validateField($(this));
-            });
+            // REMOVED VALIDATION ON STARTUP
+            // Show errors instead when saving or sending the form
+            // var validator = survey.validator();
+            // $.each(survey.filledInputs(), function () {
+            //     validator.validateField($(this));
+            // });
 
             updateProgress();
         };
@@ -298,16 +375,19 @@ define(['jquery', 'bootbox', 'survey.sum', 'survey.cell', 'surveys.dispatch', 'b
         };
         return {
             init: function () {
-
                 var start = new Date().getTime();
+                if(debug) console.log("0. " + (new Date().getTime()-start));
 
                 readOnlyInit();
                 if ($("#read_only").val()) {
                     return;
                 }
+
+                if(debug) console.log("1. " + (new Date().getTime()-start));
+
                 survey.form().bootstrapValidator({
                     excluded: ['.disable-validation', ':disabled', ':hidden', ':not(:visible)'],
-                    trigger: 'keyup',
+                    trigger: 'change keyup paste',
                     feedbackIcons: null
 
                 }).on('error.validator.bv', function (e, data) { // http://bootstrapvalidator.com/examples/changing-default-behaviour/#showing-one-message-each-time
@@ -357,7 +437,11 @@ define(['jquery', 'bootbox', 'survey.sum', 'survey.cell', 'surveys.dispatch', 'b
 
                             if(submit_action=="save") {
 
-                                alert("Formuläret är sparat!");
+                                // Hide message after 3 sec (3000ms)
+                                $("#unsaved-changes-label").html("<strong>Formuläret är nu sparat.</strong>");
+                                setTimeout(function() {
+                                    $("#unsaved-changes-label").html("");
+                                },3000);
 
                             } else if(submit_action=="submit") {
                                 // Hide bootstrap modal
@@ -375,6 +459,7 @@ define(['jquery', 'bootbox', 'survey.sum', 'survey.cell', 'surveys.dispatch', 'b
                             }
                             
                         },
+                        // handle a non-successful response
                         error : function(xhr,errmsg,err) {
                             alert("Ett fel uppstod! Var vänlig försök igen.");
                             $("#print-survey-btn, #save-survey-btn, #submit-survey-btn").removeClass("disabled");
@@ -387,6 +472,8 @@ define(['jquery', 'bootbox', 'survey.sum', 'survey.cell', 'surveys.dispatch', 'b
                         scrollTop: invalidField.offset().top - 10
                     }, 300);
                 });
+
+                if(debug) console.log("2. " + (new Date().getTime()-start));
 
 
                 var submitTo = function (action, submit) {
@@ -452,22 +539,26 @@ define(['jquery', 'bootbox', 'survey.sum', 'survey.cell', 'surveys.dispatch', 'b
                     });
                 });
 
-				$('.col-sm-2 .form-control').focus(function()
-				{
-					if($(window).width() <= 992) {
-						var inputGroup = $(this).parent('.input-group');
+                if(debug) console.log("3. " + (new Date().getTime()-start));
 
-						inputGroup
-							.css('width', (inputGroup.outerWidth()*1.5))
-							.addClass('expanded');
-					}
-				}).blur(function(){
-					var inputGroup = $(this).parent('.input-group');
+                $('.col-sm-2 .form-control').focus(function()
+                {
+                    if($(window).width() <= 992) {
+                        var inputGroup = $(this).parent('.input-group');
 
-					inputGroup
-						.css('width', '')
-						.removeClass('expanded');
-				});
+                        inputGroup
+                            .css('width', (inputGroup.outerWidth()*1.5))
+                            .addClass('expanded');
+                    }
+                }).blur(function(){
+                    var inputGroup = $(this).parent('.input-group');
+
+                    inputGroup
+                        .css('width', '')
+                        .removeClass('expanded');
+                });
+
+                if(debug) console.log("4. " + (new Date().getTime()-start));
 
                 survey.form("#save-survey-btn").click(function (e) {
                     e.preventDefault();
@@ -534,6 +625,8 @@ define(['jquery', 'bootbox', 'survey.sum', 'survey.cell', 'surveys.dispatch', 'b
                     }, 100);
                 });
 
+                if(debug) console.log("5. " + (new Date().getTime()-start));
+
                 cell.onChange(survey.changeableInputs(), function () {
                     showChangesNotSaved();
                 });
@@ -551,45 +644,48 @@ define(['jquery', 'bootbox', 'survey.sum', 'survey.cell', 'surveys.dispatch', 'b
                     }
                 };
 
+                if(debug) console.log("6. " + (new Date().getTime()-start));
+
                 $('#panel-help .collapse').on('show.bs.collapse', function () {
                     setIcon($(this).attr('id'), 'show');
                 }).on('hide.bs.collapse', function () {
                     setIcon($(this).attr('id'), 'collapse');
                 });
 
-                $('.survey-popover').tooltip();
-
                 $('.modified-after-publish').on("click", function (e) {
                     e.preventDefault();
                 });
 
+                $('.tooltip-wrapper').tooltip({position: "bottom"});
+                $('.survey-popover').tooltip();
                 $("input").placeholder();
 
+                if(debug) console.log("7. " + (new Date().getTime()-start));
+                
                 sum.init();
                 initDropdown();
                 initProgress();
 
-                var position = $("#scroll_position");
-                if (position.length > 0) {
-                    if (position.val() > 0)
-                        $(window).scrollTop(position.val());
+                if(debug) console.log("8. " + (new Date().getTime()-start));
 
-                    $(window).scroll(function () {
-                        var position = $(this).scrollTop();
-                        $('#scroll_position').val(position);
-                    });
-                }
-
-                $('.tooltip-wrapper').tooltip({position: "bottom"});
                 bootbox.setLocale("sv");
 
+                if(debug) console.log("9. " + (new Date().getTime()-start));
+
                 // Prevent form submission with enter key.
-                $(document).ready(function() {
-                    survey.form("input").keydown(function(event){
+                $(document).ready(function(e) {
+                    survey.form("input").keydown(function(){
                         if(event.keyCode == 13) {
                             event.preventDefault();
                             return false;
                         }
+                    });
+                    survey.form("input").keyup(function(){
+                        var input = $(this)
+                        if(input.prop("data-bv-numeric")) {
+                            var value = input.val().replace(/\./g, ",");
+                            if(input.val()!==value) input.val(value);
+                        }                        
                     });
                 });
             }

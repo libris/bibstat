@@ -46,8 +46,8 @@ class SurveyForm(forms.Form):
             attrs["data-bv-greaterthan-inclusive"] = ""
             attrs["max"] = "99999999"
             attrs["data-bv-regexp"] = ""
-            attrs["data-bv-regexp-regexp"] = "^\d+(\,\d{1,2})?$"
-            attrs["data-bv-regexp-message"] = "Vänligen mata in ett nummer med max 2 decimaler (tex 12,50)"
+            attrs["data-bv-regexp-regexp"] = "^\d+(\,\d{1,3})?$"
+            attrs["data-bv-regexp-message"] = "Vänligen mata in ett nummer med max 3 decimaler (tex 12,522)"
 
 
 
