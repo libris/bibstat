@@ -25,11 +25,13 @@
             -webkit-transition: width 3s;
             transition: width 3s;
         }
+        .cell .form-control {
+            padding-left: 5px;
+            padding-right: 20px;
+        }
         .col-sm-2 .form-control,
         .col-sm-3 .form-control {
-            padding-left: 5px !important;
-            padding-right: 5px !important;
-            background-image: none !important; 
+            background-image: none; 
         }
         .col-sm-2 .form-group .input-group-btn .btn,
         .col-sm-3 .form-group .input-group-btn .btn {
@@ -47,9 +49,18 @@
         .form-group.has-success input {
             background-image: url(/static/img/check.png);
         }
+        .sum-of {
+            position: absolute;
+            left: -13px;
+            background: #F29400;
+            border: 1px solid #DB8804;
+            border-right: 0;
+            padding: 5px 2px 7px;
+            border-radius: 3px 0 0 3px;
+            color: #fff;
+            font-weight: bold;
 
-
-
+        }
         .sum-description {
             font-weight: bold;
         }
@@ -105,6 +116,20 @@
             font-size: 15px;
         }
 
+        tr.library {
+            display: none;
+        }
+
+        tr.library.expanded {
+            display: table-row;
+        }
+        @media print {
+            tr.library {
+                display: table-row !important;
+            }
+            #show-more-libraries { display: none; }
+        }
+
         .section-title {
             color: rgb(0, 158, 224);
             font-weight: bold;
@@ -119,11 +144,6 @@
 
         .cell {
             margin-top: 3px;
-        }
-
-        .cell .input-group input {
-            padding-right: 20px;
-            padding-left: 8px;
         }
 
         .btn-dropdown {
@@ -298,7 +318,12 @@
                         </thead>
                         <tbody>
                         {% for library in form.libraries %}
-                            <tr>
+                            {% if forloop.first %}
+                                <tr>
+                            {% else %}
+                                <tr class="library">
+                            {% endif %}
+                            
                                 <td>
                                     {% with key=library.checkbox_id %}
                                         {{ form|access:key }}
@@ -318,6 +343,11 @@
                                 </td>
                             </tr>
                         {% endfor %}
+                            <tr>
+                                <td colspan="5" align="center">
+                                    <a href="#" id="show-more-libraries" class="btn btn-default btn-sm" data-display-text="Göm bibliotek ({{form.libraries|length}}st)">Visa fler bibliotek ({{form.libraries|length}}st)</a>
+                                </td>
+                            </tr>
                         </tbody>
                     </table>
                 </div>
@@ -405,8 +435,13 @@
                                             <div class="cell">
                                                 <div class="form-group">
                                                     <div class="input-group">
+    
                                                         {% with variable_key=cell.variable_key %}
+                                                            {% if cell.sum_of %}
+                                                                <div class="sum-of">=</div>
+                                                            {% endif %}
                                                             {{ form|access:variable_key }}
+                                                            
                                                         {% endwith %}
                                                         <div class="input-group-btn">
                                                             <!-- Skip dropdown for inputs in first group of first section. -->
@@ -500,6 +535,7 @@
                             </div>
                         </div>
                         <div class="navbar-right navbar-submit">
+                            <a id="faq-survey-btn" class="btn btn-default"><i class="fa fa-question fa-inline"></i>Vanliga frågor</a>
                             <a id="print-survey-btn" class="btn btn-default" href="javascript:if(window.print)window.print()"><i class="fa fa-print fa-inline"></i>Skriv ut</a>
                             <div id="unsaved-changes-label" class="navbar-text"></div>
                             <a href="#" id="save-survey-btn" class="btn btn-primary navbar-btn">Spara</a>

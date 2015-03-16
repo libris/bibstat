@@ -65,9 +65,7 @@
             'typeahead': 'plugins/typeaheadjs/0.10.5/typeahead.bundle',
             'underscore': 'plugins/underscorejs/1.7.0/underscore-min',
             'bootbox': 'plugins/bootbox'
-        },
-
-        // deps: ['app/main']
+        }
     });
 
     requirejs.onError = function(e) {

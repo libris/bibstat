@@ -8,8 +8,9 @@
 
         <title>Biblioteksstatistiken</title>
         
+        {# In production "/static/css/bundle.min.css" #}
+        {# In dev "/static/css/bundle.css" #}
         <!-- Stylesheets -->
-        <!-- <link href="/static/css/bundle.css" rel="stylesheet"/> -->
         <link href="/static/css/bundle.min.css" rel="stylesheet"/>
 
         <!-- IE fixes needs to be included first of all javascript files -->
@@ -27,9 +28,10 @@
         {% endblock %}
     
         <script src="{% url 'js_reverse' %}" type="text/javascript"></script>
-        <!--<script src="/static/js/plugins/requirejs/require.js"></script>
-        <script src="/static/js/main.js"></script>-->
-        
-        <script src="/static/js/main.min.js"></script>
+    
+        {# In production "/static/js/main.min" #}
+        {# In dev "/static/js/main" #}
+        <!-- main.min.js -->
+        <script data-main="/static/js/main.min" src="/static/js/plugins/requirejs/require.js"></script>
     </body>
 </html>

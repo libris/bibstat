@@ -1,7 +1,6 @@
 define(['jquery', 'bootbox', 'survey.sum', 'survey.cell', 'surveys.dispatch', 'bootstrap.validator.sv', 'jquery.placeholder'],
     function ($, bootbox, sum, cell, dispatch) {
-
-        var debug = false;
+        
         var _form = $('#survey-form');
         var _inputs = null;
 
@@ -50,6 +49,9 @@ define(['jquery', 'bootbox', 'survey.sum', 'survey.cell', 'surveys.dispatch', 'b
             },
             requiredInputs: function () {
                 return survey.enabledInputs().filter("[data-bv-notempty]");
+            },
+            sumOfInputs: function () {
+                return survey.enabledInputs().filter("[data-sum-of]");
             }
         };
 
@@ -134,7 +136,7 @@ define(['jquery', 'bootbox', 'survey.sum', 'survey.cell', 'surveys.dispatch', 'b
 
                 // Empty input if text and NOT A NUMBER               
                 if(!((input.val() - 0) == input.val() && (''+input.val()).trim().length > 0)) {
-                    input.val("");   
+                    input.val("0");   
                 }
                 
                 input.prop('disabled', false);
@@ -375,15 +377,11 @@ define(['jquery', 'bootbox', 'survey.sum', 'survey.cell', 'surveys.dispatch', 'b
         };
         return {
             init: function () {
-                var start = new Date().getTime();
-                if(debug) console.log("0. " + (new Date().getTime()-start));
 
                 readOnlyInit();
                 if ($("#read_only").val()) {
                     return;
                 }
-
-                if(debug) console.log("1. " + (new Date().getTime()-start));
 
                 survey.form().bootstrapValidator({
                     excluded: ['.disable-validation', ':disabled', ':hidden', ':not(:visible)'],
@@ -420,7 +418,6 @@ define(['jquery', 'bootbox', 'survey.sum', 'survey.cell', 'surveys.dispatch', 'b
                     $("#disabled_inputs").val(disabledInputIds);
 
                     // survey.disabledInputs().prop("disabled", false);
-
 
                     $("#selected_libraries").val(survey.selectedLibraries());
 
@@ -472,9 +469,6 @@ define(['jquery', 'bootbox', 'survey.sum', 'survey.cell', 'surveys.dispatch', 'b
                         scrollTop: invalidField.offset().top - 10
                     }, 300);
                 });
-
-                if(debug) console.log("2. " + (new Date().getTime()-start));
-
 
                 var submitTo = function (action, submit) {
                     submit = submit || false
@@ -539,7 +533,6 @@ define(['jquery', 'bootbox', 'survey.sum', 'survey.cell', 'surveys.dispatch', 'b
                     });
                 });
 
-                if(debug) console.log("3. " + (new Date().getTime()-start));
 
                 $('.col-sm-2 .form-control').focus(function()
                 {
@@ -558,7 +551,6 @@ define(['jquery', 'bootbox', 'survey.sum', 'survey.cell', 'surveys.dispatch', 'b
                         .removeClass('expanded');
                 });
 
-                if(debug) console.log("4. " + (new Date().getTime()-start));
 
                 survey.form("#save-survey-btn").click(function (e) {
                     e.preventDefault();
@@ -615,6 +607,43 @@ define(['jquery', 'bootbox', 'survey.sum', 'survey.cell', 'surveys.dispatch', 'b
                     }, 100);
                 });
 
+                survey.form("#faq-survey-btn").click(function (e) {
+                    e.preventDefault();
+
+                    var button = $(this);
+
+                    if(button.attr("data-scroll-to")) {
+                        $('html, body').animate({
+                            scrollTop: button.attr("data-scroll-to")
+                        }, 1000);
+                        button
+                            .html('<i class="fa fa-question fa-inline"></i>Vanliga frågor')
+                            .removeAttr("data-scroll-to");
+                    } else {
+                        var yPos = $(document).scrollTop();
+                        button
+                            .html('<i class="fa fa-question fa-inline"></i>Ta mig tillbaka')
+                            .attr("data-scroll-to", yPos);
+
+                        $('html, body').animate({
+                            scrollTop: ($("#panel-help-top").offset().top - 60)
+                        }, 1000);
+                    }
+                });
+
+                survey.form("#show-more-libraries").click(function (e) {
+                    event.preventDefault();
+                    var button = $(this);
+                    var oldText = button.text();
+                    button
+                        .text( button.attr("data-display-text") )
+                        .attr("data-display-text", oldText)
+                        .blur();
+
+                    $("tr.library").toggleClass("expanded");
+                    return false;
+                });
+
                 $("#confirm-submit-survey-btn").click(function (e) {
                     e.preventDefault();
 
@@ -625,7 +654,6 @@ define(['jquery', 'bootbox', 'survey.sum', 'survey.cell', 'surveys.dispatch', 'b
                     }, 100);
                 });
 
-                if(debug) console.log("5. " + (new Date().getTime()-start));
 
                 cell.onChange(survey.changeableInputs(), function () {
                     showChangesNotSaved();
@@ -644,7 +672,6 @@ define(['jquery', 'bootbox', 'survey.sum', 'survey.cell', 'surveys.dispatch', 'b
                     }
                 };
 
-                if(debug) console.log("6. " + (new Date().getTime()-start));
 
                 $('#panel-help .collapse').on('show.bs.collapse', function () {
                     setIcon($(this).attr('id'), 'show');
@@ -659,18 +686,12 @@ define(['jquery', 'bootbox', 'survey.sum', 'survey.cell', 'surveys.dispatch', 'b
                 $('.tooltip-wrapper').tooltip({position: "bottom"});
                 $('.survey-popover').tooltip();
                 $("input").placeholder();
-
-                if(debug) console.log("7. " + (new Date().getTime()-start));
-                
+      
                 sum.init();
                 initDropdown();
                 initProgress();
 
-                if(debug) console.log("8. " + (new Date().getTime()-start));
-
                 bootbox.setLocale("sv");
-
-                if(debug) console.log("9. " + (new Date().getTime()-start));
 
                 // Prevent form submission with enter key.
                 $(document).ready(function(e) {
