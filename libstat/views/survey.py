@@ -43,7 +43,7 @@ def example_survey(request):
 def _save_survey_response_from_form(survey, form):
 
     if form.is_valid():
-        disabled_inputs = form.cleaned_data.pop("disabled_inputs").split(" ")
+        disabled_inputs = form.cleaned_data.pop("disabled_inputs").split(" ") #TODO: remove?
         unknown_inputs = form.cleaned_data.pop("unknown_inputs").split(" ")
         submit_action = form.cleaned_data.pop("submit_action", None)
         altered_fields = form.cleaned_data.pop("altered_fields", None).split(" ")
@@ -53,7 +53,7 @@ def _save_survey_response_from_form(survey, form):
             if observation:
                 if field in altered_fields:
                     observation.value = form.cleaned_data[field]
-                    observation.disabled = (field in disabled_inputs)
+                    observation.disabled = (field in disabled_inputs) #TODO: remove?
                     observation.value_unknown = (field in unknown_inputs)
             else:
                 survey.__dict__["_data"][field] = form.cleaned_data[field]

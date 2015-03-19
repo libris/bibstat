@@ -295,7 +295,7 @@ class Library(EmbeddedDocument):
 class SurveyObservation(EmbeddedDocument):
     variable = ReferenceField(Variable, required=True)
     value = DynamicField()
-    disabled = BooleanField()
+    disabled = BooleanField()#TODO: remove?
     value_unknown = BooleanField()
     # Public API Optimization and traceability (was this field public at the time of the survey?)
     _is_public = BooleanField(required=True, default=True)
@@ -801,7 +801,7 @@ class Cell(EmbeddedDocument):
     previous_value = StringField()
     sum_of = ListField(StringField())
     types = ListField(StringField())
-    disabled = BooleanField()
+    disabled = BooleanField() #TODO: remove?
     _variable = ReferenceField(Variable)
 
     @property

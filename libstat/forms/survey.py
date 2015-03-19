@@ -49,8 +49,6 @@ class SurveyForm(forms.Form):
             attrs["data-bv-regexp-regexp"] = "^\d+(\,\d{1,3})?$"
             attrs["data-bv-regexp-message"] = "Vänligen mata in ett nummer med max 3 decimaler (tex 12,522)"
 
-
-
         if "email" in cell.types:
             attrs["data-bv-emailaddress"] = ""
             attrs["data-bv-regexp"] = ""
@@ -64,10 +62,8 @@ class SurveyForm(forms.Form):
         if "Utgift" in cell.variable_key or "Intakt" in cell.variable_key:
             attrs["max"] = "999999999"
 
-        if not observation or observation.disabled:
-            attrs["disabled"] = ""
-
         if not observation or observation.value_unknown:
+            attrs["disabled"] = ""
             attrs["class"] = "{} value-unknown".format(attrs["class"])
 
             attrs["data-original-value"] = observation.value if observation and observation.value is not None else ""
@@ -186,7 +182,7 @@ class SurveyForm(forms.Form):
         template = survey_template(survey.sample_year, survey)
 
         self.fields["disabled_inputs"] = forms.CharField(
-            required=False, widget=forms.HiddenInput(attrs={"id": "disabled_inputs"}))
+            required=False, widget=forms.HiddenInput(attrs={"id": "disabled_inputs"})) #TODO: remove?
         self.fields["unknown_inputs"] = forms.CharField(
             required=False, widget=forms.HiddenInput(attrs={"id": "unknown_inputs"}))
         self.fields["altered_fields"] = forms.CharField(
@@ -247,7 +243,7 @@ class SurveyForm(forms.Form):
             observation = survey.get_observation(variable_key)
 
             if observation:
-                cell.disabled = observation.disabled
+                cell.disabled = observation.disabled #TODO: remove?
                 cell.value_unknown = observation.value_unknown
                 if previous_survey:
                     cell.previous_value = survey.previous_years_value(observation.variable, previous_survey)
