@@ -116,20 +116,6 @@
             font-size: 15px;
         }
 
-        tr.library {
-            display: none;
-        }
-
-        tr.library.expanded {
-            display: table-row;
-        }
-        @media print {
-            tr.library {
-                display: table-row !important;
-            }
-            #show-more-libraries { display: none; }
-        }
-
         .section-title {
             color: rgb(0, 158, 224);
             font-weight: bold;
@@ -343,11 +329,6 @@
                                 </td>
                             </tr>
                         {% endfor %}
-                            <tr>
-                                <td colspan="5" align="center">
-                                    <a href="#" id="show-more-libraries" class="btn btn-default btn-sm" data-display-text="Göm bibliotek ({{form.libraries|length}}st)">Visa fler bibliotek ({{form.libraries|length}}st)</a>
-                                </td>
-                            </tr>
                         </tbody>
                     </table>
                 </div>

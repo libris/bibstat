@@ -631,7 +631,7 @@ define(['jquery', 'bootbox', 'survey.sum', 'survey.cell', 'surveys.dispatch', 'b
                     }
                 });
 
-                survey.form("#show-more-libraries").click(function (e) {
+               /* survey.form("#show-more-libraries").click(function (e) {
                     event.preventDefault();
                     var button = $(this);
                     var oldText = button.text();
@@ -642,7 +642,7 @@ define(['jquery', 'bootbox', 'survey.sum', 'survey.cell', 'surveys.dispatch', 'b
 
                     $("tr.library").toggleClass("expanded");
                     return false;
-                });
+                });*/
 
                 $("#confirm-submit-survey-btn").click(function (e) {
                     e.preventDefault();
