@@ -153,12 +153,14 @@ def _survey_template_2014():
                                 Cell(variable_key=u"Titlar101", types=["integer"]),
                                 Cell(variable_key=u"Titlar201", types=["integer"]),
                                 Cell(variable_key=u"Titlar301", types=["integer"]),
-                                Cell(variable_key=u"Titlar497", types=["integer", "required"])]),
+                                Cell(variable_key=u"Titlar497", types=["integer", "required"],
+                                     sum_of=[u"Titlar101", u"Titlar201", u"Titlar301"])]),
                             Row(cells=[
                                 Cell(variable_key=u"Titlar102", types=["integer"]),
                                 Cell(variable_key=u"Titlar202", types=["integer"]),
                                 Cell(variable_key=u"Titlar302", types=["integer"]),
-                                Cell(variable_key=u"Titlar498", types=["integer", "required"])]),
+                                Cell(variable_key=u"Titlar498", types=["integer", "required"],
+                                     sum_of=[u"Titlar102", u"Titlar202", u"Titlar302"])]),
                             Row(cells=[
                                 Cell(variable_key=u"Titlar199", types=["integer"],
                                      sum_of=[u"Titlar101", u"Titlar102"]),
