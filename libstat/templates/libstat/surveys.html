@@ -3,6 +3,12 @@
 {% load libstat_tags %}
 
 {% block content %}
+    <style>
+        .btn-primary {
+            margin-bottom: 5px;
+        }
+    </style>
+
     <div class="container">
 
         <div class="panel panel-default">
@@ -165,10 +171,12 @@
 
                             <div class="col-md-5">
                                 <p><b>För alla enkäter under {{ sample_year }} års omgång:</b></p>
-                                <a href="#" class="btn btn-primary" data-toggle="modal" data-target="#modal-import">Uppdatera
-                                    biblioteksinformation</a>
-                                <a class="btn btn-primary" href="{% url 'surveys_overview' sample_year %}">Visa översikt
-                                    av insamlingen</a>
+                                    <a href="#" class="btn btn-primary" data-toggle="modal" data-target="#modal-import">Uppdatera
+                                        biblioteksinformation</a>
+                                    <a class="btn btn-primary" href="{% url 'surveys_overview' sample_year %}">Visa översikt
+                                        av insamlingen</a>
+                                    <a href="#" class="btn btn-primary" data-toggle="modal" data-target="#modal-match-libraries">Matcha bibliotek</a>
+                                    <a href="#" class="btn btn-primary" data-toggle="modal" data-target="#modal-clean-surveys">Rensa bort tomma enkäter</a>
                             </div>
                         </div>
                         <div class="row">
@@ -505,6 +513,54 @@
                         <input type="text" name="sample_year" value="{{ sample_year }}" hidden>
                         <button type="button" class="btn btn-default" data-dismiss="modal">Avbryt</button>
                         <button type="submit" class="btn btn-primary">Uppdatera</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal fade" id="modal-clean-surveys" tabindex="-1" role="dialog"
+         aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title">Rensa bort tomma enkäter</h4>
+                </div>
+                <div class="modal-body">
+                    <b>Är du säker på att du vill ta bort alla tomma enkäter för år {{ sample_year }}? </b>
+                    <br>När du genomför denna åtgärd kommer alla enkäter för verksamhetsåret {{ sample_year }}, som inte har några observationer att rensas bort från databasen.
+                </div>
+                <div class="modal-footer">
+                    <form method="POST" action="{% url 'surveys_remove_empty' %}">
+                        {% csrf_token %}
+                        <input type="text" name="sample_year" value="{{ sample_year }}" hidden>
+                        <button type="button" class="btn btn-default" data-dismiss="modal">Avbryt</button>
+                        <button type="submit" class="btn btn-primary">Genomför</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal fade" id="modal-match-libraries" tabindex="-1" role="dialog"
+         aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title">Matcha bibliotek och ersätt sigel för publicerade enkäter</h4>
+                </div>
+                <div class="modal-body">
+                    <b>Obs! Denna åtgärd ska endast göras för att matcha in sigler för gamla enkäter som skapats utan integration med Biblioteksdatabasen.
+                        För att matchningen ska fungera behöver en ny omgång ha skapas för det aktuella året. (Dessa tomma enkäter behöver sedan rensas bort).</b>
+                    <br>
+                    <br>
+                    När du genomför denna åtgärd kommer en matchning göras för alla publicerade enkäter verksamhetsåret {{ sample_year }}.
+                    Om det finns opublicerade enkäter för samma bibliotek kommer sigel att ersättas.
+                </div>
+                <div class="modal-footer">
+                    <form method="POST" action="{% url 'surveys_match_libraries' %}">
+                        {% csrf_token %}
+                        <input type="text" name="sample_year" value="{{ sample_year }}" hidden>
+                        <button type="button" class="btn btn-default" data-dismiss="modal">Avbryt</button>
+                        <button type="submit" class="btn btn-primary">Genomför</button>
                     </form>
                 </div>
             </div>

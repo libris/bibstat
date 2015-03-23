@@ -14,6 +14,7 @@ from openpyxl.writer.excel import save_virtual_workbook
 from bibstat import settings
 from libstat import utils
 from libstat.services.bibdb_integration import fetch_libraries
+from libstat.services.clean_data import remove_empty_surveys, match_libraries_and_replace_sigel
 from libstat.models import Survey, SurveyObservation, Variable
 from libstat.services.excel_export import surveys_to_excel_workbook, public_excel_workbook
 from libstat.survey_templates import survey_template
@@ -261,6 +262,22 @@ def import_and_create(request):
     sample_year = request.POST.get("sample_year")
     sample_year = int(sample_year)
     _create_new_collection(sample_year)
+    return redirect(reverse('surveys'))
+
+
+@permission_required('is_superuser', login_url='index')
+def remove_empty(request):
+    sample_year = request.POST.get("sample_year")
+    sample_year = int(sample_year)
+    remove_empty_surveys(sample_year)
+    return redirect(reverse('surveys'))
+
+
+@permission_required('is_superuser', login_url='index')
+def match_libraries(request):
+    sample_year = request.POST.get("sample_year")
+    sample_year = int(sample_year)
+    match_libraries_and_replace_sigel(sample_year)
     return redirect(reverse('surveys'))
 
 
