@@ -268,8 +268,9 @@ def import_and_create(request):
 @permission_required('is_superuser', login_url='index')
 def remove_empty(request):
     sample_year = request.POST.get("sample_year")
+    remove_mode = request.POST.get("remove_mode")
     sample_year = int(sample_year)
-    remove_empty_surveys(sample_year)
+    remove_empty_surveys(sample_year, remove_mode)
     return redirect(reverse('surveys'))
 
 

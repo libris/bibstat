@@ -176,7 +176,7 @@
                                     <a class="btn btn-primary" href="{% url 'surveys_overview' sample_year %}">Visa översikt
                                         av insamlingen</a>
                                     <a href="#" class="btn btn-primary" data-toggle="modal" data-target="#modal-match-libraries">Matcha bibliotek</a>
-                                    <a href="#" class="btn btn-primary" data-toggle="modal" data-target="#modal-clean-surveys">Rensa bort tomma enkäter</a>
+                                    <a href="#" class="btn btn-primary" data-toggle="modal" data-target="#modal-clean-surveys">Rensa bort enkäter</a>
                             </div>
                         </div>
                         <div class="row">
@@ -523,20 +523,28 @@
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h4 class="modal-title">Rensa bort tomma enkäter</h4>
+                    <h4 class="modal-title">Rensa bort enkäter</h4>
                 </div>
-                <div class="modal-body">
-                    <b>Är du säker på att du vill ta bort alla tomma enkäter för år {{ sample_year }}? </b>
-                    <br>När du genomför denna åtgärd kommer alla enkäter för verksamhetsåret {{ sample_year }}, som inte har några observationer att rensas bort från databasen.
-                </div>
-                <div class="modal-footer">
-                    <form method="POST" action="{% url 'surveys_remove_empty' %}">
-                        {% csrf_token %}
-                        <input type="text" name="sample_year" value="{{ sample_year }}" hidden>
+                <form method="POST" action="{% url 'surveys_remove_empty' %}">
+                    {% csrf_token %}
+                    <input type="text" name="sample_year" value="{{ sample_year }}" hidden>
+                    <div class="modal-body">
+                        <b>Är du säker på att du vill ta bort enkäter för år {{ sample_year }}? </b>
+                        <br>När du genomför denna åtgärd kommer alla enkäter för verksamhetsåret <b>{{ sample_year }}</b>, som antingen är tomma (=inte har några observationer) alternativt ej är öppnade att rensas bort från databasen.
+                        <br>
+                        <br>
+                        Välj vilka enkäter som ska tas bort. Tomma eller med status "ej öppnad":
+                        <br>
+                        <select name="remove_mode" class="form-control">
+                            <option value="empty">Ta bort tomma enkäter</option>
+                            <option value="not_viewed">Ta bort ej öppnade enkäter</option>
+                        </select>
+                    </div>
+                    <div class="modal-footer">
                         <button type="button" class="btn btn-default" data-dismiss="modal">Avbryt</button>
                         <button type="submit" class="btn btn-primary">Genomför</button>
-                    </form>
-                </div>
+                    </div>
+                </form>
             </div>
         </div>
     </div>
@@ -552,8 +560,7 @@
                         För att matchningen ska fungera behöver en ny omgång ha skapas för det aktuella året. (Dessa tomma enkäter behöver sedan rensas bort).</b>
                     <br>
                     <br>
-                    När du genomför denna åtgärd kommer en matchning göras för alla publicerade enkäter verksamhetsåret {{ sample_year }}.
-                    Om det finns opublicerade enkäter för samma bibliotek kommer sigel att ersättas.
+                    När du genomför denna åtgärd kommer en matchning göras för alla publicerade enkäter verksamhetsåret <b>{{ sample_year }}</b>, för att hitta sigel att ersätta med.
                 </div>
                 <div class="modal-footer">
                     <form method="POST" action="{% url 'surveys_match_libraries' %}">
