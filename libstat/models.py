@@ -340,14 +340,15 @@ class SurveyQuerySet(QuerySet):
             free_text_query = (free_text_municipality_code_query | free_text_email_query | free_text_library_name_query
                                | free_text_municipality_name_query)
 
-        exclude_co_reported_by_other_query = Q()
-        if exclude_co_reported_by_other == True:
-            exclude_co_reported_by_other_query = Q(selected_libraries__size=0) & \
-                                         Q(library__sigel__nin=Survey.objects.all().distinct("selected_libraries"))
+        filtered_result = self.filter(target_group_query & sample_year_query & status_query &
+                                      municipality_code_query & email_query & free_text_query &
+                                      is_active_query).exclude("observations")
 
-        return self.filter(target_group_query & sample_year_query & status_query &
-                           municipality_code_query & email_query & free_text_query &
-                           is_active_query & exclude_co_reported_by_other_query).exclude("observations")
+        if exclude_co_reported_by_other:
+            co_reported_by_others = filtered_result.filter(selected_libraries__size=0, library__sigel__in=Survey.objects.all().distinct("selected_libraries")).exclude("observations")
+            filtered_result = set(filtered_result).difference(set(co_reported_by_others))
+
+        return filtered_result
 
 
 class SurveyBase(Document):
