@@ -265,7 +265,10 @@ def _survey_template_2014():
                                              u"Omlan208", u"Omlan209", u"Omlan210",
                                              u"Omlan211", u"Omlan212", u"Omlan213"]),
                                 Cell(variable_key=u"Utlan399", types=["integer"],
-                                     sum_of=[u"Inilan199", u"Omlan299"])])]),
+                                     sum_of=[u"Utlan301", u"Utlan303", u"Utlan304",
+                                             u"Utlan305", u"Utlan306", u"Utlan307",
+                                             u"Utlan308", u"Utlan309", u"Utlan310",
+                                             u"Utlan311", u"Utlan312", u"Utlan313"])])]),
                         Group(rows=[
                             Row(cells=[
                                 Cell(variable_key=u"Laslan01", types=["integer"])
