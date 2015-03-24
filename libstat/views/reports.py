@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 from pprint import pprint
+from bibstat import settings
 from django.core.urlresolvers import reverse
 
 from django.shortcuts import render, redirect
@@ -37,6 +38,10 @@ def report(request):
 
 
 def reports(request):
+
+    if settings.BLOCK_REPORTS:
+        return render(request, "libstat/reports_error.html")
+
     def all_sample_years(surveys):
         _sample_years = surveys.distinct("sample_year")
         _sample_years.sort()
