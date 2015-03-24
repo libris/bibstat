@@ -28,12 +28,13 @@ def match_libraries_and_replace_sigel(sample_year):
             #find other surveys with same library name
             matching_surveys = Survey.objects.filter(library__name=survey.library.name, pk__ne=survey.pk)
             if matching_surveys.count() != 0:
-                matched_survey = matching_surveys[0]
-                if matched_survey.library.sigel and len(matched_survey.library.sigel) != 10:
-                    logfile.write("Changing sigel %s to %s\n" % (survey.library.sigel, matched_survey.library.sigel))
-                    survey.library.sigel = matched_survey.library.sigel
-                    survey.save()
-                    matched = matched + 1
+                for matched_survey in matching_surveys:
+                    if matched_survey.library.sigel and len(matched_survey.library.sigel) != 10:
+                        logfile.write("Changing sigel %s to %s\n" % (survey.library.sigel, matched_survey.library.sigel))
+                        survey.library.sigel = matched_survey.library.sigel
+                        survey.save()
+                        matched = matched + 1
+                        break
 
     unmatched_surveys = [s for s in Survey.objects.filter(sample_year=sample_year, _status=u"published") if len(s.library.sigel) == 10]
     no_of_unmatched_surveys = len(unmatched_surveys)
