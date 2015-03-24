@@ -63,9 +63,17 @@ docs/_build/
 # MongoDB
 mongodb/
 dump/
+old_bibstat_data/
+variables_dump/
 
 # Sublime text editor
 *.sublime*
 
 # Cached export files
 data/public_exports
+
+tmp/
+
+# Log files for survey admin functions
+match_libraries_log
+remove_surveys_log
