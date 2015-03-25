@@ -316,6 +316,7 @@ MUNICIPALITIES = (
 
 municipalities = dict([(tuple[1], tuple[0]) for tuple in MUNICIPALITIES])
 
+municipalities_without_counties = dict([(tuple[1], tuple[0]) for tuple in MUNICIPALITIES if not (len(tuple[0].split()) > 1 and tuple[0].split()[len(tuple[0].split())-1] == u"län")])
 
 def get_counties(municipality_codes):
     county_list = []
