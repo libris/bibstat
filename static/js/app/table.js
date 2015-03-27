@@ -9,7 +9,7 @@ define(['jquery', 'jquery.tablesorter'], function($) {
                 return text;
             };
 
-            $(document).ready(function () {
+            $(function() {
                 $(".table.variables").addClass("tablesorter").tablesorter({ sortList: [[0, 0]] });
                 $(".table.survey_responses").addClass("tablesorter").tablesorter({
                     headers: {

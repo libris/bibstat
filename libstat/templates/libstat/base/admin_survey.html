@@ -1,0 +1,37 @@
+<!doctype html>
+<html lang="sv">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+
+        <title>Biblioteksstatistiken</title>
+
+        {# In production "/static/css/bundle.min.css" #}
+        {# In dev "/static/css/bundle.css" #}
+        <!-- Stylesheets -->
+        <link href="/static/css/bundle.min.css" rel="stylesheet"/>
+
+        <!-- IE fixes needs to be included first of all javascript files -->
+        <script src="/static/js/ie-fixes.js" type="text/javascript"></script>
+
+        <!-- Respond.js needs to be referenced after all other css to work properly -->
+        <script src="/static/js/plugins/respond/1.4.2/respond.min.js" type="text/javascript"></script>
+    </head>
+
+    <body class="page-survey">
+        {% include "libstat/base/admin/navbar.html" %}
+        {% include "libstat/base/admin/login.html" %}
+
+        {% block content %}
+        {% endblock %}
+
+        <script src="{% url 'js_reverse' %}" type="text/javascript"></script>
+
+        {# In production "/static/js/main_survey.min" #}
+        {# In dev "/static/js/main_survey" #}
+        <!-- main_survey.min.js -->
+        <script data-main="/static/js/main_survey.min" src="/static/js/plugins/requirejs/require.js"></script>
+    </body>
+</html>
