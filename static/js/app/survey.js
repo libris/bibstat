@@ -360,11 +360,11 @@ define(['jquery', 'bootbox', 'survey.sum', 'survey.cell', 'surveys.dispatch', 'b
 
               if (submit_action == 'save') {
 
-                // Hide message after 3 sec (3000ms)
+                // Hide message after 5 sec (5000ms)
                 $('#unsaved-changes-label').html('<strong>Formuläret är nu sparat.</strong>');
                 setTimeout(function() {
                   $('#unsaved-changes-label').html('');
-                }, 3000);
+                }, 5000);
 
               } else if (submit_action == 'submit') {
                 // Hide bootstrap modal
