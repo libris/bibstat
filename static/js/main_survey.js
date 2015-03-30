@@ -10,6 +10,7 @@
             'bootstrap.validator': ['bootstrap'],
             'bootstrap.validator.sv': ['bootstrap.validator'],
             'jquery.textrange': ['jquery'],
+            'jquery.scrollTo': ['jquery'],
             'jquery.placeholder': ['jquery']
         },
         paths: {
@@ -32,6 +33,7 @@
             'jquery': 'plugins/jquery/1.11.1/jquery',
             'jquery.textrange': 'plugins/jquery/textrange/1.3.0/jquery-textrange',
             'jquery.placeholder': 'plugins/jquery/placeholder/jquery.placeholder',
+            'jquery.scrollTo': 'plugins/jquery/scrollTo-2.1.0/jquery.scrollTo',
             'bootbox': 'plugins/bootbox'
         }
     });

@@ -1,5 +1,5 @@
 /*global define,Urls,alert*/
-define(['jquery', 'bootbox', 'survey.sum', 'survey.cell', 'surveys.dispatch', 'bootstrap.validator.sv', 'jquery.placeholder'],
+define(['jquery', 'bootbox', 'survey.sum', 'survey.cell', 'surveys.dispatch', 'bootstrap.validator.sv', 'jquery.placeholder', 'jquery.scrollTo'],
   function($, bootbox, sum, cell, dispatch) {
     'use strict';
     var _form = $('#survey-form');
@@ -262,6 +262,21 @@ define(['jquery', 'bootbox', 'survey.sum', 'survey.cell', 'surveys.dispatch', 'b
       });
       updateProgress();
     };
+    var initAccordion = function() {
+      $('body').on('click', 'h2[data-parent="#survey-form"]', function() {
+        var $i = $(this).find('i');
+        if ($i.hasClass('fa-chevron-down')) {
+          $i.removeClass('fa-chevron-down').addClass('fa-chevron-right');
+        } else {
+          $i.removeClass('fa-chevron-right').addClass('fa-chevron-down');
+        }
+      });
+      $('[role="tabpanel"]').on('shown.bs.collapse', function() {
+        $.scrollTo($(this).siblings('.panel-heading').find('h2'), 500, {
+          offset: -30
+        });
+      });
+    };
     var readOnlyInit = function() {
 
       /* Enable help button popover. */
@@ -317,7 +332,6 @@ define(['jquery', 'bootbox', 'survey.sum', 'survey.cell', 'surveys.dispatch', 'b
           excluded: ['.disable-validation', ':disabled', ':hidden', ':not(:visible)'],
           trigger: 'blur',
           feedbackIcons: null
-
         }).on('error.validator.bv', function(e, data) { // http://bootstrapvalidator.com/examples/changing-default-behaviour/#showing-one-message-each-time
           data.element
             .data('bv.messages')
@@ -617,6 +631,7 @@ define(['jquery', 'bootbox', 'survey.sum', 'survey.cell', 'surveys.dispatch', 'b
         sum.init();
         initDropdown();
         initProgress();
+        initAccordion();
 
         bootbox.setLocale('sv');
 

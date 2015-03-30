@@ -422,6 +422,10 @@ label.sub-label {
     padding: 15px;
 }
 
+.page-survey #survey-form > .panel-transparent {
+    box-shadow: none;
+}
+
 .page-survey .panel-body {
     background-color: rgb(255, 209, 142);
     border-top-color: rgb(219, 136, 4) !important;
@@ -430,7 +434,16 @@ label.sub-label {
     border-bottom-right-radius: 3px !important;
 }
 
-.page-survey .panel-heading {
+.page-survey .panel-transparent > .panel-heading h2 {
+    padding-left: 0;
+    margin-top: 20px;
+}
+.page-survey .panel-transparent > .panel-heading {
+    padding: 0;
+    cursor: pointer;
+}
+
+.page-survey .panel-default .panel-heading {
     background-color: rgb(242, 148, 0) !important;
     color: white !important;
     border-color: rgb(219, 136, 4) !important;
@@ -441,7 +454,7 @@ label.sub-label {
     color: white !important;
 }
 
-.page-survey .panel {
+.page-survey .panel-default {
     border-color: rgb(219, 136, 4) !important;
 }
 
@@ -510,10 +523,6 @@ label.sub-label {
 }
 
 .page-survey #panel-help.panel-group {
-    margin-bottom: 0;
-}
-
-.page-survey #panel-help-top.panel-group {
     margin-bottom: 0;
 }
 

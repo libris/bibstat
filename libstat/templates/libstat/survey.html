@@ -56,41 +56,53 @@
                 <!-- <input type="hidden" name="scroll_position" id="scroll_position" value="{{ scroll_position }}"> -->
             {% endif %}
 
-            <h2 class="section-title">Svarande organisation/bibliotek</h2>
-
-            <div class="panel panel-default">
-                <div class="panel-heading">Kryssa för de adresser som du vill redovisa för i denna enkät:</div>
-                <div class="panel-body">
-                    <table class="table">
-                        <thead>
-                        <tr>
-                            <th class="column"></th>
-                            <th class="column">Namn</th>
-                            <th class="column">Stad</th>
-                            <th class="column">Adress</th>
-                            <th class="column">Kommentar</th>
-                        </tr>
-                        </thead>
-                        <tbody>
-                        {% for library in form.libraries %}
-                            <tr{% if not forloop.first %} class="library"{% endif %}>
-                                <td>
-                                    {% with key=library.checkbox_id %}
-                                        {{ form|access:key }}
-                                    {% endwith %}
-                                </td>
-                                <td><label for="id_{{library.checkbox_id}}">{{ library.name }}</label></td>
-                                <td>{{ library.city }}</td>
-                                <td>{{ library.address }}</td>
-                                <td><em>{{ library.comment }}</em></td>
+            <div class="panel panel-transparent">
+                <div class="panel-heading" role="tab" id="heading0">
+                    <h2 class="section-title" data-toggle="collapse" data-parent="#survey-form" data-target="#section0" aria-expanded="true" aria-controls="sectionOne">
+                        <i class="fa fa-fw fa-chevron-down"></i> Svarande organisation/bibliotek
+                    </h2>
+                </div>
+                <div id="section0" class="panel panel-default panel-collapse collapse in" role="tabpanel" aria-labelledby="heading0">
+                    <div class="panel-heading">Kryssa för de adresser som du vill redovisa för i denna enkät:</div>
+                    <div class="panel-body">
+                        <table class="table">
+                            <thead>
+                            <tr>
+                                <th class="column"></th>
+                                <th class="column">Namn</th>
+                                <th class="column">Stad</th>
+                                <th class="column">Adress</th>
+                                <th class="column">Kommentar</th>
                             </tr>
-                        {% endfor %}
-                        </tbody>
-                    </table>
+                            </thead>
+                            <tbody>
+                            {% for library in form.libraries %}
+                                <tr{% if not forloop.first %} class="library"{% endif %}>
+                                    <td>
+                                        {% with key=library.checkbox_id %}
+                                            {{ form|access:key }}
+                                        {% endwith %}
+                                    </td>
+                                    <td><label for="id_{{library.checkbox_id}}">{{ library.name }}</label></td>
+                                    <td>{{ library.city }}</td>
+                                    <td>{{ library.address }}</td>
+                                    <td><em>{{ library.comment }}</em></td>
+                                </tr>
+                            {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
             </div>
             {% for section in form.sections %}
-                <h2 class="section-title">{{ section.title }}</h2>
+            <div class="panel panel-transparent">
+                <div class="panel-heading" role="tab" id="heading{{ forloop.counter }}">
+                    <h2 class="section-title" data-toggle="collapse" data-parent="#survey-form" data-target="#section{{ forloop.counter }}" aria-expanded="true" aria-controls="section{{ forloop.counter }}">
+                        <i class="fa fa-fw fa-chevron-right"></i> {{ section.title }}
+                    </h2>
+                </div>
+                <div id="section{{ forloop.counter }}" class="panel panel-collapse collapse" role="tabpanel" aria-labelledby="heading{{ forloop.counter }}">
+
                 {% for group in section.groups %}
                     <div class="panel panel-default">
                         {% if group.description %}
@@ -180,6 +192,8 @@
                         </div>
                     </div>
                 {% endfor %}
+                </div>
+            </div>
             {% endfor %}
             <div class="panel panel-default">
                 <div class="panel-body group-body final-words">
