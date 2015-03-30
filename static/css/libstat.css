@@ -353,7 +353,6 @@ label.sub-label {
     display: inline-block;
     cursor: default;
 }
-
 .page-survey .loading {
     position: fixed;
 }
@@ -412,20 +411,19 @@ label.sub-label {
     font-weight: bold;
     color: white;
 }
-
 .page-survey .popover {
     max-width: none;
     width: 500px;
 }
-
 .page-survey .popover .popover-content {
     padding: 15px;
 }
-
 .page-survey #survey-form > .panel-transparent {
     box-shadow: none;
 }
-
+.page-survey .panel-transparent .panel {
+    background-color: transparent;
+}
 .page-survey .panel-body {
     background-color: rgb(255, 209, 142);
     border-top-color: rgb(219, 136, 4) !important;
@@ -433,128 +431,102 @@ label.sub-label {
     border-bottom-left-radius: 3px !important;
     border-bottom-right-radius: 3px !important;
 }
-
 .page-survey .panel-transparent > .panel-heading h2 {
     padding-left: 0;
     margin-top: 20px;
+    margin-bottom: 20px;
     cursor: pointer;
 }
-
 .page-survey .panel-transparent > .panel-heading {
     padding: 0;
 }
-
 .page-survey .panel-default .panel-heading {
     background-color: rgb(242, 148, 0) !important;
     color: white !important;
     border-color: rgb(219, 136, 4) !important;
 }
-
 .page-survey .panel-footer {
     background-color: rgb(242, 148, 0) !important;
     color: white !important;
 }
-
 .page-survey .panel-default {
     border-color: rgb(219, 136, 4) !important;
 }
-
 .page-survey .container hr {
     border-color: rgb(219, 136, 4) !important;
 }
-
 .page-survey th {
     border-bottom-color: rgb(219, 136, 4) !important;
 }
-
 .page-survey .group-description {
     font-family: helvetica;
     font-size: 15px;
 }
-
 .page-survey .section-title {
     color: rgb(0, 158, 224);
     font-weight: bold;
     margin-top: 40px;
     padding-left: 14px;
 }
-
 .page-survey .section-comment {
     width: 100%;
     height: 100%;
 }
-
 .page-survey .form-group {
     margin-top: 3px;
 }
-
 .page-survey .btn-dropdown {
     border-radius: 0;
 }
-
 .page-survey .form-group .input-group input[disabled] {
     font-style: italic;
 }
-
 .page-survey .row-description {
     display: flex;
     align-items: center;
 }
-
 .page-survey .container-survey {
     padding-bottom: 120px;
 }
-
 .page-survey .answers-progress {
     margin-bottom: 0;
 }
-
 .page-survey .navbar-submit {
     margin-top: 10px;
 }
-
 .page-survey .navbar-library-info {
     background-color: rgb(0, 158, 224);
 }
-
 .page-survey .navbar-library-info .navbar-text {
     font-size: 25px;
     margin-left: 0px;
     color: white;
 }
-
 .page-survey #panel-help.panel-group {
     margin-bottom: 0;
 }
-
 .page-survey .row-help {
     margin-bottom: 10px;
 }
-
 .page-survey .alert-navbar {
     padding: 6px 12px;
     margin-bottom: 0;
     margin-top: 3px;
 }
-
 .page-survey .group-header {
     margin-bottom: 8px;
 }
-
 .page-survey .description-separator {
     margin-top: 10px;
     margin-bottom: 10px;
     border: 0px;
 }
-
 .page-survey .row-description {
     padding-left: 10px;
 }
-
 .page-survey .navbar-alert {
     margin-top: 0
 }
-
 .page-survey .btn-value {
     border-bottom-style: dashed;
     border-right-style: dashed;
@@ -562,34 +534,27 @@ label.sub-label {
     opacity: 1 !important;
     font-style: italic;
 }
-
 .page-survey .btn-dropdown:disabled {
     opacity: 1 !important;
 }
-
 .page-survey .btn-dropdown.disabled {
     opacity: 1 !important;
 }
-
 .page-survey .btn-prev-year {
     border-radius: 0 3px 3px 0;
     border-left: 0;
 }
-
 .page-survey .table tbody tr td {
     border-top-color: rgb(219, 136, 4);
 }
-
 .page-survey .jumbotron.jumbotron-submitted {
     background-color: rgb(0, 158, 224);
     color: white;
 }
-
 .page-survey .jumbotron-submitted a {
     color: white;
     text-decoration: underline;
 }
-
 .page-survey .jumbotron-submitted h1 {
     font-size: 27px;
 }

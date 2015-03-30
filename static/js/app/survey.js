@@ -1,9 +1,10 @@
 /*global define,Urls,alert*/
-define(['jquery', 'bootbox', 'survey.sum', 'survey.cell', 'surveys.dispatch', 'bootstrap.validator.sv', 'jquery.placeholder', 'jquery.scrollTo'],
+define(['jquery', 'bootbox', 'survey.sum', 'survey.cell', 'surveys.dispatch', 'formValidation.sv', 'formValidation.bootstrap', 'jquery.placeholder', 'jquery.scrollTo'],
   function($, bootbox, sum, cell, dispatch) {
     'use strict';
-    var _form = $('#survey-form');
-    var _inputs = null;
+    var _form = $('#survey-form'),
+      _inputs = null,
+      _scrollToDelay = 300;
 
     var survey = {
       form: function(selector) {
@@ -14,7 +15,7 @@ define(['jquery', 'bootbox', 'survey.sum', 'survey.cell', 'surveys.dispatch', 'b
         }
       },
       validator: function() {
-        return survey.form().data('bootstrapValidator');
+        return survey.form().data('formValidation');
       },
       inputs: function() {
         if (!_inputs) _inputs = survey.form('input:not([type="checkbox"])').not('[type="hidden"]');
@@ -50,7 +51,7 @@ define(['jquery', 'bootbox', 'survey.sum', 'survey.cell', 'surveys.dispatch', 'b
         });
       },
       requiredInputs: function() {
-        return survey.enabledInputs().filter('[data-bv-notempty]');
+        return survey.enabledInputs().filter('[data-fv-notempty]');
       },
       sumOfInputs: function() {
         return survey.enabledInputs().filter('[data-sum-of]');
@@ -272,7 +273,7 @@ define(['jquery', 'bootbox', 'survey.sum', 'survey.cell', 'surveys.dispatch', 'b
         }
       });
       $('[role="tabpanel"]').on('shown.bs.collapse', function() {
-        $.scrollTo($(this).siblings('.panel-heading').find('h2'), 500, {
+        $.scrollTo($(this).siblings('.panel-heading').find('h2'), _scrollToDelay, {
           offset: -30
         });
       });
@@ -311,7 +312,7 @@ define(['jquery', 'bootbox', 'survey.sum', 'survey.cell', 'surveys.dispatch', 'b
       };
 
       var initPassword = function() {
-        $('#form-password').bootstrapValidator();
+        $('#form-password').formValidation();
       };
 
       initAdmin();
@@ -328,16 +329,18 @@ define(['jquery', 'bootbox', 'survey.sum', 'survey.cell', 'surveys.dispatch', 'b
           return;
         }
 
-        survey.form().bootstrapValidator({
+        survey.form().formValidation({
+          framework: 'bootstrap',
           excluded: ['.disable-validation', ':disabled', ':hidden', ':not(:visible)'],
           trigger: 'blur',
-          feedbackIcons: null
-        }).on('error.validator.bv', function(e, data) { // http://bootstrapvalidator.com/examples/changing-default-behaviour/#showing-one-message-each-time
+          locale: 'sv_SE',
+          icon: null
+        }).on('error.validator.fv', function(e, data) { // http://bootstrapvalidator.com/examples/changing-default-behaviour/#showing-one-message-each-time
           data.element
-            .data('bv.messages')
-            .find('.help-block[data-bv-for="' + data.field + '"]').hide()
-            .filter('[data-bv-validator="' + data.validator + '"]').show();
-        }).on('success.form.bv', function() {
+            .data('fv.messages')
+            .find('.help-block[data-fv-for="' + data.field + '"]').hide()
+            .filter('[data-fv-validator="' + data.validator + '"]').show();
+        }).on('success.form.fv', function() {
           var submit_action = $('#submit_action').val();
           if (!submit_action)
             return;
@@ -403,11 +406,11 @@ define(['jquery', 'bootbox', 'survey.sum', 'survey.cell', 'surveys.dispatch', 'b
               $('#save-survey-btn').html('Spara');
             }
           });
-        }).on('error.form.bv', function() {
+        }).on('error.form.fv', function() {
           var invalidField = survey.validator().getInvalidFields().first();
-          $('html, body').animate({
-            scrollTop: invalidField.offset().top - 10
-          }, 300);
+          $.scrollTo(invalidField, _scrollToDelay, {
+            offset: -30
+          });
         });
 
         var submitTo = function(action, submit) {
@@ -473,7 +476,6 @@ define(['jquery', 'bootbox', 'survey.sum', 'survey.cell', 'surveys.dispatch', 'b
           });
         });
 
-
         $('.col-sm-2 .form-control').focus(function() {
           if ($(window).width() <= 992) {
             var inputGroup = $(this).parent('.input-group');
@@ -489,7 +491,6 @@ define(['jquery', 'bootbox', 'survey.sum', 'survey.cell', 'surveys.dispatch', 'b
             .css('width', '')
             .removeClass('expanded');
         });
-
 
         survey.form('#save-survey-btn').click(function(e) {
           e.preventDefault();
@@ -570,19 +571,6 @@ define(['jquery', 'bootbox', 'survey.sum', 'survey.cell', 'surveys.dispatch', 'b
           }
         });
 
-        /* survey.form('#show-more-libraries').click(function (e) {
-                    event.preventDefault();
-                    var button = $(this);
-                    var oldText = button.text();
-                    button
-                        .text( button.attr('data-display-text') )
-                        .attr('data-display-text', oldText)
-                        .blur();
-
-                    $('tr.library').toggleClass('expanded');
-                    return false;
-                });*/
-
         $('#confirm-submit-survey-btn').click(function(e) {
           e.preventDefault();
 
@@ -610,7 +598,6 @@ define(['jquery', 'bootbox', 'survey.sum', 'survey.cell', 'surveys.dispatch', 'b
             icon.addClass('fa-angle-down');
           }
         };
-
 
         $('#panel-help .collapse').on('show.bs.collapse', function() {
           setIcon($(this).attr('id'), 'show');
@@ -645,7 +632,7 @@ define(['jquery', 'bootbox', 'survey.sum', 'survey.cell', 'surveys.dispatch', 'b
           });
           survey.form('input').keyup(function() {
             var input = $(this);
-            if (input.prop('data-bv-numeric')) {
+            if (input.prop('data-fv-numeric')) {
               var value = input.val().replace(/\./g, ',');
               if (input.val() !== value) input.val(value);
             }

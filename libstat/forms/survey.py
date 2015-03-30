@@ -24,40 +24,40 @@ class SurveyForm(forms.Form):
 
         if cell.sum_of:
             attrs["data-sum-of"] = " ".join(map(lambda s: s, cell.sum_of))
-            attrs["data-bv-notempty"] = ""
+            attrs["data-fv-notempty"] = ""
             attrs["placeholder"] = "Obligatorisk"
 
         if "required" in cell.types:
-            attrs["data-bv-notempty"] = ""
+            attrs["data-fv-notempty"] = ""
             attrs["placeholder"] = "Obligatorisk"
 
         if "integer" in cell.types:
-            attrs["data-bv-integer"] = ""
-            attrs["data-bv-greaterthan"] = ""
-            attrs["data-bv-greaterthan-value"] = "0"
-            attrs["data-bv-greaterthan-inclusive"] = ""
+            attrs["data-fv-integer"] = ""
+            attrs["data-fv-greaterthan"] = ""
+            attrs["data-fv-greaterthan-value"] = "0"
+            attrs["data-fv-greaterthan-inclusive"] = ""
             attrs["max"] = "99999999"
 
         if "numeric" in cell.types:
-            attrs["data-bv-numeric"] = ""
-            attrs["data-bv-numeric-separator"] = ","
-            attrs["data-bv-greaterthan"] = ""
-            attrs["data-bv-greaterthan-value"] = "0"
-            attrs["data-bv-greaterthan-inclusive"] = ""
+            attrs["data-fv-numeric"] = ""
+            attrs["data-fv-numeric-separator"] = ","
+            attrs["data-fv-greaterthan"] = ""
+            attrs["data-fv-greaterthan-value"] = "0"
+            attrs["data-fv-greaterthan-inclusive"] = ""
             attrs["max"] = "99999999"
-            attrs["data-bv-regexp"] = ""
-            attrs["data-bv-regexp-regexp"] = "^\d+(\,\d{1,3})?$"
-            attrs["data-bv-regexp-message"] = "Vänligen mata in ett nummer med max 3 decimaler (tex 12,522)"
+            attrs["data-fv-regexp"] = ""
+            attrs["data-fv-regexp-regexp"] = "^\d+(\,\d{1,3})?$"
+            attrs["data-fv-regexp-message"] = "Vänligen mata in ett nummer med max 3 decimaler (tex 12,522)"
 
         if "email" in cell.types:
-            attrs["data-bv-emailaddress"] = ""
-            attrs["data-bv-regexp"] = ""
-            attrs["data-bv-regexp-regexp"] = ".+@.+\..+"
-            attrs["data-bv-regexp-message"] = "Vänligen mata in en giltig emailadress"
+            attrs["data-fv-emailaddress"] = ""
+            attrs["data-fv-regexp"] = ""
+            attrs["data-fv-regexp-regexp"] = ".+@.+\..+"
+            attrs["data-fv-regexp-message"] = "Vänligen mata in en giltig emailadress"
 
         if "text" in cell.types:
-            attrs["data-bv-stringlength"] = ""
-            attrs["data-bv-stringlength-min"] = "0"
+            attrs["data-fv-stringlength"] = ""
+            attrs["data-fv-stringlength-min"] = "0"
 
         if "Utgift" in cell.variable_key or "Intakt" in cell.variable_key:
             attrs["max"] = "999999999"
@@ -172,7 +172,7 @@ class SurveyForm(forms.Form):
     def __init__(self, *args, **kwargs):
         survey = kwargs.pop('survey', None)
         authenticated = kwargs.pop('authenticated', False)
-        super(SurveyForm, self).__init__(*args, **kwargs)        
+        super(SurveyForm, self).__init__(*args, **kwargs)
 
         # Cache variables for performance
         variables = {}

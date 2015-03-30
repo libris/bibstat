@@ -56,7 +56,7 @@
                 <!-- <input type="hidden" name="scroll_position" id="scroll_position" value="{{ scroll_position }}"> -->
             {% endif %}
 
-            <div class="panel panel-transparent">
+            <div class="panel panel-transparent well well-sm">
                 <div class="panel-heading" role="tab" id="heading0">
                     <h2 class="section-title" data-toggle="collapse" data-parent="#survey-form" data-target="#section0" aria-expanded="true" aria-controls="sectionOne">
                         <i class="fa fa-fw fa-chevron-down"></i> Svarande organisation/bibliotek
@@ -95,7 +95,7 @@
                 </div>
             </div>
             {% for section in form.sections %}
-            <div class="panel panel-transparent">
+            <div class="panel panel-transparent well well-sm">
                 <div class="panel-heading" role="tab" id="heading{{ forloop.counter }}">
                     <h2 class="section-title" data-toggle="collapse" data-parent="#survey-form" data-target="#section{{ forloop.counter }}" aria-expanded="true" aria-controls="section{{ forloop.counter }}">
                         <i class="fa fa-fw fa-chevron-right"></i> {{ section.title }}

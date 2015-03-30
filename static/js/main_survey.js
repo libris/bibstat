@@ -7,8 +7,9 @@
         urlArgs: 'bust=' + (new Date()).getTime(),
         shim: {
             'bootstrap': ['jquery'],
-            'bootstrap.validator': ['bootstrap'],
-            'bootstrap.validator.sv': ['bootstrap.validator'],
+            'formValidation': ['bootstrap'],
+            'formValidation.bootstrap': ['formValidation'],
+            'formValidation.sv': ['formValidation'],
             'jquery.textrange': ['jquery'],
             'jquery.scrollTo': ['jquery'],
             'jquery.placeholder': ['jquery']
@@ -28,8 +29,9 @@
 
             /* Plugins */
             'bootstrap': 'plugins/bootstrap/3.2.0/js/bootstrap',
-            'bootstrap.validator': 'plugins/bootstrap-validator/0.5.3/js/bootstrapValidator',
-            'bootstrap.validator.sv': 'plugins/bootstrap-validator/0.5.3/js/language/sv_SE',
+            'formValidation': 'plugins/formValidation/js/formValidation',
+            'formValidation.bootstrap': 'plugins/formValidation/js/framework/bootstrap',
+            'formValidation.sv': 'plugins/formValidation/js/language/sv_SE',
             'jquery': 'plugins/jquery/1.11.1/jquery',
             'jquery.textrange': 'plugins/jquery/textrange/1.3.0/jquery-textrange',
             'jquery.placeholder': 'plugins/jquery/placeholder/jquery.placeholder',
