@@ -226,32 +226,25 @@ define(['jquery', 'bootbox', 'survey.sum', 'survey.cell', 'surveys.dispatch', 'b
       });
     };
     var updateProgress = function() {
-      var total = survey.enabledInputs().length;
-      var correct = survey.correctInputs().length;
-      var percent = (correct / total) * 100;
-
-      var requiredPercent = Math.ceil((survey.requiredInputs().length / total) * 100);
-      var boostedPercent = Math.ceil(1.15 * percent);
-
-      var setText = function(text) {
-        survey.form('.answers-text').text(text);
-      };
-      var setPercent = function(percent) {
-        survey.form('.answers-progress .progress-bar-success').css('width', percent + '%');
-      };
-      var setPercentAndText = function(percent) {
-        setText('Du har hittills fyllt i ' + percent + '% av hela enkäten');
-        setPercent(percent);
-      };
-
-      if (correct === 0) {
-        setText('Inga fält är ifyllda');
+      var totalInputsLength = survey.enabledInputs().length,
+        correctInputsLength = survey.correctInputs().length,
+        correctInputsPercentage = Math.ceil((correctInputsLength / totalInputsLength) * 100),
+        requiredPercent = Math.ceil((survey.requiredInputs().length / totalInputsLength) * 100),
+        setText = function(text) {
+          survey.form('.answers-text').text(text);
+        },
+        setPercent = function(percent) {
+          survey.form('.answers-progress .progress-bar-success').css('width', percent + '%');
+        },
+        setPercentAndText = function(percent) {
+          setText('Du har hittills fyllt i ' + percent + '% av hela enkäten');
+          setPercent(percent);
+        };
+      if (correctInputsLength === 0) {
+        setText('Du har inte börjat fylla i enkäten ännu.');
         setPercent(0);
-      } else if (boostedPercent <= requiredPercent) {
-        setPercentAndText(Math.min(boostedPercent, requiredPercent));
       } else {
-        percent = (correct == total) ? 100 : Math.ceil(percent);
-        setPercentAndText(Math.max(percent, requiredPercent));
+        setPercentAndText(correctInputsPercentage);
       }
     };
     var initProgress = function() {
@@ -459,7 +452,6 @@ define(['jquery', 'bootbox', 'survey.sum', 'survey.cell', 'surveys.dispatch', 'b
           });
         });
 
-
         $('.col-sm-2 .form-control').focus(function() {
           if ($(window).width() <= 992) {
             var inputGroup = $(this).parent('.input-group');
@@ -475,7 +467,6 @@ define(['jquery', 'bootbox', 'survey.sum', 'survey.cell', 'surveys.dispatch', 'b
             .css('width', '')
             .removeClass('expanded');
         });
-
 
         survey.form('#save-survey-btn').click(function(e) {
           e.preventDefault();
@@ -556,19 +547,6 @@ define(['jquery', 'bootbox', 'survey.sum', 'survey.cell', 'surveys.dispatch', 'b
           }
         });
 
-        /* survey.form('#show-more-libraries').click(function (e) {
-                    event.preventDefault();
-                    var button = $(this);
-                    var oldText = button.text();
-                    button
-                        .text( button.attr('data-display-text') )
-                        .attr('data-display-text', oldText)
-                        .blur();
-
-                    $('tr.library').toggleClass('expanded');
-                    return false;
-                });*/
-
         $('#confirm-submit-survey-btn').click(function(e) {
           e.preventDefault();
 
@@ -578,7 +556,6 @@ define(['jquery', 'bootbox', 'survey.sum', 'survey.cell', 'surveys.dispatch', 'b
             survey.validator().validate();
           }, 100);
         });
-
 
         cell.onChange(survey.changeableInputs(), function() {
           showChangesNotSaved();
@@ -596,7 +573,6 @@ define(['jquery', 'bootbox', 'survey.sum', 'survey.cell', 'surveys.dispatch', 'b
             icon.addClass('fa-angle-down');
           }
         };
-
 
         $('#panel-help .collapse').on('show.bs.collapse', function() {
           setIcon($(this).attr('id'), 'show');
