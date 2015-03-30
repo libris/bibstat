@@ -1,5 +1,7 @@
 from libstat.models import Survey
 from django.core.files import File
+from bibstat import settings
+import os
 
 def _get_surveys_with_no_observations(sample_year):
     survey_list = []
@@ -19,7 +21,7 @@ def match_libraries_and_replace_sigel(sample_year):
     count = 0
     matched = 0
 
-    f = open('match_libraries_log', 'wt')
+    f = open(os.path.join(settings.CLEAN_DATA_LOG_PATH, 'match_libraries_log'), 'wt')
     logfile = File(f)
 
     for survey in all_published_surveys:
@@ -56,7 +58,7 @@ def remove_empty_surveys(sample_year, mode):
     elif mode == 'not_viewed':
         remove_surveys = _get_surveys_with_status_not_viewed(sample_year)
 
-    f = open('remove_surveys_log', 'wt')
+    f = open(os.path.join(settings.CLEAN_DATA_LOG_PATH, 'remove_surveys_log'), 'wt')
     logfile = File(f)
     logfile.write("Mode: %s\n" % mode)
 
