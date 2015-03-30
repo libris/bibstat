@@ -334,7 +334,53 @@ define(['jquery', 'bootbox', 'survey.sum', 'survey.cell', 'surveys.dispatch', 'f
           excluded: ['.disable-validation', ':disabled', ':hidden', ':not(:visible)'],
           trigger: 'blur',
           locale: 'sv_SE',
-          icon: null
+          icon: null,
+          fields: {
+            integer: {
+              selector: '.type-integer',
+              validators: {
+                greaterThan: {
+                  inclusive: '',
+                  value: '0'
+                },
+                integer: {}
+              }
+            },
+            email: {
+              selector: '.type-email',
+              validators: {
+                regexp: {
+                  regexp: '.+@.+\..+',
+                  message: 'Vänligen mata in en giltig e-postadress'
+                },
+                emailAddress: {}
+              }
+            },
+            numeric: {
+              selector: '.type-numeric',
+              validators: {
+                greaterThan: {
+                  inclusive: '',
+                  value: '0'
+                },
+                numeric: {
+                  separator: ','
+                },
+                regexp: {
+                  regexp: '^\d+(\,\d{1,3})?$',
+                  message: 'Vänligen mata in ett nummer med max 3 decimaler (tex 12,522)'
+                }
+              }
+            },
+            text: {
+              selector: '.type-text',
+              validators: {
+                stringLength: {
+                  min: 0
+                }
+              }
+            }
+          }
         }).on('error.validator.fv', function(e, data) { // http://bootstrapvalidator.com/examples/changing-default-behaviour/#showing-one-message-each-time
           data.element
             .data('fv.messages')
@@ -342,8 +388,9 @@ define(['jquery', 'bootbox', 'survey.sum', 'survey.cell', 'surveys.dispatch', 'f
             .filter('[data-fv-validator="' + data.validator + '"]').show();
         }).on('success.form.fv', function() {
           var submit_action = $('#submit_action').val();
-          if (!submit_action)
+          if (!submit_action) {
             return;
+          }
 
           $('#altered_fields').val(survey.changeableInputs().filter(function() {
             return $(this).val() != $(this).attr('data-original-value');
@@ -580,7 +627,6 @@ define(['jquery', 'bootbox', 'survey.sum', 'survey.cell', 'surveys.dispatch', 'f
             survey.validator().validate();
           }, 100);
         });
-
 
         cell.onChange(survey.changeableInputs(), function() {
           showChangesNotSaved();

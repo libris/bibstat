@@ -24,40 +24,26 @@ class SurveyForm(forms.Form):
 
         if cell.sum_of:
             attrs["data-sum-of"] = " ".join(map(lambda s: s, cell.sum_of))
-            attrs["data-fv-notempty"] = ""
+            attrs["required"] = ""
             attrs["placeholder"] = "Obligatorisk"
 
         if "required" in cell.types:
-            attrs["data-fv-notempty"] = ""
+            attrs["required"] = ""
             attrs["placeholder"] = "Obligatorisk"
 
         if "integer" in cell.types:
-            attrs["data-fv-integer"] = ""
-            attrs["data-fv-greaterthan"] = ""
-            attrs["data-fv-greaterthan-value"] = "0"
-            attrs["data-fv-greaterthan-inclusive"] = ""
             attrs["max"] = "99999999"
+            attrs["class"] = "{} type-integer".format(attrs["class"])
 
         if "numeric" in cell.types:
-            attrs["data-fv-numeric"] = ""
-            attrs["data-fv-numeric-separator"] = ","
-            attrs["data-fv-greaterthan"] = ""
-            attrs["data-fv-greaterthan-value"] = "0"
-            attrs["data-fv-greaterthan-inclusive"] = ""
             attrs["max"] = "99999999"
-            attrs["data-fv-regexp"] = ""
-            attrs["data-fv-regexp-regexp"] = "^\d+(\,\d{1,3})?$"
-            attrs["data-fv-regexp-message"] = "Vänligen mata in ett nummer med max 3 decimaler (tex 12,522)"
+            attrs["class"] = "{} type-numeric".format(attrs["class"])
 
         if "email" in cell.types:
-            attrs["data-fv-emailaddress"] = ""
-            attrs["data-fv-regexp"] = ""
-            attrs["data-fv-regexp-regexp"] = ".+@.+\..+"
-            attrs["data-fv-regexp-message"] = "Vänligen mata in en giltig emailadress"
+            attrs["class"] = "{} type-email".format(attrs["class"])
 
         if "text" in cell.types:
-            attrs["data-fv-stringlength"] = ""
-            attrs["data-fv-stringlength-min"] = "0"
+            attrs["class"] = "{} type-text".format(attrs["class"])
 
         if "Utgift" in cell.variable_key or "Intakt" in cell.variable_key:
             attrs["max"] = "999999999"
@@ -65,7 +51,6 @@ class SurveyForm(forms.Form):
         if not observation or observation.value_unknown:
             attrs["disabled"] = ""
             attrs["class"] = "{} value-unknown".format(attrs["class"])
-
             attrs["data-original-value"] = observation.value if observation and observation.value is not None else ""
 
         if authenticated:
