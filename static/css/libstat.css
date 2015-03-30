@@ -437,10 +437,11 @@ label.sub-label {
 .page-survey .panel-transparent > .panel-heading h2 {
     padding-left: 0;
     margin-top: 20px;
+    cursor: pointer;
 }
+
 .page-survey .panel-transparent > .panel-heading {
     padding: 0;
-    cursor: pointer;
 }
 
 .page-survey .panel-default .panel-heading {
