@@ -20,6 +20,15 @@ def _get_surveys_with_status_not_viewed(sample_year):
     return surveys
 
 
+def _update_sigel(survey, matched_survey):
+    if survey.library.sigel in survey.selected_libraries:
+        survey.selected_libraries.remove(survey.library.sigel)
+        survey.selected_libraries.append(matched_survey.library.sigel)
+    survey.library.sigel = matched_survey.library.sigel
+    survey.save()
+    survey.publish()
+
+
 def match_libraries_and_replace_sigel(sample_year):
     all_published_surveys = Survey.objects.filter(sample_year=sample_year, _status=u"published")
     count = 0
@@ -29,7 +38,7 @@ def match_libraries_and_replace_sigel(sample_year):
     logfile = File(f)
 
     for survey in all_published_surveys:
-        if len(survey.library.sigel) == 10 or survey.library.sigel.startswith("8", 0, 1):  # fake sigel or 8*-sigel
+        if len(survey.library.sigel) == 10 or survey.library.sigel.startswith("8", 0, 1):  #random-sigel or 8*-sigel
             count = count + 1
             #find other surveys with same library name
             matching_surveys = Survey.objects.filter(library__name=survey.library.name, pk__ne=survey.pk)
@@ -40,9 +49,7 @@ def match_libraries_and_replace_sigel(sample_year):
                         if matched_survey.library.sigel.startswith("8", 0, 1) == False or index == len(matching_surveys) - 1:
                             logfile.write(
                                 "Changing sigel %s to %s\n" % (survey.library.sigel, matched_survey.library.sigel))
-                            survey.library.sigel = matched_survey.library.sigel
-                            survey.save()
-                            survey.publish()
+                            _update_sigel(survey, matched_survey)
                             matched = matched + 1
                             break
 
@@ -51,10 +58,10 @@ def match_libraries_and_replace_sigel(sample_year):
     no_of_unmatched_surveys = len(unmatched_surveys)
 
     logfile.write("\nMatched libraries for year %d\n" % sample_year)
-    logfile.write("Found %d number of published surveys with fake sigels\n" % count)
+    logfile.write("Found %d number of published surveys with random-sigels\n" % count)
     logfile.write("Changed sigel for %d number of surveys\n" % matched)
     logfile.write(
-        "Remaining published surveys year %d with fake sigels: %d. Sigels: \n" % (sample_year, no_of_unmatched_surveys))
+        "Remaining published surveys year %d with random-sigels: %d. Sigels: \n" % (sample_year, no_of_unmatched_surveys))
 
     for unmatched_survey in unmatched_surveys:
         logfile.write("%s\n" % unmatched_survey.library.sigel)
