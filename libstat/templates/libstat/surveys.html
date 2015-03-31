@@ -118,16 +118,20 @@
                                        data-placement="top" data-toggle="tooltip"
                                        data-original-title="Sök efter hela eller delar av: e-postadress, biblioteksnamn, kommun och kommunkod">
                                 <button type="submit" name="action" value="list"
-                                        class="btn btn-primary">
+                                        class="btn btn-primary no-margin">
                                     Visa
                                 </button>
-                                <label>
-                                    <input type="checkbox"
-                                           id="exclude_co_reported_by_other"
-                                           name="exclude_co_reported_by_other"
-                                           {% if exclude_co_reported_by_other %}checked{% endif %}>
-                                    Visa inte bibliotek som samredovisas av annat bibliotek
-                                </label>
+                            </div>
+                            <div class="form-group">
+                                <div class="checkbox">
+                                    <label>
+                                        <input type="checkbox"
+                                               id="exclude_co_reported_by_other"
+                                               name="exclude_co_reported_by_other"
+                                               {% if exclude_co_reported_by_other %}checked{% endif %}>
+                                        Visa inte bibliotek som samredovisas av annat bibliotek
+                                    </label>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -216,21 +220,21 @@
                     <input type="hidden" name="free_text" value="{{ free_text }}"/>
                     <input type="hidden" name="surveys_state" value="{{ surveys_state }}"/>
                 {% endif %}
-                <table class="table survey_responses">
+                <table class="table survey_responses table-striped">
                     <thead>
                     <tr>
-                        <th class="column selection no-sort-carets">
+                        <th class="column selection">
                             <input title="Markera alla" class="select-all"
                                    type="checkbox" value="all"/>
                         </th>
-                        <th class="column">Bibliotek</th>
-                        <th class="column">Kommun</th>
-                        <th class="column">Kod</th>
-                        <th class="column">Bibliotekstyp</th>
-                        <th class="column">Email</th>
-                        <th class="column">Status</th>
+                        <th class="column">Bibliotek <i class="fa fa-fw fa-sort"></i></th>
+                        <th class="column">Kommun <i class="fa fa-fw fa-sort"></i></th>
+                        <th class="column sort-numeric">Kod <i class="fa fa-fw fa-sort"></i></th>
+                        <th class="column">Bibliotekstyp <i class="fa fa-fw fa-sort"></i></th>
+                        <th class="column">Email <i class="fa fa-fw fa-sort"></i></th>
+                        <th class="column">Status <i class="fa fa-fw fa-sort"></i></th>
                         <th class="column">Publicerad</th>
-                        <th class="no-sort-carets"></th>
+                        <th></th>
                     </tr>
                     </thead>
                     <tbody>

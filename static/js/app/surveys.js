@@ -1,5 +1,5 @@
-/*global define,Urls,alert*/
-define(['jquery', 'bootbox', 'surveys.dispatch'],
+/*global define,Urls*/
+define(['jquery', 'surveys.dispatch'],
   function($, dispatch) {
     'use strict';
 
@@ -89,7 +89,10 @@ define(['jquery', 'bootbox', 'surveys.dispatch'],
           e.preventDefault();
         });
 
-        $('.survey-popover').tooltip();
+        $(document).tooltip({
+          selector: '.survey-popover',
+        });
+
       }
     };
   });

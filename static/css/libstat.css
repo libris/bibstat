@@ -29,8 +29,8 @@ a[disabled] {
     margin-bottom: 0;
 }
 
-.no-sort-carets {
-    background-image: inherit !important;
+.no-margin {
+    margin: 0 !important;
 }
 
 .dispatch-label {
@@ -38,31 +38,27 @@ a[disabled] {
 }
 
 /* Top menu */
-.libstat .navbar-inverse li:hover {
+.navbar-inverse li:hover {
     background-color: #333333;
 }
 
 /* Table Sortable plugin */
-.libstat .tablesorter .tablesorter-header {
-    background-image: url(../img/bg.gif);
-    background-repeat: no-repeat;
-    background-position: center right;
+.tablesorter .tablesorter-header {
     cursor: pointer;
     padding-right: 16px;
+    white-space: nowrap;
 }
-
-.libstat .tablesorter .tablesorter-header.tablesorter-headerAsc {
-    background-image: url(../img/asc.gif);
+.tablesorter .tablesorter-headerAsc .fa:before {
+    content: "\f15d";
 }
-
-.libstat .tablesorter .tablesorter-header.tablesorter-headerDesc {
-    background-image: url(../img/desc.gif);
+.tablesorter .tablesorter-headerDesc .fa:before {
+    content: "\f15e";
 }
-
-.libstat .tablesorter .tablesorter-header.tablesorter-headerAsc,
-.libstat .tablesorter .tablesorter-header.tablesorter-headerDesc {
-    background-color: #428BCA;
-    color: #ffffff;
+.tablesorter .tablesorter-headerAsc.sort-numeric .fa:before {
+    content: "\f162";
+}
+.tablesorter .tablesorter-headerDesc.sort-numeric .fa:before {
+    content: "\f163";
 }
 
 .modified-after-publish {
@@ -129,8 +125,8 @@ a[disabled] {
     background-color: #f5f5f5;
 }
 
-#exclude_co_reported_by_other {
-    margin-top: 15px;
+.form-inline .form-group {
+    margin-bottom: 15px;
 }
 
 /* Edit survey response */
