@@ -42,6 +42,7 @@ def match_libraries_and_replace_sigel(sample_year):
                                 "Changing sigel %s to %s\n" % (survey.library.sigel, matched_survey.library.sigel))
                             survey.library.sigel = matched_survey.library.sigel
                             survey.save()
+                            survey.publish()
                             matched = matched + 1
                             break
 
