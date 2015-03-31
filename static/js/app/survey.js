@@ -51,7 +51,12 @@ define(['jquery', 'bootbox', 'survey.sum', 'survey.cell', 'formValidation.sv', '
         });
       },
       requiredInputs: function() {
-        return survey.enabledInputs().filter('[data-fv-notempty]');
+        return survey.enabledInputs().filter('[required]');
+      },
+      requiredEmptyInputs: function() {
+        return survey.enabledInputs().filter(function() {
+          return !$(this).val() && $(this).is('[required]');
+        });
       },
       sumOfInputs: function() {
         return survey.enabledInputs().filter('[data-sum-of]');
@@ -227,32 +232,27 @@ define(['jquery', 'bootbox', 'survey.sum', 'survey.cell', 'formValidation.sv', '
       });
     };
     var updateProgress = function() {
-      var total = survey.enabledInputs().length;
-      var correct = survey.correctInputs().length;
-      var percent = (correct / total) * 100;
-
-      var requiredPercent = Math.ceil((survey.requiredInputs().length / total) * 100);
-      var boostedPercent = Math.ceil(1.15 * percent);
-
-      var setText = function(text) {
-        survey.form('.answers-text').text(text);
-      };
-      var setPercent = function(percent) {
-        survey.form('.answers-progress .progress-bar-success').css('width', percent + '%');
-      };
-      var setPercentAndText = function(percent) {
-        setText('Du har hittills fyllt i ' + percent + '% av hela enkäten');
-        setPercent(percent);
-      };
-
-      if (correct === 0) {
-        setText('Inga fält är ifyllda');
+      var totalInputsLength = survey.enabledInputs().length,
+        correctInputsLength = survey.correctInputs().length,
+        requiredInputsLength = survey.requiredInputs().length,
+        requiredEmptyInputsLength = survey.requiredEmptyInputs().length,
+        correctInputsPercentage = Math.ceil((correctInputsLength / totalInputsLength) * 100),
+        requiredPercent = Math.ceil((requiredInputsLength / totalInputsLength) * 100),
+        setText = function(text) {
+          survey.form('.answers-text').html(text);
+        },
+        setPercent = function(percent) {
+          survey.form('.answers-progress .progress-bar-success').css('width', percent + '%');
+        },
+        setPercentAndText = function(percent) {
+          setText('Du har hittills fyllt i <strong>'+ percent +'%</strong> av hela enkäten.<br>Du har <strong>'+ requiredEmptyInputsLength +'</strong> obligatoriska fält kvar att fylla i.');
+          setPercent(percent);
+        };
+      if (correctInputsLength === 0) {
+        setText('Du har inte börjat fylla i enkäten ännu.');
         setPercent(0);
-      } else if (boostedPercent <= requiredPercent) {
-        setPercentAndText(Math.min(boostedPercent, requiredPercent));
       } else {
-        percent = (correct == total) ? 100 : Math.ceil(percent);
-        setPercentAndText(Math.max(percent, requiredPercent));
+        setPercentAndText(correctInputsPercentage);
       }
     };
     var initProgress = function() {
@@ -537,11 +537,13 @@ define(['jquery', 'bootbox', 'survey.sum', 'survey.cell', 'formValidation.sv', '
 
           $('#submit_action').val('');
 
-          var submitButton = $(this),
-            submitButtonHtml = submitButton.html(),
+          var $submitButton = $(this),
+            $validating = $('.validating'),
+            submitButtonHtml = $submitButton.html(),
             otherButtons = $('#save-survey-btn, #print-survey-btn');
 
-          submitButton.html('<i class="fa fa-spinner fa-pulse"></i> Kontrollerar...').addClass('disabled');
+          $validating.css({'display': 'table'});
+          $submitButton.html('<i class="fa fa-spinner fa-pulse"></i> Kontrollerar...').addClass('disabled');
           otherButtons.addClass('disabled');
 
           setTimeout(function() {
@@ -551,7 +553,8 @@ define(['jquery', 'bootbox', 'survey.sum', 'survey.cell', 'formValidation.sv', '
               $('#submit-confirm-modal').modal('show');
             }
 
-            submitButton.html(submitButtonHtml).removeClass('disabled');
+            $validating.css({'display': 'none'});
+            $submitButton.html(submitButtonHtml).removeClass('disabled');
             otherButtons.removeClass('disabled');
           }, 100);
         });

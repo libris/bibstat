@@ -321,7 +321,7 @@ label.sub-label {
     display: inline-block;
 }
 
-.loading,.saving{
+.loading, .saving, .validating{
     display: table;
     position: absolute;
     top: 30%;
@@ -338,13 +338,15 @@ label.sub-label {
     font-size: 20px;
 }
 
-.loading p,.saving p {
+.loading p, .saving p, .validating p {
     display: table-cell;
     margin: auto auto;
     vertical-align: middle;
     text-align: center;
 }
-
+.validating, .saving {
+    display: none;
+}
 .input-group-btn {
     cursor: not-allowed;
 }
@@ -353,7 +355,8 @@ label.sub-label {
     display: inline-block;
     cursor: default;
 }
-.page-survey .loading {
+.page-survey .loading,
+.page-survey .validating {
     position: fixed;
 }
 .page-survey .fa-pulse {
