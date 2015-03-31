@@ -75,5 +75,5 @@ data/public_exports
 tmp/
 
 # Log files for survey admin functions
-match_libraries_log
-remove_surveys_log
+match_libraries_log*
+remove_surveys_log*
