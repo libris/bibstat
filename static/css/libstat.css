@@ -356,6 +356,9 @@ label.sub-label {
 .page-survey .loading {
     position: fixed;
 }
+.page-survey .fa-pulse {
+    line-height: inherit;
+}
 .page-survey .input-group.expanded {
     border-radius: 3px;
     box-shadow: 0 0 0 2px #428bca;
