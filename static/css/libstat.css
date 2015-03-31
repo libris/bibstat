@@ -421,40 +421,52 @@ label.sub-label {
 .page-survey .popover .popover-content {
     padding: 15px;
 }
-.page-survey #survey-form > .panel-transparent {
+.page-survey #survey-form > .panel-wrapper,
+.page-survey .panel-wrapper .panel-collapse {
     box-shadow: none;
 }
-.page-survey .panel-transparent .panel {
+.page-survey .panel-wrapper .panel-collapse {
+    margin-bottom: 0;
+}
+.page-survey .panel-wrapper .panel {
     background-color: transparent;
 }
-.page-survey .panel-body {
+.page-survey .panel-bibstat .panel-body {
     background-color: rgb(255, 209, 142);
     border-top-color: rgb(219, 136, 4) !important;
     border-bottom: 0px !important;
     border-bottom-left-radius: 3px !important;
     border-bottom-right-radius: 3px !important;
 }
-.page-survey .panel-transparent > .panel-heading h2 {
+.page-survey .panel-wrapper > .panel-heading h2 {
     padding-left: 0;
-    margin-top: 20px;
-    margin-bottom: 20px;
+    margin-top: 10px;
+    margin-bottom: 10px;
     cursor: pointer;
 }
-.page-survey .panel-transparent > .panel-heading {
-    padding: 0;
+.page-survey .panel-wrapper > .panel-heading h2 .fa {
+    -webkit-transition: all .15s linear;
+       -moz-transition: all .15s linear;
+            transition: all .15s linear;
+    -webkit-filter: blur(0);
+            filter: blur(0);
 }
-.page-survey .panel-default .panel-heading {
+.page-survey .panel-bibstat .panel-heading {
     background-color: rgb(242, 148, 0) !important;
     color: white !important;
     border-color: rgb(219, 136, 4) !important;
 }
-.page-survey .panel-footer {
+.page-survey .panel-bibstat .panel-footer {
     background-color: rgb(242, 148, 0) !important;
     color: white !important;
 }
-.page-survey .panel-default {
+.page-survey .panel-bibstat {
     border-color: rgb(219, 136, 4) !important;
 }
+.page-survey .panel-bibstat:last-child {
+    margin-bottom: 0;
+}
+
 .page-survey .container hr {
     border-color: rgb(219, 136, 4) !important;
 }

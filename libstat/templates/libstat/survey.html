@@ -56,151 +56,164 @@
                 <!-- <input type="hidden" name="scroll_position" id="scroll_position" value="{{ scroll_position }}"> -->
             {% endif %}
 
-            <div class="panel panel-transparent well well-sm">
+            <div class="panel panel-default panel-wrapper">
                 <div class="panel-heading" role="tab" id="heading0">
                     <h2 class="section-title" data-toggle="collapse" data-parent="#survey-form" data-target="#section0" aria-expanded="true" aria-controls="sectionOne">
-                        <i class="fa fa-fw fa-chevron-down"></i> Svarande organisation/bibliotek
+                        <i class="fa fa-fw fa-chevron-right fa-rotate-90"></i> Svarande organisation/bibliotek
                     </h2>
                 </div>
-                <div id="section0" class="panel panel-default panel-collapse collapse in" role="tabpanel" aria-labelledby="heading0">
-                    <div class="panel-heading">Kryssa för de adresser som du vill redovisa för i denna enkät:</div>
+                <div id="section0" class="panel panel-collapse collapse in" role="tabpanel" aria-labelledby="heading0">
                     <div class="panel-body">
-                        <table class="table">
-                            <thead>
-                            <tr>
-                                <th class="column"></th>
-                                <th class="column">Namn</th>
-                                <th class="column">Stad</th>
-                                <th class="column">Adress</th>
-                                <th class="column">Kommentar</th>
-                            </tr>
-                            </thead>
-                            <tbody>
-                            {% for library in form.libraries %}
-                                <tr{% if not forloop.first %} class="library"{% endif %}>
-                                    <td>
-                                        {% with key=library.checkbox_id %}
-                                            {{ form|access:key }}
-                                        {% endwith %}
-                                    </td>
-                                    <td><label for="id_{{library.checkbox_id}}">{{ library.name }}</label></td>
-                                    <td>{{ library.city }}</td>
-                                    <td>{{ library.address }}</td>
-                                    <td><em>{{ library.comment }}</em></td>
-                                </tr>
-                            {% endfor %}
-                            </tbody>
-                        </table>
+                        <div class="panel panel-bibstat">
+                            <div class="panel-heading">Kryssa för de adresser som du vill redovisa för i denna enkät:</div>
+                            <div class="panel-body">
+                                <table class="table">
+                                    <thead>
+                                    <tr>
+                                        <th class="column"></th>
+                                        <th class="column">Namn</th>
+                                        <th class="column">Stad</th>
+                                        <th class="column">Adress</th>
+                                        <th class="column">Kommentar</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    {% for library in form.libraries %}
+                                        <tr{% if not forloop.first %} class="library"{% endif %}>
+                                            <td>
+                                                {% with key=library.checkbox_id %}
+                                                    {{ form|access:key }}
+                                                {% endwith %}
+                                            </td>
+                                            <td><label for="id_{{library.checkbox_id}}">{{ library.name }}</label></td>
+                                            <td>{{ library.city }}</td>
+                                            <td>{{ library.address }}</td>
+                                            <td><em>{{ library.comment }}</em></td>
+                                        </tr>
+                                    {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="panel-footer">
+                        <button type="button" class="btn btn-default btn-next">Nästa <i class="fa fa-fw fa-arrow-right"></i></button>
                     </div>
                 </div>
             </div>
             {% for section in form.sections %}
-            <div class="panel panel-transparent well well-sm">
+            <div class="panel panel-default panel-wrapper">
                 <div class="panel-heading" role="tab" id="heading{{ forloop.counter }}">
-                    <h2 class="section-title" data-toggle="collapse" data-parent="#survey-form" data-target="#section{{ forloop.counter }}" aria-expanded="true" aria-controls="section{{ forloop.counter }}">
+                    <h2 class="section-title collapsed" data-toggle="collapse" data-parent="#survey-form" data-target="#section{{ forloop.counter }}" aria-expanded="true" aria-controls="section{{ forloop.counter }}">
                         <i class="fa fa-fw fa-chevron-right"></i> {{ section.title }}
                     </h2>
                 </div>
                 <div id="section{{ forloop.counter }}" class="panel panel-collapse collapse" role="tabpanel" aria-labelledby="heading{{ forloop.counter }}">
-
-                {% for group in section.groups %}
-                    <div class="panel panel-default">
-                        {% if group.description %}
-                            <div class="panel-heading group-heading">
-                                <div class="row">
-                                    <div class="col-sm-8 group-description">
-                                        {% with description=group.description|split_into_number_and_body %}
-                                            <b>{{ description.0 }}</b>
-                                            {{ description.1 }}
-                                        {% endwith %}
-                                    </div>
-                                </div>
-                            </div>
-                        {% endif %}
-                        <div class="panel-body group-body">
-                            {% if group.columns >= 2 %}
-                                <div class="row">
-                                    <div class="{% if group.columns == 2 %}col-sm-4{% elif group.columns == 3 %}col-sm-3{% elif group.columns == 4 %}col-sm-4{% endif %}"></div>
-                                    {% for header in group.headers %}
-                                        <div class="group-header {% if group.columns <= 2 %}col-sm-4{% elif group.columns == 3 %}col-sm-3{% elif group.columns == 4 %}col-sm-2{% endif %}">
-                                            <b>{{ header }}</b>
+                    <div class="panel-body">
+                    {% for group in section.groups %}
+                        <div class="panel panel-bibstat">
+                            {% if group.description %}
+                                <div class="panel-heading group-heading">
+                                    <div class="row">
+                                        <div class="col-sm-8 group-description">
+                                            {% with description=group.description|split_into_number_and_body %}
+                                                <b>{{ description.0 }}</b>
+                                                {{ description.1 }}
+                                            {% endwith %}
                                         </div>
-                                    {% endfor %}
+                                    </div>
                                 </div>
                             {% endif %}
-                            {% for row in group.rows %}
-                                {% if row.cells and row.cells.0 and "comment" in row.cells.0.types %}
+                            <div class="panel-body group-body">
+                                {% if group.columns >= 2 %}
                                     <div class="row">
-                                        <div class="col-sm-12">
-                                        {% with variable_key=row.cells.0.variable_key %}
-                                            {{ form|access:variable_key }}
-                                        {% endwith %}
+                                        <div class="{% if group.columns == 2 %}col-sm-4{% elif group.columns == 3 %}col-sm-3{% elif group.columns == 4 %}col-sm-4{% endif %}"></div>
+                                        {% for header in group.headers %}
+                                            <div class="group-header {% if group.columns <= 2 %}col-sm-4{% elif group.columns == 3 %}col-sm-3{% elif group.columns == 4 %}col-sm-2{% endif %}">
+                                                <b>{{ header }}</b>
+                                            </div>
+                                        {% endfor %}
+                                    </div>
+                                {% endif %}
+                                {% for row in group.rows %}
+                                    {% if row.cells and row.cells.0 and "comment" in row.cells.0.types %}
+                                        <div class="row">
+                                            <div class="col-sm-12">
+                                            {% with variable_key=row.cells.0.variable_key %}
+                                                {{ form|access:variable_key }}
+                                            {% endwith %}
+                                            </div>
                                         </div>
-                                    </div>
-                                {% else %}
-                                <div class="row">
-                                    <div class="{% if row.cells and row.cells.0 and row.cells.0.sum_of %}sum-description {% endif %}{% if group.columns <= 2 %}col-sm-4{% elif group.columns == 3 %}col-sm-3{% elif group.columns == 4 %}col-sm-4{% endif %}">
-                                    {{ row.description }}
-                                    {% if row.description|length > 70 and not forloop.last %}
-                                        <hr class="description-separator">
-                                    {% endif %}
-                                    </div>
-                                    {% for cell in row.cells %}
-                                        <div class="{% if group.columns <= 2 %}col-sm-4{% elif group.columns == 3 %}col-sm-3{% elif group.columns == 4 %}col-sm-2{% endif %}">
-                                            <div class="form-group">
-                                                <div class="input-group">
-                                                    {% with variable_key=cell.variable_key %}
-                                                        {% if cell.sum_of %}
-                                                            <div class="sum-of">=</div>
-                                                        {% endif %}
-                                                        {{ form|access:variable_key }}
-                                                    {% endwith %}
-                                                    <div class="input-group-btn">
-                                                        <!-- Skip dropdown for inputs in first group of first section. -->
-                                                        {% if not forloop.parentloop.parentloop.parentloop.first or not forloop.parentloop.parentloop.first %}
-                                                            {% with variable=form|access:cell.variable_key %}
-                                                                <button type="button" class="btn btn-default btn-dropdown dropdown-toggle" data-toggle="dropdown" tabindex="-1"{% if form.is_read_only %} disabled{% endif %} title="Visa alternativ"><span class="caret"></span></button>
-                                                                <ul class="dropdown-menu dropdown-menu-right {% if cell.value_unknown %}value-unknown{% endif %}" role="menu">
-                                                                {% if cell.value_unknown %}
-                                                                    <li class="active"><a href="#" class="menu-disable-input">Värdet är okänt</a></li>
-                                                                    <li><a href="#" class="menu-enable">Ange värdet</a></li>
-                                                                {% else %}
-                                                                    <li><a href="#" class="menu-disable-input">Värdet är okänt</a></li>
-                                                                    <li class="active"><a href="#" class="menu-enable">Ange värdet</a></li>
-                                                                {% endif %}
-                                                                </ul>
-                                                            {% endwith %}
-                                                        {% endif %}
-                                                        {% if cell.explanation %}
-                                                            <a class="btn btn-default btn-help" href="#" tabindex="-1" data-toggle="popover" data-placement="top" data-content="{{ cell.explanation }}" data-trigger="click" title="Förklaring">
-                                                                <i class="fa fa-question"></i>
-                                                            </a>
-                                                        {% endif %}
-                                                        {% if group.columns != 4 %}
-                                                            <div class="tooltip-wrapper" data-title="Föregående års värde">
-                                                                <button class="btn btn-default disabled btn-prev-year" tabindex="-1">{% if cell.previous_value %}{{ cell.previous_value|floatformat:"-2" }}{% else %} &mdash;{% endif %}</button>
-                                                            </div>
-                                                        {% endif %}
+                                    {% else %}
+                                    <div class="row">
+                                        <div class="{% if row.cells and row.cells.0 and row.cells.0.sum_of %}sum-description {% endif %}{% if group.columns <= 2 %}col-sm-4{% elif group.columns == 3 %}col-sm-3{% elif group.columns == 4 %}col-sm-4{% endif %}">
+                                        {{ row.description }}
+                                        {% if row.description|length > 70 and not forloop.last %}
+                                            <hr class="description-separator">
+                                        {% endif %}
+                                        </div>
+                                        {% for cell in row.cells %}
+                                            <div class="{% if group.columns <= 2 %}col-sm-4{% elif group.columns == 3 %}col-sm-3{% elif group.columns == 4 %}col-sm-2{% endif %}">
+                                                <div class="form-group">
+                                                    <div class="input-group">
+                                                        {% with variable_key=cell.variable_key %}
+                                                            {% if cell.sum_of %}
+                                                                <div class="sum-of">=</div>
+                                                            {% endif %}
+                                                            {{ form|access:variable_key }}
+                                                        {% endwith %}
+                                                        <div class="input-group-btn">
+                                                            <!-- Skip dropdown for inputs in first group of first section. -->
+                                                            {% if not forloop.parentloop.parentloop.parentloop.first or not forloop.parentloop.parentloop.first %}
+                                                                {% with variable=form|access:cell.variable_key %}
+                                                                    <button type="button" class="btn btn-default btn-dropdown dropdown-toggle" data-toggle="dropdown" tabindex="-1"{% if form.is_read_only %} disabled{% endif %} title="Visa alternativ"><span class="caret"></span></button>
+                                                                    <ul class="dropdown-menu dropdown-menu-right {% if cell.value_unknown %}value-unknown{% endif %}" role="menu">
+                                                                    {% if cell.value_unknown %}
+                                                                        <li class="active"><a href="#" class="menu-disable-input">Värdet är okänt</a></li>
+                                                                        <li><a href="#" class="menu-enable">Ange värdet</a></li>
+                                                                    {% else %}
+                                                                        <li><a href="#" class="menu-disable-input">Värdet är okänt</a></li>
+                                                                        <li class="active"><a href="#" class="menu-enable">Ange värdet</a></li>
+                                                                    {% endif %}
+                                                                    </ul>
+                                                                {% endwith %}
+                                                            {% endif %}
+                                                            {% if cell.explanation %}
+                                                                <a class="btn btn-default btn-help" href="#" tabindex="-1" data-toggle="popover" data-placement="top" data-content="{{ cell.explanation }}" data-trigger="click" title="Förklaring">
+                                                                    <i class="fa fa-question"></i>
+                                                                </a>
+                                                            {% endif %}
+                                                            {% if group.columns != 4 %}
+                                                                <div class="tooltip-wrapper" data-toggle="tooltip" title="Föregående års värde">
+                                                                    <button class="btn btn-default disabled btn-prev-year" tabindex="-1">{% if cell.previous_value %}{{ cell.previous_value|floatformat:"-2" }}{% else %} &mdash;{% endif %}</button>
+                                                                </div>
+                                                            {% endif %}
+                                                        </div>
                                                     </div>
                                                 </div>
                                             </div>
-                                        </div>
-                                    {% endfor %}
-                                </div>
-                                {% endif %}
-                            {% endfor %}
+                                        {% endfor %}
+                                    </div>
+                                    {% endif %}
+                                {% endfor %}
+                            </div>
                         </div>
+                    {% endfor %}
                     </div>
-                {% endfor %}
+                    {% if not forloop.last %}
+                    <div class="panel-footer">
+                        <button type="button" class="btn btn-default btn-next">Nästa <i class="fa fa-fw fa-arrow-right"></i></button>
+                    </div>
+                    {% endif %}
                 </div>
             </div>
             {% endfor %}
-            <div class="panel panel-default">
+            <div class="panel panel-bibstat">
                 <div class="panel-body group-body final-words">
                     Stort tack för att du besvarade frågorna!
                 </div>
             </div>
-            <div class="panel panel-default">
+            <div class="panel panel-bibstat">
                 <div class="panel-body group-body final-words">
                     Klicka på skicka-knappen för att lämna in enkäten.
                 </div>

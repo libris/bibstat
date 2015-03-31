@@ -1,6 +1,6 @@
 /*global define,Urls,alert*/
-define(['jquery', 'bootbox', 'survey.sum', 'survey.cell', 'surveys.dispatch', 'formValidation.sv', 'formValidation.bootstrap', 'jquery.placeholder', 'jquery.scrollTo'],
-  function($, bootbox, sum, cell, dispatch) {
+define(['jquery', 'bootbox', 'survey.sum', 'survey.cell', 'formValidation.sv', 'formValidation.bootstrap', 'jquery.placeholder', 'jquery.scrollTo'],
+  function($, bootbox, sum, cell) {
     'use strict';
     var _form = $('#survey-form'),
       _inputs = null,
@@ -127,7 +127,7 @@ define(['jquery', 'bootbox', 'survey.sum', 'survey.cell', 'surveys.dispatch', 'f
         }
       };
 
-      survey.form('.input-group-btn .dropdown-menu .menu-disable-input').click(function(e) {
+      survey.form('.input-group-btn .dropdown-menu .menu-disable-input').on('click', function(e) {
         e.preventDefault();
 
         var element = $(this);
@@ -180,7 +180,7 @@ define(['jquery', 'bootbox', 'survey.sum', 'survey.cell', 'surveys.dispatch', 'f
 
       });
 
-      survey.form('.input-group-btn .dropdown-menu .menu-enable').click(function(e) {
+      survey.form('.input-group-btn .dropdown-menu .menu-enable').on('click', function(e) {
         e.preventDefault();
 
         var element = $(this);
@@ -263,15 +263,21 @@ define(['jquery', 'bootbox', 'survey.sum', 'survey.cell', 'surveys.dispatch', 'f
       });
       updateProgress();
     };
-    var initAccordion = function() {
-      $('body').on('click', 'h2[data-parent="#survey-form"]', function() {
-        var $i = $(this).find('i');
-        if ($i.hasClass('fa-chevron-down')) {
-          $i.removeClass('fa-chevron-down').addClass('fa-chevron-right');
-        } else {
-          $i.removeClass('fa-chevron-right').addClass('fa-chevron-down');
-        }
-      });
+    var toggleChevron = function(e) {
+      $(e.target)
+        .siblings('.panel-heading')
+        .find('i.fa')
+        .toggleClass('fa-rotate-90');
+    };
+    var focusFirst = function(e) {
+      $(e.target)
+        .find('input')
+        .first()
+        .focus();
+    };
+    var initAccordion = function()  {
+      survey.form().on('hide.bs.collapse show.bs.collapse', toggleChevron);
+      survey.form().on('shown.bs.collapse', focusFirst);
       $('[role="tabpanel"]').on('shown.bs.collapse', function() {
         $.scrollTo($(this).siblings('.panel-heading').find('h2'), _scrollToDelay, {
           offset: -30
@@ -279,7 +285,6 @@ define(['jquery', 'bootbox', 'survey.sum', 'survey.cell', 'surveys.dispatch', 'f
       });
     };
     var readOnlyInit = function() {
-
       /* Enable help button popover. */
       $('.btn-help').popover({
         container: 'body',
@@ -288,17 +293,17 @@ define(['jquery', 'bootbox', 'survey.sum', 'survey.cell', 'surveys.dispatch', 'f
         },
         html: true,
         trigger: 'focus'
-      }).click(function(e) {
+      }).on('click', function(e) {
         e.preventDefault();
       }).on('shown.bs.popover', function() {
         var button = $(this);
-        $('.popover button.close').click(function() {
+        $('.popover button.close').on('click', function() {
           button.popover('hide');
         });
       });
 
       var initAdmin = function() {
-        $('#form-admin .dropdown-menu > li > a').click(function(e) {
+        $('#form-admin .dropdown-menu > li > a').on('click', function(e) {
           e.preventDefault();
           var element = $(this);
 
@@ -323,223 +328,179 @@ define(['jquery', 'bootbox', 'survey.sum', 'survey.cell', 'surveys.dispatch', 'f
     };
     return {
       init: function() {
-
         readOnlyInit();
         if ($('#read_only').val()) {
           return;
         }
-
-        survey.form().formValidation({
-          framework: 'bootstrap',
-          excluded: ['.disable-validation', ':disabled', ':hidden', ':not(:visible)'],
-          trigger: 'blur',
-          locale: 'sv_SE',
-          icon: null,
-          fields: {
-            integer: {
-              selector: '.type-integer',
-              validators: {
-                greaterThan: {
-                  inclusive: '',
-                  value: '0'
-                },
-                integer: {}
-              }
-            },
-            email: {
-              selector: '.type-email',
-              validators: {
-                regexp: {
-                  regexp: '.+@.+\..+',
-                  message: 'Vänligen mata in en giltig e-postadress'
-                },
-                emailAddress: {}
-              }
-            },
-            numeric: {
-              selector: '.type-numeric',
-              validators: {
-                greaterThan: {
-                  inclusive: '',
-                  value: '0'
-                },
-                numeric: {
-                  separator: ','
-                },
-                regexp: {
-                  regexp: '^\d+(\,\d{1,3})?$',
-                  message: 'Vänligen mata in ett nummer med max 3 decimaler (tex 12,522)'
+        survey.form()
+          .on('init.form.fv', function()  {
+            $(document).tooltip({
+              selector: '[data-toggle="tooltip"]',
+              placement: 'bottom'
+            });
+            $('input').placeholder();
+            sum.init();
+            initDropdown();
+          })
+          .formValidation({
+            framework: 'bootstrap',
+            excluded: '.disable-validation',
+            trigger: 'blur',
+            locale: 'sv_SE',
+            icon: null,
+            fields: {
+              integer: {
+                selector: '.type-integer',
+                validators: {
+                  greaterThan: {
+                    inclusive: '',
+                    value: 0
+                  },
+                  integer: {}
+                }
+              },
+              email: {
+                selector: '.type-email',
+                validators: {
+                  regexp: {
+                    regexp: /.+@.+\..+/,
+                    message: 'Vänligen mata in en giltig e-postadress'
+                  },
+                  emailAddress: {}
+                }
+              },
+              numeric: {
+                selector: '.type-numeric',
+                validators: {
+                  greaterThan: {
+                    inclusive: '',
+                    value: 0
+                  },
+                  numeric: {
+                    separator: ','
+                  },
+                  regexp: {
+                    regexp: /^\d+(\,\d{1,3})?$/,
+                    message: 'Vänligen mata in ett nummer med max 3 decimaler (tex 12,522)'
+                  }
+                }
+              },
+              text: {
+                selector: '.type-text',
+                validators: {
+                  stringLength: {
+                    min: 0
+                  }
                 }
               }
-            },
-            text: {
-              selector: '.type-text',
-              validators: {
-                stringLength: {
-                  min: 0
+            }
+          })
+          .on('err.validator.fv', function(e, data) { // http://bootstrapvalidator.com/examples/changing-default-behaviour/#showing-one-message-each-time
+            data.element
+              .data('fv.messages')
+              .find('.help-block[data-fv-for="' + data.field + '"]').hide()
+              .filter('[data-fv-validator="' + data.validator + '"]').show();
+          })
+          .on('success.form.fv', function() {
+            var submit_action = $('#submit_action').val();
+            if (!submit_action) {
+              return;
+            }
+
+            $('#altered_fields').val(survey.changeableInputs().filter(function() {
+              return $(this).val() != $(this).attr('data-original-value');
+            }).map(function() {
+              return $(this).attr('id');
+            }).get().join(' '));
+
+            var unknownInputs = $('.value-unknown');
+
+            var unknownInputIds = unknownInputs.map(function() {
+              return $(this).attr('id');
+            }).get().join(' ');
+            $('#unknown_inputs').val(unknownInputIds);
+
+            var disabledInputIds = survey.disabledInputs().map(function() {
+              return $(this).attr('id');
+            }).get().join(' ');
+            $('#disabled_inputs').val(disabledInputIds);
+
+            $('#selected_libraries').val(survey.selectedLibraries());
+
+            survey.form().attr('action', Urls.survey(survey.form('#id_key').val()));
+
+            $.ajax({
+              url: '/surveys/' + $('#id_key').val(),
+              type: 'POST',
+              data: $('#survey-form').serialize(),
+              success: function() {
+                $('#print-survey-btn, #save-survey-btn, #submit-survey-btn').removeClass('disabled');
+                $('#save-survey-btn').html('Spara');
+
+                if (submit_action == 'save') {
+
+                  // Hide message after 5 sec (5000ms)
+                  $('#unsaved-changes-label').html('<strong>Formuläret är nu sparat.</strong>');
+                  setTimeout(function() {
+                    $('#unsaved-changes-label').html('');
+                  }, 5000);
+
+                } else if (submit_action == 'submit') {
+                  // Hide bootstrap modal
+                  $('#submit-confirm-modal').modal('hide');
+                  // Hide bootstrap navbar (footer)
+                  $('.navbar-fixed-bottom').hide();
+                  // Disable all inputs
+                  survey.inputs().attr('readonly', true);
+                  // Disable all dropdown-togglers
+                  $('input[type="checkbox"]').attr('disabled', true);
+                  // Disable all dropdown-togglers
+                  $('.btn-dropdown').attr('disabled', true);
+
+                  alert('Formuläret är skickat!');
                 }
+
+              },
+              // handle a non-successful response
+              error: function() {
+                alert('Ett fel uppstod! Var vänlig försök igen.');
+                $('#print-survey-btn, #save-survey-btn, #submit-survey-btn').removeClass('disabled');
+                $('#save-survey-btn').html('Spara');
               }
-            }
-          }
-        }).on('error.validator.fv', function(e, data) { // http://bootstrapvalidator.com/examples/changing-default-behaviour/#showing-one-message-each-time
-          data.element
-            .data('fv.messages')
-            .find('.help-block[data-fv-for="' + data.field + '"]').hide()
-            .filter('[data-fv-validator="' + data.validator + '"]').show();
-        }).on('success.form.fv', function() {
-          var submit_action = $('#submit_action').val();
-          if (!submit_action) {
-            return;
-          }
-
-          $('#altered_fields').val(survey.changeableInputs().filter(function() {
-            return $(this).val() != $(this).attr('data-original-value');
-          }).map(function() {
-            return $(this).attr('id');
-          }).get().join(' '));
-
-          var unknownInputs = $('.value-unknown');
-
-          var unknownInputIds = unknownInputs.map(function() {
-            return $(this).attr('id');
-          }).get().join(' ');
-          $('#unknown_inputs').val(unknownInputIds);
-
-          var disabledInputIds = survey.disabledInputs().map(function() {
-            return $(this).attr('id');
-          }).get().join(' ');
-          $('#disabled_inputs').val(disabledInputIds);
-
-          $('#selected_libraries').val(survey.selectedLibraries());
-
-          survey.form().attr('action', Urls.survey(survey.form('#id_key').val()));
-
-          $.ajax({
-            url: '/surveys/' + $('#id_key').val(),
-            type: 'POST',
-            data: $('#survey-form').serialize(),
-            success: function() {
-              $('#print-survey-btn, #save-survey-btn, #submit-survey-btn').removeClass('disabled');
-              $('#save-survey-btn').html('Spara');
-
-              if (submit_action == 'save') {
-
-                // Hide message after 5 sec (5000ms)
-                $('#unsaved-changes-label').html('<strong>Formuläret är nu sparat.</strong>');
-                setTimeout(function() {
-                  $('#unsaved-changes-label').html('');
-                }, 5000);
-
-              } else if (submit_action == 'submit') {
-                // Hide bootstrap modal
-                $('#submit-confirm-modal').modal('hide');
-                // Hide bootstrap navbar (footer)
-                $('.navbar-fixed-bottom').hide();
-                // Disable all inputs
-                survey.inputs().attr('readonly', true);
-                // Disable all dropdown-togglers
-                $('input[type="checkbox"]').attr('disabled', true);
-                // Disable all dropdown-togglers
-                $('.btn-dropdown').attr('disabled', true);
-
-                alert('Formuläret är skickat!');
+            });
+          })
+          .on('err.form.fv', function() {
+            var $invalidField = $(survey.validator().getInvalidFields().first());
+            $invalidField
+              .closest('.panel-wrapper')
+              .find('.section-title')
+              .click();
+            $.scrollTo($invalidField, _scrollToDelay, {
+              offset: -30,
+              complete: function() {
+                $invalidField.focus();
               }
-
-            },
-            // handle a non-successful response
-            error: function() {
-              alert('Ett fel uppstod! Var vänlig försök igen.');
-              $('#print-survey-btn, #save-survey-btn, #submit-survey-btn').removeClass('disabled');
-              $('#save-survey-btn').html('Spara');
-            }
+            });
           });
-        }).on('error.form.fv', function() {
-          var invalidField = survey.validator().getInvalidFields().first();
-          $.scrollTo(invalidField, _scrollToDelay, {
-            offset: -30
-          });
-        });
 
-        var submitTo = function(action, submit) {
-          submit = submit || false;
-          var element = $('.publish-survey-responses-form').get(0);
-          element.setAttribute('action', Urls[action]());
-          if (submit) {
-            element.submit();
-          }
-          return element;
-        };
-
-        $('#surveys_active').click(function(e) {
-          e.preventDefault();
-          if ($('#surveys_state').val() != 'active') {
-            $('#surveys_state').val('active');
-            $('#surveys_filter_form').submit();
-          }
-        });
-        $('#surveys_inactive').click(function(e) {
-          e.preventDefault();
-          if ($('#surveys_state').val() != 'inactive') {
-            $('#surveys_state').val('inactive');
-            $('#surveys_filter_form').submit();
-          }
-        });
-        $('#export-surveys-modal .btn-confirm').click(function(e) {
-          e.preventDefault();
-          $('#export-surveys-modal').modal('hide');
-          submitTo('surveys_export', true);
-        });
-        $('.btn-change-status').click(function(e) {
-          e.preventDefault();
-          submitTo('surveys_statuses', true);
-        });
-        $('.btn-activate-surveys').click(function(e) {
-          e.preventDefault();
-          submitTo('surveys_activate', true);
-        });
-        $('.btn-inactivate-surveys').click(function(e) {
-          e.preventDefault();
-          submitTo('surveys_inactivate', true);
-        });
-        $('.btn-dispatch').click(function(e) {
-          e.preventDefault();
-
-          var checked = $('.select-one:checked').first();
-          var library = checked.data('library');
-          var address = checked.data('url-base') + checked.data('address');
-          var city = checked.data('city');
-
-          submitTo('dispatches');
-          dispatch.init(library, address, city, function(unsavedChanges) {
-            var button = $('.btn-dispatch');
-
-            if (unsavedChanges) {
-              button.text('Skapa utskick*');
-              button.attr('data-original-title', 'Det finns ett påbörjat utskick.');
-            } else {
-              button.text('Skapa utskick');
-              button.attr('data-original-title', '');
+        // Open next section when using tab key from last input in current section
+        survey.form('.panel-wrapper').each(function() {
+          var $this = $(this);
+          $this.find('input, textarea').last().on('keydown', function(e) {
+            if (e.which == 9) {
+              $this.next('.panel-wrapper').find('.section-title').click();
             }
           });
         });
 
-        $('.col-sm-2 .form-control').focus(function() {
-          if ($(window).width() <= 992) {
-            var inputGroup = $(this).parent('.input-group');
-
-            inputGroup
-              .css('width', (inputGroup.outerWidth() * 1.5))
-              .addClass('expanded');
-          }
-        }).blur(function() {
-          var inputGroup = $(this).parent('.input-group');
-
-          inputGroup
-            .css('width', '')
-            .removeClass('expanded');
+        // Open next section when clicking the 'Nästa' button
+        survey.form('.btn-next').on('click', function() {
+          var $this = $(this);
+          $this.closest('.panel-wrapper').next('.panel-wrapper').find('.section-title').click();
         });
 
-        survey.form('#save-survey-btn').click(function(e) {
+        // Save survey when clicking the 'Spara' button
+        survey.form('#save-survey-btn').on('click', function(e) {
           e.preventDefault();
 
           $('#submit_action').val('save');
@@ -570,16 +531,17 @@ define(['jquery', 'bootbox', 'survey.sum', 'survey.cell', 'surveys.dispatch', 'f
           }, 100);
         });
 
-        survey.form('#submit-survey-btn').click(function(e) {
+        // Validate survey and open confirm modal when clicking the 'Skicka' button
+        survey.form('#submit-survey-btn').on('click', function(e) {
           e.preventDefault();
 
           $('#submit_action').val('');
 
-          var submitButton = $(this);
-          var submitButtonHtml = submitButton.html();
-          var otherButtons = $('#save-survey-btn,#print-survey-btn');
+          var submitButton = $(this),
+            submitButtonHtml = submitButton.html(),
+            otherButtons = $('#save-survey-btn, #print-survey-btn');
 
-          submitButton.html('<i class="fa fa-spinner fa-spin"></i> Kontrollerar...').addClass('disabled');
+          submitButton.html('<i class="fa fa-spinner fa-pulse"></i> Kontrollerar...').addClass('disabled');
           otherButtons.addClass('disabled');
 
           setTimeout(function() {
@@ -594,7 +556,7 @@ define(['jquery', 'bootbox', 'survey.sum', 'survey.cell', 'surveys.dispatch', 'f
           }, 100);
         });
 
-        survey.form('#faq-survey-btn').click(function(e) {
+        survey.form('#faq-survey-btn').on('click', function(e) {
           e.preventDefault();
 
           var button = $(this);
@@ -618,7 +580,7 @@ define(['jquery', 'bootbox', 'survey.sum', 'survey.cell', 'surveys.dispatch', 'f
           }
         });
 
-        $('#confirm-submit-survey-btn').click(function(e) {
+        $('#confirm-submit-survey-btn').on('click', function(e) {
           e.preventDefault();
 
           $('#submit_action').val('submit');
@@ -651,18 +613,6 @@ define(['jquery', 'bootbox', 'survey.sum', 'survey.cell', 'surveys.dispatch', 'f
           setIcon($(this).attr('id'), 'collapse');
         });
 
-        $('.modified-after-publish').on('click', function(e) {
-          e.preventDefault();
-        });
-
-        $('.tooltip-wrapper').tooltip({
-          position: 'bottom'
-        });
-        $('.survey-popover').tooltip();
-        $('input').placeholder();
-
-        sum.init();
-        initDropdown();
         initProgress();
         initAccordion();
 

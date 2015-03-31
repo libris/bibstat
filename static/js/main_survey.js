@@ -17,7 +17,6 @@
         paths: {
 
             /* App */
-            'dispatches': 'app/dispatches',
             'loading': 'app/loading',
             'login': 'app/login',
             'scroll': 'app/scroll',
@@ -25,7 +24,6 @@
             'survey': 'app/survey',
             'survey.cell': 'app/survey/cell',
             'survey.sum': 'app/survey/sum',
-            'surveys.dispatch': 'app/surveys/dispatch',
 
             /* Plugins */
             'bootstrap': 'plugins/bootstrap/3.2.0/js/bootstrap',

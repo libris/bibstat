@@ -56,7 +56,6 @@ class SurveyForm(forms.Form):
         if authenticated:
             attrs["class"] = "{} survey-popover".format(attrs["class"])
             attrs["data-toggle"] = "tooltip"
-            attrs["data-placement"] = "top"
             attrs["data-original-title"] = cell.variable_key
 
         if "comment" in cell.types:
