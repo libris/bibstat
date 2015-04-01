@@ -231,9 +231,12 @@ define(['jquery', 'bootbox', 'survey.sum', 'survey.cell', 'formValidation.sv', '
         showChangesNotSaved();
       });
     };
-    var updateProgress = function() {
+    var updateProgress = function(onInit) {
+      var correctInputsLength = survey.correctInputs().length;
+      if(onInit) {
+        correctInputsLength = survey.filledInputs().length;
+      }
       var totalInputsLength = survey.enabledInputs().length,
-        correctInputsLength = survey.correctInputs().length,
         requiredInputsLength = survey.requiredInputs().length,
         requiredEmptyInputsLength = survey.requiredEmptyInputs().length,
         correctInputsPercentage = Math.ceil((correctInputsLength / totalInputsLength) * 100),
@@ -261,7 +264,7 @@ define(['jquery', 'bootbox', 'survey.sum', 'survey.cell', 'formValidation.sv', '
           updateProgress();
         });
       });
-      updateProgress();
+      updateProgress(true);
     };
     var toggleChevron = function(e) {
       $(e.target)
@@ -473,7 +476,7 @@ define(['jquery', 'bootbox', 'survey.sum', 'survey.cell', 'formValidation.sv', '
             var $invalidField = $(survey.validator().getInvalidFields().first());
             $invalidField
               .closest('.panel-wrapper')
-              .find('.section-title')
+              .find('.section-title.collapsed')
               .click();
             $.scrollTo($invalidField, _scrollToDelay, {
               offset: -30,
