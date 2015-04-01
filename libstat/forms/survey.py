@@ -32,11 +32,9 @@ class SurveyForm(forms.Form):
             attrs["placeholder"] = "Obligatorisk"
 
         if "integer" in cell.types:
-            attrs["max"] = "99999999"
             attrs["class"] = "{} type-integer".format(attrs["class"])
 
         if "numeric" in cell.types:
-            attrs["max"] = "99999999"
             attrs["class"] = "{} type-numeric".format(attrs["class"])
 
         if "email" in cell.types:
@@ -44,9 +42,6 @@ class SurveyForm(forms.Form):
 
         if "text" in cell.types:
             attrs["class"] = "{} type-text".format(attrs["class"])
-
-        if "Utgift" in cell.variable_key or "Intakt" in cell.variable_key:
-            attrs["max"] = "999999999"
 
         if not observation or observation.value_unknown:
             attrs["disabled"] = ""
@@ -61,9 +56,9 @@ class SurveyForm(forms.Form):
         if "comment" in cell.types:
             field = forms.CharField(required=False, widget=forms.Textarea(attrs=attrs))
         elif "integer" in cell.types:
-            field = forms.IntegerField(required=False, max_value=999999999, widget=forms.TextInput(attrs=attrs))
+            field = forms.IntegerField(required=False, widget=forms.TextInput(attrs=attrs))
         elif "numeric" in cell.types:
-            field = forms.FloatField(localize=True, required=False, max_value=999999999, widget=forms.TextInput(attrs=attrs))
+            field = forms.FloatField(localize=True, required=False, widget=forms.TextInput(attrs=attrs))
         else:
             field = forms.CharField(required=False, widget=forms.TextInput(attrs=attrs))
 

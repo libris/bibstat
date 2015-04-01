@@ -232,11 +232,14 @@ define(['jquery', 'bootbox', 'survey.sum', 'survey.cell', 'formValidation.sv', '
       });
     };
     var updateProgress = function(onInit) {
-      var correctInputsLength = survey.correctInputs().length;
+      var filledInputs = survey.filledInputs();
       if(onInit) {
-        correctInputsLength = survey.filledInputs().length;
+        for (var i = 0; i < filledInputs.length; i++) {
+          survey.validator().validateField($(filledInputs[i]));
+        };
       }
       var totalInputsLength = survey.enabledInputs().length,
+        correctInputsLength = survey.correctInputs().length,
         requiredInputsLength = survey.requiredInputs().length,
         requiredEmptyInputsLength = survey.requiredEmptyInputs().length,
         correctInputsPercentage = Math.ceil((correctInputsLength / totalInputsLength) * 100),
@@ -347,7 +350,7 @@ define(['jquery', 'bootbox', 'survey.sum', 'survey.cell', 'formValidation.sv', '
           })
           .formValidation({
             framework: 'bootstrap',
-            excluded: '.disable-validation',
+            excluded: ['.disable-validation',':disabled'],
             trigger: 'blur',
             locale: 'sv_SE',
             icon: null,
@@ -358,6 +361,10 @@ define(['jquery', 'bootbox', 'survey.sum', 'survey.cell', 'formValidation.sv', '
                   greaterThan: {
                     inclusive: '',
                     value: 0
+                  },
+                  lessThan: {
+                    inclusive: '',
+                    value: 999999999
                   },
                   integer: {}
                 }
@@ -378,6 +385,10 @@ define(['jquery', 'bootbox', 'survey.sum', 'survey.cell', 'formValidation.sv', '
                   greaterThan: {
                     inclusive: '',
                     value: 0
+                  },
+                  lessThan: {
+                    inclusive: '',
+                    value: 999999999
                   },
                   numeric: {
                     separator: ','
