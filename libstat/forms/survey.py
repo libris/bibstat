@@ -24,11 +24,11 @@ class SurveyForm(forms.Form):
 
         if cell.sum_of:
             attrs["data-sum-of"] = " ".join(map(lambda s: s, cell.sum_of))
-            attrs["required"] = ""
+            attrs["data-bv-notempty"] = ""
             attrs["placeholder"] = "Obligatorisk"
 
         if "required" in cell.types:
-            attrs["required"] = ""
+            attrs["data-bv-notempty"] = ""
             attrs["placeholder"] = "Obligatorisk"
 
         if "integer" in cell.types:
