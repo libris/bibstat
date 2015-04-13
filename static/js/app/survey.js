@@ -51,11 +51,11 @@ define(['jquery', 'bootbox', 'survey.sum', 'survey.cell', 'formValidation.sv', '
         });
       },
       requiredInputs: function() {
-          return survey.enabledInputs().filter('[data-bv-notempty]');
+        return survey.enabledInputs().filter('[required]');
       },
       requiredEmptyInputs: function() {
         return survey.enabledInputs().filter(function() {
-          return !$(this).val() && $(this).is('[data-bv-notempty]');
+          return !$(this).val() && $(this).is('[required]');
         });
       },
       sumOfInputs: function() {
