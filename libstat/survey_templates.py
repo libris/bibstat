@@ -372,23 +372,23 @@ def _survey_template_2014():
                     groups=[
                         Group(rows=[
                             Row(cells=[
-                                Cell(variable_key=u"Open101", types=["integer"]),
-                                Cell(variable_key=u"Open201", types=["integer"])]),
+                                Cell(variable_key=u"Open101", types=["decimal"]),
+                                Cell(variable_key=u"Open201", types=["decimal"])]),
                             Row(cells=[
-                                Cell(variable_key=u"Open102", types=["integer"]),
-                                Cell(variable_key=u"Open202", types=["integer"])]),
+                                Cell(variable_key=u"Open102", types=["decimal"]),
+                                Cell(variable_key=u"Open202", types=["decimal"])]),
                             Row(cells=[
-                                Cell(variable_key=u"Open103", types=["integer"]),
-                                Cell(variable_key=u"Open203", types=["integer"])]),
+                                Cell(variable_key=u"Open103", types=["decimal"]),
+                                Cell(variable_key=u"Open203", types=["decimal"])]),
                             Row(cells=[
-                                Cell(variable_key=u"Open104", types=["integer"]),
+                                Cell(variable_key=u"Open104", types=["decimal"]),
                                 Cell(variable_key=u"Open204", types=["integer"])]),
                             Row(cells=[
-                                Cell(variable_key=u"Open105", types=["integer"]),
-                                Cell(variable_key=u"Open205", types=["integer"])]),
+                                Cell(variable_key=u"Open105", types=["decimal"]),
+                                Cell(variable_key=u"Open205", types=["decimal"])]),
                             Row(cells=[
-                                Cell(variable_key=u"Open106", types=["integer"]),
-                                Cell(variable_key=u"Open206", types=["integer"])])]),
+                                Cell(variable_key=u"Open106", types=["decimal"]),
+                                Cell(variable_key=u"Open206", types=["decimal"])])]),
                         Group(rows=[
                             Row(cells=[Cell(variable_key=u"Serv01", types=["integer"])]),
                             Row(cells=[Cell(variable_key=u"Serv02", types=["integer"])]),
