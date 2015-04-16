@@ -107,7 +107,7 @@ def surveys_to_excel_workbook(survey_ids):
         "Huvudman",
         "Kan publiceras?"
     ]
-    headers += [unicode(observation.variable.key) for observation in surveys[0].observations]
+    headers += [unicode(observation.variable.key) for observation in surveys[0].observations if observation.variable.key]
 
     workbook = Workbook(encoding="utf-8")
     worksheet = workbook.active

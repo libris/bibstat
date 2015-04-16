@@ -9,7 +9,7 @@ def _survey_template_2014():
             Section(title=u"Frågor om biblioteksorganisationen",
                     groups=[
                         Group(rows=[
-                            Row(cells=[Cell(variable_key=u"Namn01", types=["text"])]),
+                            Row(cells=[Cell(variable_key=u"Namn01", types=["text"])]), #TODO: use variable types??
                             Row(cells=[Cell(variable_key=u"Epost01", types=["email", "required"])]),
                             Row(cells=[Cell(variable_key=u"Tele01", types=["text"])]),
                             Row(cells=[Cell(variable_key=u"Plan01", types=["text"])])]),
@@ -499,7 +499,7 @@ def _default_template_from_survey(survey):
     if survey:
         for observation in survey.observations:
             variable = observation.variable
-            rows.append(Row(cells=[Cell(variable_key=variable.key, types=["text"])]))
+            rows.append(Row(cells=[Cell(variable_key=variable.key, types=["text"])])) #TODO: use variable.type??
 
     return SurveyTemplate(sections=[
         Section(title="",
