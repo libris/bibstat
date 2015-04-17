@@ -399,7 +399,7 @@ def _survey_template_2014():
                             Row(cells=[Cell(variable_key=u"Serv07", types=["integer"])])]),
                         Group(rows=[
                             Row(cells=[Cell(variable_key=u"Openkomm", types=["comment"])])])]),
-            Section(title=u"Publika aktiviter",
+            Section(title=u"Aktiviteter",
                     groups=[
                         Group(rows=[
                             Row(cells=[
