@@ -521,6 +521,7 @@ class Survey(SurveyBase):
             "library.sigel",
             "library.municipality_code",
             "library.library_type",
+            "library.name",
             "sample_year",
             "_status",
             "is_active"

@@ -1,7 +1,9 @@
 # -*- coding: utf-8 -*-
+from __future__ import division
 import glob
 import os
 import datetime
+import math
 from django.core.files import File
 
 from openpyxl import Workbook, load_workbook
@@ -11,8 +13,12 @@ from bibstat import settings
 from data.principals import principal_for_library_type
 from libstat.models import Survey, OpenData, Variable
 
+import logging
 
 DATE_FORMAT = "%Y_%m_%d_%H_%M_%S"
+
+
+logger = logging.getLogger(__name__)
 
 
 def _cache_path(year, date_str=None):
@@ -91,28 +97,7 @@ def _published_open_data_as_workbook(year):
     return workbook
 
 
-def surveys_to_excel_workbook(survey_ids):
-    surveys = Survey.objects.filter(id__in=survey_ids).order_by('library__name')
-
-    headers = [
-        "Bibliotek",
-        "Sigel",
-        "Bibliotekstyp",
-        "Status",
-        "Email",
-        "Kommunkod",
-        "Stad",
-        "Adress",
-        "Postkod",
-        "Huvudman",
-        "Kan publiceras?"
-    ]
-    headers += [unicode(observation.variable.key) for observation in surveys[0].observations if observation.variable.key]
-
-    workbook = Workbook(encoding="utf-8")
-    worksheet = workbook.active
-    worksheet.append(headers)
-
+def _load_surveys_and_append_worksheet_rows(surveys, worksheet):
     for survey in surveys:
         row = [
             survey.library.name,
@@ -131,5 +116,41 @@ def surveys_to_excel_workbook(survey_ids):
         for observation in survey.observations:
             row.append(observation.value)
         worksheet.append(row)
+
+
+def surveys_to_excel_workbook(survey_ids):
+    bulk_size = 500
+    bulks = int(math.ceil(len(survey_ids) / bulk_size))
+
+    headers = [
+        "Bibliotek",
+        "Sigel",
+        "Bibliotekstyp",
+        "Status",
+        "Email",
+        "Kommunkod",
+        "Stad",
+        "Adress",
+        "Postkod",
+        "Huvudman",
+        "Kan publiceras?"
+    ]
+    headers += [unicode(observation.variable.key) for observation in Survey.objects.get(pk=survey_ids[0]).observations if observation.variable.key]
+
+    workbook = Workbook(encoding="utf-8")
+    worksheet = workbook.active
+    worksheet.append(headers)
+
+    for index in range(0, bulks):
+        start_index = index * bulk_size
+        stop_index = start_index + bulk_size
+        if stop_index > len(survey_ids):
+            stop_index = len(survey_ids)
+
+        ids = survey_ids[start_index:stop_index]
+
+        surveys = Survey.objects.filter(id__in=ids).order_by('library__name')
+
+        _load_surveys_and_append_worksheet_rows(surveys, worksheet)
 
     return workbook
