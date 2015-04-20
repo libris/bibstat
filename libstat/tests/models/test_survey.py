@@ -556,7 +556,7 @@ class TestSelectedSigels(MongoTestCase):
         library = self._dummy_library(municipality_code=None)
         survey = self._dummy_survey(sample_year=2014)
 
-        self.assertSetEqual(survey.selected_sigels(2014), Set())
+        self.assertSetEqual(survey.selected_sigels_in_other_surveys(2014), Set())
 
     def test_should_include_second_surveys_selected_sigel(self):
         library = self._dummy_library(sigel="1")
@@ -565,7 +565,7 @@ class TestSelectedSigels(MongoTestCase):
         survey = self._dummy_survey(library=library, sample_year=2014)
         self._dummy_survey(library=second_library, sample_year=2014, selected_libraries=["2"])
 
-        self.assertSetEqual(survey.selected_sigels(2014), {"2"})
+        self.assertSetEqual(survey.selected_sigels_in_other_surveys(2014), {"2"})
 
     def test_should_include_librarys_own_sigel_when_selected_in_second_survey(self):
         library = self._dummy_library(sigel="1")
@@ -574,7 +574,7 @@ class TestSelectedSigels(MongoTestCase):
         survey = self._dummy_survey(library=library, sample_year=2014)
         self._dummy_survey(library=second_library, sample_year=2014, selected_libraries=["1", "2"])
 
-        self.assertSetEqual(survey.selected_sigels(2014), {"1", "2"})
+        self.assertSetEqual(survey.selected_sigels_in_other_surveys(2014), {"1", "2"})
 
     def test_should_exclude_selected_sigel_for_another_sample_year(self):
         library = self._dummy_library(sigel="1")
@@ -583,7 +583,7 @@ class TestSelectedSigels(MongoTestCase):
         survey = self._dummy_survey(library=library, sample_year=2014)
         self._dummy_survey(library=second_library, sample_year=2015, selected_libraries=["1", "2"])
 
-        self.assertSetEqual(survey.selected_sigels(2014), Set())
+        self.assertSetEqual(survey.selected_sigels_in_other_surveys(2014), Set())
 
     def test_should_exclude_selected_sigel_for_another_municipality_code(self):
         library = self._dummy_library(sigel="1")
@@ -592,7 +592,7 @@ class TestSelectedSigels(MongoTestCase):
         survey = self._dummy_survey(library=library, sample_year=2014)
         self._dummy_survey(library=second_library, sample_year=2014, selected_libraries=["2"])
 
-        self.assertSetEqual(survey.selected_sigels(2014), Set())
+        self.assertSetEqual(survey.selected_sigels_in_other_surveys(2014), Set())
 
     def test_should_exclude_selected_sigel_in_librarys_own_survey(self):
         library = self._dummy_library(sigel="1")
@@ -601,7 +601,7 @@ class TestSelectedSigels(MongoTestCase):
         survey = self._dummy_survey(library=library, sample_year=2014, selected_libraries=["3"])
         self._dummy_survey(library=second_library, sample_year=2014, selected_libraries=["2"])
 
-        self.assertSetEqual(survey.selected_sigels(2014), {"2"})
+        self.assertSetEqual(survey.selected_sigels_in_other_surveys(2014), {"2"})
 
     def test_should_include_second_surveys_selected_sigel_with_same_principal_library_type(self):
         library = self._dummy_library(sigel="1", library_type=u"folkbib")
@@ -610,7 +610,7 @@ class TestSelectedSigels(MongoTestCase):
         survey = self._dummy_survey(library=library, sample_year=2014)
         self._dummy_survey(library=second_library, sample_year=2014, selected_libraries=["2"])
 
-        self.assertSetEqual(survey.selected_sigels(2014), {"2"})
+        self.assertSetEqual(survey.selected_sigels_in_other_surveys(2014), {"2"})
 
     def test_should_exclude_second_surveys_selected_sigel_with_different_principal_library_type(self):
         library = self._dummy_library(sigel="1", library_type=u"folkbib")
@@ -619,7 +619,7 @@ class TestSelectedSigels(MongoTestCase):
         survey = self._dummy_survey(library=library, sample_year=2014)
         self._dummy_survey(library=second_library, sample_year=2014, selected_libraries=["2"])
 
-        self.assertSetEqual(survey.selected_sigels(2014), Set())
+        self.assertSetEqual(survey.selected_sigels_in_other_surveys(2014), Set())
 
     def test_should_include_second_surveys_selected_sigel_when_library_type_is_unknown(self):
         library = self._dummy_library(sigel="1", library_type=None)
@@ -628,7 +628,7 @@ class TestSelectedSigels(MongoTestCase):
         survey = self._dummy_survey(library=library, sample_year=2014)
         self._dummy_survey(library=second_library, sample_year=2014, selected_libraries=["2"])
 
-        self.assertSetEqual(survey.selected_sigels(2014), {"2"})
+        self.assertSetEqual(survey.selected_sigels_in_other_surveys(2014), {"2"})
 
     def test_should_include_second_surveys_selected_sigel_when_principal_is_unknown_for_library_type(self):
         library = self._dummy_library(sigel="1", library_type=u"musbib")
@@ -638,7 +638,7 @@ class TestSelectedSigels(MongoTestCase):
         survey = self._dummy_survey(library=library, sample_year=2014)
         self._dummy_survey(library=second_library, sample_year=2014, selected_libraries=["2"])
 
-        self.assertSetEqual(survey.selected_sigels(2014), {"2"})
+        self.assertSetEqual(survey.selected_sigels_in_other_surveys(2014), {"2"})
 
     def test_reports_for_same_libraries_when_same_selected_libraries(self):
         library1 = self._dummy_library(sigel="lib1")
@@ -1009,5 +1009,31 @@ class TestPreviousYearsSurvey(MongoTestCase):
         this_years_survey.publish()
 
         self.assertEqual(this_years_survey.previous_years_value(new_variable), None)
+
+
+class TestSurveyReporting(MongoTestCase):
+    def test_reported_by(self):
+        library1 = self._dummy_library(sigel="X")
+        survey1 = self._dummy_survey(library=library1, selected_libraries=["X"])
+        library2 = self._dummy_library(sigel="Z")
+        survey2 = self._dummy_survey(library=library2, selected_libraries=["Z", "X"])
+
+        self.assertEqual(survey1.reported_by(), ["X", "Z"])
+
+    def test_is_reported_by_other(self):
+        library1 = self._dummy_library(sigel="X")
+        survey1 = self._dummy_survey(library=library1)
+        library2 = self._dummy_library(sigel="Z")
+        survey2 = self._dummy_survey(library=library2, selected_libraries=["Z", "X"])
+
+        self.assertTrue(survey1.is_reported_by_other())
+
+    def test_is_reporting_for_others(self):
+        library1 = self._dummy_library(sigel="X")
+        survey1 = self._dummy_survey(library=library1)
+        library2 = self._dummy_library(sigel="Z")
+        survey2 = self._dummy_survey(library=library2, selected_libraries=["Z", "X"])
+
+        self.assertTrue(survey2.is_reporting_for_others())
 
 

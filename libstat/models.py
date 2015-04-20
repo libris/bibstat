@@ -470,7 +470,7 @@ class SurveyBase(Document):
 
         return selectable_libs
 
-    def selected_sigels(self, sample_year):
+    def selected_sigels_in_other_surveys(self, sample_year):
         if not self.library.municipality_code:
             return Set()
 
@@ -489,7 +489,7 @@ class SurveyBase(Document):
         return selected_sigels
 
     def has_conflicts(self):
-        for selected_sigel in self.selected_sigels(self.sample_year):
+        for selected_sigel in self.selected_sigels_in_other_surveys(self.sample_year):
             if selected_sigel in self.selected_libraries or selected_sigel == self.library.sigel:
                 return True
 
@@ -511,6 +511,20 @@ class SurveyBase(Document):
             if any(sigel in other_survey.selected_libraries for sigel in self.selected_libraries)
             or self.library.sigel in other_survey.selected_libraries
         ]
+
+    def reported_by(self):
+        surveys = Survey.objects.filter(sample_year=self.sample_year)
+        return [survey.library.sigel for survey in surveys
+                if self.library.sigel in survey.selected_libraries]
+
+    def is_reported_by_other(self):
+        return self.library.sigel in self.selected_sigels_in_other_surveys(self.sample_year)
+
+    def is_reporting_for_others(self):
+        for sigel in self.selected_libraries:
+            if sigel != self.library.sigel:
+                return True
+        return False
 
 
 class Survey(SurveyBase):

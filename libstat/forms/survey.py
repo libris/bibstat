@@ -88,7 +88,7 @@ class SurveyForm(forms.Form):
         return field
 
     def _set_libraries(self, current_survey, this_surveys_selected_sigels, authenticated):
-        other_surveys_selected_sigels = current_survey.selected_sigels(self.sample_year)
+        other_surveys_selected_sigels = current_survey.selected_sigels_in_other_surveys(self.sample_year)
 
         def set_library(self, library, current_library=False):
 

@@ -11,7 +11,7 @@ from openpyxl.writer.excel import save_virtual_workbook
 from bibstat import settings
 
 from data.principals import principal_for_library_type
-from libstat.models import Survey, OpenData, Variable
+from libstat.models import Survey, OpenData, Variable, Library
 
 import logging
 
@@ -111,10 +111,21 @@ def _load_surveys_and_append_worksheet_rows(surveys, worksheet):
             survey.library.zip_code,
             principal_for_library_type[survey.library.library_type]
             if survey.library.library_type in principal_for_library_type else None,
-            "Ja" if survey.can_publish() else "Nej: " + survey.reasons_for_not_able_to_publish()
+            "Ja" if survey.can_publish() else "Nej: " + survey.reasons_for_not_able_to_publish(),
+            "Ja" if survey.is_reporting_for_others() else "Nej",
+            "Ja" if survey.is_reported_by_other() else "Nej",
+            ",".join(survey.reported_by())
         ]
         for observation in survey.observations:
             row.append(observation.value)
+
+        for sigel in survey.selected_libraries:
+            if sigel != survey.library.sigel:
+                survey = Survey.objects.filter(library__sigel=sigel, sample_year=survey.sample_year).first()
+                row.append("%s (%s)" % (survey.library.name, survey.library.sigel))
+                row.append(survey.library.address)
+                row.append(survey.library.zip_code)
+
         worksheet.append(row)
 
 
@@ -133,9 +144,13 @@ def surveys_to_excel_workbook(survey_ids):
         "Adress",
         "Postkod",
         "Huvudman",
-        "Kan publiceras?"
+        "Kan publiceras?",
+        "Samredovisar",
+        "Samredovisas",
+        "Redovisas av"
     ]
     headers += [unicode(observation.variable.key) for observation in Survey.objects.get(pk=survey_ids[0]).observations if observation.variable.key]
+    headers += ["Samredovisat bibliotek", "Gatuadress", "Postnummer"]
 
     workbook = Workbook(encoding="utf-8")
     worksheet = workbook.active
