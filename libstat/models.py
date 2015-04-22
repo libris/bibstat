@@ -518,13 +518,14 @@ class SurveyBase(Document):
                 if self.library.sigel in survey.selected_libraries]
 
     def is_reported_by_other(self):
-        return self.library.sigel in self.selected_sigels_in_other_surveys(self.sample_year)
-
-    def is_reporting_for_others(self):
-        for sigel in self.selected_libraries:
-            if sigel != self.library.sigel:
+        other_surveys_selected_sigels = Survey.objects.filter(sample_year=self.sample_year, pk__ne=self.pk).only("selected_libraries")
+        for survey in other_surveys_selected_sigels:
+            if self.library.sigel in survey.selected_libraries:
                 return True
         return False
+
+    def is_reporting_for_others(self):
+        return any(sigel != self.library.sigel for sigel in self.selected_libraries)
 
 
 class Survey(SurveyBase):
