@@ -75,7 +75,7 @@ def _published_open_data_as_workbook(year):
     worksheet.append(header)
 
     for sigel in libraries:
-        library = Survey.objects.get(library__sigel=sigel).library
+        library = Survey.objects.filter(library__sigel=sigel, sample_year=year).first().library
         row = [""] * len(header)
         row[0] = library.name
         row[1] = sigel if year >= 2014 else ""  # Do not show auto-generated sigels (used before 2014)
