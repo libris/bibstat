@@ -1,5 +1,5 @@
 # -*- coding: UTF-8 -*-
-from libstat.services.excel_export import surveys_to_excel_workbook
+from libstat.services.excel_export import surveys_to_excel_workbook, _build_row
 
 from libstat.tests import MongoTestCase
 
@@ -160,7 +160,16 @@ class TestSurveysExport(MongoTestCase):
         survey2 = self._dummy_survey()
 
         response = self._post(action="surveys_export",
-                              data={"survey-response-ids": [survey1.pk, survey2.pk]})
+                              data={"survey-response-ids": [survey1.pk, survey2.pk], "file_format": "excel"})
+
+        self.assertEquals(response.status_code, 200)
+
+    def test_can_export_surveys_as_csv(self):
+        survey1 = self._dummy_survey()
+        survey2 = self._dummy_survey()
+
+        response = self._post(action="surveys_export",
+                              data={"survey-response-ids": [survey1.pk, survey2.pk], "file_format": "csv"})
 
         self.assertEquals(response.status_code, 200)
 
@@ -175,6 +184,11 @@ class TestSurveysExport(MongoTestCase):
         self.assertEquals(worksheet["A2"].value, "lib1_name")
         self.assertEquals(worksheet["A3"].value, "lib2_name")
         self.assertEquals(worksheet["D3"].value, "Kontrollerad")
+
+    def test_build_row(self):
+        survey1 = self._dummy_survey()
+        row = _build_row(survey1)
+        self.assertEquals(len(row), 13)
 
 
 class TestLibraryImport(MongoTestCase):

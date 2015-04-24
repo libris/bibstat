@@ -5,6 +5,7 @@ import os
 import datetime
 import math
 from django.core.files import File
+from django.utils.encoding import smart_bytes
 
 from openpyxl import Workbook, load_workbook
 from openpyxl.writer.excel import save_virtual_workbook
@@ -97,42 +98,68 @@ def _published_open_data_as_workbook(year):
     return workbook
 
 
-def _load_surveys_and_append_worksheet_rows(surveys, worksheet):
-    for survey in surveys:
-        row = [
-            survey.library.name,
-            survey.library.sigel,
-            survey.library.library_type,
-            Survey.status_label(survey.status),
-            survey.library.email,
-            survey.library.municipality_code,
-            survey.library.city,
-            survey.library.address,
-            survey.library.zip_code,
-            principal_for_library_type[survey.library.library_type]
-            if survey.library.library_type in principal_for_library_type else None,
-            "Ja" if survey.can_publish() else "Nej: " + survey.reasons_for_not_able_to_publish(),
-            "Ja" if survey.is_reporting_for_others() else "Nej",
-            #"Ja" if survey.is_reported_by_other() else "Nej",
-            ",".join(survey.reported_by())
-        ]
-        for observation in survey.observations:
-            row.append(observation.value)
+def _build_row(survey):
+    row = [
+        survey.library.name,
+        survey.library.sigel,
+        survey.library.library_type,
+        Survey.status_label(survey.status),
+        survey.library.email,
+        survey.library.municipality_code,
+        survey.library.city,
+        survey.library.address,
+        survey.library.zip_code,
+        principal_for_library_type[survey.library.library_type]
+        if survey.library.library_type in principal_for_library_type else None,
+        "Ja" if survey.can_publish() else "Nej: " + survey.reasons_for_not_able_to_publish(),
+        "Ja" if survey.is_reporting_for_others() else "Nej",
+        #"Ja" if survey.is_reported_by_other() else "Nej",
+        ",".join(survey.reported_by())
+    ]
 
-        for sigel in survey.selected_libraries:
-            if sigel != survey.library.sigel:
-                survey = Survey.objects.filter(library__sigel=sigel, sample_year=survey.sample_year).first()
-                row.append("%s (%s)" % (survey.library.name, survey.library.sigel))
-                row.append(survey.library.address)
-                row.append(survey.library.zip_code)
+    for observation in survey.observations:
+        row.append(observation.value)
 
-        worksheet.append(row)
+    for sigel in survey.selected_libraries:
+        if sigel != survey.library.sigel:
+            survey = Survey.objects.filter(library__sigel=sigel, sample_year=survey.sample_year).first()
+            row.append("%s (%s)" % (survey.library.name, survey.library.sigel))
+            row.append(survey.library.address)
+            row.append(survey.library.zip_code)
 
+    return row
 
-def surveys_to_excel_workbook(survey_ids):
-    bulk_size = 300
-    bulks = int(math.ceil(len(survey_ids) / bulk_size))
+def _build_row_encoded(survey):
+    row = [
+        smart_bytes(unicode(survey.library.name)),
+        smart_bytes(unicode(survey.library.sigel)),
+        smart_bytes(unicode(survey.library.library_type)),
+        smart_bytes(unicode(Survey.status_label(survey.status))),
+        smart_bytes(unicode(survey.library.email)),
+        smart_bytes(unicode(survey.library.municipality_code)),
+        smart_bytes(unicode(survey.library.city)),
+        smart_bytes(unicode(survey.library.address)),
+        smart_bytes(unicode(survey.library.zip_code)),
+        smart_bytes(unicode(principal_for_library_type[survey.library.library_type]))if survey.library.library_type in principal_for_library_type else None,
+        smart_bytes(u"Ja") if survey.can_publish() else smart_bytes(u"Nej: ") + survey.reasons_for_not_able_to_publish(),
+        smart_bytes(u"Ja") if survey.is_reporting_for_others() else smart_bytes(u"Nej"),
+        #smart_bytes(u"Ja") if smart_bytes(unicode(survey.is_reported_by_other())) else smart_bytes(u"Nej"),
+        smart_bytes(u",").join([smart_bytes(unicode(r)) for r in survey.reported_by()])
+    ]
 
+    for observation in survey.observations:
+        row.append(smart_bytes(unicode(observation.value)))
+
+    for sigel in survey.selected_libraries:
+        if sigel != survey.library.sigel:
+            survey = Survey.objects.filter(library__sigel=sigel, sample_year=survey.sample_year).first()
+            row.append("%s (%s)" % (smart_bytes(unicode(survey.library.name)), smart_bytes(unicode(survey.library.sigel))))
+            row.append(smart_bytes(unicode(survey.library.address)))
+            row.append(smart_bytes(unicode(survey.library.zip_code)))
+
+    return row
+
+def _get_headers(survey_id):
     headers = [
         "Bibliotek",
         "Sigel",
@@ -149,12 +176,40 @@ def surveys_to_excel_workbook(survey_ids):
         #"Samredovisas",
         "Redovisas av"
     ]
-    headers += [unicode(observation.variable.key) for observation in Survey.objects.get(pk=survey_ids[0]).observations if observation.variable.key]
+    headers += [unicode(observation.variable.key) for observation in Survey.objects.get(pk=survey_id).observations if observation.variable.key]
     headers += ["Samredovisat bibliotek", "Gatuadress", "Postnummer"]
+
+    return headers
+
+def _get_headers_encoded(survey_id):
+    headers = [
+        smart_bytes(u"Bibliotek"),
+        smart_bytes(u"Sigel"),
+        smart_bytes(u"Bibliotekstyp"),
+        smart_bytes(u"Status"),
+        smart_bytes(u"Email"),
+        smart_bytes(u"Kommunkod"),
+        smart_bytes(u"Stad"),
+        smart_bytes(u"Adress"),
+        smart_bytes(u"Postkod"),
+        smart_bytes(u"Huvudman"),
+        smart_bytes(u"Kan publiceras?"),
+        smart_bytes(u"Samredovisar andra bibliotek"),
+        #smart_bytes(u"Samredovisas"),
+        smart_bytes(u"Redovisas av")
+    ]
+    headers += [smart_bytes(unicode(observation.variable.key)) for observation in Survey.objects.get(pk=survey_id).observations if observation.variable.key]
+    headers += [smart_bytes(u"Samredovisat bibliotek"), smart_bytes(u"Gatuadress"), smart_bytes(u"Postnummer")]
+
+    return headers
+
+def surveys_to_excel_workbook(survey_ids):
+    bulk_size = 300
+    bulks = int(math.ceil(len(survey_ids) / bulk_size))
 
     workbook = Workbook(encoding="utf-8")
     worksheet = workbook.active
-    worksheet.append(headers)
+    worksheet.append(_get_headers(survey_ids[0]))
 
     for index in range(0, bulks):
         start_index = index * bulk_size
@@ -166,6 +221,18 @@ def surveys_to_excel_workbook(survey_ids):
 
         surveys = Survey.objects.filter(id__in=ids).order_by('library__name')
 
-        _load_surveys_and_append_worksheet_rows(surveys, worksheet)
+        for survey in surveys:
+            row = _build_row(survey)
+            worksheet.append(row)
 
     return workbook
+
+def surveys_to_csv(survey_ids, writer):
+    headers = _get_headers_encoded(survey_ids[0])
+    writer.writerow(headers)
+    surveys = Survey.objects.filter(id__in=survey_ids).order_by('library__name')
+    for survey in surveys:
+        row = _build_row_encoded(survey)
+        writer.writerow(row)
+
+

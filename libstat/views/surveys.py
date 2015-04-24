@@ -3,7 +3,9 @@ import logging
 import json
 from time import strftime
 from datetime import datetime
+import csv
 
+from django.core.files.uploadedfile import TemporaryUploadedFile
 from django.core.urlresolvers import reverse
 from django.shortcuts import render, redirect
 from django.http import HttpResponse, HttpResponseRedirect, HttpResponseNotFound, HttpResponseNotAllowed, HttpResponseServerError, HttpResponseBadRequest
@@ -16,7 +18,7 @@ from libstat import utils
 from libstat.services.bibdb_integration import fetch_libraries
 from libstat.services.clean_data import remove_empty_surveys, match_libraries_and_replace_sigel
 from libstat.models import Survey, SurveyObservation, Variable
-from libstat.services.excel_export import surveys_to_excel_workbook, public_excel_workbook
+from libstat.services.excel_export import surveys_to_excel_workbook, surveys_to_csv, public_excel_workbook
 from libstat.survey_templates import survey_template
 from data.municipalities import municipalities
 
@@ -153,11 +155,19 @@ def _surveys_redirect(request):
 def surveys_export(request):
     if request.method == "POST":
         survey_ids = request.POST.getlist("survey-response-ids", [])
-        filename = u"Exporterade enkätsvar ({}).xlsx".format(strftime("%Y-%m-%d %H.%M.%S"))
-        workbook = surveys_to_excel_workbook(survey_ids)
-
-        response = HttpResponse(save_virtual_workbook(workbook), content_type='application/vnd.ms-excel')
-        response['Content-Disposition'] = u'attachment; filename="{}"'.format(filename)
+        file_format = request.POST.get("export_file_format", "excel")
+        logger.debug('File format: %s' % file_format)
+        if file_format == 'csv':
+            filename = u"Exporterade enkätsvar ({}).csv".format(strftime("%Y-%m-%d %H.%M.%S"))
+            response = HttpResponse(content_type='text/csv')
+            response['Content-Disposition'] = u'attachment; filename="{}"'.format(filename)
+            writer = csv.writer(response, csv.excel)
+            surveys_to_csv(survey_ids, writer)
+        else:
+            workbook = surveys_to_excel_workbook(survey_ids)
+            filename = u"Exporterade enkätsvar ({}).xlsx".format(strftime("%Y-%m-%d %H.%M.%S"))
+            response = HttpResponse(save_virtual_workbook(workbook), content_type='application/vnd.ms-excel')
+            response['Content-Disposition'] = u'attachment; filename="{}"'.format(filename)
         return response
 
 

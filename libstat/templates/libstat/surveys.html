@@ -348,13 +348,20 @@
                             <div class="modal-body">
                                 <span class="selected-single hidden">
                                     <b>Är du säker på att du vill exportera den markerade enkäten?</b>
-                                    <br>Enkäten kommer att exporteras till en fil som Excel klarar av att öppna.
+                                    <br>
+                                    <br>Välj vilket filformat du vill exportera till:
                                 </span>
                                 <span class="selected-multiple selected-default">
                                     <b>Är du säker på att du vill exportera de <span class="selected-count"></span> markerade enkäterna?</b>
-                                    <br>Enkäterna kommer att exporteras till en fil som Excel klarar av att öppna.
+                                    <br>
+                                    <br>Välj vilket filformat du vill exportera till:
                                 </span>
-
+                                <br>
+                                <br>
+                                <select name="export_file_format" class="form-control">
+                                    <option value="excel">Excel (xlsx)</option>
+                                    <option value="csv">Kommaseparerad fil (csv)</option>
+                                </select>
                             </div>
                             <div class="modal-footer">
                                 <a href="#" class="btn btn-default" data-dismiss="modal">Avbryt</a>
