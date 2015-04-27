@@ -3,7 +3,7 @@ from pprint import pprint
 import uuid
 
 from libstat.models import Survey, Variable, OpenData, CachedReport
-from libstat.report_templates import report_template_2014
+from libstat.report_templates import report_template_2014, report_template_2014_without_target_group_calculations
 
 
 REPORT_CACHE_LIMIT = 500
@@ -35,8 +35,15 @@ def get_report(surveys, year):
     if cached_report:
         return cached_report
     else:
+
+        library_types = [survey.library.library_type for survey in surveys]
+
         # This should of course be updated when (and if) more templates are added
-        report_template = report_template_2014()
+        # Use template without target group calculations if surveys with different library types are included in report
+        if len(surveys) > 1 and not all(libtype == library_types[0] for libtype in library_types):
+            report_template = report_template_2014_without_target_group_calculations()
+        else:
+            report_template = report_template_2014()
 
         observations = pre_cache_observations(report_template, surveys, year)
 
