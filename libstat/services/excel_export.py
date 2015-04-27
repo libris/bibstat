@@ -117,7 +117,10 @@ def _load_surveys_and_append_worksheet_rows(surveys, worksheet):
             ",".join(survey.reported_by())
         ]
         for observation in survey.observations:
-            row.append(observation.value)
+            value = observation.value
+            if observation.value_unknown:
+                value = u"okänt värde"
+            row.append(value)
 
         for sigel in survey.selected_libraries:
             if sigel != survey.library.sigel:
