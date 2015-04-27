@@ -5,7 +5,7 @@ from django.core.urlresolvers import reverse
 
 from django.shortcuts import render, redirect
 from django.utils.http import is_safe_url
-from data.municipalities import municipalities, get_counties, municipalities_without_counties
+from data.municipalities import municipalities, get_counties
 from data.principals import principal_for_library_type, name_for_principal, library_types_for_principal
 from libstat.models import Survey
 from libstat.services.report_generation import get_report
@@ -50,8 +50,8 @@ def reports(request):
 
     def all_municipality_codes(surveys):
         _municipality_codes = surveys.distinct("library.municipality_code")
-        _municipality_codes = [(municipalities[code], code) for code in _municipality_codes if code in municipalities_without_counties]
-        #_municipality_codes += list(get_counties(_municipality_codes))
+        _municipality_codes = [(municipalities[code], code) for code in _municipality_codes if code in municipalities]
+        _municipality_codes += list(get_counties(_municipality_codes)) #comment out this line to remove municipalities from report selection list
         _municipality_codes = set(_municipality_codes)
         _municipality_codes = list(_municipality_codes)
         _municipality_codes.sort()
