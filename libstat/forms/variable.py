@@ -48,7 +48,7 @@ class VariableForm(forms.Form):
             self.fields['category'].initial = self.instance.category
             self.fields['sub_category'].initial = self.instance.sub_category
             self.fields['type'].initial = self.instance.type
-            self.fields['is_public'].initial = int(self.instance.is_public)
+            self.fields['is_public'].initial = self.instance.is_public
             self.fields['target_groups'].initial = self.instance.target_groups
             self.fields['description'].initial = self.instance.description
             self.fields['comment'].initial = self.instance.comment
