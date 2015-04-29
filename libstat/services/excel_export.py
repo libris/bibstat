@@ -56,21 +56,22 @@ def _published_open_data_as_workbook(year):
     worksheet = workbook.active
     worksheet.title = u"Värden"
 
-    variable_keys = list(OpenData.objects.filter(is_active=True, sample_year=year).distinct("variable_key"))
-    sigels = list(OpenData.objects.filter(is_active=True, sample_year=year).distinct("sigel"))
+    public_variables = list(Variable.objects.filter(is_public=True).distinct("key"))
+
+    variable_keys = list(OpenData.objects.filter(is_active=True, sample_year=year, variable_key__in=public_variables).distinct("variable_key"))
+    sigels = list(OpenData.objects.filter(is_active=True, sample_year=year, variable_key__in=public_variables).distinct("sigel"))
 
     libraries = {}
     for sigel in sigels:
         libraries[sigel] = dict.fromkeys(variable_keys)
 
-    for open_data in OpenData.objects.filter(is_active=True, sample_year=year).only("library_name", "variable_key",
-                                                                                    "sigel", "value"):
+    for open_data in OpenData.objects.filter(is_active=True, sample_year=year, variable_key__in=public_variables).only("library_name", "variable_key", "sigel", "value"):
         libraries[open_data.sigel][open_data.variable_key] = open_data.value
 
-    header = ["Bibliotek", "Sigel", "Bibliotekstyp", "Kommunkod", "Stad", "Adress", "Postkod"]
+    header = ["Bibliotek", "Sigel", "Bibliotekstyp", "Kommunkod", "Stad"]
     variable_index = {}
     for index, key in enumerate(variable_keys):
-        variable_index[key] = index + 7
+        variable_index[key] = index + 5
         header.append(key)
     worksheet.append(header)
 
@@ -82,8 +83,6 @@ def _published_open_data_as_workbook(year):
         row[2] = library.library_type
         row[3] = library.municipality_code
         row[4] = library.city
-        row[5] = library.address
-        row[6] = library.zip_code
 
         for key in variable_keys:
             row[variable_index[key]] = libraries[sigel][key]
