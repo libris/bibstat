@@ -662,11 +662,16 @@ class Survey(SurveyBase):
                 open_datas = OpenData.objects.filter(source_survey=self.pk, variable=observation.variable)
                 if open_datas:
                     for open_data in open_datas:
-                        if observation.value != open_data.value:
+                        if not observation._is_public or self.library.library_type not in observation.variable.target_groups:
+                            open_data.delete()
+                        elif observation.value != open_data.value:
                             open_data.value = observation.value
                             open_data.date_modified = publishing_date
-                        open_data.is_active = True
-                        open_data.save()
+                            open_data.is_active = True
+                            open_data.save()
+                        else:
+                            open_data.is_active = True
+                            open_data.save()
 
         def create_new_open_data(self, publishing_date):
             existing_open_data_variables = [open_data.variable for open_data in
@@ -674,6 +679,7 @@ class Survey(SurveyBase):
 
             observations = [observation for observation in self.observations if
                             observation._is_public and
+                            self.library.library_type in observation.variable.target_groups and
                             observation.value is not None and
                             observation.value != "" and
                             not observation.variable in existing_open_data_variables]

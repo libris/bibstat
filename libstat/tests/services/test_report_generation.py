@@ -4,7 +4,7 @@ from libstat.tests import MongoTestCase
 from libstat.models import CachedReport
 from libstat.report_templates import ReportTemplate, Group, Row
 
-from libstat.services.report_generation import generate_report, pre_cache_observations, get_report
+from libstat.services.report_generation import generate_report, pre_cache_observations, get_report, is_variable_to_be_included
 from libstat.services import report_generation
 
 
@@ -36,6 +36,9 @@ class TestReportGeneration(MongoTestCase):
                             variable_keys=["does_not_exist2", "does_not_exist3"]),
                   ])
         ])
+        variable1 = self._dummy_variable(key="key1", target_groups=["folkbib"])
+        variable2 = self._dummy_variable(key="key2", target_groups=["folkbib"])
+        variable4 = self._dummy_variable(key="key4", target_groups=["folkbib"])
         observations = {
             "key1": {
                 2012: 19.0,
@@ -57,7 +60,7 @@ class TestReportGeneration(MongoTestCase):
             }
         }
 
-        report = generate_report(template, 2014, observations)
+        report = generate_report(template, 2014, observations, ["folkbib"])
         expected_report = [
             {
                 "title": "some_title1",
@@ -216,6 +219,15 @@ class TestReportGeneration(MongoTestCase):
         }
 
         self.assertEqual(observations, expected_observations)
+
+    def test_is_variable_to_be_included(self):
+        variable1 = self._dummy_variable(key="key4", target_groups=["folkbib", "natbib"])
+        variable2 = self._dummy_variable(key="key5", target_groups=["natbib"])
+        variable3 = self._dummy_variable(key="key6", target_groups=["skolbib", "folkbib"])
+
+        self.assertTrue(is_variable_to_be_included(variable1, ["folkbib"]), True)
+        self.assertTrue(is_variable_to_be_included(variable2, ["folkbib"]), False)
+        self.assertTrue(is_variable_to_be_included(variable3, ["folkbib", "natbib"]), False)
 
 
 class TestReportTemplate(MongoTestCase):

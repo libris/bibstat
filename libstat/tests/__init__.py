@@ -129,8 +129,10 @@ class MongoTestCase(TestCase):
         connect(self.mongodb_name)
         from mongoengine.django.mongo_auth.models import MongoUser
 
-        MongoUser.objects.create_superuser("admin", "admin@example.com", "admin")
-        MongoUser.objects.create_user("library_user", "library.user@example.com", "secret")
+        if MongoUser.objects.filter(username="admin").count() == 0:
+            MongoUser.objects.create_superuser("admin", "admin@example.com", "admin")
+        if MongoUser.objects.filter(username="library_user").count() == 0:
+            MongoUser.objects.create_user("library_user", "library.user@example.com", "secret")
         setup_test_environment()
 
     def _post_teardown(self):

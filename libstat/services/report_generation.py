@@ -66,7 +66,7 @@ def get_report(surveys, year):
                     "address": library.address,
                     "city": library.city
                 } for library in libraries],
-            "measurements": generate_report(report_template, year, observations)
+            "measurements": generate_report(report_template, year, observations, library_types)
         }
 
         store_cached_report(report, surveys, year)
@@ -74,7 +74,17 @@ def get_report(surveys, year):
         return report
 
 
-def generate_report(report_template, year, observations):
+def is_variable_to_be_included(variable_key, library_types):
+    variables = Variable.objects.filter(key=variable_key)
+    if len(variables) > 0:
+        variable = variables[0]
+        if variable.target_groups and len(variable.target_groups) > 0 and \
+                any([library_type not in variable.target_groups for library_type in library_types]):
+            return False
+    return True
+
+
+def generate_report(report_template, year, observations, library_types):
     year0 = str(year)
     year1 = str(year - 1)
     year2 = str(year - 2)
@@ -115,14 +125,17 @@ def generate_report(report_template, year, observations):
     def clear_nones(a_dict):
         return dict([(k, v) for k, v in a_dict.iteritems() if v is not None])
 
+
     report = []
     for template_group in report_template.groups:
         group = group_skeleton(template_group)
 
         for template_row in template_group.rows:
-            row = row_skeleton(template_row)
 
-            if template_row.variable_key:
+            row = None
+
+            if template_row.variable_key and is_variable_to_be_included(template_row.variable_key, library_types):
+                row = row_skeleton(template_row)
                 observation = observations.get(template_row.variable_key, {})
                 row[year0] = observation.get(year, None)
                 row[year1] = observation.get(year - 1, None)
@@ -133,7 +146,8 @@ def generate_report(report_template, year, observations):
                     row["extra"] = template_row.compute(values_for(template_row.variable_keys, year))
                     row["extra"] = row["extra"] * 100 if row["extra"] is not None else None
 
-            elif template_row.variable_keys:
+            elif template_row.variable_keys and all(is_variable_to_be_included(variable_key, library_types) for variable_key in template_row.variable_keys):
+                row = row_skeleton(template_row)
                 row["is_key_figure"] = True
                 for y in (year0, year1, year2):
                     row[y] = template_row.compute(values_for(template_row.variable_keys, int(y)))
@@ -142,20 +156,24 @@ def generate_report(report_template, year, observations):
                             "incomplete_data"]:
                             row["incomplete_data"].append(int(y))
 
-            if row[year0] == 0 and row[year1] == 0:
-                row["diff"] = 0.0
-            elif row[year0] is not None and row[year1]:
-                row["diff"] = ((row[year0] / row[year1]) - 1) * 100
+            elif not template_row.variable_key and not template_row.variable_keys:
+                row = row_skeleton(template_row)
 
-            if row[year0] == 0 and row[year1] == 0:
-                row["nation_diff"] = 0.0
-            elif row[year0] is not None and row["total"]:
-                row["nation_diff"] = (row[year0] / row["total"]) * 1000
+            if row:
+                if row[year0] == 0 and row[year1] == 0:
+                    row["diff"] = 0.0
+                elif row[year0] is not None and row[year1]:
+                    row["diff"] = ((row[year0] / row[year1]) - 1) * 100
 
-            row["incomplete_data"] = [str(a) for a in row["incomplete_data"]] if row["incomplete_data"] else None
+                if row[year0] == 0 and row[year1] == 0:
+                    row["nation_diff"] = 0.0
+                elif row[year0] is not None and row["total"]:
+                    row["nation_diff"] = (row[year0] / row["total"]) * 1000
 
-            row["total"] = None
-            group["rows"].append(clear_nones(row))
+                row["incomplete_data"] = [str(a) for a in row["incomplete_data"]] if row["incomplete_data"] else None
+
+                row["total"] = None
+                group["rows"].append(clear_nones(row))
         report.append(clear_nones(group))
     return report
 
