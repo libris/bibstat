@@ -219,6 +219,8 @@ class SurveyForm(forms.Form):
 
         self.url = settings.API_BASE_URL + reverse('survey', args=(survey.pk,))
         self.url_with_password = "{}?p={}".format(self.url, self.password)
+        self.print_url = settings.API_BASE_URL + reverse('survey_print_view', args=(survey.pk,))
+        self.print_url_with_password = "{}?p={}".format(self.print_url, self.password)
         self.email = survey.library.email
         self.mailto = self._mailto_link()
 

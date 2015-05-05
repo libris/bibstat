@@ -4,8 +4,10 @@ import time
 
 from django.core.urlresolvers import reverse
 from django.shortcuts import render, redirect
-from django.http import HttpResponseNotFound
+from django.http import HttpResponse, HttpResponseNotFound, HttpResponseForbidden, HttpResponseBadRequest
 from django.contrib.auth.decorators import permission_required
+from django.template.loader import get_template
+from django.template import Context
 from bibstat import settings
 
 from libstat.models import Survey, Variable, SurveyObservation, Library
@@ -43,7 +45,7 @@ def example_survey(request):
 def _save_survey_response_from_form(survey, form):
 
     if form.is_valid():
-        disabled_inputs = form.cleaned_data.pop("disabled_inputs").split(" ") #TODO: remove?
+        disabled_inputs = form.cleaned_data.pop("disabled_inputs").split(" ")
         unknown_inputs = form.cleaned_data.pop("unknown_inputs").split(" ")
         submit_action = form.cleaned_data.pop("submit_action", None)
         altered_fields = form.cleaned_data.pop("altered_fields", None).split(" ")
@@ -53,7 +55,7 @@ def _save_survey_response_from_form(survey, form):
             if observation:
                 if field in altered_fields:
                     observation.value = form.cleaned_data[field]
-                    observation.disabled = (field in disabled_inputs) #TODO: remove?
+                    observation.disabled = (field in disabled_inputs)
                     observation.value_unknown = (field in unknown_inputs)
             else:
                 survey.__dict__["_data"][field] = form.cleaned_data[field]
@@ -86,7 +88,7 @@ def survey(request, survey_id):
     survey = survey[0]
 
     if not survey.is_active and not request.user.is_authenticated():
-        return HttpResponseNotFound()
+        return HttpResponseForbidden()
 
     context = {
         'survey_id': survey_id,
@@ -140,3 +142,39 @@ def survey_notes(request, survey_id):
         survey.save()
 
     return redirect(reverse('survey', args=(survey_id,)))
+
+
+def survey_print_view(request, survey_id):
+
+    def has_password():
+        return request.method == "GET" and "p" in request.GET or request.method == "POST"
+
+    def get_password():
+        return request.GET["p"] if request.method == "GET" else request.POST.get("password", None)
+
+    if request.method == "GET":
+
+        survey = Survey.objects.get(pk=survey_id)
+
+        if not survey:
+            return HttpResponseNotFound()
+
+        if not survey.is_active and not request.user.is_authenticated():
+            return HttpResponseForbidden()
+
+        context = {
+            'survey_id': survey_id,
+        }
+
+        if request.user.is_authenticated() or request.session.get("password") == survey.id:
+            context["form"] = SurveyForm(survey=survey, authenticated=request.user.is_authenticated())
+            return render(request, 'libstat/survey_print.html', context)
+
+        if has_password():
+            if get_password() == survey.password:
+                request.session["password"] = survey.id
+                return redirect(reverse("survey", args=(survey_id,)))
+            else:
+                context["wrong_password"] = True
+
+    return render(request, 'libstat/survey/password.html', context)
