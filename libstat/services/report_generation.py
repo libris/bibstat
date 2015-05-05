@@ -75,12 +75,10 @@ def get_report(surveys, year):
 
 
 def is_variable_to_be_included(variable_key, library_types):
-    variables = Variable.objects.filter(key=variable_key)
-    if len(variables) > 0:
-        variable = variables[0]
-        if variable.target_groups and len(variable.target_groups) > 0 and \
+    variable = Variable.objects.filter(key=variable_key).first()
+    if variable.target_groups and len(variable.target_groups) > 0 and \
                 any([library_type not in variable.target_groups for library_type in library_types]):
-            return False
+        return False
     return True
 
 
