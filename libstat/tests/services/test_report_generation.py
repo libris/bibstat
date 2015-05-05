@@ -225,9 +225,9 @@ class TestReportGeneration(MongoTestCase):
         variable2 = self._dummy_variable(key="key5", target_groups=["natbib"])
         variable3 = self._dummy_variable(key="key6", target_groups=["skolbib", "folkbib"])
 
-        self.assertTrue(is_variable_to_be_included(variable1, ["folkbib"]), True)
-        self.assertTrue(is_variable_to_be_included(variable2, ["folkbib"]), False)
-        self.assertTrue(is_variable_to_be_included(variable3, ["folkbib", "natbib"]), False)
+        self.assertTrue(is_variable_to_be_included(variable1, ["folkbib"]))
+        self.assertFalse(is_variable_to_be_included(variable2, ["folkbib"]))
+        self.assertFalse(is_variable_to_be_included(variable3, ["folkbib", "natbib"]))
 
 
 class TestReportTemplate(MongoTestCase):
