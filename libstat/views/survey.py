@@ -142,39 +142,3 @@ def survey_notes(request, survey_id):
         survey.save()
 
     return redirect(reverse('survey', args=(survey_id,)))
-
-
-def survey_print_view(request, survey_id):
-
-    def has_password():
-        return request.method == "GET" and "p" in request.GET or request.method == "POST"
-
-    def get_password():
-        return request.GET["p"] if request.method == "GET" else request.POST.get("password", None)
-
-    if request.method == "GET":
-
-        survey = Survey.objects.get(pk=survey_id)
-
-        if not survey:
-            return HttpResponseNotFound()
-
-        if not survey.is_active and not request.user.is_authenticated():
-            return HttpResponseForbidden()
-
-        context = {
-            'survey_id': survey_id,
-        }
-
-        if request.user.is_authenticated() or request.session.get("password") == survey.id:
-            context["form"] = SurveyForm(survey=survey, authenticated=request.user.is_authenticated())
-            return render(request, 'libstat/survey_print.html', context)
-
-        if has_password():
-            if get_password() == survey.password:
-                request.session["password"] = survey.id
-                return redirect(reverse("survey", args=(survey_id,)))
-            else:
-                context["wrong_password"] = True
-
-    return render(request, 'libstat/survey/password.html', context)
