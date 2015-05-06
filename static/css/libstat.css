@@ -609,3 +609,16 @@ label.sub-label {
 .page-survey .jumbotron-submitted h1 {
     font-size: 27px;
 }
+
+/* styles for media type=print */
+
+@media print {
+
+    .container {
+        width: 900px;
+    }
+
+    #kundo_button_container {
+        display: None;
+    }
+}
