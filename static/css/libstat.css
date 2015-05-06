@@ -621,4 +621,16 @@ label.sub-label {
     #kundo_button_container {
         display: None;
     }
+
+    @page {
+        margin: 2.0cm;
+    }
+
+    .btn {
+        display: None;
+    }
+
+    .final-words {
+        display: None;
+    }
 }
