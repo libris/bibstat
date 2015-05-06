@@ -277,3 +277,16 @@ td.observation-extra {
 .popover .popover-content {
     padding: 15px;
 }
+
+/* styles for media type=print */
+
+@media print {
+
+    #kundo_button_container {
+        display: None;
+    }
+
+    @page {
+        margin: 2.0cm;
+    }
+}

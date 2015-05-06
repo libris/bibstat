@@ -4,7 +4,7 @@ import time
 
 from django.core.urlresolvers import reverse
 from django.shortcuts import render, redirect
-from django.http import HttpResponseNotFound
+from django.http import HttpResponseNotFound, HttpResponseForbidden
 from django.contrib.auth.decorators import permission_required
 from bibstat import settings
 
@@ -43,7 +43,7 @@ def example_survey(request):
 def _save_survey_response_from_form(survey, form):
 
     if form.is_valid():
-        disabled_inputs = form.cleaned_data.pop("disabled_inputs").split(" ") #TODO: remove?
+        disabled_inputs = form.cleaned_data.pop("disabled_inputs").split(" ")
         unknown_inputs = form.cleaned_data.pop("unknown_inputs").split(" ")
         submit_action = form.cleaned_data.pop("submit_action", None)
         altered_fields = form.cleaned_data.pop("altered_fields", None).split(" ")
@@ -53,7 +53,7 @@ def _save_survey_response_from_form(survey, form):
             if observation:
                 if field in altered_fields:
                     observation.value = form.cleaned_data[field]
-                    observation.disabled = (field in disabled_inputs) #TODO: remove?
+                    observation.disabled = (field in disabled_inputs)
                     observation.value_unknown = (field in unknown_inputs)
             else:
                 survey.__dict__["_data"][field] = form.cleaned_data[field]
@@ -86,7 +86,7 @@ def survey(request, survey_id):
     survey = survey[0]
 
     if not survey.is_active and not request.user.is_authenticated():
-        return HttpResponseNotFound()
+        return HttpResponseForbidden()
 
     context = {
         'survey_id': survey_id,
