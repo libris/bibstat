@@ -430,14 +430,6 @@ label.sub-label {
     border-bottom-right-radius: 3px !important;
 }
 
-.page-survey .panel-body-print {
-    background-color: white;
-    border-top-color: #ccc;
-    border-bottom: 0px !important;
-    border-bottom-left-radius: 3px !important;
-    border-bottom-right-radius: 3px !important;
-}
-
 .page-survey .panel-heading {
     background-color: rgb(242, 148, 0) !important;
     color: white !important;
@@ -451,10 +443,6 @@ label.sub-label {
 
 .page-survey .panel {
     border-color: rgb(219, 136, 4) !important;
-}
-
-.page-survey .panel-print {
-    border-color: #ccc;
 }
 
 .page-survey .container hr {
@@ -475,20 +463,6 @@ label.sub-label {
     font-weight: bold;
     margin-top: 40px;
     padding-left: 14px;
-}
-
-.page-survey .print-title {
-    color: black;
-    font-weight: bold;
-    margin-top: 40px;
-    margin-bottom: 20px;
-}
-
-.page-survey .section-title-print {
-    color: gray;
-    font-weight: bold;
-    margin-top: 40px;
-    margin-bottom: 20px;
 }
 
 .page-survey .section-comment {
