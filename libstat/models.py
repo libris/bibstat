@@ -663,15 +663,16 @@ class Survey(SurveyBase):
                 if open_datas:
                     for open_data in open_datas:
                         if not observation._is_public or self.library.library_type not in observation.variable.target_groups:
-                            open_data.delete()
+                            if open_data.is_active:
+                                open_data.date_modified = publishing_date
+                                open_data.is_active = False
                         elif observation.value != open_data.value:
                             open_data.value = observation.value
                             open_data.date_modified = publishing_date
                             open_data.is_active = True
-                            open_data.save()
                         else:
                             open_data.is_active = True
-                            open_data.save()
+                        open_data.save()
 
         def create_new_open_data(self, publishing_date):
             existing_open_data_variables = [open_data.variable for open_data in
@@ -718,6 +719,7 @@ class Survey(SurveyBase):
     def unpublish(self):
         for open_data in OpenData.objects.filter(source_survey=self.pk):
             open_data.is_active = False
+            open_data.date_modified = datetime.utcnow()
             open_data.save()
 
     def __init__(self, *args, **kwargs):
@@ -760,7 +762,7 @@ class Dispatch(Document):
 
 
 class OpenData(Document):
-    is_active = BooleanField(required=True, default=True)
+    is_active = BooleanField(required=True, default=True) # Usage: False if source_survey has been unpublished, if source_survey.library is no longer in variable.target_group or if observation it's based on is no longer public
     source_survey = ReferenceField(Survey)
     library_name = StringField(required=True)
     sigel = StringField()
