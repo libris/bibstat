@@ -593,7 +593,7 @@ label.sub-label {
     }
 
     #kundo_button_container {
-        display: None;
+        display: None !important;
     }
 
     @page {
@@ -607,4 +607,9 @@ label.sub-label {
     .final-words {
         display: None;
     }
+
+    .group-body {
+        page-break-inside: avoid !important;
+    }
+
 }

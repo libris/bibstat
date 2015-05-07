@@ -16,7 +16,7 @@
     }
 
     #kundo_button_container {
-        display: None;
+        display: None !important;
     }
 
     @page {
