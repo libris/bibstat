@@ -20,6 +20,11 @@ DATE_FORMAT = "%Y_%m_%d_%H_%M_%S"
 
 logger = logging.getLogger(__name__)
 
+def _cache_dir_path():
+    if settings.ENVIRONMENT == "local":
+        return "{}/data/public_exports/".format(os.getcwd())
+    return "/data/appl/public_exports/"
+
 
 def _cache_path(year, date_str=None):
     file_name = "public_export_{} {}.xslx".format(year, date_str if date_str else "*")
@@ -41,6 +46,9 @@ def _cached_workbook_exists_and_is_valid(year):
 
 
 def _cache_workbook(workbook, year):
+    for filename in os.listdir(_cache_dir_path()):
+        if ".xslx" in filename:
+            os.remove("%s%s" % (_cache_dir_path(), filename))
     with open(_cache_path(year, datetime.datetime.utcnow().strftime(DATE_FORMAT)), "w") as f:
         File(f).write(save_virtual_workbook(workbook))
 
