@@ -1,10 +1,12 @@
 # -*- coding: utf-8 -*-
 from pprint import pprint
-import uuid
+import uuid, logging
 
 from libstat.models import Survey, Variable, OpenData, CachedReport
 from libstat.report_templates import report_template_2014, report_template_2014_with_municipality_calculations, report_template_2014_with_target_group_calculations
 
+
+logger = logging.getLogger(__name__)
 
 REPORT_CACHE_LIMIT = 500
 
@@ -230,12 +232,26 @@ def pre_cache_observations(template, surveys, year):
         for y in (year, year - 1, year - 2):
             open_data = OpenData.objects.filter(source_survey__in=survey_ids[y], variable__in=variables,
                                                 is_active=True)
-            value = open_data.sum("value")
+            sum_value = 0
+            for od in open_data:
+                try:
+                    if is_number(od.value):
+                        sum_value += od.value
+                    else:
+                        sum_value += float(od.value)
+                except:
+                    # Value is missing or empty
+                    continue
 
-            #not checking if value is a number until survey templates use variable-defined types
-            #if is_number(value) and open_data.count() != 0:
-            if open_data.count() != 0:
-                observations[key][y] = float(value)
+            if sum_value == 0:
+                sum_value = None
+
+            if sum_value and open_data.count() != 0:
+                try:
+                    observations[key][y] = float(sum_value)
+                except:
+                    observations[key][y] = None
+
             if open_data.count() < len(survey_ids[y]):
                 observations[key]["incomplete_data"].append(y)
 
