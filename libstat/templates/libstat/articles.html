@@ -31,6 +31,11 @@
                                 {{ article.content|linebreaks }}
                             </div>
                         </div>
+                        <div class="row">
+                            <div class="col-md-6">
+                                Typ: {{ article.type|article_type_label }}
+                            </div>
+                        </div>
                         <div class="row date_published">
                             <div class="col-md-6">
                                 Publicerad: {{ article.date_published }}

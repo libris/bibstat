@@ -11,6 +11,7 @@ from django.conf import settings
 from datetime import datetime
 from mongoengine.context_managers import no_dereference
 from data.municipalities import MUNICIPALITIES
+from data.articletypes import ARTICLE_TYPES
 from data.principals import get_library_types_with_same_principal, principal_for_library_type
 from libstat.query_sets.variable import VariableQuerySet
 
@@ -740,13 +741,13 @@ class SurveyVersion(SurveyBase):
 class Article(Document):
     title = StringField()
     content = StringField()
+    type = StringField(choices=ARTICLE_TYPES, default=u"corrections")
     date_published = DateTimeField(default=datetime.utcnow)
 
     meta = {
         'collection': 'libstat_articles',
         'ordering': ['date_published']
     }
-
 
 class Dispatch(Document):
     description = StringField()

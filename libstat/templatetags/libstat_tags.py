@@ -9,9 +9,10 @@ import pytz
 from django import template
 
 from bibstat import settings
-from libstat.models import Dispatch, Survey
+from libstat.models import Dispatch, Survey, Article
 from libstat.utils import targetGroups, ALL_TARGET_GROUPS_label
 from data.municipalities import municipalities
+from data.articletypes import article_types_dict
 
 
 register = template.Library()
@@ -42,6 +43,11 @@ def tg_label(value):
 @register.filter
 def srs_label(key):
     return next((status[1] for status in Survey.STATUSES if status[0] == key))
+
+
+@register.filter
+def article_type_label(key):
+    return article_types_dict[key]
 
 
 @register.filter
