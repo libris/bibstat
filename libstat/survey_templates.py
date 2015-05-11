@@ -4,7 +4,6 @@ from libstat.models import Section, Group, Cell, Row, SurveyTemplate
 
 def _survey_template_2014():
     return SurveyTemplate(
-        intro_text_variable_key="Introtext2014",
         sections=[
             Section(title=u"Frågor om biblioteksorganisationen",
                     groups=[

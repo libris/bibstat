@@ -8,7 +8,7 @@ from django.http import HttpResponseNotFound, HttpResponseForbidden
 from django.contrib.auth.decorators import permission_required
 from bibstat import settings
 
-from libstat.models import Survey, Variable, SurveyObservation, Library
+from libstat.models import Survey, Variable, SurveyObservation, Library, Article
 from libstat.forms.survey import SurveyForm
 from libstat.survey_templates import survey_template
 
@@ -88,8 +88,11 @@ def survey(request, survey_id):
     if not survey.is_active and not request.user.is_authenticated():
         return HttpResponseForbidden()
 
+    survey_intro_text = Article.objects.filter(type="survey_intro").first()
+
     context = {
         'survey_id': survey_id,
+        'survey_intro': survey_intro_text.content if survey_intro_text else ""
     }
 
     if not request.user.is_superuser:

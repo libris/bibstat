@@ -25,3 +25,4 @@ class ArticleForm(forms.Form):
         article.content = self.cleaned_data["content"]
         article.type = self.cleaned_data["type"]
         article.save()
+        return article

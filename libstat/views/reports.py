@@ -7,7 +7,7 @@ from django.shortcuts import render, redirect
 from django.utils.http import is_safe_url
 from data.municipalities import municipalities, get_counties
 from data.principals import principal_for_library_type, name_for_principal, library_types_for_principal
-from libstat.models import Survey
+from libstat.models import Survey, Article
 from libstat.services.report_generation import get_report
 
 
@@ -98,6 +98,8 @@ def reports(request):
             if len(filtered_surveys) == 0:
                 message = u"Det finns inga bibliotek att visa för den valda verksamheten."
 
+        reports_info_text = Article.objects.filter(type="reports_info").order_by("-date_published").first()
+
         context = {
             "sample_year": sample_year,
             "sample_years": sample_years,
@@ -109,7 +111,8 @@ def reports(request):
             "municipality_name": municipalities[municipality_code] if municipality_code in municipalities else None,
             "municipality_codes": municipality_codes,
             "principal": principal,
-            "principals": principals
+            "principals": principals,
+            "reports_info_text": reports_info_text
         }
 
         return render(request, 'libstat/reports.html', context)

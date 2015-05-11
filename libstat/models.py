@@ -741,7 +741,7 @@ class SurveyVersion(SurveyBase):
 class Article(Document):
     title = StringField()
     content = StringField()
-    type = StringField(choices=ARTICLE_TYPES, default=u"corrections")
+    type = StringField(choices=ARTICLE_TYPES, default=u"correction")
     date_published = DateTimeField(default=datetime.utcnow)
 
     meta = {
@@ -881,7 +881,6 @@ class Section(EmbeddedDocument):
 
 
 class SurveyTemplate(Document):
-    intro_text_variable_key = StringField()
     sections = ListField(EmbeddedDocumentField(Section))
 
     @property
