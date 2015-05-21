@@ -37,6 +37,7 @@ class SurveyForm(forms.Form):
             attrs["data-bv-greaterthan-value"] = "0"
             attrs["data-bv-greaterthan-inclusive"] = ""
             attrs["max"] = "99999999"
+            attrs["data-bv-message"] = "Vänligen mata in ett numeriskt värde mindre än eller lika med 99999999"
 
         if variable_type == "decimal":
             attrs["data-bv-numeric"] = ""
@@ -60,9 +61,9 @@ class SurveyForm(forms.Form):
             attrs["data-bv-stringlength-min"] = "0"
 
         if variable_type == "phonenumber":
-            attrs["data-bv-regexp"]
-            attrs["data-bv-regexp-regexp"] = "[\d\-]+"
-            attrs["data-bv-regexp-message"] = "Vänligen mata in ett giltigt telefonnummer, utan mellanslag och parenteser, t ex 08-111111"
+            attrs["data-bv-regexp"] = ""
+            attrs["data-bv-regexp-regexp"] = "^\+?\d\d+\-?\d(\s?\d+)*\d+$"
+            attrs["data-bv-regexp-message"] = "Vänligen mata in ett giltigt telefonnummer utan bokstäver och parenteser, t ex 010-709 30 00"
 
         if "Utgift" in cell.variable_key or "Intakt" in cell.variable_key: #TODO: add max_value field to variable + editable in term form
             attrs["max"] = "999999999"
@@ -220,7 +221,6 @@ class SurveyForm(forms.Form):
         self.statuses = Survey.STATUSES
         self.is_published = survey.status == "published"
         self.latest_version_published = survey.latest_version_published
-        self.sections = template.sections
 
         self.url = settings.API_BASE_URL + reverse('survey', args=(survey.pk,))
         self.url_with_password = "{}?p={}".format(self.url, self.password)
@@ -246,6 +246,7 @@ class SurveyForm(forms.Form):
             if not variable_key in variables:
                 raise Exception("Can't find variable with key '{}'".format(variable_key))
             variable_type = variables[variable_key].type
+            cell.types.append(variable_type) #cell is given same type as variable
             observation = survey.get_observation(variable_key)
 
             if observation:
@@ -257,6 +258,8 @@ class SurveyForm(forms.Form):
                 observation = SurveyObservation(variable=variables[variable_key])
                 survey.observations.append(observation)
             self.fields[variable_key] = self._cell_to_input_field(cell, observation, authenticated, variable_type)
+
+        self.sections = template.sections
 
         if self.is_read_only:
             self.fields["read_only"].initial = "true"

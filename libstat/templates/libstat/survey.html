@@ -111,7 +111,7 @@
                                 </div>
                             {% endif %}
                             {% for row in group.rows %}
-                                {% if row.cells and row.cells.0 and "comment" in row.cells.0.types %}
+                                {% if row.cells and row.cells.0 and "textarea" in row.cells.0.types %}
                                     <div class="row">
                                         <div class="col-sm-12">
                                         {% with variable_key=row.cells.0.variable_key %}

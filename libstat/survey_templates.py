@@ -9,10 +9,9 @@ def _survey_template_2014():
             Section(title=u"Frågor om biblioteksorganisationen",
                     groups=[
                         Group(rows=[
-                            #TODO: remove types and user variable type instead
                             Row(cells=[Cell(variable_key=u"Namn01")]),#text
                             Row(cells=[Cell(variable_key=u"Epost01", required=True)]),#email
-                            Row(cells=[Cell(variable_key=u"Tele01")]),#text
+                            Row(cells=[Cell(variable_key=u"Tele01")]),#phonenumber
                             Row(cells=[Cell(variable_key=u"Plan01")])]),#text
                         Group(rows=[
                             Row(cells=[Cell(variable_key=u"BemanService01", required=True)]),#integer
@@ -31,13 +30,13 @@ def _survey_template_2014():
             Section(title=u"Frågor om bemanning och personal",
                     groups=[
                         Group(rows=[
-                            Row(cells=[Cell(variable_key=u"Arsverke01")]),#numeric
-                            Row(cells=[Cell(variable_key=u"Arsverke02")]),#numeric
-                            Row(cells=[Cell(variable_key=u"Arsverke03")]),#numeric
-                            Row(cells=[Cell(variable_key=u"Arsverke04")]),#numeric
+                            Row(cells=[Cell(variable_key=u"Arsverke01")]),#decimal
+                            Row(cells=[Cell(variable_key=u"Arsverke02")]),#decimal
+                            Row(cells=[Cell(variable_key=u"Arsverke03")]),#decimal
+                            Row(cells=[Cell(variable_key=u"Arsverke04")]),#decimal
                             Row(cells=[Cell(variable_key=u"Arsverke99",
-                                            sum_of=["Arsverke01", "Arsverke02", "Arsverke03", "Arsverke04"])]),#numeric
-                            Row(cells=[Cell(variable_key=u"Arsverke05", required=True)])]),#numeric
+                                            sum_of=["Arsverke01", "Arsverke02", "Arsverke03", "Arsverke04"])]),#decimal
+                            Row(cells=[Cell(variable_key=u"Arsverke05", required=True)])]),#decimal
                         Group(rows=[
                             Row(cells=[Cell(variable_key=u"Personer01")]),#integer
                             Row(cells=[Cell(variable_key=u"Personer02")]),#integer
@@ -46,7 +45,7 @@ def _survey_template_2014():
                                      sum_of=[u"Personer01", u"Personer02"])])]),#integer
                         Group(rows=[
                             Row(cells=[
-                                Cell(variable_key=u"Personkomm")])])]),#comment
+                                Cell(variable_key=u"Personkomm")])])]),#textarea
             Section(title=u"Frågor om ekonomi",
                     groups=[
                         Group(rows=[
@@ -68,7 +67,7 @@ def _survey_template_2014():
                                             sum_of=[u"Intakt01", u"Intakt02", u"Intakt03"])])]),#integer
                         Group(rows=[
                             Row(cells=[
-                                Cell(variable_key=u"Ekonomikomm")])])]),#comment
+                                Cell(variable_key=u"Ekonomikomm")])])]),#textarea
             Section(title=u"Bestånd – nyförvärv",
                     groups=[
                         Group(rows=[
@@ -124,23 +123,23 @@ def _survey_template_2014():
                                 Cell(variable_key=u"Bestand213"),#integer
                                 Cell(variable_key=u"Bestand313")]),#integer
                             Row(cells=[
-                                Cell(variable_key=u"Bestand199", #integer
+                                Cell(variable_key=u"Bestand199",
                                      sum_of=['Bestand101', 'Bestand103',
                                              'Bestand104', 'Bestand105', 'Bestand106',
                                              'Bestand107', 'Bestand108', 'Bestand109',
                                              'Bestand110', 'Bestand111', 'Bestand112',
-                                             'Bestand113']),
-                                Cell(variable_key=u"Bestand299", #integer
+                                             'Bestand113']), #integer
+                                Cell(variable_key=u"Bestand299",
                                      sum_of=['Bestand201', 'Bestand203',
                                              'Bestand204', 'Bestand205', 'Bestand206',
                                              'Bestand207', 'Bestand208', 'Bestand209',
                                              'Bestand210', 'Bestand211', 'Bestand212',
-                                             'Bestand213']),
-                                Cell(variable_key=u"Bestand399", #integer
+                                             'Bestand213']), #integer
+                                Cell(variable_key=u"Bestand399",
                                      sum_of=['Bestand301', 'Bestand303',
                                              'Bestand304', 'Bestand305', 'Bestand306',
                                              'Bestand307', 'Bestand308', 'Bestand310',
-                                             'Bestand311', 'Bestand312', 'Bestand313'])])]),
+                                             'Bestand311', 'Bestand312', 'Bestand313'])])]),#integer
                         Group(rows=[
                             Row(cells=[Cell(variable_key=u"Barn01", required=True)]),#integer
                             Row(cells=[Cell(variable_key=u"Barn02", required=True)]),#integer
@@ -154,14 +153,14 @@ def _survey_template_2014():
                                 Cell(variable_key=u"Titlar101"),#integer
                                 Cell(variable_key=u"Titlar201"),#integer
                                 Cell(variable_key=u"Titlar301"),#integer
-                                Cell(variable_key=u"Titlar497", required=True,#integer
-                                     sum_of=[u"Titlar101", u"Titlar201", u"Titlar301"])]),
+                                Cell(variable_key=u"Titlar497", required=True,
+                                     sum_of=[u"Titlar101", u"Titlar201", u"Titlar301"])]),#integer
                             Row(cells=[
                                 Cell(variable_key=u"Titlar102"),#integer
                                 Cell(variable_key=u"Titlar202"),#integer
                                 Cell(variable_key=u"Titlar302"),#integer
-                                Cell(variable_key=u"Titlar498", required=True,#integer
-                                     sum_of=[u"Titlar102", u"Titlar202", u"Titlar302"])]),
+                                Cell(variable_key=u"Titlar498", required=True,
+                                     sum_of=[u"Titlar102", u"Titlar202", u"Titlar302"])]),#integer
                             Row(cells=[
                                 Cell(variable_key=u"Titlar199",#integer
                                      sum_of=[u"Titlar101", u"Titlar102"]),
@@ -181,20 +180,20 @@ def _survey_template_2014():
                             Row(cells=[Cell(variable_key=u"Databas07")]),#integer
                             Row(cells=[Cell(variable_key=u"Databas08")]),#integer
                             Row(cells=[Cell(variable_key=u"Databas09")]),#integer
-                            Row(cells=[Cell(variable_key=u"Databas99",#integer
+                            Row(cells=[Cell(variable_key=u"Databas99",
                                             sum_of=[u"Databas01", u"Databas02", u"Databas03",
                                                     u"Databas04", u"Databas05", u"Databas06",
-                                                    u"Databas07", u"Databas08", u"Databas09"])])]),
+                                                    u"Databas07", u"Databas08", u"Databas09"])])]),#integer
                         Group(rows=[
-                            Row(cells=[Cell(variable_key=u"Databaskomm")])])]),#comment
+                            Row(cells=[Cell(variable_key=u"Databaskomm")])])]),#textarea
             Section(title=u"Frågor om utlån, omlån och användning",
                     groups=[
                         Group(rows=[
                             Row(cells=[
                                 Cell(variable_key=u"Inilan101"),#integer
                                 Cell(variable_key=u"Omlan201"),#integer
-                                Cell(variable_key=u"Utlan301",#integer
-                                     sum_of=[u"Inilan101", u"Omlan201"])]),
+                                Cell(variable_key=u"Utlan301",
+                                     sum_of=[u"Inilan101", u"Omlan201"])]),#integer
                             Row(cells=[
                                 Cell(variable_key=u"Inilan102"),#integer
                                 Cell(variable_key=u"Omlan202"),#integer
@@ -202,74 +201,74 @@ def _survey_template_2014():
                             Row(cells=[
                                 Cell(variable_key=u"Inilan103"),#integer
                                 Cell(variable_key=u"Omlan203"),#integer
-                                Cell(variable_key=u"Utlan303",#integer
-                                     sum_of=[u"Inilan103", u"Omlan203"])]),
+                                Cell(variable_key=u"Utlan303",
+                                     sum_of=[u"Inilan103", u"Omlan203"])]),#integer
                             Row(cells=[
                                 Cell(variable_key=u"Inilan104"),#integer
                                 Cell(variable_key=u"Omlan204"),#integer
-                                Cell(variable_key=u"Utlan304",#integer
-                                     sum_of=[u"Inilan104", u"Omlan204"])]),
+                                Cell(variable_key=u"Utlan304",
+                                     sum_of=[u"Inilan104", u"Omlan204"])]),#integer
                             Row(cells=[
                                 Cell(variable_key=u"Inilan105"),#integer
                                 Cell(variable_key=u"Omlan205"),#integer
-                                Cell(variable_key=u"Utlan305",#integer
-                                     sum_of=[u"Inilan105", u"Omlan205"])]),
+                                Cell(variable_key=u"Utlan305",
+                                     sum_of=[u"Inilan105", u"Omlan205"])]),#integer
                             Row(cells=[
                                 Cell(variable_key=u"Inilan106"),#integer
                                 Cell(variable_key=u"Omlan206"),#integer
-                                Cell(variable_key=u"Utlan306",#integer
-                                     sum_of=[u"Inilan106", u"Omlan206"])]),
+                                Cell(variable_key=u"Utlan306",
+                                     sum_of=[u"Inilan106", u"Omlan206"])]),#integer
                             Row(cells=[
                                 Cell(variable_key=u"Inilan107"),#integer
                                 Cell(variable_key=u"Omlan207"),#integer
-                                Cell(variable_key=u"Utlan307",#integer
-                                     sum_of=[u"Inilan107", u"Omlan207"])]),
+                                Cell(variable_key=u"Utlan307",
+                                     sum_of=[u"Inilan107", u"Omlan207"])]),#integer
                             Row(cells=[
                                 Cell(variable_key=u"Inilan108"),#integer
                                 Cell(variable_key=u"Omlan208"),#integer
-                                Cell(variable_key=u"Utlan308",#integer
-                                     sum_of=[u"Inilan108", u"Omlan208"])]),
+                                Cell(variable_key=u"Utlan308",
+                                     sum_of=[u"Inilan108", u"Omlan208"])]),#integer
                             Row(cells=[
                                 Cell(variable_key=u"Inilan109"),#integer
                                 Cell(variable_key=u"Omlan209"),#integer
-                                Cell(variable_key=u"Utlan309",#integer
-                                     sum_of=[u"Inilan109", u"Omlan209"])]),
+                                Cell(variable_key=u"Utlan309",
+                                     sum_of=[u"Inilan109", u"Omlan209"])]),#integer
                             Row(cells=[
                                 Cell(variable_key=u"Inilan110"),#integer
                                 Cell(variable_key=u"Omlan210"),#integer
-                                Cell(variable_key=u"Utlan310",#integer
-                                     sum_of=[u"Inilan110", u"Omlan210"])]),
+                                Cell(variable_key=u"Utlan310",
+                                     sum_of=[u"Inilan110", u"Omlan210"])]),#integer
                             Row(cells=[
                                 Cell(variable_key=u"Inilan111"),#integer
                                 Cell(variable_key=u"Omlan211"),#integer
-                                Cell(variable_key=u"Utlan311",#integer
-                                     sum_of=[u"Inilan111", u"Omlan211"])]),
+                                Cell(variable_key=u"Utlan311",
+                                     sum_of=[u"Inilan111", u"Omlan211"])]),#integer
                             Row(cells=[
                                 Cell(variable_key=u"Inilan112"),#integer
                                 Cell(variable_key=u"Omlan212"),#integer
-                                Cell(variable_key=u"Utlan312",#integer
-                                     sum_of=[u"Inilan112", u"Omlan212"])]),
+                                Cell(variable_key=u"Utlan312",
+                                     sum_of=[u"Inilan112", u"Omlan212"])]),#integer
                             Row(cells=[
                                 Cell(variable_key=u"Inilan113"),#integer
                                 Cell(variable_key=u"Omlan213"),#integer
-                                Cell(variable_key=u"Utlan313",#integer
-                                     sum_of=[u"Inilan113", u"Omlan213"])]),
+                                Cell(variable_key=u"Utlan313",
+                                     sum_of=[u"Inilan113", u"Omlan213"])]),#integer
                             Row(cells=[
-                                Cell(variable_key=u"Inilan199",#integer
+                                Cell(variable_key=u"Inilan199",
                                      sum_of=[u"Inilan101", u"Inilan103", u"Inilan104",
                                             u"Inilan105", u"Inilan106", u"Inilan107",
                                             u"Inilan108", u"Inilan109", u"Inilan110",
-                                           u"Inilan111", u"Inilan112", u"Inilan113"]),
-                                Cell(variable_key=u"Omlan299",#integer
+                                           u"Inilan111", u"Inilan112", u"Inilan113"]),#integer
+                                Cell(variable_key=u"Omlan299",
                                      sum_of=[u"Omlan201", u"Omlan203", u"Omlan204",
                                              u"Omlan205", u"Omlan206", u"Omlan207",
                                              u"Omlan208", u"Omlan209", u"Omlan210",
-                                             u"Omlan211", u"Omlan212", u"Omlan213"]),
-                                Cell(variable_key=u"Utlan399",#integer
+                                             u"Omlan211", u"Omlan212", u"Omlan213"]),#integer
+                                Cell(variable_key=u"Utlan399",
                                      sum_of=[u"Utlan301", u"Utlan303", u"Utlan304",
                                              u"Utlan305", u"Utlan306", u"Utlan307",
                                              u"Utlan308", u"Utlan309", u"Utlan310",
-                                             u"Utlan311", u"Utlan312", u"Utlan313"])])]),
+                                             u"Utlan311", u"Utlan312", u"Utlan313"])])]),#integer
                         Group(rows=[
                             Row(cells=[
                                 Cell(variable_key=u"Laslan01")#integer
@@ -285,16 +284,16 @@ def _survey_template_2014():
                             Row(cells=[
                                 Cell(variable_key=u"Fjarr101"),#integer
                                 Cell(variable_key=u"Fjarr201"),#integer
-                                Cell(variable_key=u"Fjarr397",#integer
-                                     sum_of=[u"Fjarr101", u"Fjarr201"])]),
+                                Cell(variable_key=u"Fjarr397",
+                                     sum_of=[u"Fjarr101", u"Fjarr201"])]),#integer
                             Row(cells=[
                                 Cell(variable_key=u"Fjarr102"),#integer
                                 Cell(variable_key=u"Fjarr202"),#integer
-                                Cell(variable_key=u"Fjarr398",#integer
-                                     sum_of=[u"Fjarr102", u"Fjarr202"])]),
+                                Cell(variable_key=u"Fjarr398",
+                                     sum_of=[u"Fjarr102", u"Fjarr202"])]),#integer
                         ]),
                         Group(rows=[
-                            Row(cells=[Cell(variable_key=u"Utlankomm")])])]),#comment
+                            Row(cells=[Cell(variable_key=u"Utlankomm")])])]),#textarea
             Section(title=u"Omsättningen av elektroniska medier, användning och lån",
                     groups=[
                         Group(rows=[
@@ -327,18 +326,18 @@ def _survey_template_2014():
                                 Cell(variable_key=u"Elan109"),#integer
                                 Cell(variable_key=u"Elan209")]),#integer
                             Row(cells=[
-                                Cell(variable_key=u"Elan199",#integer
+                                Cell(variable_key=u"Elan199",
                                      sum_of=[u"Elan101", u"Elan102", u"Elan103",
                                              u"Elan104", u"Elan105", u"Elan106",
-                                             u"Elan107", u"Elan108", u"Elan109"]),
-                                Cell(variable_key=u"Elan299",#integer
+                                             u"Elan107", u"Elan108", u"Elan109"]),#integer
+                                Cell(variable_key=u"Elan299",
                                      sum_of=[u"Elan201", u"Elan202", u"Elan203",
                                              u"Elan204", u"Elan205", u"Elan206",
-                                             u"Elan207", u"Elan208", u"Elan209"]),
-                                Cell(variable_key=u"Elan399",#integer
-                                     sum_of=[u"Elan301"])])]),
+                                             u"Elan207", u"Elan208", u"Elan209"]),#integer
+                                Cell(variable_key=u"Elan399",
+                                     sum_of=[u"Elan301"])])]),#integer
                         Group(rows=[
-                            Row(cells=[Cell(variable_key=u"Elankomm")])])]),#comment
+                            Row(cells=[Cell(variable_key=u"Elankomm")])])]),#textarea
             Section(title=u"Frågor om besök och aktiva låntagare",
                     groups=[
                         Group(rows=[
@@ -363,12 +362,12 @@ def _survey_template_2014():
                             Row(cells=[Cell(variable_key=u"Resurs04")]),#integer
                             Row(cells=[Cell(variable_key=u"Resurs05")]),#integer
                             Row(cells=[Cell(variable_key=u"Resurs06")]),#integer
-                            Row(cells=[Cell(variable_key=u"Resurs07", )]),#integer
+                            Row(cells=[Cell(variable_key=u"Resurs07", required=True)]),#integer
                             Row(cells=[Cell(variable_key=u"Resurs08")]),#integer
-                            Row(cells=[Cell(variable_key=u"Resurs09", )]),#integer
+                            Row(cells=[Cell(variable_key=u"Resurs09", required=True)]),#integer
                             Row(cells=[Cell(variable_key=u"Resurs10")])]),#integer
                         Group(rows=[
-                            Row(cells=[Cell(variable_key=u"Besokkomm")])])]),#comment
+                            Row(cells=[Cell(variable_key=u"Besokkomm")])])]),#textarea
             Section(title=u"Frågor om öppettider och nyttjande",
                     groups=[
                         Group(rows=[
@@ -399,7 +398,7 @@ def _survey_template_2014():
                             Row(cells=[Cell(variable_key=u"Serv06")]),#integer
                             Row(cells=[Cell(variable_key=u"Serv07")])]),#integer
                         Group(rows=[
-                            Row(cells=[Cell(variable_key=u"Openkomm")])])]),#comment
+                            Row(cells=[Cell(variable_key=u"Openkomm")])])]),#textarea
             Section(title=u"Aktiviteter",
                     groups=[
                         Group(rows=[
@@ -464,31 +463,31 @@ def _survey_template_2014():
                                 Cell(variable_key=u"Publ120", required=True),#integer
                                 Cell(variable_key=u"Publ220")]),#integer
                             Row(cells=[
-                                Cell(variable_key=u"Publ199",#integer
+                                Cell(variable_key=u"Publ199",
                                      sum_of=[u"Publ101", u"Publ102", u"Publ103",
                                              u"Publ104", u"Publ105", u"Publ106",
                                              u"Publ107", u"Publ108", u"Publ109",
                                              u"Publ110", u"Publ111", u"Publ112",
                                              u"Publ113", u"Publ114", u"Publ115",
                                              u"Publ116", u"Publ117", u"Publ118",
-                                             u"Publ119", u"Publ120"]),
-                                Cell(variable_key=u"Publ299",#integer
+                                             u"Publ119", u"Publ120"]),#integer
+                                Cell(variable_key=u"Publ299",
                                      sum_of=[u"Publ201", u"Publ202", u"Publ203",
                                              u"Publ204", u"Publ205", u"Publ206",
                                              u"Publ207", u"Publ208", u"Publ209",
                                              u"Publ210", u"Publ211", u"Publ212",
                                              u"Publ213", u"Publ214", u"Publ215",
                                              u"Publ216", u"Publ217", u"Publ218",
-                                             u"Publ219", u"Publ220"])])]),
+                                             u"Publ219", u"Publ220"])])]),#integer
                         Group(rows=[
-                            Row(cells=[Cell(variable_key=u"Publkomm")])])]),#comment
+                            Row(cells=[Cell(variable_key=u"Publkomm")])])]),#textarea
             Section(title=u"Slutligen",
                     groups=[
                         Group(rows=[
                             Row(cells=[Cell(variable_key=u"SCB01", required=True)]),#decimal
                             Row(cells=[Cell(variable_key=u"SCB02", required=True)])]),#decimal
                         Group(rows=[
-                            Row(cells=[Cell(variable_key=u"Alltkomm")])])])])#comment
+                            Row(cells=[Cell(variable_key=u"Alltkomm")])])])])#textarea
 
 
 def has_template(year):
