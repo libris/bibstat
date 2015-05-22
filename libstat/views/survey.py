@@ -1,17 +1,19 @@
 # -*- coding: utf-8 -*-
 import logging
 import time
+import json
 
 from django.core.urlresolvers import reverse
 from django.shortcuts import render, redirect
-from django.http import HttpResponseNotFound, HttpResponseForbidden
+from django.http import HttpResponseNotFound, HttpResponseForbidden, HttpResponse
 from django.contrib.auth.decorators import permission_required
+from django.forms.util import ErrorList
+
 from bibstat import settings
 
 from libstat.models import Survey, Variable, SurveyObservation, Library
 from libstat.forms.survey import SurveyForm
 from libstat.survey_templates import survey_template
-
 
 logger = logging.getLogger(__name__)
 
@@ -40,9 +42,58 @@ def example_survey(request):
     return render(request, 'libstat/survey.html', context)
 
 
-def _save_survey_response_from_form(survey, form):
+def _validate_sums(survey, form):
+    not_validated_sum_fields = []
 
-    if form.is_valid():
+    def isnumber(obj):
+        return isinstance(obj, (int, long, float, complex))
+
+    def isempty(obj):
+        if not obj:
+            return True
+        if isnumber(obj) and obj == 0:
+            return True
+        if not isnumber(obj) and obj == "0" or obj == "0,0" or obj == "":
+            return True
+        return False
+
+    for section in form.sections:
+        for group in section.groups:
+            for row in group.rows:
+                for cell in row.cells:
+                    if cell.sum_of:
+                        total = 0
+                        # no subfield values are entered -> sum doesn't need to be validated
+                        if all([isempty(survey.get_observation(f)) for f in cell.sum_of]):
+                            return not_validated_sum_fields
+                        try:
+                            for field in cell.sum_of:
+                                observation_value = survey.get_observation(field)
+                                if isnumber(observation_value):
+                                    total += observation_value
+                                else:
+                                    total += float(observation_value)
+                            sum_value = survey.get_observation(cell.variable_key)
+                            if not isnumber(sum_value):
+                                float(sum_value)
+                            if not sum_value == total:
+                                not_validated_sum_fields.append(cell.variable_key)
+                        except:
+                            not_validated_sum_fields.append(cell.variable_key)
+    return not_validated_sum_fields
+
+# Validation of sums
+def _has_valid_sums(survey, form):
+    not_validated_sum_list = _validate_sums(survey, form)
+    if len(not_validated_sum_list) > 0:
+        for variable_key in not_validated_sum_list:
+            form._errors[variable_key] = ErrorList(u"Vänligen kontrollera att summan stämmer överens med delvärdena, alternativt fyll bara i en totalsumma.")
+        return False
+    return True
+
+
+def _save_survey_response_from_form(survey, form):
+    if form.is_valid() and _has_valid_sums(survey, form):
         disabled_inputs = form.cleaned_data.pop("disabled_inputs").split(" ")
         unknown_inputs = form.cleaned_data.pop("unknown_inputs").split(" ")
         submit_action = form.cleaned_data.pop("submit_action", None)
@@ -65,11 +116,14 @@ def _save_survey_response_from_form(survey, form):
 
         survey.save()
     else:
-        raise Exception(form.errors)
+        error_dict = {}
+        for field in form.cleaned_data:
+            error_dict[field] = field.errors.as_text()
+
+    return error_dict
 
 
 def survey(request, survey_id):
-
     def has_password():
         return request.method == "GET" and "p" in request.GET or request.method == "POST"
 
@@ -106,8 +160,8 @@ def survey(request, survey_id):
 
         if request.method == "POST":
             form = SurveyForm(request.POST, survey=survey)
-            _save_survey_response_from_form(survey, form)
-
+            errors = _save_survey_response_from_form(survey, form)
+            return HttpResponse(json.dumps(errors), content_type="application/json")
         else:
             context["form"] = SurveyForm(survey=survey, authenticated=request.user.is_authenticated())
             return render(request, 'libstat/survey.html', context)

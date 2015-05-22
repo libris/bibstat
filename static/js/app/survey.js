@@ -354,32 +354,41 @@ define(['jquery', 'bootbox', 'survey.sum', 'survey.cell', 'surveys.dispatch', 'b
             url: '/surveys/' + $('#id_key').val(),
             type: 'POST',
             data: $('#survey-form').serialize(),
-            success: function() {
+            success: function(result) {
               $('#print-survey-btn, #save-survey-btn, #submit-survey-btn').removeClass('disabled');
               $('#save-survey-btn').html('Spara');
 
-              if (submit_action == 'save') {
+                //TODO: loop through all sum-validator-xkey -fields and set display to block or none, depend if in result
+                //var sumValidatorElements = $("small[id^='sum-validator-']")
 
-                // Hide message after 5 sec (5000ms)
-                $('#unsaved-changes-label').html('<strong>Formuläret är nu sparat.</strong>');
-                setTimeout(function() {
-                  $('#unsaved-changes-label').html('');
-                }, 5000);
+                $.each(result, function(key, message){
+                    $(document.getElementById('sum-validator-' + key)).style.display = "block";
+                });
 
-              } else if (submit_action == 'submit') {
-                // Hide bootstrap modal
-                $('#submit-confirm-modal').modal('hide');
-                // Hide bootstrap navbar (footer)
-                $('.navbar-fixed-bottom').hide();
-                // Disable all inputs
-                survey.inputs().attr('readonly', true);
-                // Disable all dropdown-togglers
-                $('input[type="checkbox"]').attr('disabled', true);
-                // Disable all dropdown-togglers
-                $('.btn-dropdown').attr('disabled', true);
+                //TODO: if result is empty (=there are no errors), save or submit
 
-                alert('Formuläret är skickat!');
-              }
+                  if (submit_action == 'save') {
+
+                    // Hide message after 5 sec (5000ms)
+                    $('#unsaved-changes-label').html('<strong>Formuläret är nu sparat.</strong>');
+                    setTimeout(function() {
+                      $('#unsaved-changes-label').html('');
+                    }, 5000);
+
+                  } else if (submit_action == 'submit') {
+                    // Hide bootstrap modal
+                    $('#submit-confirm-modal').modal('hide');
+                    // Hide bootstrap navbar (footer)
+                    $('.navbar-fixed-bottom').hide();
+                    // Disable all inputs
+                    survey.inputs().attr('readonly', true);
+                    // Disable all dropdown-togglers
+                    $('input[type="checkbox"]').attr('disabled', true);
+                    // Disable all dropdown-togglers
+                    $('.btn-dropdown').attr('disabled', true);
+
+                    alert('Formuläret är skickat!');
+                  }
 
             },
             // handle a non-successful response
