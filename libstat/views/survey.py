@@ -43,7 +43,7 @@ def example_survey(request):
 
 
 def _validate_sums(survey, form):
-    not_validated_sum_fields = []
+    not_valid_sum_fields = []
 
     def isnumber(obj):
         return isinstance(obj, (int, long, float, complex))
@@ -62,37 +62,43 @@ def _validate_sums(survey, form):
             for row in group.rows:
                 for cell in row.cells:
                     if cell.sum_of:
+                        logger.debug("CHECKING SUM FOR FIELD: %s" % cell.variable_key)
                         total = 0
                         # no subfield values are entered -> sum doesn't need to be validated
-                        if all([isempty(survey.get_observation(f)) for f in cell.sum_of]):
-                            return not_validated_sum_fields
+                        if all([isempty(survey.get_observation(f).value) for f in cell.sum_of]):
+                            logger.debug("All subfields are empty, skipping...")
+                            continue
                         try:
                             for field in cell.sum_of:
-                                observation_value = survey.get_observation(field)
+                                observation_value = survey.get_observation(field).value
                                 if isnumber(observation_value):
                                     total += observation_value
                                 else:
                                     total += float(observation_value)
-                            sum_value = survey.get_observation(cell.variable_key)
+                            sum_value = survey.get_observation(cell.variable_key).value
+                            logger.debug("Calculated total: %d and sum value: %d" % (total, sum_value))
                             if not isnumber(sum_value):
-                                float(sum_value)
+                                sum_value = float(sum_value)
                             if not sum_value == total:
-                                not_validated_sum_fields.append(cell.variable_key)
-                        except:
-                            not_validated_sum_fields.append(cell.variable_key)
-    return not_validated_sum_fields
+                                logger.debug("Total and sum not equal, adding field to not valid sums")
+                                not_valid_sum_fields.append(cell.variable_key)
+                        except Exception as e:
+                            logger.debug("Excepting and added field to not valid sums. Exception: %s" % e)
+                            not_valid_sum_fields.append(cell.variable_key)
+    return not_valid_sum_fields
 
 # Validation of sums
 def _has_valid_sums(survey, form):
-    not_validated_sum_list = _validate_sums(survey, form)
-    if len(not_validated_sum_list) > 0:
-        for variable_key in not_validated_sum_list:
-            form._errors[variable_key] = ErrorList(u"Vänligen kontrollera att summan stämmer överens med delvärdena, alternativt fyll bara i en totalsumma.")
+    not_valid_sum_list = _validate_sums(survey, form)
+    if len(not_valid_sum_list) > 0:
+        for variable_key in not_valid_sum_list:
+            form._errors[variable_key] = ErrorList([u"Vänligen kontrollera att summan stämmer överens med delvärdena, alternativt fyll bara i en totalsumma."]) # form._errors not used in response at the mo as form post is done w ajax and does not return whole form
         return False
     return True
 
 
 def _save_survey_response_from_form(survey, form):
+    error_list = []
     if form.is_valid() and _has_valid_sums(survey, form):
         disabled_inputs = form.cleaned_data.pop("disabled_inputs").split(" ")
         unknown_inputs = form.cleaned_data.pop("unknown_inputs").split(" ")
@@ -116,11 +122,15 @@ def _save_survey_response_from_form(survey, form):
 
         survey.save()
     else:
-        error_dict = {}
-        for field in form.cleaned_data:
-            error_dict[field] = field.errors.as_text()
+        for field_name in form.cleaned_data:
+            field_errors = form[field_name].errors
+            if len(field_errors) > 0:
+                error_dict = {}
+                error_dict["fieldName"] = field_name
+                error_dict["errorMessage"] = form[field_name].errors.as_text()
+                error_list.append(error_dict)
 
-    return error_dict
+    return {"errors": error_list}
 
 
 def survey(request, survey_id):
@@ -160,7 +170,9 @@ def survey(request, survey_id):
 
         if request.method == "POST":
             form = SurveyForm(request.POST, survey=survey)
-            errors = _save_survey_response_from_form(survey, form)
+            errors = _save_survey_response_from_form(survey, form) # Errors returned as separate json
+            logger.debug("ERRORS: ")
+            logger.debug(json.dumps(errors))
             return HttpResponse(json.dumps(errors), content_type="application/json")
         else:
             context["form"] = SurveyForm(survey=survey, authenticated=request.user.is_authenticated())

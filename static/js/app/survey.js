@@ -358,14 +358,31 @@ define(['jquery', 'bootbox', 'survey.sum', 'survey.cell', 'surveys.dispatch', 'b
               $('#print-survey-btn, #save-survey-btn, #submit-survey-btn').removeClass('disabled');
               $('#save-survey-btn').html('Spara');
 
-                //TODO: loop through all sum-validator-xkey -fields and set display to block or none, depend if in result
-                //var sumValidatorElements = $("small[id^='sum-validator-']")
+                // If there are errors -> update validators and revalidate
 
-                $.each(result, function(key, message){
-                    $(document.getElementById('sum-validator-' + key)).style.display = "block";
-                });
+                if (result.errors.length > 0) {
 
-                //TODO: if result is empty (=there are no errors), save or submit
+                  var sumElements = survey.form('[data-sum-of]');
+
+                  sumElements.each(function(index, sumElement){
+                    console.log(sumElement);
+                    for (var i in result.errors) {
+                      var fieldName = $(sumElement).attr('name')
+                      if (result.errors[i].fieldName == fieldName) {
+                        survey.validator().updateStatus(fieldName,'INVALID','numeric');
+                        survey.validator().updateMessage(fieldName, 'numeric', result.errors[i].errorMessage);
+                      } else {
+                        survey.validator().resetField(sumElement, true);
+                      }
+                      console.log("Revalidating form on return...");
+                      survey.validator().validate()
+                    }
+                  });
+
+
+                // Else -> save or submit
+
+                } else {
 
                   if (submit_action == 'save') {
 
@@ -389,6 +406,8 @@ define(['jquery', 'bootbox', 'survey.sum', 'survey.cell', 'surveys.dispatch', 'b
 
                     alert('Formuläret är skickat!');
                   }
+
+                }
 
             },
             // handle a non-successful response
@@ -502,6 +521,7 @@ define(['jquery', 'bootbox', 'survey.sum', 'survey.cell', 'surveys.dispatch', 'b
             var empty = survey.emptyInputs();
             empty.addClass('disable-validation');
 
+            console.log("Validating form before saving...");
             var validator = survey.validator();
             validator.validate();
 
