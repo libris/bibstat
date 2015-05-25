@@ -70,7 +70,11 @@ def _validate_sums(survey, form):
                             continue
                         try:
                             for field in cell.sum_of:
-                                observation_value = survey.get_observation(field).value
+                                observation = survey.get_observation(field)
+                                if observation and observation.value:
+                                    observation_value = observation.value
+                                else:
+                                    observation_value = survey.__dict__["_data"][field]
                                 if isnumber(observation_value):
                                     total += observation_value
                                 else:
@@ -99,7 +103,8 @@ def _has_valid_sums(survey, form):
 
 def _save_survey_response_from_form(survey, form):
     error_list = []
-    if form.is_valid() and _has_valid_sums(survey, form):
+
+    if form.is_valid():
         disabled_inputs = form.cleaned_data.pop("disabled_inputs").split(" ")
         unknown_inputs = form.cleaned_data.pop("unknown_inputs").split(" ")
         submit_action = form.cleaned_data.pop("submit_action", None)
@@ -116,19 +121,22 @@ def _save_survey_response_from_form(survey, form):
                 survey.__dict__["_data"][field] = form.cleaned_data[field]
 
         survey.selected_libraries = filter(None, form.cleaned_data["selected_libraries"].split(" "))
-        if submit_action == "submit" and survey.status in ("not_viewed", "initiated"):
-            if not survey.has_conflicts():
-                survey.status = "submitted"
 
-        survey.save()
-    else:
-        for field_name in form.cleaned_data:
-            field_errors = form[field_name].errors
-            if len(field_errors) > 0:
-                error_dict = {}
-                error_dict["fieldName"] = field_name
-                error_dict["errorMessage"] = form[field_name].errors.as_text()
-                error_list.append(error_dict)
+        if _has_valid_sums(survey, form):
+
+            if submit_action == "submit" and survey.status in ("not_viewed", "initiated"):
+                if not survey.has_conflicts():
+                    survey.status = "submitted"
+
+            survey.save()
+
+    for field_name in form.cleaned_data:
+        field_errors = form[field_name].errors
+        if len(field_errors) > 0:
+            error_dict = {}
+            error_dict["fieldName"] = field_name
+            error_dict["errorMessage"] = form[field_name].errors.as_text()
+            error_list.append(error_dict)
 
     return {"errors": error_list}
 

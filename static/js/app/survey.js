@@ -329,6 +329,7 @@ define(['jquery', 'bootbox', 'survey.sum', 'survey.cell', 'surveys.dispatch', 'b
             return;
 
           $('#altered_fields').val(survey.changeableInputs().filter(function() {
+            console.log($(this));
             return $(this).val() != $(this).attr('data-original-value');
           }).map(function() {
             return $(this).attr('id');
@@ -367,15 +368,21 @@ define(['jquery', 'bootbox', 'survey.sum', 'survey.cell', 'surveys.dispatch', 'b
                   sumElements.each(function(index, sumElement){
                     console.log(sumElement);
                     for (var i in result.errors) {
-                      var fieldName = $(sumElement).attr('name')
-                      if (result.errors[i].fieldName == fieldName) {
-                        survey.validator().updateStatus(fieldName,'INVALID','numeric');
-                        survey.validator().updateMessage(fieldName, 'numeric', result.errors[i].errorMessage);
-                      } else {
-                        survey.validator().resetField(sumElement, true);
-                      }
-                      console.log("Revalidating form on return...");
-                      survey.validator().validate()
+                        var fieldName = $(sumElement).attr('name')
+                        if (result.errors[i].fieldName == fieldName) {
+                            var numericValidator = $(sumElement).is('[data-bv-numeric]') ? true : false;
+                            if (numericValidator == true) {
+                              survey.validator().updateStatus(fieldName,'INVALID','numeric');
+                              survey.validator().updateMessage(fieldName, 'numeric', result.errors[i].errorMessage);
+                            } else {
+                              survey.validator().updateStatus(fieldName,'INVALID','integer');
+                              survey.validator().updateMessage(fieldName, 'integer', result.errors[i].errorMessage);
+                            }
+                        } else {
+                          survey.validator().resetField(fieldName, true);
+                        }
+                        console.log("Revalidating form on return...");
+                        survey.validator().validate()
                     }
                   });
 
@@ -521,7 +528,6 @@ define(['jquery', 'bootbox', 'survey.sum', 'survey.cell', 'surveys.dispatch', 'b
             var empty = survey.emptyInputs();
             empty.addClass('disable-validation');
 
-            console.log("Validating form before saving...");
             var validator = survey.validator();
             validator.validate();
 
