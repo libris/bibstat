@@ -75,12 +75,18 @@ def _validate_sums(survey, form):
                                     observation_value = observation.value
                                 else:
                                     observation_value = survey.__dict__["_data"][field]
+                                logger.debug("Observation value: %d" % observation_value)
                                 if isnumber(observation_value):
                                     total += observation_value
                                 else:
                                     total += float(observation_value)
-                            sum_value = survey.get_observation(cell.variable_key).value
-                            logger.debug("Calculated total: %d and sum value: %d" % (total, sum_value))
+                            if survey.get_observation(cell.variable_key) and survey.get_observation(cell.variable_key).value:
+                                sum_value = survey.get_observation(cell.variable_key).value
+                            elif survey.__dict__["_data"].get(cell.variable_key, None):
+                                sum_value = survey.__dict__["_data"][cell.variable_key]
+                            else:
+                                not_valid_sum_fields.append(cell.variable_key)
+                                continue
                             if not isnumber(sum_value):
                                 sum_value = float(sum_value)
                             if not sum_value == total:

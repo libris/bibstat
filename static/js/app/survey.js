@@ -359,7 +359,7 @@ define(['jquery', 'bootbox', 'survey.sum', 'survey.cell', 'surveys.dispatch', 'b
               $('#print-survey-btn, #save-survey-btn, #submit-survey-btn').removeClass('disabled');
               $('#save-survey-btn').html('Spara');
 
-                // If there are errors -> update validators and revalidate
+                // If there are errors -> update validators w errors and revalidate
 
                 if (result.errors.length > 0) {
 
@@ -369,6 +369,7 @@ define(['jquery', 'bootbox', 'survey.sum', 'survey.cell', 'surveys.dispatch', 'b
                     console.log(sumElement);
                     for (var i in result.errors) {
                         var fieldName = $(sumElement).attr('name')
+                        // If field name is found in json response error list -> update field validator to invalid status and add error message
                         if (result.errors[i].fieldName == fieldName) {
                             var numericValidator = $(sumElement).is('[data-bv-numeric]') ? true : false;
                             if (numericValidator == true) {
@@ -379,10 +380,18 @@ define(['jquery', 'bootbox', 'survey.sum', 'survey.cell', 'surveys.dispatch', 'b
                               survey.validator().updateMessage(fieldName, 'integer', result.errors[i].errorMessage);
                             }
                         } else {
-                          survey.validator().resetField(fieldName, true);
+                          //survey.validator().resetField(fieldName, true);
                         }
+
+                        // Revalidate
                         console.log("Revalidating form on return...");
-                        survey.validator().validate()
+                        setTimeout(function() {
+                          if (submit_action == 'save') { // Save doesn't validate empty required fields
+                            var empty = survey.emptyInputs();
+                            empty.addClass('disable-validation');
+                          }
+                          survey.validator().validate()
+                        }, 100);
                     }
                   });
 
@@ -426,9 +435,11 @@ define(['jquery', 'bootbox', 'survey.sum', 'survey.cell', 'surveys.dispatch', 'b
           });
         }).on('error.form.bv', function() {
           var invalidField = survey.validator().getInvalidFields().first();
-          $('html, body').animate({
-            scrollTop: invalidField.offset().top - 10
-          }, 300);
+          setTimeout(function() {
+              $('html, body').animate({
+                scrollTop: invalidField.offset().top - 150
+              }, 100);
+          }, 100);
         });
 
         var submitTo = function(action, submit) {
@@ -526,7 +537,7 @@ define(['jquery', 'bootbox', 'survey.sum', 'survey.cell', 'surveys.dispatch', 'b
 
           setTimeout(function() {
             var empty = survey.emptyInputs();
-            empty.addClass('disable-validation');
+            empty.addClass('disable-validation'); // Save doesn't validate empty required fields (only done on submit)
 
             var validator = survey.validator();
             validator.validate();
