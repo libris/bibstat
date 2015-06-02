@@ -98,7 +98,7 @@ class TestSurveyAuthorization(MongoTestCase):
 
         response = self._get(action="survey", kwargs={"survey_id": survey.pk})
 
-        self.assertEquals(response.status_code, 404)
+        self.assertEquals(response.status_code, 403)
 
 
 class TestSurveyStatus(MongoTestCase):
