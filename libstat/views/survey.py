@@ -62,11 +62,9 @@ def _validate_sums(survey, form):
             for row in group.rows:
                 for cell in row.cells:
                     if cell.sum_of:
-                        logger.debug("CHECKING SUM FOR FIELD: %s" % cell.variable_key)
                         total = 0
                         # no subfield values are entered -> sum doesn't need to be validated
                         if all([isempty(survey.get_observation(f).value) for f in cell.sum_of]):
-                            logger.debug("All subfields are empty, skipping...")
                             continue
                         try:
                             for field in cell.sum_of:
@@ -74,23 +72,19 @@ def _validate_sums(survey, form):
                                 if observation and observation.value:
                                     observation_value = observation.value
                                 else:
-                                    observation_value = survey.__dict__["_data"][field]
-                                logger.debug("Observation value: %d" % observation_value)
+                                    continue
                                 if isnumber(observation_value):
                                     total += observation_value
                                 else:
                                     total += float(observation_value)
                             if survey.get_observation(cell.variable_key) and survey.get_observation(cell.variable_key).value:
                                 sum_value = survey.get_observation(cell.variable_key).value
-                            elif survey.__dict__["_data"].get(cell.variable_key, None):
-                                sum_value = survey.__dict__["_data"][cell.variable_key]
                             else:
                                 not_valid_sum_fields.append(cell.variable_key)
                                 continue
                             if not isnumber(sum_value):
                                 sum_value = float(sum_value)
                             if not sum_value == total:
-                                logger.debug("Total and sum not equal, adding field to not valid sums")
                                 not_valid_sum_fields.append(cell.variable_key)
                         except Exception as e:
                             logger.debug("Excepting and added field to not valid sums. Exception: %s" % e)
