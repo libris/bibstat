@@ -16,7 +16,7 @@ logger = logging.getLogger(__name__)
 
 class SurveyForm(forms.Form):
 
-    def _cell_to_input_field(self, cell, observation, authenticated):
+    def _cell_to_input_field(self, cell, observation, authenticated, variable_type):
         attrs = {"class": "form-control",
                  "id": cell.variable_key,
                  "name": cell.variable_key,
@@ -27,18 +27,19 @@ class SurveyForm(forms.Form):
             attrs["data-bv-notempty"] = ""
             attrs["placeholder"] = "Obligatorisk"
 
-        if "required" in cell.types:
+        if cell.required == True:
             attrs["data-bv-notempty"] = ""
             attrs["placeholder"] = "Obligatorisk"
 
-        if "integer" in cell.types:
+        if variable_type == "integer":
             attrs["data-bv-integer"] = ""
             attrs["data-bv-greaterthan"] = ""
             attrs["data-bv-greaterthan-value"] = "0"
             attrs["data-bv-greaterthan-inclusive"] = ""
             attrs["max"] = "99999999"
+            attrs["data-bv-message"] = "Vänligen mata in ett numeriskt värde mindre än eller lika med 99999999"
 
-        if "numeric" in cell.types:
+        if variable_type == "decimal":
             attrs["data-bv-numeric"] = ""
             attrs["data-bv-numeric-separator"] = ","
             attrs["data-bv-greaterthan"] = ""
@@ -47,19 +48,24 @@ class SurveyForm(forms.Form):
             attrs["max"] = "99999999"
             attrs["data-bv-regexp"] = ""
             attrs["data-bv-regexp-regexp"] = "^\d+(\,\d{1,3})?$"
-            attrs["data-bv-regexp-message"] = "Vänligen mata in ett nummer med max 3 decimaler (tex 12,522)"
+            attrs["data-bv-regexp-message"] = "Vänligen mata in ett nummer med max 3 decimaler (t ex 12,522)"
 
-        if "email" in cell.types:
+        if variable_type == "email":
             attrs["data-bv-emailaddress"] = ""
             attrs["data-bv-regexp"] = ""
             attrs["data-bv-regexp-regexp"] = ".+@.+\..+"
             attrs["data-bv-regexp-message"] = "Vänligen mata in en giltig emailadress"
 
-        if "text" in cell.types:
+        if variable_type == "string":
             attrs["data-bv-stringlength"] = ""
             attrs["data-bv-stringlength-min"] = "0"
 
-        if "Utgift" in cell.variable_key or "Intakt" in cell.variable_key:
+        if variable_type == "phonenumber":
+            attrs["data-bv-regexp"] = ""
+            attrs["data-bv-regexp-regexp"] = "^\+?\d\d+\-?\d(\s?\d+)*\d+$"
+            attrs["data-bv-regexp-message"] = "Vänligen mata in ett giltigt telefonnummer utan bokstäver och parenteser, t ex 010-709 30 00"
+
+        if "Utgift" in cell.variable_key or "Intakt" in cell.variable_key: #TODO: add max_value field to variable + editable in term form
             attrs["max"] = "999999999"
 
         if not observation or observation.value_unknown:
@@ -74,11 +80,11 @@ class SurveyForm(forms.Form):
             attrs["data-placement"] = "top"
             attrs["data-original-title"] = cell.variable_key
 
-        if "comment" in cell.types:
+        if variable_type == "textarea":
             field = forms.CharField(required=False, widget=forms.Textarea(attrs=attrs))
-        elif "integer" in cell.types:
+        elif variable_type == "integer":
             field = forms.IntegerField(required=False, max_value=999999999, widget=forms.TextInput(attrs=attrs))
-        elif "numeric" in cell.types:
+        elif variable_type == "decimal":
             field = forms.FloatField(localize=True, required=False, max_value=999999999, widget=forms.TextInput(attrs=attrs))
         else:
             field = forms.CharField(required=False, widget=forms.TextInput(attrs=attrs))
@@ -215,7 +221,6 @@ class SurveyForm(forms.Form):
         self.statuses = Survey.STATUSES
         self.is_published = survey.status == "published"
         self.latest_version_published = survey.latest_version_published
-        self.sections = template.sections
 
         self.url = settings.API_BASE_URL + reverse('survey', args=(survey.pk,))
         self.url_with_password = "{}?p={}".format(self.url, self.password)
@@ -240,6 +245,8 @@ class SurveyForm(forms.Form):
             variable_key = cell.variable_key
             if not variable_key in variables:
                 raise Exception("Can't find variable with key '{}'".format(variable_key))
+            variable_type = variables[variable_key].type
+            cell.types.append(variable_type) #cell is given same type as variable
             observation = survey.get_observation(variable_key)
 
             if observation:
@@ -250,7 +257,9 @@ class SurveyForm(forms.Form):
             if not observation:
                 observation = SurveyObservation(variable=variables[variable_key])
                 survey.observations.append(observation)
-            self.fields[variable_key] = self._cell_to_input_field(cell, observation, authenticated)
+            self.fields[variable_key] = self._cell_to_input_field(cell, observation, authenticated, variable_type)
+
+        self.sections = template.sections
 
         if self.is_read_only:
             self.fields["read_only"].initial = "true"

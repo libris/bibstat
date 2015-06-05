@@ -329,6 +329,7 @@ define(['jquery', 'bootbox', 'survey.sum', 'survey.cell', 'surveys.dispatch', 'b
             return;
 
           $('#altered_fields').val(survey.changeableInputs().filter(function() {
+            console.log($(this));
             return $(this).val() != $(this).attr('data-original-value');
           }).map(function() {
             return $(this).attr('id');
@@ -354,32 +355,75 @@ define(['jquery', 'bootbox', 'survey.sum', 'survey.cell', 'surveys.dispatch', 'b
             url: '/surveys/' + $('#id_key').val(),
             type: 'POST',
             data: $('#survey-form').serialize(),
-            success: function() {
+            success: function(result) {
               $('#print-survey-btn, #save-survey-btn, #submit-survey-btn').removeClass('disabled');
               $('#save-survey-btn').html('Spara');
 
-              if (submit_action == 'save') {
+                // If there are errors -> update validators w errors and revalidate
 
-                // Hide message after 5 sec (5000ms)
-                $('#unsaved-changes-label').html('<strong>Formuläret är nu sparat.</strong>');
-                setTimeout(function() {
-                  $('#unsaved-changes-label').html('');
-                }, 5000);
+                if (result.errors.length > 0) {
 
-              } else if (submit_action == 'submit') {
-                // Hide bootstrap modal
-                $('#submit-confirm-modal').modal('hide');
-                // Hide bootstrap navbar (footer)
-                $('.navbar-fixed-bottom').hide();
-                // Disable all inputs
-                survey.inputs().attr('readonly', true);
-                // Disable all dropdown-togglers
-                $('input[type="checkbox"]').attr('disabled', true);
-                // Disable all dropdown-togglers
-                $('.btn-dropdown').attr('disabled', true);
+                  var sumElements = survey.form('[data-sum-of]');
 
-                alert('Formuläret är skickat!');
-              }
+                  sumElements.each(function(index, sumElement){
+                    console.log(sumElement);
+                    for (var i in result.errors) {
+                        var fieldName = $(sumElement).attr('name')
+                        // If field name is found in json response error list -> update field validator to invalid status and add error message
+                        if (result.errors[i].fieldName == fieldName) {
+                            var numericValidator = $(sumElement).is('[data-bv-numeric]') ? true : false;
+                            if (numericValidator == true) {
+                              survey.validator().updateStatus(fieldName,'INVALID','numeric');
+                              survey.validator().updateMessage(fieldName, 'numeric', result.errors[i].errorMessage);
+                            } else {
+                              survey.validator().updateStatus(fieldName,'INVALID','integer');
+                              survey.validator().updateMessage(fieldName, 'integer', result.errors[i].errorMessage);
+                            }
+                        } else {
+                          //survey.validator().resetField(fieldName, true);
+                        }
+
+                        // Revalidate
+                        console.log("Revalidating form on return...");
+                        setTimeout(function() {
+                          if (submit_action == 'save') { // Save doesn't validate empty required fields
+                            var empty = survey.emptyInputs();
+                            empty.addClass('disable-validation');
+                          }
+                          survey.validator().validate()
+                        }, 100);
+                    }
+                  });
+
+
+                // Else -> save or submit
+
+                } else {
+
+                  if (submit_action == 'save') {
+
+                    // Hide message after 5 sec (5000ms)
+                    $('#unsaved-changes-label').html('<strong>Formuläret är nu sparat.</strong>');
+                    setTimeout(function() {
+                      $('#unsaved-changes-label').html('');
+                    }, 5000);
+
+                  } else if (submit_action == 'submit') {
+                    // Hide bootstrap modal
+                    $('#submit-confirm-modal').modal('hide');
+                    // Hide bootstrap navbar (footer)
+                    $('.navbar-fixed-bottom').hide();
+                    // Disable all inputs
+                    survey.inputs().attr('readonly', true);
+                    // Disable all dropdown-togglers
+                    $('input[type="checkbox"]').attr('disabled', true);
+                    // Disable all dropdown-togglers
+                    $('.btn-dropdown').attr('disabled', true);
+
+                    alert('Formuläret är skickat!');
+                  }
+
+                }
 
             },
             // handle a non-successful response
@@ -391,9 +435,11 @@ define(['jquery', 'bootbox', 'survey.sum', 'survey.cell', 'surveys.dispatch', 'b
           });
         }).on('error.form.bv', function() {
           var invalidField = survey.validator().getInvalidFields().first();
-          $('html, body').animate({
-            scrollTop: invalidField.offset().top - 10
-          }, 300);
+          setTimeout(function() {
+              $('html, body').animate({
+                scrollTop: invalidField.offset().top - 150
+              }, 100);
+          }, 100);
         });
 
         var submitTo = function(action, submit) {
@@ -491,7 +537,7 @@ define(['jquery', 'bootbox', 'survey.sum', 'survey.cell', 'surveys.dispatch', 'b
 
           setTimeout(function() {
             var empty = survey.emptyInputs();
-            empty.addClass('disable-validation');
+            empty.addClass('disable-validation'); // Save doesn't validate empty required fields (only done on submit)
 
             var validator = survey.validator();
             validator.validate();

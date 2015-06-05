@@ -51,6 +51,14 @@ def access(value, arg):
     except KeyError:
         return None
 
+@register.filter
+def get_errors(form, key):
+    try:
+        if len(form[key].errors) > 0:
+            return form[key].errors.as_text()
+    except KeyError:
+        return None
+    return None
 
 @register.filter
 def split_into_number_and_body(description):

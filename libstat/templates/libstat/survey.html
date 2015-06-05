@@ -111,7 +111,7 @@
                                 </div>
                             {% endif %}
                             {% for row in group.rows %}
-                                {% if row.cells and row.cells.0 and "comment" in row.cells.0.types %}
+                                {% if row.cells and row.cells.0 and "textarea" in row.cells.0.types %}
                                     <div class="row">
                                         <div class="col-sm-12">
                                         {% with variable_key=row.cells.0.variable_key %}
@@ -164,6 +164,9 @@
                                                             </div>
                                                         {% endif %}
                                                     </div>
+                                                    <!--<small class="help-block" data-bv-validator="sumCheck" sum-validator tot data-bv-for="{{ cell.variable_key }}" data-bv-result="INVALID" style="display: none;">
+                                                        Vänligen kontrollera att summan stämmer överens med delvärdena, alternativt fyll bara i en totalsumma.
+                                                    </small>-->
                                                 </div>
                                             </div>
                                         </div>

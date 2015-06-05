@@ -31,11 +31,11 @@ TYPE_INTEGER = (u"integer", u"Integer")
 TYPE_LONG = (u"long", u"Long")
 TYPE_DECIMAL = (u"decimal", u"Decimal")
 TYPE_PERCENT = (u"percent", u"Procent")
-# TODO: TYPE_DECIMAL1 = (u"decimal1", u"1 decimals noggrannhet"),
-# Type_DECIMAL2 = (u"decimal2", u"2 decimalers noggrannhet") isf TYPE_DECIMAL
-# TODO: TYPE_TEXT = (u"text", u"Text") för kommentarer (textarea),
-# TYPE_STRING=(u"string", u"Textsträng") för icke-numeriska värden "numerical" (input)
-VARIABLE_TYPES = (TYPE_STRING, TYPE_BOOLEAN, TYPE_INTEGER, TYPE_LONG, TYPE_DECIMAL, TYPE_PERCENT)
+TYPE_PHONE = (u"phonenumber", u"Telefonnummer")
+TYPE_TEXTAREA = (u"textarea", u"Textruta")
+TYPE_EMAIL = (u"email", u"E-post")
+
+VARIABLE_TYPES = (TYPE_STRING, TYPE_BOOLEAN, TYPE_INTEGER, TYPE_LONG, TYPE_DECIMAL, TYPE_PERCENT, TYPE_PHONE, TYPE_TEXTAREA, TYPE_EMAIL)
 
 rdfVariableTypes = {TYPE_STRING[0]: u"xsd:string", TYPE_BOOLEAN[0]: u"xsd:boolean", TYPE_INTEGER[0]: u"xsd:integer",
                     TYPE_LONG[0]: u"xsd:long", TYPE_DECIMAL[0]: u"xsd:decimal", TYPE_PERCENT[0]: u"xsd:decimal"}
