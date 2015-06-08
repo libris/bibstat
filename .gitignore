@@ -81,4 +81,5 @@ remove_surveys_log*
 static/js/main_survey.min.js
 
 # Html templates generated from cms forms
-libstat/templates/libstat/index/*
+libstat/templates/libstat/index/open_data_info.html
+libstat/templates/libstat/index/statistics_info.html
