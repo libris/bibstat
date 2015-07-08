@@ -26,30 +26,35 @@ def _cache_dir_path():
     return "/data/appl/public_exports/"
 
 
-def _cache_path(year, date_str=None):
-    file_name = "public_export_{} {}.xslx".format(year, date_str if date_str else "*")
+def _cache_path(year, file_name_str="public_export_{} {}.xslx", date_str=None):
+    file_name = file_name_str.format(year, date_str if date_str else "*")
     if settings.ENVIRONMENT == "local":
         return "{}/data/public_exports/{}".format(os.getcwd(), file_name)
     else:
         return "/data/appl/public_exports/{}".format(file_name)
 
 
-def _cached_workbook_exists_and_is_valid(year):
-    paths = sorted(glob.glob(_cache_path(year)))
+def _cached_workbook_exists_and_is_valid(year, file_name="public_export_{} {}.xslx", workbook_is_public=True):
+    paths = sorted(glob.glob(_cache_path(year, file_name_str=file_name)))
     if not paths:
         return False
 
     cache_date = datetime.datetime.strptime(paths[-1].split(" ")[-1].split(".")[0], DATE_FORMAT)
-    latest_publication = OpenData.objects.first().date_modified
-
+    
+    if workbook_is_public:
+        latest_publication = OpenData.objects.first().date_modified
+    else:
+        latest_publication = Survey.objects.all().order_by("-date_modified").first().date_modified
+        
     return cache_date > latest_publication
 
 
-def _cache_workbook(workbook, year):
+def _cache_workbook(workbook, year, file_name_str="public_export_{} {}.xslx", workbook_is_public=True):
     for filename in os.listdir(_cache_dir_path()):
         if ".xslx" in filename:
-            os.remove("%s%s" % (_cache_dir_path(), filename))
-    with open(_cache_path(year, datetime.datetime.utcnow().strftime(DATE_FORMAT)), "w") as f:
+            if (workbook_is_public == True and filename.startswith("public")) or (workbook_is_public == False and filename.startsWith("survey")):    
+                os.remove("%s%s" % (_cache_dir_path(), filename))
+    with open(_cache_path(year, file_name_str, datetime.datetime.utcnow().strftime(DATE_FORMAT)), "w") as f:
         File(f).write(save_virtual_workbook(workbook))
 
 
