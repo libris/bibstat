@@ -1,9 +1,10 @@
 # -*- coding: UTF-8 -*-
 
 from django.core.management.base import BaseCommand, CommandError
-import logging
-from bibstat import settings
-from libstat.services.excel_export import surveys_to_excel_workbook, _cache_dir_path, _cached_workbook_exists_and_is_valid
+from optparse import make_option
+import logging, re
+from libstat.models import Survey
+from libstat.services.excel_export import surveys_to_excel_workbook, _cached_workbook_exists_and_is_valid, _cache_workbook, _cache_dir_path
 
 logger = logging.getLogger(__name__)
 
@@ -23,7 +24,7 @@ class Command(BaseCommand):
             return re.compile('^\d{4}$').match(str(year))
         
         if not year:
-            logger.info(help_text)
+            logger.info(self.help_text)
             return
         
         if not _valid_year(year):
@@ -38,6 +39,3 @@ class Command(BaseCommand):
             _cache_workbook(workbook, year, file_name_str, workbook_is_public=False)
             logger.info("Saved excel file %s" % _cache_dir_path)
             return
-        
-        
-        
