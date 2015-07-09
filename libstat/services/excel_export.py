@@ -22,16 +22,16 @@ logger = logging.getLogger(__name__)
 
 def _cache_dir_path():
     if settings.ENVIRONMENT == "local":
-        return "{}/data/public_exports/".format(os.getcwd())
-    return "/data/appl/public_exports/"
+        return "{}/data/excel_exports/".format(os.getcwd())
+    return "/data/appl/excel_exports/"
 
 
 def _cache_path(year, file_name_str="public_export_{} {}.xslx", date_str=None):
     file_name = file_name_str.format(year, date_str if date_str else "*")
     if settings.ENVIRONMENT == "local":
-        return "{}/data/public_exports/{}".format(os.getcwd(), file_name)
+        return "{}/data/excel_exports/{}".format(os.getcwd(), file_name)
     else:
-        return "/data/appl/public_exports/{}".format(file_name)
+        return "/data/appl/excel_exports/{}".format(file_name)
 
 
 def _cached_workbook_exists_and_is_valid(year, file_name="public_export_{} {}.xslx", workbook_is_public=True):

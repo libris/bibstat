@@ -70,7 +70,7 @@ variables_dump/
 *.sublime*
 
 # Cached export files
-data/public_exports
+data/excel_exports/*.xslx
 
 tmp/
 
