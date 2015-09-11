@@ -395,7 +395,7 @@ define(['jquery', 'bootbox', 'survey.sum', 'survey.cell', 'surveys.dispatch', 'b
                                     }
                                 });
 
-                             // Else -> save or submit
+                             // Else -> save, show submit-modal or submit
 
                             } else {
 
@@ -406,6 +406,10 @@ define(['jquery', 'bootbox', 'survey.sum', 'survey.cell', 'surveys.dispatch', 'b
                                     setTimeout(function () {
                                         $('#unsaved-changes-label').html('');
                                     }, 5000);
+
+                                } else if (submit_action == 'presubmit') {
+
+                                    $('#submit-confirm-modal').modal('show');
 
                                 } else if (submit_action == 'submit') {
                                     // Hide bootstrap modal
@@ -418,8 +422,14 @@ define(['jquery', 'bootbox', 'survey.sum', 'survey.cell', 'surveys.dispatch', 'b
                                     $('input[type="checkbox"]').attr('disabled', true);
                                     // Disable all dropdown-togglers
                                     $('.btn-dropdown').attr('disabled', true);
+                                    // Don't show status message about unsaved changes
+                                    $('#unsaved-changes-label').html('');
 
-                                    alert('Formuläret är skickat!');
+                                    $('.jumbotron-submitted').show();
+
+                                    $('html, body').animate({
+                                        scrollTop: ($('.jumbotron-submitted').first().offset().top - 60)
+                                    }, 1000);
                                 }
 
                             }
@@ -556,7 +566,7 @@ define(['jquery', 'bootbox', 'survey.sum', 'survey.cell', 'surveys.dispatch', 'b
                 survey.form('#submit-survey-btn').click(function (e) {
                     e.preventDefault();
 
-                    $('#submit_action').val('');
+                    $('#submit_action').val('presubmit');
 
                     var submitButton = $(this);
                     var submitButtonHtml = submitButton.html();
@@ -568,10 +578,6 @@ define(['jquery', 'bootbox', 'survey.sum', 'survey.cell', 'surveys.dispatch', 'b
                     setTimeout(function () {
                         var validator = survey.validator();
                         validator.validate();
-                        if (validator.isValid()) {
-                            $('#submit-confirm-modal').modal('show');
-                        }
-
                         submitButton.html(submitButtonHtml).removeClass('disabled');
                         otherButtons.removeClass('disabled');
                     }, 100);

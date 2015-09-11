@@ -23,9 +23,14 @@
         {% include 'libstat/survey/headers/admin.html' %}
     {% endif %}
     <div class="container container-survey">
-        {% if form.is_user_read_only %}
-            {% include "libstat/survey/headers/submitted.html" %}
-        {% endif %}
+
+        <div class="jumbotron jumbotron-submitted" {% if form.is_user_read_only %}{% else %} style="display: none;" {% endif %}>
+            <h1>Stort tack för att du besvarade biblioteksstatistiken!</h1>
+
+            <p>Enkäten är nu inskickad. Du kan fortfarande se dina inskickade svar, men enkäten är nu låst.<br>
+            Om du skulle vilja ändra ett svar i efterhand, kontakta <a href="{{ form.mailto }}">biblioteksstatistik@kb.se</a>.</p>
+            <p><a href="javascript:if(window.print)window.print()"><i class="fa fa-print fa-inline"></i>Skriv ut enkäten</a></p>
+        </div>
 
         <div class="row">
             <div class="col-xs-11 col-sm-10 col-md-7">
