@@ -42,7 +42,7 @@ def example_survey(request):
     return render(request, 'libstat/survey.html', context)
 
 
-def _validate_sums(survey, form):
+def _validate_sums(survey, form, submit_action):
     not_valid_sum_fields = []
 
     def isnumber(obj):
@@ -79,8 +79,10 @@ def _validate_sums(survey, form):
                                     total += float(observation_value)
                             if survey.get_observation(cell.variable_key) and survey.get_observation(cell.variable_key).value:
                                 sum_value = survey.get_observation(cell.variable_key).value
-                            else:
+                            elif cell.required and submit_action == 'submit': # empty cells only generate error if required and action is 'submit'
                                 not_valid_sum_fields.append(cell.variable_key)
+                                continue
+                            elif submit_action == 'save':
                                 continue
                             if not isnumber(sum_value):
                                 sum_value = float(sum_value)
@@ -92,8 +94,8 @@ def _validate_sums(survey, form):
     return not_valid_sum_fields
 
 # Validation of sums
-def _has_valid_sums(survey, form):
-    not_valid_sum_list = _validate_sums(survey, form)
+def _has_valid_sums(survey, form, submit_action):
+    not_valid_sum_list = _validate_sums(survey, form, submit_action)
     if len(not_valid_sum_list) > 0:
         for variable_key in not_valid_sum_list:
             form._errors[variable_key] = ErrorList([u"Vänligen kontrollera att summan stämmer överens med delvärdena, alternativt fyll bara i en totalsumma."]) # form._errors not used in response at the mo as form post is done w ajax and does not return whole form
@@ -122,7 +124,7 @@ def _save_survey_response_from_form(survey, form):
 
         survey.selected_libraries = filter(None, form.cleaned_data["selected_libraries"].split(" "))
 
-        if _has_valid_sums(survey, form):
+        if _has_valid_sums(survey, form, submit_action):
 
             if submit_action == "submit" and survey.status in ("not_viewed", "initiated"):
                 if not survey.has_conflicts():
