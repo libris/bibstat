@@ -134,7 +134,7 @@
                                     </div>
                                     {% for cell in row.cells %}
                                         <div class="{% if group.columns <= 2 %}col-sm-4{% elif group.columns == 3 %}col-sm-3{% elif group.columns == 4 %}col-sm-2{% endif %}">
-                                            <div class="form-group">
+                                            <div class="form-group" id="fg-{{ cell.variable_key }}">
                                                 <div class="input-group">
                                                     {% with variable_key=cell.variable_key %}
                                                         {% if cell.sum_of %}
