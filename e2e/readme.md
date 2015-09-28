@@ -6,6 +6,8 @@ Installera [nightwatch](http://nightwatchjs.org/)
     
 Ladda ner den senaste versionen av selenium från [denna sidan](http://selenium-release.storage.googleapis.com/index.html) och placera JAR-filen i ``e2e/bin/``
 
+Om du vill köra test i Chrome så behöver du Chromedriver som finns att ladda ner [här](https://code.google.com/p/selenium/wiki/ChromeDriver). Lägg den i ``e2e/bin/``
+
 Gå till e2e-mappen
     
     $ cd e2e
@@ -13,3 +15,7 @@ Gå till e2e-mappen
 Kör test
 
     $ nightwatch --test tests/<testfile>.js
+
+Kör test med specifika environments, i exemplet körs defalt=firefox och chrome (enligt nightwatch.json)
+
+    $ nightwatch --test tests/<testfile>.js -e default,chrome
