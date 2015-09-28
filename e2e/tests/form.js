@@ -110,6 +110,12 @@ module.exports = {
       .verify.elementPresent("#" + sumOfFields[0] + ":enabled", formatOutput('Sum of', 'Change to unknown cancelled', 'Input SHOULD be enabled'))
       
       // Help text
+      .pause(500)
+      .click('#fg-' +sumOfFields[0]+' .btn-help')
+      .verify.elementPresent('div.popover', formatOutput('Help popover', 'Should be present after help button click'))
+      .click(outsideField)
+      .pause(500)
+      .verify.elementNotPresent('div.popover', formatOutput('Help popover', 'Should NOT be present after click outside popover'))
       
       
       
