@@ -27,3 +27,9 @@ Kör test
 Kör test med specifika environments, i exemplet körs defalt=firefox och chrome (enligt nightwatch.json)
 
     $ nightwatch --test tests/<testfile>.js -e default,chrome
+
+## Stänga ner selenium
+
+När ett test kraschar under körning (t ex vid syntaxfel i testkoden) och man försöker köra igen, så kan man få felet att ens port redan är upptagen. Du kan då stänga ner Selenium genom att kalla på följande adress i din browser:
+
+http://localhost:4444/selenium-server/driver/?cmd=shutDownSeleniumServer
