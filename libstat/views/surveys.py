@@ -295,21 +295,22 @@ def _update_library_from_json(survey, json_data):
     library_type = json_data.get("library_type", None)
     if library_type and library_type != "":
         survey.library.library_type = library_type
-    location = next((a for a in json_data["address"] if a["address_type"] == "stat"), None)
-    address = location["street"] if location and location["street"] else None
-    if address and address != "":
-        survey.library.address = address
-    city = location["city"] if location and location["city"] else None
-    if city and city != "":
-        survey.library.city = city
-    zip_code = location["zip_code"] if location and location["zip_code"] else None
-    if zip_code and zip_code != "":
-        survey.library.zip_code = zip_code
-    contacts = json_data.get("contact", None)
-    if contacts:
-        email = next((c["email"] for c in contacts
-            if "email" in c and c["contact_type"] == "statans"), None)
-        if email and email != "":
+    if json_data.get("address", None):
+        location = next((a for a in json_data["address"] if a["address_type"] == "stat"), None)
+        address = location["street"] if location and location["street"] else None
+        if address and address != "":
+            survey.library.address = address
+        city = location["city"] if location and location["city"] else None
+        if city and city != "":
+            survey.library.city = city
+        zip_code = location["zip_code"] if location and location["zip_code"] else None
+        if zip_code and zip_code != "":
+            survey.library.zip_code = zip_code
+    contact = json_data.get("contact", None)
+    if contact:
+        email = contact.get("email", None)
+        contact_type = contact.get("contact_type", None)
+        if email and email != "" and contact_type and contact_type == "statans":
             survey.library.email = email
     return survey
 
@@ -327,14 +328,18 @@ def surveys_update_library(request):
                     for survey in existing_surveys:
                         survey = _update_library_from_json(survey, post_data)
                         survey.save()
+                    logger.info("Bibdb library data change sync: updated survey data for sigel %s" % sigel)
                     return HttpResponse("Updated survey data for sigel %s" % sigel)
                 else:
+                    logger.info("Bibdb library data change sync: Tried to update survey data for sigel %s, but couldn't find any active surveys." % sigel)
                     return HttpResponse("Tried to update survey data for sigel %s, but couldn't find any active surveys." % sigel)
             else:
+                logger.error("Bibdb library data change sync: library not found")
                 return HttpResponseNotFound("Library not found")
         else:
+            logger.error("Bibdb library data change sync: bad request")
             return HttpResponseBadRequest()
-
+    logger.warn("Received illegal request to /surveys/update_library")
     return HttpResponseNotAllowed()
 
 
