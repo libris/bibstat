@@ -138,6 +138,7 @@ Det finns en [sammanfattning](docs/servers.md) av hur miljöerna sattes upp.
 
 ### Stage
 
+Redhat Enterprise Linux Server 6.7
 Adress: [bibstat-stg.libris.kb.se](http://bibstat-stg.libris.kb.se)  
 Hårdvara: 2 GB Minne, 80 GB Hårddisk  
 Deploy: `fab conf.stgbibstat app.bibstat.deploy`  
@@ -145,6 +146,7 @@ Inloggning: Fråga en involverad utvecklare efter uppgifterna.
 
 ### Produktion
 
+Redhat Enterprise Linux Server 6.7
 Adress: [bibstat.libris.kb.se](http://bibstat.libris.kb.se)  
 Hårdvara: 16 GB Minne, 80 GB Hårddisk  
 Deploy: `fab conf.prodbibstat app.bibstat.deploy`  
