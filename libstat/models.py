@@ -300,6 +300,12 @@ class SurveyObservation(EmbeddedDocument):
     # Public API Optimization and traceability (was this field public at the time of the survey?)
     _is_public = BooleanField(required=True, default=True)
 
+    meta = {
+        'indexes': [
+            'variable'
+        ]
+    }
+
     def __unicode__(self):
         return u"{0}: {1}".format(self.variable, self.value)
 
@@ -512,8 +518,25 @@ class SurveyBase(Document):
             or self.library.sigel in other_survey.selected_libraries
         ]
 
+    def get_conflicting_surveys_return_only_libs_and_selected_libs(self):
+        if not self.library.municipality_code:
+            return []
+
+        other_surveys = Survey.objects.filter(
+            sample_year=self.sample_year,
+            library__municipality_code=self.library.municipality_code,
+            library__library_type__in=get_library_types_with_same_principal(self.library),
+            library__sigel__ne=self.library.sigel
+        ).only("library", "selected_libraries")
+
+        return [
+            other_survey for other_survey in other_surveys
+            if any(sigel in other_survey.selected_libraries for sigel in self.selected_libraries)
+            or self.library.sigel in other_survey.selected_libraries
+        ]
+
     def reported_by(self):
-        surveys = Survey.objects.filter(sample_year=self.sample_year)
+        surveys = Survey.objects.filter(sample_year=self.sample_year).only("library__sigel", "selected_libraries")
         return [survey.library.sigel for survey in surveys
                 if self.library.sigel in survey.selected_libraries]
 
@@ -651,7 +674,7 @@ class Survey(SurveyBase):
             reasons.append("Inga bibliotek har valts")
 
         if self.has_conflicts():
-            conflicting_surveys = ", ".join([survey.library.sigel for survey in self.get_conflicting_surveys()])
+            conflicting_surveys = ", ".join([survey.library.sigel for survey in self.get_conflicting_surveys_return_only_libs_and_selected_libs()])
             reasons.append("Konflikt i rapporteringen (med {})".format(conflicting_surveys))
 
         return ", ".join(reasons)

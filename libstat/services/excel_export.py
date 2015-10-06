@@ -134,12 +134,20 @@ def _load_surveys_and_append_worksheet_rows(surveys, worksheet):
                 value = u"okänt värde"
             row.append(value)
 
-        for sigel in survey.selected_libraries:
-            if sigel != survey.library.sigel:
-                survey = Survey.objects.filter(library__sigel=sigel, sample_year=survey.sample_year).first()
-                row.append("%s (%s)" % (survey.library.name, survey.library.sigel))
-                row.append(survey.library.address)
-                row.append(survey.library.zip_code)
+        # for sigel in survey.selected_libraries:
+        #     if sigel != survey.library.sigel:
+        #         survey = Survey.objects.filter(library__sigel=sigel, sample_year=survey.sample_year).first()
+        #         row.append("%s (%s)" % (survey.library.name, survey.library.sigel))
+        #         row.append(survey.library.address)
+        #         row.append(survey.library.zip_code)
+
+        other_sigels = [s for s in survey.selected_libraries if s != survey.library.sigel]
+        if len(other_sigels) > 0:
+            other_surveys = Survey.objects.filter(library__sigel__in=other_sigels, sample_year=survey.sample_year).only("library")
+            for other_survey in other_surveys:
+                row.append("%s (%s)" % (other_survey.library.name, other_survey.library.sigel))
+                row.append(other_survey.library.address)
+                row.append(other_survey.library.zip_code)
 
         worksheet.append(row)
 
