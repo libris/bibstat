@@ -52,7 +52,7 @@ def _cached_workbook_exists_and_is_valid(year, file_name="public_export_{} {}.xs
 def _cache_workbook(workbook, year, file_name_str="public_export_{} {}.xslx", workbook_is_public=True):
     for filename in os.listdir(_cache_dir_path()):
         if ".xslx" in filename:
-            if (workbook_is_public == True and filename.startswith("public")) or (workbook_is_public == False and filename.startsWith("survey")):    
+            if (workbook_is_public == True and filename.startswith("public")) or (workbook_is_public == False and filename.startswith("survey")):
                 os.remove("%s%s" % (_cache_dir_path(), filename))
     with open(_cache_path(year, file_name_str, datetime.datetime.utcnow().strftime(DATE_FORMAT)), "w") as f:
         File(f).write(save_virtual_workbook(workbook))
