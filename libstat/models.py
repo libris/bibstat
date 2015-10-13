@@ -476,6 +476,8 @@ class SurveyBase(Document):
 
         return selectable_libs
 
+    #TODO: optimize by caching surveys by samle_year and municipality_code?
+
     def selected_sigels_in_other_surveys(self, sample_year):
         if not self.library.municipality_code:
             return Set()
@@ -500,6 +502,8 @@ class SurveyBase(Document):
                 return True
 
         return False
+
+    #TODO: optimize by caching surveys by samle_year and municipality_code?
 
     def get_conflicting_surveys(self):
         if not self.library.municipality_code:
@@ -535,17 +539,20 @@ class SurveyBase(Document):
             or self.library.sigel in other_survey.selected_libraries
         ]
 
+    #TODO: optimize by saving reported_by, is_reported_by_other and is_reporting_for_others to db?
+
     def reported_by(self):
-        surveys = Survey.objects.filter(sample_year=self.sample_year).only("library__sigel", "selected_libraries")
-        return [survey.library.sigel for survey in surveys
-                if self.library.sigel in survey.selected_libraries]
+        surveys = Survey.objects.filter(sample_year=self.sample_year, selected_libraries__contains=self.library.sigel).only("library", "selected_libraries")
+
+        result = [survey.library.sigel for survey in surveys if self.library.sigel in survey.selected_libraries]
+        return result
 
     def is_reported_by_other(self):
-        other_surveys_selected_sigels = Survey.objects.filter(sample_year=self.sample_year, pk__ne=self.pk).only("selected_libraries")
-        for survey in other_surveys_selected_sigels:
-            if self.library.sigel in survey.selected_libraries:
-                return True
-        return False
+        other_surveys_selected_sigels = Survey.objects.filter(sample_year=self.sample_year, pk__ne=self.pk, selected_libraries__contains=self.library.sigel).count()
+        if other_surveys_selected_sigels > 0:
+            return True
+        else:
+            return False
 
     def is_reporting_for_others(self):
         return any(sigel != self.library.sigel for sigel in self.selected_libraries)

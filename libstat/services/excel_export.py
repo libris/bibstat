@@ -125,7 +125,7 @@ def _load_surveys_and_append_worksheet_rows(surveys, worksheet):
             if survey.library.library_type in principal_for_library_type else None,
             "Ja" if survey.can_publish() else "Nej: " + survey.reasons_for_not_able_to_publish(),
             "Ja" if survey.is_reporting_for_others() else "Nej",
-            #"Ja" if survey.is_reported_by_other() else "Nej",
+            "Ja" if survey.is_reported_by_other() else "Nej",
             ",".join(survey.reported_by())
         ]
         for observation in survey.observations:
@@ -169,7 +169,7 @@ def surveys_to_excel_workbook(survey_ids):
         "Huvudman",
         "Kan publiceras?",
         "Samredovisar andra bibliotek",
-        #"Samredovisas",
+        "Samredovisas",
         "Redovisas av"
     ]
     headers += [unicode(observation.variable.key) for observation in Survey.objects.get(pk=survey_ids[0]).observations if observation.variable.key]
