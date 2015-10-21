@@ -43,17 +43,17 @@
                 <form action="" method="post" class="form-inline form-dispatches">
                     {% csrf_token %}
 
-                    <table class="table table-dispatches">
+                    <table class="table table-dispatches table-striped">
                         <thead>
                         <tr>
-                            <th class="column selection no-sort-carets">
+                            <th class="column selection">
                                 <input title="{% trans 'Markera alla' %}" class="select-all" type="checkbox" value="all"/>
                             </th>
-                            <th class="column">{% trans "Beskrivning" %}</th>
-                            <th class="column">{% trans "Bibliotek" %}</th>
-                            <th class="column">{% trans "Stad" %}</th>
-                            <th class="column" nowrap>{% trans "Email" %}</th>
-                            <th class="column no-sort-carets"></th>
+                            <th class="column" nowrap>{% trans "Beskrivning" %} <i class="fa fa-fw fa-sort"></i></th>
+                            <th class="column" nowrap>{% trans "Bibliotek" %} <i class="fa fa-fw fa-sort"></i></th>
+                            <th class="column" nowrap>{% trans "Stad" %} <i class="fa fa-fw fa-sort"></i></th>
+                            <th class="column" nowrap>{% trans "Email" %} <i class="fa fa-fw fa-sort"></i></th>
+                            <th class="column"></th>
                         </tr>
                         </thead>
                         <tbody>
