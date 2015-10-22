@@ -5,6 +5,8 @@ define(['jquery', 'bootbox', 'survey.sum', 'survey.cell', 'surveys.dispatch', 'b
         var _form = $('#survey-form');
         var _inputs = null;
 
+        var isDirty = false;
+
         var survey = {
             form: function (selector) {
                 if (selector) {
@@ -311,6 +313,7 @@ define(['jquery', 'bootbox', 'survey.sum', 'survey.cell', 'surveys.dispatch', 'b
             initPassword();
         };
         var showChangesNotSaved = function () {
+            isDirty = true;
             $('#unsaved-changes-label').text('Det finns ifyllda svar som inte sparats');
         };
         return {
@@ -320,6 +323,21 @@ define(['jquery', 'bootbox', 'survey.sum', 'survey.cell', 'surveys.dispatch', 'b
                 if ($('#read_only').val()) {
                     return;
                 }
+
+                //Warn user if they leave page before saving changes
+
+                $(window).on('beforeunload', function(event) {
+                    if (!isDirty) {
+                        console.log("Nu behöver vi inte varna");
+                        return undefined;
+                    }
+                    else {
+                        var confirmMessage = "Det finns osparade ändringar i enkäten.";
+                        (event || $(window).event).returnValue = confirmMessage; //Gecko + IE
+                        return confirmMessage; //Gecko + Webkit, Safari, Chrome etc.
+                    }
+                });
+
 
                 //Validate fields with Bootstrap validator
 
@@ -401,6 +419,8 @@ define(['jquery', 'bootbox', 'survey.sum', 'survey.cell', 'surveys.dispatch', 'b
 
                                 if (submit_action == 'save') {
 
+                                    isDirty = false;
+
                                     // Hide message after 5 sec (5000ms)
                                     $('#unsaved-changes-label').html('<strong>Formuläret är nu sparat.</strong>');
                                     setTimeout(function () {
@@ -424,6 +444,8 @@ define(['jquery', 'bootbox', 'survey.sum', 'survey.cell', 'surveys.dispatch', 'b
                                     $('.btn-dropdown').attr('disabled', true);
                                     // Don't show status message about unsaved changes
                                     $('#unsaved-changes-label').html('');
+
+                                    isDirty = false;
 
                                     $('.jumbotron-submitted').show();
 

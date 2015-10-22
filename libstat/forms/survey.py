@@ -130,7 +130,7 @@ class SurveyForm(forms.Form):
                     attrs["checked"] = "true"
 
                 if not library.sigel in other_surveys_selected_sigels:
-                    row["comment"] = u"Detta är det bibliotek som mottagit denna enkät. Om du samredovisar med andra bibliotek, glöm inte att kryssa för dem här i listan."
+                    row["comment"] = u"Detta är det bibliotek som mottagit denna enkät. Om du samredovisar med andra bibliotek, glöm inte att även kryssa för dem här i listan."
             elif library.sigel in this_surveys_selected_sigels:
                 attrs["checked"] = "true"
 
