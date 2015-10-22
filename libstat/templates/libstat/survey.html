@@ -4,10 +4,13 @@
 
 {% block content %}
     {% include "libstat/analytics.html" %}
+
+    <!-- Warn users of Internet Explorer 9 or earlier versions -->
+
     <!--[if lte IE 9]>
     <div class="warning" style="background-color: #F0F04F;padding: 10px 15px">
         <h2>Din webbläsare är för gammal</h2>
-        <p>OBS! du använder en mycket gammal webbläsare. Statistikenkäten är
+        <p><b>OBS! Du använder en mycket gammal webbläsare.</b> Statistikenkäten är
       omfattande och kommer att fungera dåligt i den. Kontakta din IT-avdelning för att
       få tillgång till en modernare webbläsare.</p>
     </div>

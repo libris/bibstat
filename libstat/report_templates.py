@@ -62,7 +62,7 @@ class Row():
                 return variables[0].description
         return None
 
-def report_template_2014():
+def report_template_base():
     return ReportTemplate(groups=[
         Group(title=u"Organisation",
               rows=[
@@ -733,7 +733,7 @@ def report_template_2014():
                   ]),
         ])
 
-def report_template_2014_with_target_group_calculations():
+def report_template_base_with_target_group_calculations():
     return ReportTemplate(groups=[
         Group(title=u"Organisation",
               rows=[
@@ -1424,7 +1424,7 @@ def report_template_2014_with_target_group_calculations():
     ])
 
 
-def report_template_2014_with_municipality_calculations():
+def report_template_base_with_municipality_calculations():
     return ReportTemplate(groups=[
         Group(title=u"Organisation",
               rows=[

@@ -3,7 +3,7 @@ from pprint import pprint
 import uuid, logging
 
 from libstat.models import Survey, Variable, OpenData, CachedReport
-from libstat.report_templates import report_template_2014, report_template_2014_with_municipality_calculations, report_template_2014_with_target_group_calculations
+from libstat.report_templates import report_template_base, report_template_base_with_municipality_calculations, report_template_base_with_target_group_calculations
 
 
 logger = logging.getLogger(__name__)
@@ -40,13 +40,15 @@ def get_report(surveys, year):
         library_types = [survey.library.library_type for survey in surveys]
         only_folkbib = all(libtype == u"folkbib" for libtype in library_types)
 
-        # This should of course be updated when (and if) more templates are added
+        # This should of course be updated when (and if) more report templates are added
+
+        # Different report templates are used depending on types of libraries included
         if only_folkbib:
-            report_template = report_template_2014_with_municipality_calculations()
+            report_template = report_template_base_with_municipality_calculations()
         elif len(surveys) > 1 and any(libtype == u"folkbib" for libtype in library_types):
-            report_template = report_template_2014()
+            report_template = report_template_base()
         else:
-            report_template = report_template_2014_with_target_group_calculations()
+            report_template = report_template_base_with_target_group_calculations()
 
         observations = pre_cache_observations(report_template, surveys, year)
 
@@ -78,7 +80,7 @@ def get_report(surveys, year):
 
 def is_variable_to_be_included(variable_key, library_types):
     variable = Variable.objects.filter(key=variable_key).first()
-    if variable.target_groups and len(variable.target_groups) > 0 and \
+    if variable and variable.target_groups and len(variable.target_groups) > 0 and \
                 any([library_type not in variable.target_groups for library_type in library_types]):
         return False
     return True

@@ -7,16 +7,20 @@ from django.contrib.auth.decorators import permission_required
 from libstat.models import Survey
 from libstat.views.surveys import _create_new_collection
 
+import datetime
+
+current_year = datetime.datetime.now().year
+
 
 @permission_required('is_superuser', login_url='index')
 def administration(request):
     context = {
         "possible_year_choices": [
-            2014,
-            2015,
-            2016,
-            2017,
-            2018
+            current_year,
+            current_year + 1,
+            current_year + 2,
+            current_year + 3,
+            current_year + 4
         ],
         "message": request.session.pop("message", None)
     }
