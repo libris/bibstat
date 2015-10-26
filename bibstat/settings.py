@@ -39,12 +39,11 @@ TEMPLATE_CONTEXT_PROCESSORS = TCP + (
 )
 
 ALLOWED_HOSTS = [
-    ".bibstat-stg.libris.kb.se",
-    ".bibstat-stg.libris.kb.se.",
+    ".bibstat-stg.kb.se"
 ]
 
 # Base url for api, i.e. http://stats.kb.se
-API_BASE_URL = "http://bibstat-stg.libris.kb.se"
+API_BASE_URL = "http://bibstat-stg.kb.se"
 BIBDB_BASE_URL = "http://bibdb-stg.libris.kb.se"
 BIBSTAT_BLOG_BASE_URL = "http://biblioteksstatistik.blogg.kb.se"
 

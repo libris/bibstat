@@ -50,12 +50,12 @@ Efter en första installation kommer det inte finnas någon data i den lokala mi
 Nedan är instruktioner för att göra en dump av produktionsdatabasen och importera den.
 
     # Gör en dump av produktionsdatabasen
-    $ ssh root@bibstat.libris.kb.se
+    $ ssh root@bibstat.kb.se
     $ mongodump -d bibstat -u <username> -p <password>
     $ exit
 
     # Hämta ned dump till lokala maskinen
-    $ sftp root@bibstat.libris.kb.se
+    $ sftp root@bibstat.kb.se
     $ get dump
     $ exit
 
@@ -139,7 +139,7 @@ Det finns en [sammanfattning](docs/servers.md) av hur miljöerna sattes upp.
 ### Stage
 
 Redhat Enterprise Linux Server 6.7
-Adress: [bibstat-stg.libris.kb.se](http://bibstat-stg.libris.kb.se)  
+Adress: [bibstat-stg.kb.se](http://bibstat-stg.kb.se)  
 Hårdvara: 2 GB Minne, 80 GB Hårddisk  
 Deploy: `fab conf.stgbibstat app.bibstat.deploy`  
 Inloggning: Fråga en involverad utvecklare efter uppgifterna.
@@ -147,7 +147,7 @@ Inloggning: Fråga en involverad utvecklare efter uppgifterna.
 ### Produktion
 
 Redhat Enterprise Linux Server 6.7
-Adress: [bibstat.libris.kb.se](http://bibstat.libris.kb.se)  
+Adress: [bibstat.kb.se](http://bibstat.kb.se)  
 Hårdvara: 16 GB Minne, 80 GB Hårddisk  
 Deploy: `fab conf.prodbibstat app.bibstat.deploy`  
 Inloggning: Fråga en involverad utvecklare efter uppgifterna.
