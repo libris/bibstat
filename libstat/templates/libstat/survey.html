@@ -3,7 +3,6 @@
 {% load libstat_tags %}
 
 {% block content %}
-    {% include "libstat/analytics.html" %}
 
     <!-- Warn users of Internet Explorer 9 or earlier versions -->
 
@@ -299,5 +298,6 @@
         })();
     </script>
 
+    {% include "libstat/analytics.html" %}
 
 {% endblock %}
