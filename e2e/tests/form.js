@@ -30,7 +30,7 @@ module.exports = {
     
     browser
       .url('http://localhost:8000/surveys/54b7ca100b52ff12b56c8279?p=umyzlsJmi2')
-      .waitForElementVisible('body', 1000)
+      .waitForElementVisible('body', 5000)
       
       .verify.containsText('.navbar-text', 'Välkommen')
       

@@ -5,14 +5,27 @@
 Installera [nightwatch](http://nightwatchjs.org/)
 
     $ npm install -g nightwatch
-    
-Ladda ner den senaste versionen av selenium-server-standalone från [denna sidan](http://selenium-release.storage.googleapis.com/index.html) och placera JAR-filen i ``e2e/bin/``
 
-Om du vill köra test i Chrome så behöver du Chromedriver som finns att ladda ner [här](https://code.google.com/p/selenium/wiki/ChromeDriver). Lägg den i ``e2e/bin/``
+Installera Selenium
+
+    $ brew install selenium-server-standalone
+    
+(alternativt ladda ner den senaste versionen av selenium-server-standalone från [denna sidan](http://selenium-release.storage.googleapis.com/index.html) och placera JAR-filen i ``e2e/bin/``)
+
+Om du vill köra test i Chrome så behöver du Chromedriver. Installera den mha homebrew:
+ 
+    $ brew install chromedriver
+
+(alternativt finns den att ladda ner [här](https://code.google.com/p/selenium/wiki/ChromeDriver). Lägg den i ``e2e/bin/``)
 
 ## Konfiguera
 
-Portnummer kan anpassas i ``nightwatch.json``
+I ``nightwatch.json``:
+
+- Kolla selenium "server_path" (ex "/usr/local/Cellar/selenium-server-standalone/2.48.2/libexec/selenium-server-standalone-2.48.2.jar" eller "bin/selenium-server-standalone-2.47.1.jar")
+- Kolla "webdriver.chrome.driver"  ("/usr/local/bin/chromedriver" eller "bin/chromedriver")
+- Anpassa portar
+- Välj om Selenium ska startas via Nightwatch eller separat 
 
 ## Köra tester
 
