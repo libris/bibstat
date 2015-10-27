@@ -39,7 +39,8 @@ TEMPLATE_CONTEXT_PROCESSORS = TCP + (
 )
 
 ALLOWED_HOSTS = [
-    ".bibstat-stg.kb.se"
+    ".bibstat-stg.kb.se",
+    ".bibstat-stg.libris.kb.se"
 ]
 
 # Base url for api, i.e. http://stats.kb.se
