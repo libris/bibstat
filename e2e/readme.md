@@ -1,5 +1,7 @@
 # E2E-testning
 
+End-to-end-webbtester för att testa enkätformuläret. Testerna går igenom och kollar att vissa element och inputs finns på plats samt att validering, summering och hjälptexter fungerar. Obs att valideringstesterna kräver att korrekta enheter för de olika variablerna är inställda (t ex för e-postfält och telefonnummerfält).
+
 ## Installation
 
 Installera [nightwatch](http://nightwatchjs.org/)
