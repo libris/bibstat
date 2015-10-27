@@ -83,3 +83,4 @@ static/js/main_survey.min.js
 # Html templates generated from cms forms
 libstat/templates/libstat/index/*
 e2e/reports
+e2e/nightwatch.json

@@ -22,6 +22,11 @@ Om du vill köra test i Chrome så behöver du Chromedriver. Installera den mha 
 
 ## Konfiguera
 
+Kopiera konfigureringsfilen:
+
+    $ cd e2e
+    $ cp nightwatch.json.example nightwatch.json
+
 I ``nightwatch.json``:
 
 - Kolla selenium "server_path" (ex "/usr/local/Cellar/selenium-server-standalone/2.48.2/libexec/selenium-server-standalone-2.48.2.jar" eller "bin/selenium-server-standalone-2.47.1.jar")
