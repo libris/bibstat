@@ -363,6 +363,20 @@ class TestSurveyPublish(MongoTestCase):
 
         self.assertEquals(OpenData.objects.all()[0].value, "new_value")
 
+    def test_deletes_existing_open_data_if_observation_value_has_been_emptied(self):
+        survey = self._dummy_survey(observations=[
+            self._dummy_observation(value="some_value")])
+        survey.publish()
+
+        self.assertEquals(OpenData.objects.all()[0].value, "some_value")
+
+        open_data = OpenData.objects.all()[0]
+
+        survey.observations[0].value = ""
+        survey.publish()
+
+        self.assertEquals(OpenData.objects.filter(pk=open_data.pk).count(), 0)
+
     def test_updates_date_modified_for_open_data_that_has_changed_when_republishing(self):
         survey = self._dummy_survey(observations=[
             self._dummy_observation(value="old_value")])
