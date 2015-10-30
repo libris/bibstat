@@ -53,7 +53,7 @@ def _validate_sums(survey, form, submit_action):
             return True
         if isnumber(obj) and obj == 0:
             return True
-        if not isnumber(obj) and obj == "0" or obj == "0,0" or obj == "":
+        if not isnumber(obj) and obj == "0" or obj == "0.0" or obj == "" or obj == "-":
             return True
         return False
 
@@ -73,12 +73,16 @@ def _validate_sums(survey, form, submit_action):
                                     observation_value = observation.value
                                 else:
                                     continue
+                                if observation_value == "-":
+                                    continue
                                 if isnumber(observation_value):
                                     total += observation_value
                                 else:
                                     total += float(observation_value)
                             if survey.get_observation(cell.variable_key) and survey.get_observation(cell.variable_key).value:
                                 sum_value = survey.get_observation(cell.variable_key).value
+                                if sum_value == "-":
+                                    continue
                             elif cell.required and submit_action == 'submit': # empty cells only generate error if required and action is 'submit'
                                 not_valid_sum_fields.append(cell.variable_key)
                                 continue
@@ -91,6 +95,8 @@ def _validate_sums(survey, form, submit_action):
                         except Exception as e:
                             logger.debug("Excepting and added field to not valid sums. Exception: %s" % e)
                             not_valid_sum_fields.append(cell.variable_key)
+    logger.debug(total)
+    logger.debug(not_valid_sum_fields)
     return not_valid_sum_fields
 
 # Validation of sums
@@ -106,24 +112,40 @@ def _has_valid_sums(survey, form, submit_action):
 def _save_survey_response_from_form(survey, form):
     error_list = []
 
+    # Note: all syntax/format validation is done on client side w Bootstrap validator. 
+    # All fields are handled as CharFields in the form and casted based on variable.type before saving.  More types can be added when needed.
+
     if form.is_valid():
         disabled_inputs = form.cleaned_data.pop("disabled_inputs").split(" ")
         unknown_inputs = form.cleaned_data.pop("unknown_inputs").split(" ")
         submit_action = form.cleaned_data.pop("submit_action", None)
         altered_fields = form.cleaned_data.pop("altered_fields", None).split(" ")
 
+        variables = Variable.objects.all().only('key')
+        all_variable_keys = [var.key for var in variables]
+
         for field in form.cleaned_data:
+            value = form.cleaned_data[field]
+            if type(value) == "str":
+                value = value.strip()
+            if field in all_variable_keys:
+                variable_type = Variable.objects.filter(key=field).first().type
+                if variable_type == "integer" and value != "" and value != "-":
+                    value = int(value)
+                elif variable_type == "decimal" and value != "" and value != "-":
+                    value = float(value.replace(",", ".")) # decimals are entered with comma in the form
             observation = survey.get_observation(field)
             if observation:
                 if field in altered_fields:
-                    observation.value = form.cleaned_data[field]
+                    observation.value = value
                     observation.disabled = (field in disabled_inputs)
                     observation.value_unknown = (field in unknown_inputs)
             else:
-                survey.__dict__["_data"][field] = form.cleaned_data[field]
+                survey.__dict__["_data"][field] = value
 
         survey.selected_libraries = filter(None, form.cleaned_data["selected_libraries"].split(" "))
 
+        #TODO: remove sum validation here
         if _has_valid_sums(survey, form, submit_action):
 
             if submit_action == "submit" and survey.status in ("not_viewed", "initiated"):

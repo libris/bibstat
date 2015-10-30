@@ -328,7 +328,6 @@ define(['jquery', 'bootbox', 'survey.sum', 'survey.cell', 'surveys.dispatch', 'b
 
                 $(window).on('beforeunload', function(event) {
                     if (!isDirty) {
-                        console.log("Nu behöver vi inte varna");
                         return undefined;
                     }
                     else {
@@ -401,14 +400,8 @@ define(['jquery', 'bootbox', 'survey.sum', 'survey.cell', 'surveys.dispatch', 'b
 
                                         // If field name is found in json response error list -> update field validator to invalid status and add error message
                                         if (result.errors[i].fieldName == fieldName) {
-                                            var numericValidator = $(sumElement).is('[data-bv-numeric]') ? true : false;
-                                            if (numericValidator == true) {
-                                                survey.validator().updateStatus(fieldName, 'INVALID', 'numeric');
-                                                survey.validator().updateMessage(fieldName, 'numeric', result.errors[i].errorMessage);
-                                            } else {
-                                                survey.validator().updateStatus(fieldName, 'INVALID', 'integer');
-                                                survey.validator().updateMessage(fieldName, 'integer', result.errors[i].errorMessage);
-                                            }
+                                            survey.validator().updateStatus(fieldName, 'INVALID', 'regexp');
+                                            survey.validator().updateMessage(fieldName, 'regexp', result.errors[i].errorMessage);
                                         }
                                     }
                                 });
