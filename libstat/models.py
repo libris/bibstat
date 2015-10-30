@@ -697,9 +697,13 @@ class Survey(SurveyBase):
                                 open_data.date_modified = publishing_date
                                 open_data.is_active = False
                         elif observation.value != open_data.value:
-                            open_data.value = observation.value
-                            open_data.date_modified = publishing_date
-                            open_data.is_active = True
+                            if observation.value is None or observation.value == "" or observation.value == "-":
+                                open_data.delete()
+                                continue
+                            else:
+                                open_data.value = observation.value
+                                open_data.date_modified = publishing_date
+                                open_data.is_active = True
                         else:
                             open_data.is_active = True
                         open_data.save()
@@ -713,6 +717,7 @@ class Survey(SurveyBase):
                             self.library.library_type in observation.variable.target_groups and
                             observation.value is not None and
                             observation.value != "" and
+                            observation.value != "-" and
                             not observation.variable in existing_open_data_variables]
             if observations:
                 open_datas = []
