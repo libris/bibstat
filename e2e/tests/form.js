@@ -6,6 +6,7 @@ module.exports = {
     var emailField = 'Epost01',
         teleField = 'Tele01',
         integerField = 'Bokbuss01',
+        decimalField = 'Arsverke01',
         outsideField = '.navbar-text', // Used to blur input fields
         sumOfFields = [
           'Arsverke01',
@@ -47,7 +48,6 @@ module.exports = {
       .verify.attributeEquals('#fg-'+emailField +' small[data-bv-validator=notEmpty]', 'data-bv-result', 'VALID', formatOutput('Validation', 'notEmpty', 'VALID for "Test"'))
       .verify.visible('#fg-'+emailField+' small[data-bv-validator=regexp]', formatOutput('Validation Msg', 'regexp (email)', 'Should show msg on fail'))
       .verify.attributeEquals('#fg-'+emailField +' small[data-bv-validator=regexp]', 'data-bv-result', 'INVALID', formatOutput('Validation', 'regexp', 'INVALID for "Test"'))
-      .verify.attributeEquals('#fg-'+emailField +' small[data-bv-validator=emailAddress]', 'data-bv-result', 'INVALID', formatOutput('Validation', 'emailAddress', 'INVALID for "Test"'))
       .clearValue("#" + emailField)
       
       .click("#" + emailField)
@@ -55,8 +55,7 @@ module.exports = {
       .click(outsideField)
       .verify.hidden('#fg-'+emailField+' small[data-bv-validator=regexp]', formatOutput('Validation Msg', 'regexp (email)', 'Should hide msg on pass'))
       .verify.attributeEquals('#fg-'+emailField +' small[data-bv-validator=regexp]', 'data-bv-result', 'VALID', formatOutput('Validation', 'regexp', 'VALID for "test@test.test"'))
-      .verify.attributeEquals('#fg-'+emailField +' small[data-bv-validator=emailAddress]', 'data-bv-result', 'VALID', formatOutput('Validation', 'emailAddress', 'VALID for "test@test.test"'))
-      
+
       .click("#" + teleField)
       .setValue("#" + teleField, '3')
       .click(outsideField)
@@ -70,13 +69,33 @@ module.exports = {
       .click("#" + integerField)
       .setValue("#" + integerField, '99999999999999')
       .click(outsideField)
-      .verify.visible('#fg-'+integerField+' small[data-bv-validator=lessThan]', formatOutput('Validation Msg', 'lessThan', 'Should show msg on fail'))
+      .verify.visible('#fg-'+integerField+' small[data-bv-validator=regexp]', formatOutput('Validation Msg', 'regexp (integer)', 'Should show msg on fail'))
       .clearValue("#" + integerField)
       .click("#" + integerField)
       .setValue("#" + integerField, '3')
       .click(outsideField)
-      .verify.hidden('#fg-'+integerField+' small[data-bv-validator=lessThan]', formatOutput('Validation Msg', 'lessThan', 'Should hide msg on pass'))
-      
+      .verify.hidden('#fg-'+integerField+' small[data-bv-validator=regexp]', formatOutput('Validation Msg', 'regexp (integer)', 'Should hide msg on pass'))
+
+      .click("#" + decimalField)
+      .setValue("#" + decimalField, '99999999999999')
+      .click(outsideField)
+      .verify.visible('#fg-'+decimalField+' small[data-bv-validator=regexp]', formatOutput('Validation Msg', 'regexp (decimal)', 'Should show msg on fail'))
+      .clearValue("#" + decimalField)
+      .click("#" + decimalField)
+      .setValue("#" + decimalField, '3,33')
+      .click(outsideField)
+      .verify.hidden('#fg-'+decimalField+' small[data-bv-validator=regexp]', formatOutput('Validation Msg', 'regexp (decimal)', 'Should hide msg on pass'))
+      .clearValue("#" + decimalField)
+      .click("#" + decimalField)
+      .setValue("#" + decimalField, '3,3333')
+      .click(outsideField)
+      .verify.visible('#fg-'+decimalField+' small[data-bv-validator=regexp]', formatOutput('Validation Msg', 'regexp (decimal)', 'Should show msg on fail'))
+      .clearValue("#" + decimalField)
+      .setValue("#" + decimalField, '-')
+      .click(outsideField)
+      .verify.hidden('#fg-'+decimalField+' small[data-bv-validator=regexp]', formatOutput('Validation Msg', 'regexp (decimal)', 'Should hide msg on pass'))
+      .clearValue("#" + decimalField)
+
       // Sum-of
       .click("#" + sumOfFields[0])
       .setValue("#" + sumOfFields[0], 5)
