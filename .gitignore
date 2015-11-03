@@ -84,3 +84,4 @@ static/js/main_survey.min.js
 libstat/templates/libstat/index/*
 e2e/reports
 e2e/nightwatch.json
+wdio.conf.js
