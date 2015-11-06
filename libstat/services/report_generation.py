@@ -243,6 +243,8 @@ def pre_cache_observations(template, surveys, year):
                         sum_value += float(od.value)
                 except:
                     # Value is missing or empty
+                    # Note: this should not happen, as open_data objects are only created from observations w values, and deleted if observation value is emptied
+                    observations[key]["incomplete_data"].append(y)
                     continue
 
             if sum_value == 0:
@@ -254,7 +256,7 @@ def pre_cache_observations(template, surveys, year):
                 except:
                     observations[key][y] = None
 
-            if open_data.count() < len(survey_ids[y]):
+            if open_data.count() < len(survey_ids[y]) and y not in observations[key]["incomplete_data"]:
                 observations[key]["incomplete_data"].append(y)
 
     return observations

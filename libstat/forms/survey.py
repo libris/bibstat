@@ -31,29 +31,22 @@ class SurveyForm(forms.Form):
             attrs["data-bv-notempty"] = ""
             attrs["placeholder"] = "Obligatorisk"
 
+        # Integer max value is 99999999
         if variable_type == "integer":
-            attrs["data-bv-integer"] = ""
-            attrs["data-bv-greaterthan"] = ""
-            attrs["data-bv-greaterthan-value"] = "0"
-            attrs["data-bv-greaterthan-inclusive"] = ""
-            attrs["max"] = "99999999"
-            attrs["data-bv-message"] = "Vänligen mata in ett numeriskt värde mindre än eller lika med 99999999"
-
-        if variable_type == "decimal":
-            attrs["data-bv-numeric"] = ""
-            attrs["data-bv-numeric-separator"] = ","
-            attrs["data-bv-greaterthan"] = ""
-            attrs["data-bv-greaterthan-value"] = "0"
-            attrs["data-bv-greaterthan-inclusive"] = ""
-            attrs["max"] = "99999999"
             attrs["data-bv-regexp"] = ""
-            attrs["data-bv-regexp-regexp"] = "^\d+(\,\d{1,3})?$"
-            attrs["data-bv-regexp-message"] = "Vänligen mata in ett nummer med max 3 decimaler (t ex 12,522)"
+            attrs["data-bv-regexp-regexp"] = "^(-|(0|[1-9]([0-9]){0,7}))$"
+            attrs["data-bv-message"] = "Vänligen mata in ett numeriskt värde mindre än eller lika med 99999999, alternativt '-' om värdet inte är relevant"
+
+        # Decimal max value is 99999999,999
+        if variable_type == "decimal":
+            attrs["data-bv-regexp"] = ""
+            attrs["data-bv-regexp-regexp"] = "^(-|\d{1,8}(\,\d{1,3})?)$"
+            attrs["data-bv-regexp-message"] = "Vänligen mata in ett numeriskt värde mindre än eller lika med 99999999,999 med max 3 decimaler (t ex 12,522), alternativt '-' om värdet inte är relevant"
 
         if variable_type == "email":
-            attrs["data-bv-emailaddress"] = ""
+            #attrs["data-bv-emailaddress"] = ""
             attrs["data-bv-regexp"] = ""
-            attrs["data-bv-regexp-regexp"] = ".+@.+\..+"
+            attrs["data-bv-regexp-regexp"] = "^(-|.+@.+\..+)$"
             attrs["data-bv-regexp-message"] = "Vänligen mata in en giltig emailadress"
 
         if variable_type == "string":
@@ -62,11 +55,17 @@ class SurveyForm(forms.Form):
 
         if variable_type == "phonenumber":
             attrs["data-bv-regexp"] = ""
-            attrs["data-bv-regexp-regexp"] = "^\+?\d\d+\-?\d(\s?\d+)*\d+$"
+            attrs["data-bv-regexp-regexp"] = "^(-|\+?(\d\d?-?)+\d(\s?\d+)*\d+)$"
             attrs["data-bv-regexp-message"] = "Vänligen mata in ett giltigt telefonnummer utan bokstäver och parenteser, t ex 010-709 30 00"
 
-        if "Utgift" in cell.variable_key or "Intakt" in cell.variable_key: #TODO: add max_value field to variable + editable in term form
-            attrs["max"] = "999999999"
+        # Utgifter and Intakter max 999999999 or 999999999,999
+        if "Utgift" in cell.variable_key or "Intakt" in cell.variable_key:
+            if variable_type == "integer":
+                attrs["data-bv-reg exp-regexp"] = "^(-|(0|[1-9]([0-9]){0,8}))$"
+                attrs["data-bv-regexp-message"] = "Vänligen mata in ett numeriskt värde mindre än eller lika med 999999999, alternativt '-' om värdet inte är relevant"
+            elif variable_type == "decimal":
+                attrs["data-bv-regexp-regexp"] = "^(-|\d{1,9}(\,\d{1,3})?)$"
+                attrs["data-bv-regexp-message"] = "Vänligen mata in ett numeriskt värde mindre än eller lika med 999999999,999 med max 3 decimaler (t ex 12,522), alternativt '-' om värdet inte är relevant"
 
         if not observation or observation.value_unknown:
             attrs["disabled"] = ""
@@ -80,16 +79,21 @@ class SurveyForm(forms.Form):
             attrs["data-placement"] = "top"
             attrs["data-original-title"] = cell.variable_key
 
+        # Note: all fields are CharFields and types are casted before saving the form
         if variable_type == "textarea":
             field = forms.CharField(required=False, widget=forms.Textarea(attrs=attrs))
-        elif variable_type == "integer":
-            field = forms.IntegerField(required=False, max_value=999999999, widget=forms.TextInput(attrs=attrs))
-        elif variable_type == "decimal":
-            field = forms.FloatField(localize=True, required=False, max_value=999999999, widget=forms.TextInput(attrs=attrs))
         else:
             field = forms.CharField(required=False, widget=forms.TextInput(attrs=attrs))
 
-        field.initial = u"Värdet är okänt" if not observation or observation.value_unknown else observation.value
+        if not observation or observation.value_unknown:
+            field.initial = u"Värdet är okänt"
+        elif observation.value and variable_type == "decimal":
+            field.initial = str(observation.value).replace(".", ",") # decimals are displayed with comma in the form
+        else:
+            field.initial = observation.value
+
+        if type(field.initial) == "str":
+            field.initial.strip()
 
         return field
 
@@ -178,7 +182,7 @@ class SurveyForm(forms.Form):
     def __init__(self, *args, **kwargs):
         survey = kwargs.pop('survey', None)
         authenticated = kwargs.pop('authenticated', False)
-        super(SurveyForm, self).__init__(*args, **kwargs)        
+        super(SurveyForm, self).__init__(*args, **kwargs)
 
         # Cache variables for performance
         variables = {}

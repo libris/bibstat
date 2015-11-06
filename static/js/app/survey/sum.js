@@ -21,7 +21,7 @@ define(['jquery', 'survey.cell'], function($, cell) {
         var childCallback = function(parent, child, children) {
             cell.onChange(child, function() {
                 if(!$(parent).prop("disabled")) {
-                    $(parent).val(String(sumOf(children)).replace(".", ","));
+                    $(parent).val(String(sumOf(children)).replace(".", ",").replace("-", ""));
                     $(parent).change();
                 }
             });
