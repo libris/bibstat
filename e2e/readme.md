@@ -4,9 +4,9 @@ End-to-end-webbtester för att testa enkätformuläret. Testerna går igenom och
 
 ## Installation
 
-Installera [nightwatch](http://nightwatchjs.org/)
+Installera [webdriver.io](http://webdriver.io/)
 
-    $ npm install -g nightwatch
+    $ npm install webdriverio
 
 Installera Selenium
 
@@ -18,21 +18,22 @@ Om du vill köra test i Chrome så behöver du Chromedriver. Installera den mha 
  
     $ brew install chromedriver
 
-(alternativt finns den att ladda ner [här](https://code.google.com/p/selenium/wiki/ChromeDriver). Lägg den i ``e2e/bin/``)
+Alternativt finns den att ladda ner [här](https://code.google.com/p/selenium/wiki/ChromeDriver).
+
+Lägg den i ``e2e/bin/``
 
 ## Konfiguera
 
 Kopiera konfigureringsfilen:
 
     $ cd e2e
-    $ cp nightwatch.json.example nightwatch.json
+    $ cp wdio.conf.js.example wdio.conf.js
 
-I ``nightwatch.json``:
+I ``wdio.conf.js``
 
-- Kolla selenium "server_path" (ex "/usr/local/Cellar/selenium-server-standalone/2.48.2/libexec/selenium-server-standalone-2.48.2.jar" eller "bin/selenium-server-standalone-2.47.1.jar")
-- Kolla "webdriver.chrome.driver"  ("/usr/local/bin/chromedriver" eller "bin/chromedriver")
-- Anpassa portar
-- Välj om Selenium ska startas via Nightwatch eller separat 
+* Anpassa portar
+* Anpassa vilka browsers du vill testa
+  * Om man kör flera parallella browsers behöver Firefox startas sist, då den inte klarar av att hantera vissa händelser om den inte är i fokus.
 
 ## Köra tester
 
@@ -40,16 +41,10 @@ Gå till e2e-mappen
     
     $ cd e2e
     
-Kör test
+Starta selenium (här anger vi även sökväg till chromedriver)
 
-    $ nightwatch --test tests/<testfile>.js
+    $ java -jar bin/selenium-server-standalone-2.47.1.jar -Dwebdriver.chrome.driver=bin/chromedriver
+    
+Kör tester
 
-Kör test med specifika environments, i exemplet körs defalt=firefox och chrome (enligt nightwatch.json)
-
-    $ nightwatch --test tests/<testfile>.js -e default,chrome
-
-## Stänga ner selenium
-
-När ett test kraschar under körning (t ex vid syntaxfel i testkoden) och man försöker köra igen, så kan man få felet att ens port redan är upptagen. Du kan då stänga ner Selenium genom att kalla på följande adress i din browser:
-
-http://localhost:4444/selenium-server/driver/?cmd=shutDownSeleniumServer
+    $ wdio wdio.conf.js
