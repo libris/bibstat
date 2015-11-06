@@ -85,3 +85,4 @@ libstat/templates/libstat/index/*
 e2e/reports
 e2e/nightwatch.json
 wdio.conf.js
+node_modules/

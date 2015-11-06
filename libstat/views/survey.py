@@ -42,75 +42,7 @@ def example_survey(request):
     return render(request, 'libstat/survey.html', context)
 
 
-def _validate_sums(survey, form, submit_action):
-    not_valid_sum_fields = []
-
-    def isnumber(obj):
-        return isinstance(obj, (int, long, float, complex))
-
-    def isempty(obj):
-        if not obj:
-            return True
-        if isnumber(obj) and obj == 0:
-            return True
-        if not isnumber(obj) and obj == "0" or obj == "0.0" or obj == "" or obj == "-":
-            return True
-        return False
-
-    for section in form.sections:
-        for group in section.groups:
-            for row in group.rows:
-                for cell in row.cells:
-                    if cell.sum_of:
-                        total = 0
-                        # no subfield values are entered -> sum doesn't need to be validated
-                        if all([isempty(survey.get_observation(f).value) for f in cell.sum_of]):
-                            continue
-                        try:
-                            for field in cell.sum_of:
-                                observation = survey.get_observation(field)
-                                if observation and observation.value:
-                                    observation_value = observation.value
-                                else:
-                                    continue
-                                if observation_value == "-":
-                                    continue
-                                if isnumber(observation_value):
-                                    total += observation_value
-                                else:
-                                    total += float(observation_value)
-                            if survey.get_observation(cell.variable_key) and survey.get_observation(cell.variable_key).value:
-                                sum_value = survey.get_observation(cell.variable_key).value
-                                if sum_value == "-":
-                                    continue
-                            elif cell.required and submit_action == 'submit': # empty cells only generate error if required and action is 'submit'
-                                not_valid_sum_fields.append(cell.variable_key)
-                                continue
-                            elif submit_action == 'save':
-                                continue
-                            if not isnumber(sum_value):
-                                sum_value = float(sum_value)
-                            if not sum_value == total:
-                                not_valid_sum_fields.append(cell.variable_key)
-                        except Exception as e:
-                            logger.debug("Excepting and added field to not valid sums. Exception: %s" % e)
-                            not_valid_sum_fields.append(cell.variable_key)
-    logger.debug(total)
-    logger.debug(not_valid_sum_fields)
-    return not_valid_sum_fields
-
-# Validation of sums
-def _has_valid_sums(survey, form, submit_action):
-    not_valid_sum_list = _validate_sums(survey, form, submit_action)
-    if len(not_valid_sum_list) > 0:
-        for variable_key in not_valid_sum_list:
-            form._errors[variable_key] = ErrorList([u"Vänligen kontrollera att summan stämmer överens med delvärdena, alternativt fyll bara i en totalsumma."]) # form._errors not used in response at the mo as form post is done w ajax and does not return whole form
-        return False
-    return True
-
-
 def _save_survey_response_from_form(survey, form):
-    error_list = []
 
     # Note: all syntax/format validation is done on client side w Bootstrap validator. 
     # All fields are handled as CharFields in the form and casted based on variable.type before saving.  More types can be added when needed.
@@ -145,24 +77,16 @@ def _save_survey_response_from_form(survey, form):
 
         survey.selected_libraries = filter(None, form.cleaned_data["selected_libraries"].split(" "))
 
-        #TODO: remove sum validation here
-        if _has_valid_sums(survey, form, submit_action):
+        if submit_action == "submit" and survey.status in ("not_viewed", "initiated"):
+            if not survey.has_conflicts():
+                survey.status = "submitted"
 
-            if submit_action == "submit" and survey.status in ("not_viewed", "initiated"):
-                if not survey.has_conflicts():
-                    survey.status = "submitted"
+        survey.save()
 
-            survey.save()
-
-    for field_name in form.cleaned_data:
-        field_errors = form[field_name].errors
-        if len(field_errors) > 0:
-            error_dict = {}
-            error_dict["fieldName"] = field_name
-            error_dict["errorMessage"] = form[field_name].errors.as_text()
-            error_list.append(error_dict)
-
-    return {"errors": error_list}
+    else:
+        logger.error('Could not save survey due to django validation error, library: %s' % survey.library.sigel)
+        logger.error(form.errors)
+        raise Exception(form.errors)
 
 
 def survey(request, survey_id):
