@@ -13,7 +13,8 @@ define(['jquery', 'jquery.tablesorter'], function($) {
                 $(".table.variables").addClass("tablesorter").tablesorter({ sortList: [[0, 0]] });
                 $(".table.survey_responses").addClass("tablesorter").tablesorter({
                     headers: {
-                        0: { sorter: false }
+                        0: { sorter: false },
+                        8: { sorter: false }
                     }
                 });
                 $(".table.libraries").addClass("tablesorter").tablesorter({
