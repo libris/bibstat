@@ -78,6 +78,7 @@ tmp/
 match_libraries_log*
 remove_surveys_log*
 
+static/js/main.min.js
 static/js/main_survey.min.js
 
 # Html templates generated from cms forms
