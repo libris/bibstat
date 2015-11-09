@@ -254,7 +254,7 @@
                                         {{ sr.library.name }}
                                     </a>
                                 </td>
-                                <td nowrap>
+                                <td>
                                     {{ sr.library.municipality_code|municipality_name|default:"" }}
                                 </td>
                                 <td>
@@ -263,7 +263,7 @@
                                 <td>
                                     {{ sr.library.library_type|tg_label|default:"" }}
                                 </td>
-                                <td nowrap>
+                                <td>
                                     {% if sr.library.email %}
                                         <a title="" class="survey-popover" data-placement="top"
                                            data-toggle="tooltip" href="mailto:{{ sr.library.email }}"
