@@ -114,14 +114,42 @@ describe('Bibstat', function() {
       browser
         .setValue('#Bokbuss01', 'abc')
         .keys('Tab')
-        .getAttribute('#fg-Bokbuss01 small[data-bv-validator=integer]', 'data-bv-result').then(function(attr) {
+        .getAttribute('#fg-Bokbuss01 small[data-bv-validator=regexp]', 'data-bv-result').then(function(attr) {
           expect(attr).toBe('INVALID')
         })
         .setValue('#Bokbuss01', '123')
         .keys('Tab')
-        .getAttribute('#fg-Bokbuss01 small[data-bv-validator=integer]', 'data-bv-result').then(function(attr) {
+        .getAttribute('#fg-Bokbuss01 small[data-bv-validator=regexp]', 'data-bv-result').then(function(attr) {
           expect(attr).toBe('VALID')
         })
+        .call(done);
+    });
+  });
+
+  describe('Decimal validation', function() {
+    it('Should not allow too big value or more than three decimals', function(done){
+      browser
+          .setValue('#Arsverke01', '99999999999999')
+          .keys('Tab')
+          .getAttribute('#fg-Arsverke01 small[data-bv-validator=regexp]', 'data-bv-result').then(function(attr) {
+          expect(attr).toBe('INVALID')
+        })
+          .setValue('#Arsverke01', '3,33')
+          .keys('Tab')
+          .getAttribute('#fg-Arsverke01 small[data-bv-validator=regexp]', 'data-bv-result').then(function(attr) {
+            expect(attr).toBe('VALID')
+        })
+          .setValue('#Arsverke01', '3,3333')
+          .keys('Tab')
+          .getAttribute('#fg-Arsverke01 small[data-bv-validator=regexp]', 'data-bv-result').then(function(attr) {
+            expect(attr).toBe('INVALID')
+        })
+          .setValue('#Arsverke01', '-')
+          .keys('Tab')
+          .getAttribute('#fg-Arsverke01 small[data-bv-validator=regexp]', 'data-bv-result').then(function(attr) {
+            expect(attr).toBe('VALID')
+        })
+          setValue('#Arsverke01', '')
         .call(done);
     });
   });
@@ -131,17 +159,17 @@ describe('Bibstat', function() {
       browser
         .setValue('#Bokbuss01', '99999999')
         .keys('Tab')
-        .getAttribute('#fg-Bokbuss01 small[data-bv-validator=lessThan]', 'data-bv-result').then(function(attr) {
+        .getAttribute('#fg-Bokbuss01 small[data-bv-validator=regexp]', 'data-bv-result').then(function(attr) {
           expect(attr).toBe('VALID')
         })
         .setValue('#Bokbuss01', '1')
         .keys('Tab')
-        .getAttribute('#fg-Bokbuss01 small[data-bv-validator=lessThan]', 'data-bv-result').then(function(attr) {
+        .getAttribute('#fg-Bokbuss01 small[data-bv-validator=regexp]', 'data-bv-result').then(function(attr) {
           expect(attr).toBe('VALID')
         })
         .setValue('#Bokbuss01', '100000000')
         .keys('Tab')
-        .getAttribute('#fg-Bokbuss01 small[data-bv-validator=lessThan]', 'data-bv-result').then(function(attr) {
+        .getAttribute('#fg-Bokbuss01 small[data-bv-validator=regexp]', 'data-bv-result').then(function(attr) {
           expect(attr).toBe('INVALID')
         })
         .call(done);
