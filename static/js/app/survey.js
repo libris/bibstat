@@ -316,6 +316,43 @@ define(['jquery', 'bootbox', 'survey.sum', 'survey.cell', 'surveys.dispatch', 'b
             isDirty = true;
             $('#unsaved-changes-label').text('Det finns ifyllda svar som inte sparats');
         };
+
+        var getTrimmedValue = function (element) {
+          return $.trim(element.val()).replace(",", ".").replace("-", "");
+        };
+
+        //Check question 14 to make sure sums match
+        var checkQuestion14  = function() {
+            var inilan199Value = getTrimmedValue($('#Inilan199'));
+            var omlan299Value = getTrimmedValue($('#Omlan299'));
+            var utlan399Value = getTrimmedValue($('#Utlan399'));
+            var inilanEntered = (inilan199Value != null && inilan199Value != "" && Number(inilan199Value) != NaN);
+            var omlanEntered = (omlan299Value != null && omlan299Value != "" && Number(omlan299Value) != NaN);
+            var utlanEntered = (utlan399Value != null && utlan399Value != "" && Number(utlan399Value) != NaN);
+
+            if (inilanEntered && omlanEntered && utlanEntered) {
+                console.log(Number(inilan199Value));
+                console.log(Number(omlan299Value));
+                console.log(Number(utlan399Value));
+                console.log(Number(inilan199Value) + Number(omlan299Value) == Number(utlan399Value));
+                if (Number(inilan199Value) + Number(omlan299Value) == Number(utlan399Value)) {
+                    // Sum is correct
+                } else {
+                    // Warn user if value in Utlan399 is not sum of Inilan199 and Omlan299
+                    bootbox.alert('Summan för totalt antal utlån på fråga 14 stämmer inte överens med det totala antalet initiala utlån och omlån. Du måste antingen ändra värdena i kolumnen under Totalt antal utlån eller korrigera totalsummorna för totalt antal initiala utlån samt omlån.', function() {
+                        $('#Inilan199').focus();
+                        setTimeout(function () {
+                            $('html, body').animate({
+                                scrollTop: $('#Inilan101').offset().top - 30
+                            }, 100);
+                        }, 100);
+                    });
+                }
+            } else {
+                // do nothing
+            }
+        };
+
         return {
             init: function () {
 
@@ -351,6 +388,9 @@ define(['jquery', 'bootbox', 'survey.sum', 'survey.cell', 'surveys.dispatch', 'b
                         .find('.help-block[data-bv-for="' + data.field + '"]').hide()
                         .filter('[data-bv-validator="' + data.validator + '"]').show();
                 }).on('success.form.bv', function () {
+
+                    //Check question 14 to make sure sums match
+                    checkQuestion14();
 
                     // On successful form-format-validation, if submit_action -> ajax post form
 
@@ -423,7 +463,7 @@ define(['jquery', 'bootbox', 'survey.sum', 'survey.cell', 'surveys.dispatch', 'b
 
                                 $('html, body').animate({
                                     scrollTop: ($('.jumbotron-submitted').first().offset().top - 60)
-                                }, 1000);
+                                }, 100);
                             }
 
                         },
@@ -583,7 +623,7 @@ define(['jquery', 'bootbox', 'survey.sum', 'survey.cell', 'surveys.dispatch', 'b
                     if (button.attr('data-scroll-to')) {
                         $('html, body').animate({
                             scrollTop: button.attr('data-scroll-to')
-                        }, 1000);
+                        }, 100);
                         button
                             .html('<i class="fa fa-question fa-inline"></i>Vanliga frågor')
                             .removeAttr('data-scroll-to');
@@ -595,7 +635,7 @@ define(['jquery', 'bootbox', 'survey.sum', 'survey.cell', 'surveys.dispatch', 'b
 
                         $('html, body').animate({
                             scrollTop: ($('#panel-help-top').offset().top - 60)
-                        }, 1000);
+                        }, 100);
                     }
                 });
 
