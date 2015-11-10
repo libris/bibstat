@@ -326,15 +326,11 @@ define(['jquery', 'bootbox', 'survey.sum', 'survey.cell', 'surveys.dispatch', 'b
             var inilan199Value = getTrimmedValue($('#Inilan199'));
             var omlan299Value = getTrimmedValue($('#Omlan299'));
             var utlan399Value = getTrimmedValue($('#Utlan399'));
-            var inilanEntered = (inilan199Value != null && inilan199Value != "" && Number(inilan199Value) != NaN);
-            var omlanEntered = (omlan299Value != null && omlan299Value != "" && Number(omlan299Value) != NaN);
-            var utlanEntered = (utlan399Value != null && utlan399Value != "" && Number(utlan399Value) != NaN);
+            var inilanEntered = ($.isNumeric(inilan199Value));
+            var omlanEntered = ($.isNumeric(omlan299Value));
+            var utlanEntered = ($.isNumeric(utlan399Value));
 
             if (inilanEntered && omlanEntered && utlanEntered) {
-                console.log(Number(inilan199Value));
-                console.log(Number(omlan299Value));
-                console.log(Number(utlan399Value));
-                console.log(Number(inilan199Value) + Number(omlan299Value) == Number(utlan399Value));
                 if (Number(inilan199Value) + Number(omlan299Value) == Number(utlan399Value)) {
                     // Sum is correct
                 } else {
