@@ -321,34 +321,6 @@ define(['jquery', 'bootbox', 'survey.sum', 'survey.cell', 'surveys.dispatch', 'b
           return $.trim(element.val()).replace(",", ".").replace("-", "");
         };
 
-        //Check question 14 to make sure sums match
-        var checkQuestion14  = function() {
-            var inilan199Value = getTrimmedValue($('#Inilan199'));
-            var omlan299Value = getTrimmedValue($('#Omlan299'));
-            var utlan399Value = getTrimmedValue($('#Utlan399'));
-            var inilanEntered = ($.isNumeric(inilan199Value));
-            var omlanEntered = ($.isNumeric(omlan299Value));
-            var utlanEntered = ($.isNumeric(utlan399Value));
-
-            if (inilanEntered && omlanEntered && utlanEntered) {
-                if (Number(inilan199Value) + Number(omlan299Value) == Number(utlan399Value)) {
-                    // Sum is correct
-                } else {
-                    // Warn user if value in Utlan399 is not sum of Inilan199 and Omlan299
-                    bootbox.alert('Summan för totalt antal utlån på fråga 14 stämmer inte överens med det totala antalet initiala utlån och omlån. Du måste antingen ändra värdena i kolumnen under Totalt antal utlån eller korrigera totalsummorna för totalt antal initiala utlån samt omlån.', function() {
-                        $('#Inilan199').focus();
-                        setTimeout(function () {
-                            $('html, body').animate({
-                                scrollTop: $('#Inilan101').offset().top - 30
-                            }, 100);
-                        }, 100);
-                    });
-                }
-            } else {
-                // do nothing
-            }
-        };
-
         return {
             init: function () {
 
@@ -370,7 +342,6 @@ define(['jquery', 'bootbox', 'survey.sum', 'survey.cell', 'surveys.dispatch', 'b
                     }
                 });
 
-
                 //Validate fields with Bootstrap validator
 
                 survey.form().bootstrapValidator({
@@ -386,90 +357,123 @@ define(['jquery', 'bootbox', 'survey.sum', 'survey.cell', 'surveys.dispatch', 'b
                 }).on('success.form.bv', function () {
 
                     //Check question 14 to make sure sums match
-                    checkQuestion14();
+                    var continuePosting = false;
+                    var inilan199Value = getTrimmedValue($('#Inilan199'));
+                    var omlan299Value = getTrimmedValue($('#Omlan299'));
+                    var utlan399Value = getTrimmedValue($('#Utlan399'));
+                    var inilanEntered = ($.isNumeric(inilan199Value));
+                    var omlanEntered = ($.isNumeric(omlan299Value));
+                    var utlanEntered = ($.isNumeric(utlan399Value));
 
-                    // On successful form-format-validation, if submit_action -> ajax post form
+                    if (inilanEntered && omlanEntered && utlanEntered) {
+                        if (Number(inilan199Value) + Number(omlan299Value) == Number(utlan399Value)) {
+                            // Sum is correct
+                            continuePosting = true;
+                        } else {
+                            // Warn user if value in Utlan399 is not sum of Inilan199 and Omlan299
+                            bootbox.alert('Summan för totalt antal utlån på fråga 14 stämmer inte överens med det totala antalet initiala utlån och omlån. Du måste antingen ändra värdena i kolumnen under Totalt antal utlån eller korrigera totalsummorna för totalt antal initiala utlån samt omlån.', function() {
 
-                    var submit_action = $('#submit_action').val();
-                    if (!submit_action)
-                        return;
-
-                    $('#altered_fields').val(survey.changeableInputs().filter(function () {
-                        return $(this).val() != $(this).attr('data-original-value');
-                    }).map(function () {
-                        return $(this).attr('id');
-                    }).get().join(' '));
-
-                    var unknownInputs = $('.value-unknown');
-
-                    var unknownInputIds = unknownInputs.map(function () {
-                        return $(this).attr('id');
-                    }).get().join(' ');
-                    $('#unknown_inputs').val(unknownInputIds);
-
-                    var disabledInputIds = survey.disabledInputs().map(function () {
-                        return $(this).attr('id');
-                    }).get().join(' ');
-                    $('#disabled_inputs').val(disabledInputIds);
-
-                    $('#selected_libraries').val(survey.selectedLibraries());
-
-                    survey.form().attr('action', Urls.survey(survey.form('#id_key').val()));
-
-                    $.ajax({
-                        url: '/surveys/' + $('#id_key').val(),
-                        type: 'POST',
-                        data: $('#survey-form').serialize(),
-                        success: function (result) {
-                            $('#print-survey-btn, #save-survey-btn, #submit-survey-btn').removeClass('disabled');
-                            $('#save-survey-btn').html('Spara');
-
-
-                            if (submit_action == 'save') {
-
-                                isDirty = false;
-
-                                // Hide message after 5 sec (5000ms)
-                                $('#unsaved-changes-label').html('<strong>Formuläret är nu sparat.</strong>');
+                                $('#Inilan199').focus();
                                 setTimeout(function () {
-                                    $('#unsaved-changes-label').html('');
-                                }, 5000);
-
-                            } else if (submit_action == 'presubmit') {
-
-                                $('#submit-confirm-modal').modal('show');
-
-                            } else if (submit_action == 'submit') {
-                                // Hide bootstrap modal
-                                $('#submit-confirm-modal').modal('hide');
-                                // Hide bootstrap navbar (footer)
-                                $('.navbar-fixed-bottom').hide();
-                                // Disable all inputs
-                                survey.inputs().attr('readonly', true);
-                                // Disable all dropdown-togglers
-                                $('input[type="checkbox"]').attr('disabled', true);
-                                // Disable all dropdown-togglers
-                                $('.btn-dropdown').attr('disabled', true);
-                                // Don't show status message about unsaved changes
-                                $('#unsaved-changes-label').html('');
-
-                                isDirty = false;
-
-                                $('.jumbotron-submitted').show();
-
-                                $('html, body').animate({
-                                    scrollTop: ($('.jumbotron-submitted').first().offset().top - 60)
+                                    $('html, body').animate({
+                                        scrollTop: $('#Inilan101').offset().top - 30
+                                    }, 100);
                                 }, 100);
-                            }
-
-                        },
-                        // handle a non-successful response
-                        error: function () {
-                            alert('Ett fel uppstod! Var vänlig försök igen.');
-                            $('#print-survey-btn, #save-survey-btn, #submit-survey-btn').removeClass('disabled');
-                            $('#save-survey-btn').html('Spara');
+                            }); //End bootbox alert
                         }
-                    });
+
+                    } else {
+                        // Question 14 sums don't need checking
+                        continuePosting = true;
+                    }
+
+                    if (continuePosting) {
+                        // On successful form-format-validation, if submit_action -> ajax post form
+
+                        var submit_action = $('#submit_action').val();
+                        if (!submit_action)
+                            return;
+
+                        $('#altered_fields').val(survey.changeableInputs().filter(function () {
+                            return $(this).val() != $(this).attr('data-original-value');
+                        }).map(function () {
+                            return $(this).attr('id');
+                        }).get().join(' '));
+
+                        var unknownInputs = $('.value-unknown');
+
+                        var unknownInputIds = unknownInputs.map(function () {
+                            return $(this).attr('id');
+                        }).get().join(' ');
+                        $('#unknown_inputs').val(unknownInputIds);
+
+                        var disabledInputIds = survey.disabledInputs().map(function () {
+                            return $(this).attr('id');
+                        }).get().join(' ');
+                        $('#disabled_inputs').val(disabledInputIds);
+
+                        $('#selected_libraries').val(survey.selectedLibraries());
+
+                        survey.form().attr('action', Urls.survey(survey.form('#id_key').val()));
+
+                        $.ajax({
+                            url: '/surveys/' + $('#id_key').val(),
+                            type: 'POST',
+                            data: $('#survey-form').serialize(),
+                            success: function (result) {
+                                $('#print-survey-btn, #save-survey-btn, #submit-survey-btn').removeClass('disabled');
+                                $('#save-survey-btn').html('Spara');
+
+
+                                if (submit_action == 'save') {
+
+                                    isDirty = false;
+
+                                    // Hide message after 5 sec (5000ms)
+                                    $('#unsaved-changes-label').html('<strong>Formuläret är nu sparat.</strong>');
+                                    setTimeout(function () {
+                                        $('#unsaved-changes-label').html('');
+                                    }, 5000);
+
+                                } else if (submit_action == 'presubmit') {
+
+                                    $('#submit-confirm-modal').modal('show');
+
+                                } else if (submit_action == 'submit') {
+                                    // Hide bootstrap modal
+                                    $('#submit-confirm-modal').modal('hide');
+                                    // Hide bootstrap navbar (footer)
+                                    $('.navbar-fixed-bottom').hide();
+                                    // Disable all inputs
+                                    survey.inputs().attr('readonly', true);
+                                    // Disable all dropdown-togglers
+                                    $('input[type="checkbox"]').attr('disabled', true);
+                                    // Disable all dropdown-togglers
+                                    $('.btn-dropdown').attr('disabled', true);
+                                    // Don't show status message about unsaved changes
+                                    $('#unsaved-changes-label').html('');
+
+                                    isDirty = false;
+
+                                    $('.jumbotron-submitted').show();
+
+                                    $('html, body').animate({
+                                        scrollTop: ($('.jumbotron-submitted').first().offset().top - 60)
+                                    }, 100);
+                                }
+
+                            },
+                            // handle a non-successful response
+                            error: function () {
+                                alert('Ett fel uppstod! Var vänlig försök igen.');
+                                $('#print-survey-btn, #save-survey-btn, #submit-survey-btn').removeClass('disabled');
+                                $('#save-survey-btn').html('Spara');
+                            }
+                        }); //End ajax
+
+                    }
+
+
                 }).on('error.form.bv', function () {
                     var invalidField = survey.validator().getInvalidFields().first();
                     setTimeout(function () {
