@@ -87,7 +87,7 @@ class SurveyForm(forms.Form):
 
         if not observation or observation.value_unknown:
             field.initial = u"Värdet är okänt"
-        elif observation.value and variable_type == "decimal":
+        elif observation.value != None and variable_type == "decimal":
             field.initial = str(observation.value).replace(".", ",") # decimals are displayed with comma in the form
         else:
             field.initial = observation.value

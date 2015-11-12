@@ -38,14 +38,17 @@ define(['jquery', 'bootbox', 'survey.cell'], function($, bootbox, cell) {
 
             //Warn if sum of subfields does not match sumfield value
             $(parent).blur(function () {
+
                 var sumValue = $.trim(String(this.value).replace(".", ","));
+
+                //Check if all subfields contain '-'
                 var allIrrelevantChildren = function (children) {
                     var allIrrelevant = true;
-                    for (var child in children) {
-                        if (child.value != "-") {
-                            allIrrelevant = false;
-                        }
-                    }
+                    $.each(children, function (index, childElement) {
+                       if (cell.value(childElement) != "-") {
+                           allIrrelevant = false;
+                       }
+                    });
                     return allIrrelevant;
                 }
 
