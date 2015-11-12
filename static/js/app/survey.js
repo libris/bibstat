@@ -664,6 +664,7 @@ define(['jquery', 'bootbox', 'survey.sum', 'survey.cell', 'surveys.dispatch', 'b
 
 
                 cell.onChange(survey.changeableInputs(), function () {
+                    this.value = $.trim(this.value);
                     showChangesNotSaved();
                 });
 
