@@ -87,3 +87,5 @@ e2e/reports
 e2e/nightwatch.json
 wdio.conf.js
 node_modules/
+
+static/css/bundle.min.css
