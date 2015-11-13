@@ -75,6 +75,17 @@ a[disabled] {
     margin-left: -9px;
 }
 
+.modified-date-label {
+    cursor: default !important;
+    color: black;
+}
+
+.modified-date-label:hover {
+    cursor: default !important;
+    color: black;
+    text-decoration: none;
+}
+
 /* List variables */
 .variables .column.header {
     white-space: nowrap !important;
@@ -586,6 +597,16 @@ label.sub-label {
 
 .page-survey .jumbotron-submitted h1 {
     font-size: 27px;
+}
+
+@media (min-width: 1200px) {
+  .container-extended {
+      width: 1250px;
+      padding-right: 15px;
+      padding-left: 15px;
+      margin-right: auto;
+      margin-left: auto;
+  }
 }
 
 /* styles for media type=print */
