@@ -177,9 +177,26 @@ Filerna finns på både stage- och produktionsmiljön i `/data/appl/old_bibstat_
 	$ python manage.py import_survey_responses --file=/data/appl/old_bibstat_data/Folkbibliotek.xlsx --target_group=folkbib --year=2011
 	$ python manage.py import_survey_responses --file=/data/appl/old_bibstat_data/Folkbibliotek.xlsx --target_group=folkbib --year=2010
 
+### Export
+Export av enkäter till excelfil kan göras via administrationssidan [/surveys](http://bibstat.kb.se/surveys). Det öppna datat kan också exporteras till excelfil under "Öppna data". Då kommer enbart observationer med för variabler som är publika.
+
+Script för export finns även under [libstat/management/commands]([libstat/management/commands).
+
+För att ta ut enkäter:
+
+	$ python manage.py export_surveys_to_excel --year=2014
+
+För att ta ut data om biblioteken (ange all=y för att ta ut alla bibliotek, eller all=n för att endast få med bibliotek som saknar sigel):
+
+	$ python manage.py export_libraries_to_excel --year=2012 --all=n
+	
+Filerna hamnar under [data/excel_exports] (data/excel_exports) (under /data/appl/excel_exports på servrarna)
+
 ## Analytics
 
 [Google Analytics](http://www.google.com/analytics) används för att spåra hur externa användare använder tjänsten.  
 Kontot som används delas tillsammans med de andra utvecklade systemen i Libris.
 
 Inloggningsuppgifterna kan fås genom att fråga en involverad utvecklare.
+
+Tjänsten genererar även data till Piwik på [http://analytics.kb.se](http://analytics.kb.se)
