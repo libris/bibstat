@@ -356,6 +356,10 @@ define(['jquery', 'bootbox', 'survey.sum', 'survey.cell', 'surveys.dispatch', 'b
                         .filter('[data-bv-validator="' + data.validator + '"]').show();
                 }).on('success.form.bv', function () {
 
+                    var submit_action = $('#submit_action').val();
+                    if (!submit_action)
+                        return;
+
                     //Check question 14 to make sure sums match
                     var continuePosting = false;
                     var inilan199Value = getTrimmedValue($('#Inilan199'));
@@ -370,6 +374,10 @@ define(['jquery', 'bootbox', 'survey.sum', 'survey.cell', 'surveys.dispatch', 'b
                             // Sum is correct
                             continuePosting = true;
                         } else {
+                           $('#print-survey-btn, #save-survey-btn, #submit-survey-btn').removeClass('disabled');
+                           $('#save-survey-btn').html('Spara');
+                           $('#submit-survey-btn').html('Skicka');
+
                             // Warn user if value in Utlan399 is not sum of Inilan199 and Omlan299
                             bootbox.alert('Summan för totalt antal utlån på fråga 14 stämmer inte överens med det totala antalet initiala utlån och omlån. Du måste antingen ändra värdena i kolumnen under Totalt antal utlån eller korrigera summorna för totalt antal initiala utlån samt omlån.', function() {
 
@@ -390,9 +398,13 @@ define(['jquery', 'bootbox', 'survey.sum', 'survey.cell', 'surveys.dispatch', 'b
                     if (continuePosting) {
                         // On successful form-format-validation, if submit_action -> ajax post form
 
-                        var submit_action = $('#submit_action').val();
-                        if (!submit_action)
-                            return;
+                        if (submit_action == "save") {
+                            $('#save-survey-btn').html('<i class="fa fa-spinner fa-spin"></i> Sparar...');
+                        } else if (submit_action == "presubmit") {
+                            $('#submit-survey-button').html('<i class="fa fa-spinner fa-spin"></i> Sparar...');
+                        } else if (submit_action == "submit") {
+                            $('#submit-survey-button').html('<i class="fa fa-spinner fa-spin"></i> Skickar...');
+                        }
 
                         $('#altered_fields').val(survey.changeableInputs().filter(function () {
                             return $(this).val() != $(this).attr('data-original-value');
@@ -423,6 +435,7 @@ define(['jquery', 'bootbox', 'survey.sum', 'survey.cell', 'surveys.dispatch', 'b
                             success: function (result) {
                                 $('#print-survey-btn, #save-survey-btn, #submit-survey-btn').removeClass('disabled');
                                 $('#save-survey-btn').html('Spara');
+                                $('#submit-survey-btn').html('Skicka');
 
 
                                 if (submit_action == 'save') {
@@ -468,6 +481,7 @@ define(['jquery', 'bootbox', 'survey.sum', 'survey.cell', 'surveys.dispatch', 'b
                                 alert('Ett fel uppstod! Var vänlig försök igen.');
                                 $('#print-survey-btn, #save-survey-btn, #submit-survey-btn').removeClass('disabled');
                                 $('#save-survey-btn').html('Spara');
+                                $('#submit-survey-btn').html('Skicka');
                             }
                         }); //End ajax
 
@@ -475,6 +489,9 @@ define(['jquery', 'bootbox', 'survey.sum', 'survey.cell', 'surveys.dispatch', 'b
 
 
                 }).on('error.form.bv', function () {
+                    $('#print-survey-btn, #save-survey-btn, #submit-survey-btn').removeClass('disabled');
+                    $('#save-survey-btn').html('Spara');
+                    $('#submit-survey-btn').html('Skicka');
                     var invalidField = survey.validator().getInvalidFields().first();
                     setTimeout(function () {
                         $('html, body').animate({
@@ -582,15 +599,6 @@ define(['jquery', 'bootbox', 'survey.sum', 'survey.cell', 'surveys.dispatch', 'b
 
                         var validator = survey.validator();
                         validator.validate();
-
-                        if (!validator.isValid()) {
-                            saveButton.html(saveButtonHtml).removeClass('disabled');
-                            otherButtons.removeClass('disabled');
-                        } else {
-                            $('#unsaved-changes-label').text('');
-                            saveButton.html('<i class="fa fa-spinner fa-spin"></i> Sparar...');
-                        }
-
                         empty.removeClass('disable-validation');
                     }, 100);
                 });
@@ -610,8 +618,6 @@ define(['jquery', 'bootbox', 'survey.sum', 'survey.cell', 'surveys.dispatch', 'b
                     setTimeout(function () {
                         var validator = survey.validator();
                         validator.validate();
-                        submitButton.html(submitButtonHtml).removeClass('disabled');
-                        otherButtons.removeClass('disabled');
                     }, 100);
                 });
 
