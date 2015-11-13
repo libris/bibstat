@@ -10,7 +10,7 @@ from django import template
 
 from bibstat import settings
 from libstat.models import Dispatch, Survey
-from libstat.utils import targetGroups, ALL_TARGET_GROUPS_label
+from libstat.utils import targetGroups, ALL_TARGET_GROUPS_label, variableTypes
 from data.municipalities import municipalities
 
 
@@ -38,6 +38,12 @@ def tg_label(value):
                 display_names.append(targetGroups[value])
     return ", ".join(display_names)
 
+@register.filter
+def var_type_label(var_key):
+    try:
+        return variableTypes[var_key]
+    except KeyError:
+        return None
 
 @register.filter
 def srs_label(key):

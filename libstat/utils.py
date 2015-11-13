@@ -37,6 +37,8 @@ TYPE_EMAIL = (u"email", u"E-post")
 
 VARIABLE_TYPES = (TYPE_STRING, TYPE_BOOLEAN, TYPE_INTEGER, TYPE_LONG, TYPE_DECIMAL, TYPE_PERCENT, TYPE_PHONE, TYPE_TEXTAREA, TYPE_EMAIL)
 
+variableTypes = dict(VARIABLE_TYPES)
+
 rdfVariableTypes = {TYPE_STRING[0]: u"xsd:string", TYPE_BOOLEAN[0]: u"xsd:boolean", TYPE_INTEGER[0]: u"xsd:integer",
                     TYPE_LONG[0]: u"xsd:long", TYPE_DECIMAL[0]: u"xsd:decimal", TYPE_PERCENT[0]: u"xsd:decimal"}
 

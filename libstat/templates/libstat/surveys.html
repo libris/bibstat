@@ -9,7 +9,7 @@
         }
     </style>
 
-    <div class="container">
+    <div class="container-extended">
 
         <div class="panel panel-default">
             <div class="panel-heading panel-top">
@@ -233,6 +233,7 @@
                         <th class="column" nowrap>Bibliotekstyp <i class="fa fa-fw fa-sort"></i></th>
                         <th class="column" nowrap>Email <i class="fa fa-fw fa-sort"></i></th>
                         <th class="column" nowrap>Status <i class="fa fa-fw fa-sort"></i></th>
+                        <th class="column" nowrap>Ändrad <i class="fa fa-fw fa-sort"></i></th>
                         <th class="column" nowrap>Publicerad <i class="fa fa-fw fa-sort"></i></th>
                         <th></th>
                     </tr>
@@ -272,6 +273,18 @@
                                 </td>
                                 <td nowrap>
                                     {{ sr.status|srs_label|default:"" }}
+                                </td>
+                                <td nowrap>
+                                    {% if sr.date_modified %}
+                                        <span>
+                                        <a class="modified-date-label survey-popover"
+                                           data-placement="top"
+                                           data-toggle="tooltip" href="#"
+                                           data-original-title="{{ sr.date_modified|utc_tz|date:"Y-m-d H:i" }}">
+                                            {{ sr.date_modified|utc_tz|date:"Y-m-d" }}
+                                        </a>
+                                        </span>
+                                    {% endif %}
                                 </td>
                                 <td nowrap>
                                     {% if sr.is_published and not sr.latest_version_published %}

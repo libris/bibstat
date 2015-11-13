@@ -371,7 +371,7 @@ define(['jquery', 'bootbox', 'survey.sum', 'survey.cell', 'surveys.dispatch', 'b
                             continuePosting = true;
                         } else {
                             // Warn user if value in Utlan399 is not sum of Inilan199 and Omlan299
-                            bootbox.alert('Summan för totalt antal utlån på fråga 14 stämmer inte överens med det totala antalet initiala utlån och omlån. Du måste antingen ändra värdena i kolumnen under Totalt antal utlån eller korrigera totalsummorna för totalt antal initiala utlån samt omlån.', function() {
+                            bootbox.alert('Summan för totalt antal utlån på fråga 14 stämmer inte överens med det totala antalet initiala utlån och omlån. Du måste antingen ändra värdena i kolumnen under Totalt antal utlån eller korrigera summorna för totalt antal initiala utlån samt omlån.', function() {
 
                                 $('#Inilan199').focus();
                                 setTimeout(function () {
@@ -664,6 +664,7 @@ define(['jquery', 'bootbox', 'survey.sum', 'survey.cell', 'surveys.dispatch', 'b
 
 
                 cell.onChange(survey.changeableInputs(), function () {
+                    this.value = $.trim(this.value);
                     showChangesNotSaved();
                 });
 

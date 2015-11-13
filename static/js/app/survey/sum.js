@@ -39,37 +39,53 @@ define(['jquery', 'bootbox', 'survey.cell'], function($, bootbox, cell) {
             //Warn if sum of subfields does not match sumfield value
             $(parent).blur(function () {
 
+                var sumValue = $.trim(String(this.value).replace(".", ","));
+
+                //Check if all subfields contain '-'
+                var allIrrelevantChildren = function (children) {
+                    var allIrrelevant = true;
+                    $.each(children, function (index, childElement) {
+                       if (cell.value(childElement) != "-") {
+                           allIrrelevant = false;
+                       }
+                    });
+                    return allIrrelevant;
+                }
+
                 //Array of subfield elements
                 childels = $.map(setup[parent], function (child) {
                     return $(child);
                 });
 
-                //Calculate sum of subfields
-                childsum = String(sumOf(childels)).replace(".", ",").replace("-", "");
+                if (sumValue != "-" && !allIrrelevantChildren(childels)) {
 
-                //Compare subfield sum with value in sumfield
-                if (childsum != "" && String(this.value).replace(".", ",") != childsum) {
+                    //Calculate sum of subfields
+                    childsum = String(sumOf(childels)).replace(".", ",").replace("-", "");
 
-                    // Varna användaren om summan skiljer sig från totalfältet
-                    bootbox.confirm('Du har angivit värden i delfälten som inte kan summeras till värdet i totalfältet. Om du istället vill ange värde i summeringsfältet kommer delfälten att raderas. Klicka OK för att radera värden i delfälten eller Avbryt för att korrigera summeringfältet.', function (result) {
+                    //Compare subfield sum with value in sumfield
+                    if (childsum != "" && sumValue != childsum) {
 
-                        if (result) {
+                        // Varna användaren om summan skiljer sig från totalfältet
+                        bootbox.confirm('Du har angivit värden i delfälten som inte kan summeras till värdet i totalfältet. Om du istället vill ange värde i summeringsfältet kommer delfälten att raderas. Klicka OK för att radera värden i delfälten eller Avbryt för att korrigera summeringfältet.', function (result) {
 
-                            // Blank subfields and put focus on sumfield
-                            $.each(childels, function(index, child) {
-                                child.val("");
-                            });
+                            if (result) {
 
-                            $(parent).focus()
+                                // Blank subfields and put focus on sumfield
+                                $.each(childels, function (index, child) {
+                                    child.val("");
+                                });
 
-                        } else {
+                                $(parent).focus()
 
-                            // Trigger change on one of the subfields to change the sum
-                            childels[0].change()
-                        }
-                    });
-                } else {
-                    //Sum is correct, ignore
+                            } else {
+
+                                // Trigger change on one of the subfields to change the sum
+                                childels[0].change()
+                            }
+                        });
+                    } else {
+                        //Sum is correct, ignore
+                    }
                 }
             });
     };
