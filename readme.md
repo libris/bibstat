@@ -190,6 +190,15 @@ För att ta ut data om biblioteken (ange all=y för att ta ut alla bibliotek, el
 
 	$ python manage.py export_libraries_to_excel --year=2012 --all=n
 	
+I servermiljöerna måste man aktivera virtuell env genom 
+    
+    $ cd /data/appl/bibstat
+    $ source env/bin/activate
+    
+För att köra script som bakgrundsprocess:
+    
+    $ nohup python manage.py export_surveys_to_excel --year=2014 &
+	
 Filerna hamnar under [data/excel_exports] (data/excel_exports) (under /data/appl/excel_exports på servrarna)
 
 ## Analytics
