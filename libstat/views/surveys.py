@@ -6,8 +6,9 @@ from datetime import datetime
 
 from django.core.urlresolvers import reverse
 from django.shortcuts import render, redirect
-from django.http import HttpResponse, HttpResponseRedirect, HttpResponseNotFound, HttpResponseNotAllowed, HttpResponseServerError, HttpResponseBadRequest
+from django.http import HttpResponse, HttpResponseRedirect, HttpResponseNotFound, HttpResponseNotAllowed, HttpResponseServerError, HttpResponseBadRequest, HttpResponseForbidden
 from django.contrib.auth.decorators import permission_required
+from django.contrib.auth.hashers import PBKDF2PasswordHasher
 from django.views.decorators.csrf import csrf_exempt
 from openpyxl.writer.excel import save_virtual_workbook
 
@@ -321,6 +322,16 @@ def surveys_update_library(request):
     if request.method == "POST":
         post_data = json.loads(request.body)
         if post_data:
+            passw = getattr(settings, 'BIBDB_UPDATE_PASS')
+            hasher = PBKDF2PasswordHasher()
+            try:
+                if not hasher.verify(passw, post_data['pass']):
+                    logger.warn("Bibdb library data change sync: password check failed")
+                    return HttpResponseForbidden('Password required')
+            except:
+                logger.warn("Bibdb library data change sync: password check failed")
+                return HttpResponseForbidden('Password required')
+
             sigel = post_data.get("sigel", None)
             if sigel:
                 existing_surveys = Survey.objects.filter(is_active=True, library__sigel=sigel).only("library")
@@ -340,6 +351,6 @@ def surveys_update_library(request):
             logger.error("Bibdb library data change sync: bad request")
             return HttpResponseBadRequest()
     logger.warn("Received illegal request to /surveys/update_library")
-    return HttpResponseNotAllowed()
+    return HttpResponseNotAllowed(['POST'])
 
 

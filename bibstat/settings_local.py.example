@@ -31,3 +31,6 @@ CLEAN_DATA_LOG_PATH = os.path.dirname(os.path.dirname(__file__))
 # Path to excel file with sigel mappings
 # Change to /data/appl/sigel_match/sigel_mapping.xlsx for production
 SIGEL_MAPPING_FILE_PATH = '/Users/ina/projects/bibstat/data/sigel_match/sigel_mapping.xlsx'
+
+# SECURITY WARNING: keep the pass for bibdb library updates in production secret!
+BIBDB_UPDATE_PASS = 'password'
