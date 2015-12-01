@@ -158,7 +158,9 @@ class SurveyForm(forms.Form):
 
     def _conflicting_libraries(self, first_selection, second_selection):
         intersection = Set(first_selection).intersection(Set(second_selection))
-        return [survey.library for survey in Survey.objects.filter(library__sigel__in=intersection)]
+        s = set(intersection) #remove duplicates
+        list_intersection = list(s)
+        return [survey.library for survey in Survey.objects.filter(library__sigel__in=list_intersection)]
 
     def _mailto_link(self):
         body = (
