@@ -22,19 +22,19 @@ def _get_surveys_with_status_not_viewed(sample_year):
     return surveys
 
 
-def _load_sigel_mapping_from_workbook():
+def _load_sigel_mapping_from_workbook(sheet="Blad1", column_old_value=1, column_new_value=0):
     worksheet = None
     sigel_mapping = {}
 
     try:
         book = open_workbook(settings.SIGEL_MAPPING_FILE_PATH, verbosity=0)
-        worksheet = book.sheet_by_name(str("Blad1"))
+        worksheet = book.sheet_by_name(str(sheet))
     except XLRDError as xld_e:
         logger.error(u"{}".format(xld_e))
 
     if worksheet:
         for i in range(1, worksheet.nrows):
-            sigel_mapping[worksheet.cell_value(i, 1)] = worksheet.cell_value(i, 0)
+            sigel_mapping[worksheet.cell_value(i, column_old_value)] = worksheet.cell_value(i, column_new_value)
 
     return sigel_mapping
 

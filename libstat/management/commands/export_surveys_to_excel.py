@@ -9,7 +9,7 @@ from libstat.services.excel_export import surveys_to_excel_workbook, _cached_wor
 logger = logging.getLogger(__name__)
 
 class Command(BaseCommand):
-    args = "-year=<YYYY>"
+    args = "--year=<YYYY>"
     help = "Export surveys to Excel file"
     help_text = ("Usage: python manage.py export_surveys_to_excel --year=<YYYY>\n\n")
 
