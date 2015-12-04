@@ -89,7 +89,7 @@
             {% for survey in form.conflicting_surveys %}
                 <li class="jumbotron-list">
                     <a href="{{ survey.url }}">{{ survey.library.name }} {% if survey.library.city %} i {{ survey.library.city }}{% endif %}</a>
-                    rapporterar också för {% for library in survey.conflicting_libraries %}{{ library.name }}{% if not forloop.last %}, {% endif %}{% endfor %}.
+                    rapporterar också för {% for library in survey.conflicting_libraries %}{{ library.name }} ({{ library.sigel }}) i {{ library.city }}{% if not forloop.last %}, {% endif %}{% endfor %}.
                 </li>
             {% endfor %}
             </ul>
