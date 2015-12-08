@@ -350,7 +350,7 @@ def surveys_update_library(request):
         else:
             logger.error("Bibdb library data change sync: bad request")
             return HttpResponseBadRequest()
-    logger.warn("Received illegal request to /surveys/update_library")
+    logger.warn("Received illegal request to /surveys/update_library. HTTP-method: %s" % request.method)
     return HttpResponseNotAllowed(['POST'])
 
 
