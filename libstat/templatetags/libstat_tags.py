@@ -139,7 +139,7 @@ def show_in_chart(rows):
 
 @register.simple_tag
 def footer():
-    return "&copy; Kungliga Biblioteket 2014-" + str(datetime.now().year)
+    return "&copy; Kungl. biblioteket 2014-" + str(datetime.now().year) + ". Version " + settings.RELEASE_VERSION + ".  <a href=\"http://github.com/libris/bibstat/releases\" target=\"_blank\"/>Se senaste release notes</a>"
 
 
 @register.simple_tag()

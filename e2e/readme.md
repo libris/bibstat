@@ -6,7 +6,7 @@ End-to-end-webbtester för att testa enkätformuläret. Testerna går igenom och
 
 Installera [webdriver.io](http://webdriver.io/)
 
-    $ npm install webdriverio
+    $ npm install -g webdriverio
 
 Installera Selenium
 
