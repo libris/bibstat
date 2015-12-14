@@ -8,7 +8,7 @@
                 <div class="row">
                     <div class="col-md-10 col-md-offset-1">
                         <img src="/static/img/kb.svg" class="intro-logo" alt="Kungliga Bibliotekets logotyp">
-                        <h1 class="intro-title">Biblioteksstatistik</h1>
+                        <h1 class="intro-title">Biblioteksstatistik{% if environment and environment != 'prod' %} *** {{ environment }} ***{% endif %}</h1>
                         <p class="intro-text">Biblioteksstatistiken visar uppgifter om de offentligt finansierade bibliotekens verksamhet. Alla bibliotekstyper som finansieras av staten, en kommun eller ett landsting ingår.</p>
 
                         <ul class="list-inline intro-buttons">
