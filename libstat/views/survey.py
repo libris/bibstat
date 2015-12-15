@@ -42,6 +42,16 @@ def example_survey(request):
     return render(request, 'libstat/survey.html', context)
 
 
+@permission_required('is_superuser', login_url='index')
+def sigel_survey(request, sigel):
+    if request.method == 'GET':
+        survey = Survey.objects.filter(library__sigel=sigel).first()
+        if survey:
+            logger.info('Redirecting to /survey/%s' % survey.id)
+            return redirect(reverse('survey', args=(survey.id,)))
+        return HttpResponseNotFound()
+
+
 def _save_survey_response_from_form(survey, form):
 
     # Note: all syntax/format validation is done on client side w Bootstrap validator. 
