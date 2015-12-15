@@ -38,8 +38,11 @@ ENVIRONMENT = 'local'
 # Getting version number from latest release tag in github libris/bibstat repository
 http = urllib3.PoolManager(cert_reqs='CERT_REQUIRED', ca_certs=certifi.where())
 response = http.urlopen('GET', 'https://github.com/libris/bibstat/releases/latest', redirect=False)
-location_header = response.headers['Location']
-latest_version = location_header.split('/')[-1]
+location_header = response.headers.get('Location', None)
+if location_header:
+    latest_version = location_header.split('/')[-1]
+else:
+    latest_version = None
 RELEASE_VERSION = latest_version
 
 # SECURITY WARNING: keep the pass for bibdb library updates in production secret!
