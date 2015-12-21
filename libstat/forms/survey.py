@@ -46,7 +46,7 @@ class SurveyForm(forms.Form):
         if variable_type == "email":
             #attrs["data-bv-emailaddress"] = ""
             attrs["data-bv-regexp"] = ""
-            attrs["data-bv-regexp-regexp"] = "^(-|.+@.+\..+)$"
+            attrs["data-bv-regexp-regexp"] = "^([\w!#$%&'*+/=?`{|}~^-]+(?:\.[\w!#$%&'*+/=?`{|}~^-]+)*@(?:[A-Za-z0-9-]+\.)+[A-Za-z]{2,6})$"
             attrs["data-bv-regexp-message"] = "Vänligen mata in en giltig emailadress"
 
         if variable_type == "string":
