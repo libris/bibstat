@@ -277,18 +277,10 @@ define(['jquery', 'bootbox', 'survey.sum', 'survey.cell', 'surveys.dispatch', 'b
             /* Enable help button popover. */
             $('.btn-help').popover({
                 container: 'body',
-                title: function () {
-                    return 'Förklaring' + '<button class="close" style="line-height: inherit;">&times</button>';
-                },
                 html: true,
-                trigger: 'focus'
+                trigger: 'click'
             }).click(function (e) {
                 e.preventDefault();
-            }).on('shown.bs.popover', function () {
-                var button = $(this);
-                $('.popover button.close').click(function () {
-                    button.popover('hide');
-                });
             });
 
             var initAdmin = function () {
@@ -360,8 +352,46 @@ define(['jquery', 'bootbox', 'survey.sum', 'survey.cell', 'surveys.dispatch', 'b
                     if (!submit_action)
                         return;
 
-                    //Check question 14 to make sure sums match
+                    //Check question 12 to make sure sums match
                     var continuePosting = false;
+
+                    var titlar199Value = getTrimmedValue($('#Titlar199'));
+                    var titlar299Value = getTrimmedValue($('#Titlar299'));
+                    var titlar399Value = getTrimmedValue($('#Titlar399'));
+                    var titlar499Value = getTrimmedValue($('#Titlar499'));
+                    var titlar199Entered = ($.isNumeric(titlar199Value));
+                    var titlar299Entered = ($.isNumeric(titlar299Value));
+                    var titlar399Entered = ($.isNumeric(titlar399Value));
+                    var titlar499Entered = ($.isNumeric(titlar499Value));
+
+                    if (titlar199Entered && titlar299Entered && titlar399Entered && titlar499Entered) {
+                        if (Number(titlar199Value) + Number(titlar299Value) + Number(titlar399Value) == Number(titlar499Value)) {
+                            // Sum is correct
+                            continuePosting = true;
+                        } else {
+                           $('#print-survey-btn, #save-survey-btn, #submit-survey-btn').removeClass('disabled');
+                           $('#save-survey-btn').html('Spara');
+                           $('#submit-survey-btn').html('Skicka');
+
+                            // Warn user if value in Titlar499 is not sum of Titlar199, Titlar299 and Titlar399
+                            bootbox.alert('Summan för totalt antal titlar på fråga 12 stämmer inte överens med det totala antalet titlar på svenska, nationella minoritetsspråk och utländska språk. Du måste antingen ändra värdena i kolumnen under Totalt antal titlar eller korrigera summorna för totalt antal titlar på svenska, minoritetsspråk samt utländska språk', function() {
+
+                                $('#Titlar199').focus();
+                                setTimeout(function () {
+                                    $('html, body').animate({
+                                        scrollTop: $('#Titlar101').offset().top - 30
+                                    }, 100);
+                                }, 100);
+                            }); //End bootbox alert
+                        }
+
+                    } else {
+                        // Question 12 sums don't need checking
+                        continuePosting = true;
+                    }
+
+
+                    //Check question 14 to make sure sums match
                     var inilan199Value = getTrimmedValue($('#Inilan199'));
                     var omlan299Value = getTrimmedValue($('#Omlan299'));
                     var utlan399Value = getTrimmedValue($('#Utlan399'));
