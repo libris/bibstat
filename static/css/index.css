@@ -271,6 +271,7 @@ dd:last-child {
     margin-bottom: 0;
 }
 
+.btn-help
 .btn {
     font-family: Montserrat, "Helvetica Neue", Helvetica, Arial, sans-serif;
     font-weight: 400;
@@ -279,12 +280,14 @@ dd:last-child {
     transition: all .3s ease-in-out;
 }
 
+.btn-help
 .btn-default {
     border: 1px solid grey;
     color: grey;
     background-color: transparent;
 }
 
+.btn-help
 .btn-default:hover,
 .btn-default:focus {
     border: 1px solid grey;
