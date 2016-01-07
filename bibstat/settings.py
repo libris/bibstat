@@ -10,7 +10,11 @@ https://docs.djangoproject.com/en/1.6/ref/settings/
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 import os
+import sys
 from django.conf.global_settings import TEMPLATE_CONTEXT_PROCESSORS as TCP
+
+reload(sys)
+sys.setdefaultencoding('utf-8')
 
 BASE_DIR = os.path.dirname(os.path.dirname(__file__))
 
