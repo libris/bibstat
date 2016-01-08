@@ -169,18 +169,20 @@ def surveys_overview(request, sample_year):
         table[0].append(status[1])
     table[0].append("Total")
 
-    all_active_surveys = Survey.objects.filter(is_active=True, sample_year=sample_year)
+    all_active_surveys = list(Survey.objects.filter(is_active=True, sample_year=sample_year)) #Preload surveys from database
 
     for library_type in utils.SURVEY_TARGET_GROUPS:
         row = [library_type[1]]
+        library_type_value = library_type[0]
         for status in Survey.STATUSES:
-            surveys = all_active_surveys.filter(_status=status[0], library__library_type=library_type[0])
-            surveys_all_count = surveys.count()
+            status_value = status[0]
+            surveys = [s for s in all_active_surveys if s._status == status_value and s.library.library_type == library_type_value]
+            surveys_all_count = len(surveys)
             surveys_self_reporting_count = len([s for s in surveys if s.library.sigel in s.selected_libraries])
             row.append('%d (%d)' % (surveys_self_reporting_count, surveys_all_count))
 
-        surveys_total_status = all_active_surveys.filter(library__library_type=library_type[0])
-        surveys_total_status_all_count = surveys_total_status.count()
+        surveys_total_status = [s for s in all_active_surveys if s.library.library_type == library_type_value]
+        surveys_total_status_all_count = len(surveys_total_status)
         surveys_total_status_self_reporting_count = len([s for s in surveys_total_status if s.library.sigel in s.selected_libraries])
         row.append('%d (%d)' % (surveys_total_status_self_reporting_count, surveys_total_status_all_count))
 
@@ -188,12 +190,13 @@ def surveys_overview(request, sample_year):
 
     row = ["Total"]
     for status in Survey.STATUSES:
-        surveys_total = all_active_surveys.filter(_status=status[0])
-        surveys_total_all_count = surveys_total.count()
+        status_value_str = status[0]
+        surveys_total = [s for s in all_active_surveys if s._status == status_value_str]
+        surveys_total_all_count = len(surveys_total)
         surveys_total_self_reporting_count = len([s for s in surveys_total if s.library.sigel in s.selected_libraries])
         row.append('%d (%d)' % (surveys_total_self_reporting_count, surveys_total_all_count))
 
-    surveys_total_total_all_count = all_active_surveys.count()
+    surveys_total_total_all_count = len(all_active_surveys)
     surveys_total_total_self_reporting_count = len([s for s in all_active_surveys if s.library.sigel in s.selected_libraries])
     row.append('%d (%d)' % (surveys_total_total_self_reporting_count, surveys_total_total_all_count))
 
