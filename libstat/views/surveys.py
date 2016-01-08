@@ -169,19 +169,34 @@ def surveys_overview(request, sample_year):
         table[0].append(status[1])
     table[0].append("Total")
 
+    all_active_surveys = Survey.objects.filter(is_active=True, sample_year=sample_year)
+
     for library_type in utils.SURVEY_TARGET_GROUPS:
         row = [library_type[1]]
         for status in Survey.STATUSES:
-            row.append(Survey.objects.filter(is_active=True, sample_year=sample_year, _status=status[0],
-                                             library__library_type=library_type[0]).count())
-        row.append(Survey.objects.filter(is_active=True, sample_year=sample_year,
-                                         library__library_type=library_type[0]).count())
+            surveys = all_active_surveys.filter(_status=status[0], library__library_type=library_type[0])
+            surveys_all_count = surveys.count()
+            surveys_self_reporting_count = len([s for s in surveys if s.library.sigel in s.selected_libraries])
+            row.append('%d (%d)' % (surveys_self_reporting_count, surveys_all_count))
+
+        surveys_total_status = all_active_surveys.filter(library__library_type=library_type[0])
+        surveys_total_status_all_count = surveys_total_status.count()
+        surveys_total_status_self_reporting_count = len([s for s in surveys_total_status if s.library.sigel in s.selected_libraries])
+        row.append('%d (%d)' % (surveys_total_status_self_reporting_count, surveys_total_status_all_count))
+
         table.append(row)
 
     row = ["Total"]
     for status in Survey.STATUSES:
-        row.append(Survey.objects.filter(is_active=True, sample_year=sample_year, _status=status[0]).count())
-    row.append(Survey.objects.filter(is_active=True, sample_year=sample_year).count())
+        surveys_total = all_active_surveys.filter(_status=status[0])
+        surveys_total_all_count = surveys_total.count()
+        surveys_total_self_reporting_count = len([s for s in surveys_total if s.library.sigel in s.selected_libraries])
+        row.append('%d (%d)' % (surveys_total_self_reporting_count, surveys_total_all_count))
+
+    surveys_total_total_all_count = all_active_surveys.count()
+    surveys_total_total_self_reporting_count = len([s for s in all_active_surveys if s.library.sigel in s.selected_libraries])
+    row.append('%d (%d)' % (surveys_total_total_self_reporting_count, surveys_total_total_all_count))
+
     table.append(row)
 
     context = {
