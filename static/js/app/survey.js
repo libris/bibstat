@@ -313,6 +313,15 @@ define(['jquery', 'bootbox', 'survey.sum', 'survey.cell', 'surveys.dispatch', 'b
           return $.trim(element.val()).replace(",", ".").replace("-", "");
         };
 
+        var checkPartSum = function (partValueEl, valueEl) {
+            var partValueElVal = getTrimmedValue($(partValueEl));
+            var valueElVal = getTrimmedValue($(valueEl));
+          if ($.isNumeric(partValueElVal) && $.isNumeric(valueElVal)) {
+              return parseFloat(partValueElVal) <= parseFloat(valueElVal);
+          }
+          return true;
+        };
+
         return {
             init: function () {
 
@@ -352,44 +361,32 @@ define(['jquery', 'bootbox', 'survey.sum', 'survey.cell', 'surveys.dispatch', 'b
                     if (!submit_action)
                         return;
 
-                    //Check question 12 to make sure sums match
-                    var continuePosting = false;
+                    var continuePosting = false; //only continue posting if sum checks are passed
 
-                    var titlar199Value = getTrimmedValue($('#Titlar199'));
-                    var titlar299Value = getTrimmedValue($('#Titlar299'));
-                    var titlar399Value = getTrimmedValue($('#Titlar399'));
-                    var titlar499Value = getTrimmedValue($('#Titlar499'));
-                    var titlar199Entered = ($.isNumeric(titlar199Value));
-                    var titlar299Entered = ($.isNumeric(titlar299Value));
-                    var titlar399Entered = ($.isNumeric(titlar399Value));
-                    var titlar499Entered = ($.isNumeric(titlar499Value));
+                    var showBootBox = false;
+                    var messageToShow = null;
+                    var elementToFocusOn = null;
+                    var elementToScrollTo = null;
 
-                    if (titlar199Entered && titlar299Entered && titlar399Entered && titlar499Entered) {
-                        if (Number(titlar199Value) + Number(titlar299Value) + Number(titlar399Value) == Number(titlar499Value)) {
-                            // Sum is correct
-                            continuePosting = true;
-                        } else {
-                           $('#print-survey-btn, #save-survey-btn, #submit-survey-btn').removeClass('disabled');
-                           $('#save-survey-btn').html('Spara');
-                           $('#submit-survey-btn').html('Skicka');
+                    //Check question 23 part sums
+                    var q23partSums = ['#Publ201','#Publ202','#Publ203','#Publ204','#Publ205','#Publ206','#Publ207','#Publ208','#Publ209','#Publ210','#Publ211','#Publ212','#Publ213','#Publ214','#Publ215','#Publ216','#Publ217','#Publ218','#Publ219','#Publ220','#Publ299']
+                    var q23Sums = ['#Publ101','#Publ102','#Publ103','#Publ104','#Publ105','#Publ106','#Publ107','#Publ108','#Publ109','#Publ110','#Publ111','#Publ112','#Publ113','#Publ114','#Publ115','#Publ116','#Publ117','#Publ118','#Publ119','#Publ120','#Publ199']
 
-                            // Warn user if value in Titlar499 is not sum of Titlar199, Titlar299 and Titlar399
-                            bootbox.alert('Summan för totalt antal titlar på fråga 12 stämmer inte överens med det totala antalet titlar på svenska, nationella minoritetsspråk och utländska språk. Du måste antingen ändra värdena i kolumnen under Totalt antal titlar eller korrigera summorna för totalt antal titlar på svenska, minoritetsspråk samt utländska språk', function() {
-
-                                $('#Titlar199').focus();
-                                setTimeout(function () {
-                                    $('html, body').animate({
-                                        scrollTop: $('#Titlar101').offset().top - 30
-                                    }, 100);
-                                }, 100);
-                            }); //End bootbox alert
+                    var allOk = true;
+                    for (var i=0; i < 21; i++) {
+                        if (!checkPartSum(q23partSums[i], q23Sums[i])) {
+                            allOk = false;
                         }
+                    }
+                    if (!allOk) {
+                        showBootBox = true;
+                        messageToShow = 'Något eller några av värdena under aktiviteter för barn och unga i den andra kolumnen på fråga 23 är större än det totala antalet aktiviteter som angetts. Du behöver korrigera värdena.';
+                        elementToFocusOn = '#Publ201';
+                        elementToScrollTo = '#Publ101';
 
                     } else {
-                        // Question 12 sums don't need checking
                         continuePosting = true;
                     }
-
 
                     //Check question 14 to make sure sums match
                     var inilan199Value = getTrimmedValue($('#Inilan199'));
@@ -404,29 +401,128 @@ define(['jquery', 'bootbox', 'survey.sum', 'survey.cell', 'surveys.dispatch', 'b
                             // Sum is correct
                             continuePosting = true;
                         } else {
-                           $('#print-survey-btn, #save-survey-btn, #submit-survey-btn').removeClass('disabled');
-                           $('#save-survey-btn').html('Spara');
-                           $('#submit-survey-btn').html('Skicka');
 
-                            // Warn user if value in Utlan399 is not sum of Inilan199 and Omlan299
-                            bootbox.alert('Summan för totalt antal utlån på fråga 14 stämmer inte överens med det totala antalet initiala utlån och omlån. Du måste antingen ändra värdena i kolumnen under Totalt antal utlån eller korrigera summorna för totalt antal initiala utlån samt omlån.', function() {
-
-                                $('#Inilan199').focus();
-                                setTimeout(function () {
-                                    $('html, body').animate({
-                                        scrollTop: $('#Inilan101').offset().top - 30
-                                    }, 100);
-                                }, 100);
-                            }); //End bootbox alert
-                        }
+                            showBootBox = true;
+                            messageToShow = 'Summan för totalt antal utlån på fråga 14 stämmer inte överens med det totala antalet initiala utlån och omlån. Du måste antingen ändra värdena i kolumnen under Totalt antal utlån eller korrigera summorna för totalt antal initiala utlån samt omlån.';
+                            elementToFocusOn = '#Inilan199';
+                            elementToScrollTo = '#Inilan101';
+                       }
 
                     } else {
                         // Question 14 sums don't need checking
                         continuePosting = true;
                     }
 
+                    //Check question 14 course literature
+                    var q14CourseLitPartSums = ['#Inilan102','#Omlan202','#Utlan302']
+                    var q14CourseLitSums = ['#Inilan101','#Omlan201','#Utlan301']
+
+                    var allOk = true;
+                    for (var i=0; i < 4; i++) {
+                        if (!checkPartSum(q14CourseLitPartSums[i], q14CourseLitSums[i])) {
+                            allOk = false;
+                        }
+                    }
+                    if (!allOk) {
+
+                        showBootBox = true;
+                        messageToShow = 'Något eller några av värdena för antal kursböcker, studielitteratur, läromedel samt skolböcker på fråga 14, andra raden, är större än det totala antalet böcker med skriven text som angetts. Du behöver korrigera värdena.';
+                        elementToFocusOn = '#Inilan102';
+                        elementToScrollTo = '#Inilan101';
+
+                    } else {
+                        continuePosting = true;
+                    }
+
+                    //Check question 12 to make sure sums match
+                    var titlar199Value = getTrimmedValue($('#Titlar199'));
+                    var titlar299Value = getTrimmedValue($('#Titlar299'));
+                    var titlar399Value = getTrimmedValue($('#Titlar399'));
+                    var titlar499Value = getTrimmedValue($('#Titlar499'));
+                    var titlar199Entered = ($.isNumeric(titlar199Value));
+                    var titlar299Entered = ($.isNumeric(titlar299Value));
+                    var titlar399Entered = ($.isNumeric(titlar399Value));
+                    var titlar499Entered = ($.isNumeric(titlar499Value));
+
+                    if (titlar199Entered && titlar299Entered && titlar399Entered && titlar499Entered) {
+                        if (Number(titlar199Value) + Number(titlar299Value) + Number(titlar399Value) == Number(titlar499Value)) {
+                            // Sum is correct
+                            continuePosting = true;
+                        } else {
+
+                            showBootBox = true;
+                            messageToShow = 'Summan för totalt antal titlar på fråga 12 stämmer inte överens med det totala antalet titlar på svenska, nationella minoritetsspråk och utländska språk. Du måste antingen ändra värdena i kolumnen under Totalt antal titlar eller korrigera summorna för totalt antal titlar på svenska, minoritetsspråk samt utländska språk.';
+                            elementToFocusOn = '#Titlar199';
+                            elementToScrollTo = '#Titlar101';
+                        }
+
+                    } else {
+                        // Question 12 sums don't need checking
+                        continuePosting = true;
+                    }
+
+                    //Check question 10 part sums
+                    var q10partSums = ['#Bestand201','#Bestand202','#Bestand203','#Bestand204','#Bestand205','#Bestand206','#Bestand207','#Bestand208','#Bestand209','#Bestand210','#Bestand211','#Bestand212','#Bestand213','#Bestand299']
+                    var q10Sums = ['#Bestand101','#Bestand102','#Bestand103','#Bestand104','#Bestand105','#Bestand106','#Bestand107','#Bestand108','#Bestand109','#Bestand110','#Bestand111','#Bestand112','#Bestand113','#Bestand199']
+
+                    var allOk = true;
+                    for (var i=0; i < 14; i++) {
+                        if (!checkPartSum(q10partSums[i], q10Sums[i])) {
+                            allOk = false;
+                        }
+                    }
+                    if (!allOk) {
+
+                        showBootBox = true;
+                        messageToShow = 'Något eller några av värdena under fysiskt nyförvärv i den andra kolumnen på fråga 10 är större än det totala fysiska beståndet som angetts. Du behöver korrigera värdena.';
+                        elementToFocusOn = '#Bestand201';
+                        elementToScrollTo = '#Bestand101';
+
+                    } else {
+                        continuePosting = true;
+                    }
+
+                    //Check question 10 course literature
+                    var q10CourseLitPartSums = ['#Bestand102','#Bestand202','#Bestand302']
+                    var q10CourseLitSums = ['#Bestand101','#Bestand201','#Bestand301']
+
+                    var allOk = true;
+                    for (var i=0; i < 4; i++) {
+                        if (!checkPartSum(q10CourseLitPartSums[i], q10CourseLitSums[i])) {
+                            allOk = false;
+                        }
+                    }
+                    if (!allOk) {
+
+                        showBootBox = true;
+                        messageToShow = 'Något eller några av värdena för antal kursböcker, studielitteratur, läromedel samt skolböcker på fråga 10, andra raden, är större än det antal böcker med skriven text som angetts. Du behöver korrigera värdena.';
+                        elementToFocusOn = '#Bestand102';
+                        elementToScrollTo = '#Bestand101';
+
+                    } else {
+                        continuePosting = true;
+                    }
+
+                    //Warn user by showing message box
+                    if (showBootBox) {
+
+                        $('#print-survey-btn, #save-survey-btn, #submit-survey-btn').removeClass('disabled');
+                        $('#save-survey-btn').html('Spara');
+                        $('#submit-survey-btn').html('Skicka');
+
+                        bootbox.alert(messageToShow, function() {
+
+                                $(elementToFocusOn).focus();
+                                setTimeout(function () {
+                                    $('html, body').animate({
+                                        scrollTop: $(elementToScrollTo).offset().top - 30
+                                    }, 100);
+                                }, 100);
+                            }); //End bootbox alert
+                    }
+
                     if (continuePosting) {
-                        // On successful form-format-validation, if submit_action -> ajax post form
+                        // On successful form-format-validation and sum checks, if submit_action -> ajax post form
 
                         if (submit_action == "save") {
                             $('#save-survey-btn').html('<i class="fa fa-spinner fa-spin"></i> Sparar...');
