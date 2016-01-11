@@ -39,7 +39,7 @@ class SurveyForm(forms.Form):
                 attrs["data-bv-regexp-message"] = u"Vänligen mata in ett numeriskt värde mindre än eller lika med 999999999, alternativt '-' om värdet inte är relevant"
             else:
                 attrs["data-bv-regexp-regexp"] = "^(-|(0|[1-9]([0-9]){0,7}))$"
-                attrs["data-bv-message"] = u"Vänligen mata in ett numeriskt värde mindre än eller lika med 99999999, alternativt '-' om värdet inte är relevant"
+                attrs["data-bv-regexp-message"] = u"Vänligen mata in ett numeriskt värde mindre än eller lika med 99999999, alternativt '-' om värdet inte är relevant"
 
         # Decimal max value is 99999999,999, utgift and intakt 999999999,999
         if variable_type == "decimal":
