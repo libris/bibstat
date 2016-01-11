@@ -89,8 +89,8 @@
                                     {% endwith %}
                                 </td>
                                 <td><label for="id_{{library.checkbox_id}}">{{ library.name }}</label></td>
-                                <td>{{ library.city }}</td>
-                                <td>{{ library.address }}</td>
+                                <td>{{ library.city|default:"" }}</td>
+                                <td>{{ library.address|default:"" }}</td>
                                 <td><em>{{ library.comment }}</em></td>
                             </tr>
                         {% endfor %}
