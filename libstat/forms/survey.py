@@ -31,25 +31,17 @@ class SurveyForm(forms.Form):
             attrs["data-bv-notempty"] = ""
             attrs["placeholder"] = "Obligatorisk"
 
-        # Integer max value is 99999999, utgift and intakt 999999999
+        # Integer max value is 99999999
         if variable_type == "integer":
             attrs["data-bv-regexp"] = ""
-            if "Utgift" in cell.variable_key or "Intakt" in cell.variable_key:
-                attrs["data-bv-reg exp-regexp"] = "^(-|(0|[1-9]([0-9]){0,8}))$"
-                attrs["data-bv-regexp-message"] = u"Vänligen mata in ett numeriskt värde mindre än eller lika med 999999999, alternativt '-' om värdet inte är relevant"
-            else:
-                attrs["data-bv-regexp-regexp"] = "^(-|(0|[1-9]([0-9]){0,7}))$"
-                attrs["data-bv-regexp-message"] = u"Vänligen mata in ett numeriskt värde mindre än eller lika med 99999999, alternativt '-' om värdet inte är relevant"
+            attrs["data-bv-regexp-regexp"] = "^(-|(0|[1-9]([0-9]){0,7}))$"
+            attrs["data-bv-message"] = u"Vänligen mata in ett numeriskt värde mindre än eller lika med 99999999, alternativt '-' om värdet inte är relevant"
 
-        # Decimal max value is 99999999,999, utgift and intakt 999999999,999
+        # Decimal max value is 99999999,999
         if variable_type == "decimal":
             attrs["data-bv-regexp"] = ""
-            if "Utgift" in cell.variable_key or "Intakt" in cell.variable_key:
-                attrs["data-bv-regexp-regexp"] = "^(-|\d{1,9}(\,\d{1,3})?)$"
-                attrs["data-bv-regexp-message"] = u"Vänligen mata in ett numeriskt värde mindre än eller lika med 999999999,999 med max 3 decimaler (t ex 12,522), alternativt '-' om värdet inte är relevant"
-            else:
-                attrs["data-bv-regexp-regexp"] = "^(-|\d{1,8}(\,\d{1,3})?)$"
-                attrs["data-bv-regexp-message"] = u"Vänligen mata in ett numeriskt värde mindre än eller lika med 99999999,999 med max 3 decimaler (t ex 12,522), alternativt '-' om värdet inte är relevant"
+            attrs["data-bv-regexp-regexp"] = "^(-|\d{1,8}(\,\d{1,3})?)$"
+            attrs["data-bv-regexp-message"] = u"Vänligen mata in ett numeriskt värde mindre än eller lika med 99999999,999 med max 3 decimaler (t ex 12,522), alternativt '-' om värdet inte är relevant"
 
         if variable_type == "email":
             #attrs["data-bv-emailaddress"] = ""
@@ -65,6 +57,15 @@ class SurveyForm(forms.Form):
             attrs["data-bv-regexp"] = ""
             attrs["data-bv-regexp-regexp"] = "^(-|\+?(\d\d?-?)+\d(\s?\d+)*\d+)$"
             attrs["data-bv-regexp-message"] = u"Vänligen mata in ett giltigt telefonnummer utan bokstäver och parenteser, t ex 010-709 30 00"
+
+        # Utgifter and Intakter max 999999999 or 999999999,999
+        if "Utgift" in cell.variable_key or "Intakt" in cell.variable_key:
+            if variable_type == "integer":
+                attrs["data-bv-reg exp-regexp"] = "^(-|(0|[1-9]([0-9]){0,8}))$"
+                attrs["data-bv-regexp-message"] = u"Vänligen mata in ett numeriskt värde mindre än eller lika med 999999999, alternativt '-' om värdet inte är relevant"
+            elif variable_type == "decimal":
+                attrs["data-bv-regexp-regexp"] = "^(-|\d{1,9}(\,\d{1,3})?)$"
+                attrs["data-bv-regexp-message"] = u"Vänligen mata in ett numeriskt värde mindre än eller lika med 999999999,999 med max 3 decimaler (t ex 12,522), alternativt '-' om värdet inte är relevant"
 
         if not observation or observation.value_unknown:
             attrs["disabled"] = ""
