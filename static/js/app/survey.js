@@ -44,6 +44,11 @@ define(['jquery', 'bootbox', 'survey.sum', 'survey.cell', 'surveys.dispatch', 'b
                     return $(this).val();
                 });
             },
+            filledRequiredInputs: function () {
+                return survey.requiredEnabledInputs().filter(function () {
+                    return $(this).val();
+                });
+            },
             emptyInputs: function () {
                 return survey.enabledInputs().filter(function () {
                     return !$(this).val();
@@ -54,13 +59,11 @@ define(['jquery', 'bootbox', 'survey.sum', 'survey.cell', 'surveys.dispatch', 'b
                     return $(this).val();
                 });
             },
-            correctInputs: function () {
-                return survey.enabledInputs().filter(function () {
-                    return this.value && $(this).closest('.form-group').hasClass('has-success');
-                });
-            },
             requiredInputs: function () {
                 return survey.enabledInputs().filter('[data-bv-notempty]');
+            },
+            requiredEnabledInputs: function() {
+              return survey.enabledInputs().filter('[data-bv-notempty]').not('[disabled]');
             },
             sumOfInputs: function () {
                 return survey.enabledInputs().filter('[data-sum-of]');
@@ -237,11 +240,11 @@ define(['jquery', 'bootbox', 'survey.sum', 'survey.cell', 'surveys.dispatch', 'b
         };
         var updateProgress = function () {
             var total = survey.enabledInputs().length;
-            var correct = survey.correctInputs().length;
-            var percent = (correct / total) * 100;
-
-            var requiredPercent = Math.ceil((survey.requiredInputs().length / total) * 100);
-            var boostedPercent = Math.ceil(1.15 * percent);
+            var filled = survey.filledInputs().length;
+            var filledPercent = Math.ceil((filled / total) * 100);
+            var required = survey.requiredEnabledInputs().length;
+            var filledRequired = survey.filledRequiredInputs().length;
+            var filledRequiredPercent = Math.ceil((filledRequired / required) * 100);
 
             var setText = function (text) {
                 survey.form('.answers-text').text(text);
@@ -254,14 +257,12 @@ define(['jquery', 'bootbox', 'survey.sum', 'survey.cell', 'surveys.dispatch', 'b
                 setPercent(percent);
             };
 
-            if (correct === 0) {
+            if (filled === 0) {
                 setText('Inga fält är ifyllda');
                 setPercent(0);
-            } else if (boostedPercent <= requiredPercent) {
-                setPercentAndText(Math.min(boostedPercent, requiredPercent));
             } else {
-                percent = (correct == total) ? 100 : Math.ceil(percent);
-                setPercentAndText(Math.max(percent, requiredPercent));
+                filledPercent = (filled == total) ? 100 : filledPercent;
+                setPercentAndText(Math.max(filledPercent, filledRequiredPercent)); // Use filledRequiredPercent if it's higher than filledPercent
             }
         };
         var initProgress = function () {
