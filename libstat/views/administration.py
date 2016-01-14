@@ -16,6 +16,7 @@ current_year = datetime.datetime.now().year
 def administration(request):
     context = {
         "possible_year_choices": [
+            current_year -1,
             current_year,
             current_year + 1,
             current_year + 2,
