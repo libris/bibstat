@@ -80,7 +80,7 @@ describe('Bibstat', function() {
   describe('Phone number validation', function() {
     it('Should only allow proper telephone number strings', function(done) {
       browser
-        .setValue('#Tele01', '123')
+        .setValue('#Tele01', '3')
         .keys('Tab')
         .getAttribute('#fg-Tele01 small[data-bv-validator=regexp]', 'data-bv-result').then(function(attr) {
           expect(attr).toBe('INVALID');
