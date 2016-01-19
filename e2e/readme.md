@@ -4,23 +4,30 @@ End-to-end-webbtester för att testa enkätformuläret. Testerna går igenom och
 
 ## Installation
 
-Installera [webdriver.io](http://webdriver.io/)
+Installera [webdriver.io](http://webdriver.io/) och jasmine
 
     $ npm install -g webdriverio
+    $ npm install -g jasmine
+   
+Ladda ner den senaste versionen av selenium-server-standalone från [denna sidan](http://selenium-release.storage.googleapis.com/index.html)
 
-Installera Selenium
+Placera JAR-filen i ``e2e/bin/``
 
-    $ brew install selenium-server-standalone
-    
-(alternativt ladda ner den senaste versionen av selenium-server-standalone från [denna sidan](http://selenium-release.storage.googleapis.com/index.html) och placera JAR-filen i ``e2e/bin/``)
+alternativt installera gnm $ brew install selenium-server-standalone (obs, ej testat)
 
-Om du vill köra test i Chrome så behöver du Chromedriver. Installera den mha homebrew:
- 
-    $ brew install chromedriver
-
-Alternativt finns den att ladda ner [här](https://code.google.com/p/selenium/wiki/ChromeDriver).
+Om du vill köra test i Chrome så behöver du Chromedriver. Den finns den att ladda ner [här](https://code.google.com/p/selenium/wiki/ChromeDriver).
 
 Lägg den i ``e2e/bin/``
+
+alternativt installera gnm $ brew install chromedriver (obs, ej testat)
+
+Testade versioner (på Mac):
+
+- webdriverio: 3.3.0
+- jasmine: 2.4.1
+- selenium-server-standalone: 2.47.1
+- chromedriver: 2.20
+- Google Chrome: 47.0
 
 ## Konfiguera
 
