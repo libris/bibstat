@@ -109,8 +109,8 @@ def _published_open_data_as_workbook(year):
     return workbook
 
 
-def _load_surveys_and_append_worksheet_rows(surveys, worksheet, headers_columns_dict):
-    row_no = 2
+def _load_surveys_and_append_worksheet_rows(surveys, worksheet, headers_columns_dict, offset=0):
+    row_no = 2 + offset
     for survey in surveys:
         worksheet.cell(row=row_no, column=headers_columns_dict["Bibliotek"]).value = survey.library.name
         worksheet.cell(row=row_no, column=headers_columns_dict["Sigel"]).value = survey.library.sigel
@@ -143,7 +143,7 @@ def _load_surveys_and_append_worksheet_rows(surveys, worksheet, headers_columns_
                 worksheet.cell(row=row_no, column=headers_columns_dict["Gatuadress"]).value = other_survey.library.address
                 worksheet.cell(row=row_no, column=headers_columns_dict["Postnummer"]).value = other_survey.library.zip_code
 
-        row_no = row_no + 1
+        row_no += 1
 
 
 def surveys_to_excel_workbook(survey_ids):
@@ -181,6 +181,7 @@ def surveys_to_excel_workbook(survey_ids):
     worksheet = workbook.active
     worksheet.append(headers)
 
+    offset = 0
     for index in range(0, bulks):
         start_index = index * bulk_size
         stop_index = start_index + bulk_size
@@ -191,6 +192,7 @@ def surveys_to_excel_workbook(survey_ids):
 
         surveys = Survey.objects.filter(id__in=ids).order_by('library__name')
 
-        _load_surveys_and_append_worksheet_rows(surveys, worksheet, headers_dict)
+        _load_surveys_and_append_worksheet_rows(surveys, worksheet, headers_dict, offset=offset)
+        offset += bulk_size
 
     return workbook
