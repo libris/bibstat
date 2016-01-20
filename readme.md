@@ -72,26 +72,11 @@ Installera requirejs genom:
 
     $ npm install -g requirejs
 
-I mappen build, som ligger i root finns det två filer
-- js.buildmain.js
-- js.buildsurvey.js
-- css.build.js
-
-När ändringar är gjorda i javascript och css filerna är det viktigt att köra build filerna. Annars kommer inte de nya ändringarna ta effekt. 
+I mappen build finns byggfiler som körs med r.js. När ändringar är gjorda i Javascript och CSS måste dessa köras för att ändringarna ska ha effekt.
 
 För att köra jobbet:
 
-    # cd till build mappen
-    $ cd /User/../Github/bibstat/build
-
-    # Minifiering av Stylesheets
-    $ sudo r.js -o css.build.js
-
-    # Minifiering av main.js javascript and dependency third party scripts
-    $ sudo r.js -o js.buildmain.js
-    
-    # Minifiering av main_survey.js javascript and dependency third party scripts
-    $ sudo r.js -o js.buildsurvey.js
+    $ ./build.sh
 
 Nu är alla filer minifierade och redo för produktion!
 
