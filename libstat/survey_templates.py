@@ -198,7 +198,7 @@ def _survey_template_base():
                                 Cell(variable_key=u"Inilan102"),
                                 Cell(variable_key=u"Omlan202"),
                                 Cell(variable_key=u"Utlan302",
-                                     sum_of=[u"Inilan102", u"Omlan102"])]),
+                                     sum_of=[u"Inilan102", u"Omlan202"])]),
                             Row(cells=[
                                 Cell(variable_key=u"Inilan103"),
                                 Cell(variable_key=u"Omlan203"),
