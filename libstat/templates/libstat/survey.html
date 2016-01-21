@@ -146,7 +146,7 @@
                                         </div>
                                         {% for cell in row.cells %}
                                             {% if form|access:cell.variable_key != None %}
-                                                {% if row.cells and row.cells.0 and row.cells.0.variable_key != 'Population01' and row.cells.0.variable_key != 'Population02' and row.cells.0.variable_key != 'Population03' or user.is_authenticated %} <!-- Only show Population01, Population02 and Population03 if logged in admin user -->
+                                                {% if row.cells and row.cells.0 %}
                                                 <div class="{% if group.columns <= 2 %}col-sm-4{% elif group.columns == 3 %}col-sm-3{% elif group.columns == 4 %}col-sm-2{% endif %}">
                                                     <div class="form-group" id="fg-{{ cell.variable_key }}">
                                                         <div class="input-group">
