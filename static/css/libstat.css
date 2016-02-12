@@ -601,7 +601,7 @@ label.sub-label {
 
 @media (min-width: 1200px) {
   .container-extended {
-      width: 1250px;
+      width: 1255px;
       padding-right: 15px;
       padding-left: 15px;
       margin-right: auto;

@@ -316,13 +316,19 @@ class SurveyObservation(EmbeddedDocument):
 
 class SurveyQuerySet(QuerySet):
     def by(self, sample_year=None, target_group=None, status=None, municipality_code=None, free_text=None,
-           is_active=None, with_email=False, without_email=False, invalid_email=False, exclude_co_reported_by_other=False):
+           is_active=None, with_email=False, without_email=False, invalid_email=False, exclude_co_reported_by_other=False, sigel=None):
+
+        order_by_field = 'library.name'
         target_group_query = Q(library__library_type=target_group) if target_group else Q()
         sample_year_query = Q(sample_year=sample_year) if sample_year else Q()
         status_query = Q(_status=status) if status else Q()
         is_active_query = Q(is_active=is_active) if is_active is not None else Q()
         municipality_code_query = (Q(library__municipality_code=municipality_code)
                                    if municipality_code else Q())
+        sigel_query = Q(library__sigel__iexact=sigel) if sigel else Q()
+
+        if sigel:
+            order_by_field = 'library.sigel'
 
         email_query = Q()
         if with_email:
@@ -348,7 +354,7 @@ class SurveyQuerySet(QuerySet):
 
         filtered_result = self.filter(target_group_query & sample_year_query & status_query &
                                       municipality_code_query & email_query & free_text_query &
-                                      is_active_query).exclude("observations")
+                                      is_active_query & sigel_query).exclude("observations").order_by(order_by_field)
 
         if exclude_co_reported_by_other:
             co_reported_by_others = filtered_result.filter(selected_libraries__size=0, library__sigel__in=Survey.objects.all().distinct("selected_libraries")).exclude("observations")
@@ -476,8 +482,6 @@ class SurveyBase(Document):
 
         return selectable_libs
 
-    #TODO: optimize by caching surveys by samle_year and municipality_code?
-
     def selected_sigels_in_other_surveys(self, sample_year):
         if not self.library.municipality_code:
             return Set()
@@ -502,8 +506,6 @@ class SurveyBase(Document):
                 return True
 
         return False
-
-    #TODO: optimize by caching surveys by samle_year and municipality_code?
 
     def get_conflicting_surveys(self):
         if not self.library.municipality_code:

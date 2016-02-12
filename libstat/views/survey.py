@@ -93,6 +93,13 @@ def _save_survey_response_from_form(survey, form):
 
         survey.save()
 
+        # Update status of co_reported surveys
+        # for sigel in survey.selected_libraries:
+        #     if sigel != survey.library.sigel:
+        #         co_reported_survey = Survey.objects.filter(library__sigel=sigel, sample_year=survey.sample_year).first()
+        #         co_reported_survey._status = survey._status
+        #         co_reported_survey.save()
+
     else:
         logger.error('Could not save survey due to django validation error, library: %s' % survey.library.sigel)
         logger.error(form.errors)
