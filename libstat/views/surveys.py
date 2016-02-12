@@ -47,7 +47,6 @@ def surveys(request, *args, **kwargs):
     email_choices = [("all", "Oavsett email"), ("with", "Med email"), ("invalid", "Med ogiltig email"),
                      ("without", "Utan email")]
     email = request.GET.get("email", "all")
-    sigel = request.GET.get("sigel", "").strip()
 
     surveys = []
     active_surveys = []
@@ -67,8 +66,7 @@ def surveys(request, *args, **kwargs):
             without_email=(email == "without"),
             invalid_email=(email == "invalid"),
             is_active=True,
-            exclude_co_reported_by_other=exclude_co_reported_by_other,
-            sigel=sigel)
+            exclude_co_reported_by_other=exclude_co_reported_by_other)
         inactive_surveys = Survey.objects.by(
             sample_year=sample_year,
             target_group=target_group,
@@ -79,8 +77,7 @@ def surveys(request, *args, **kwargs):
             without_email=(email == "without"),
             invalid_email=(email == "invalid"),
             is_active=False,
-            exclude_co_reported_by_other=exclude_co_reported_by_other,
-            sigel=sigel)
+            exclude_co_reported_by_other=exclude_co_reported_by_other)
         surveys = active_surveys if surveys_state == "active" else inactive_surveys
 
     # Triggering lazy loading of the list of surveys before iterating over it in the
@@ -100,7 +97,6 @@ def surveys(request, *args, **kwargs):
         'free_text': free_text,
         'email': email,
         'email_choices': email_choices,
-        'sigel': sigel,
         'surveys_state': surveys_state,
         'exclude_co_reported_by_other': exclude_co_reported_by_other,
         'survey_responses': surveys,
@@ -166,6 +162,54 @@ def surveys_export(request):
         return response
 
 
+# @permission_required('is_superuser', login_url='index')
+# def surveys_overview(request, sample_year):
+#     table = [[""]]
+#     for status in Survey.STATUSES:
+#         table[0].append(status[1])
+#     table[0].append("Total")
+#
+#     all_active_surveys = list(Survey.objects.filter(is_active=True, sample_year=sample_year)) #Preload surveys from database
+#
+#     for library_type in utils.SURVEY_TARGET_GROUPS:
+#         row = [library_type[1]]
+#         library_type_value = library_type[0]
+#         for status in Survey.STATUSES:
+#             status_value = status[0]
+#             surveys = [s for s in all_active_surveys if s._status == status_value and s.library.library_type == library_type_value]
+#             surveys_all_count = len(surveys)
+#             surveys_self_reporting_count = len([s for s in surveys if s.library.sigel in s.selected_libraries])
+#             row.append('%d (%d)' % (surveys_self_reporting_count, surveys_all_count))
+#
+#         surveys_total_status = [s for s in all_active_surveys if s.library.library_type == library_type_value]
+#         surveys_total_status_all_count = len(surveys_total_status)
+#         surveys_total_status_self_reporting_count = len([s for s in surveys_total_status if s.library.sigel in s.selected_libraries])
+#         row.append('%d (%d)' % (surveys_total_status_self_reporting_count, surveys_total_status_all_count))
+#
+#         table.append(row)
+#
+#     row = ["Total"]
+#     for status in Survey.STATUSES:
+#         status_value_str = status[0]
+#         surveys_total = [s for s in all_active_surveys if s._status == status_value_str]
+#         surveys_total_all_count = len(surveys_total)
+#         surveys_total_self_reporting_count = len([s for s in surveys_total if s.library.sigel in s.selected_libraries])
+#         row.append('%d (%d)' % (surveys_total_self_reporting_count, surveys_total_all_count))
+#
+#     surveys_total_total_all_count = len(all_active_surveys)
+#     surveys_total_total_self_reporting_count = len([s for s in all_active_surveys if s.library.sigel in s.selected_libraries])
+#     row.append('%d (%d)' % (surveys_total_total_self_reporting_count, surveys_total_total_all_count))
+#
+#     table.append(row)
+#
+#     context = {
+#         "sample_year": sample_year,
+#         "table": table
+#     }
+#
+#     return render(request, "libstat/surveys_overview.html", context)
+
+
 @permission_required('is_superuser', login_url='index')
 def surveys_overview(request, sample_year):
     table = [[""]]
@@ -184,12 +228,14 @@ def surveys_overview(request, sample_year):
             status_value = status[0]
             surveys = [s for s in all_active_surveys if s._status == status_value and s.library.library_type == library_type_value]
             surveys_all_count = len(surveys)
+            #surveys_self_reporting_count = len([s for s in surveys if s.library.sigel in s.selected_libraries])
             surveys_non_coreporting = [s for s in all_active_non_coreported_surveys if s._status == status_value and s.library.library_type == library_type_value]
             surveys_non_coreporting_count = len(surveys_non_coreporting)
             row.append('%d (%d)' % (surveys_non_coreporting_count, surveys_all_count))
 
         surveys_total_status = [s for s in all_active_surveys if s.library.library_type == library_type_value]
         surveys_total_status_all_count = len(surveys_total_status)
+        #surveys_total_status_self_reporting_count = len([s for s in surveys_total_status if s.library.sigel in s.selected_libraries])
         surveys_total_status_non_coreporting = [s for s in all_active_non_coreported_surveys if s.library.library_type == library_type_value]
         surveys_total_status_all_non_coreporting_count = len(surveys_total_status_non_coreporting)
         row.append('%d (%d)' % (surveys_total_status_all_non_coreporting_count, surveys_total_status_all_count))
@@ -201,11 +247,13 @@ def surveys_overview(request, sample_year):
         status_value_str = status[0]
         surveys_total = [s for s in all_active_surveys if s._status == status_value_str]
         surveys_total_all_count = len(surveys_total)
+        #surveys_total_self_reporting_count = len([s for s in surveys_total if s.library.sigel in s.selected_libraries])
         surveys_total_non_coreporting = [s for s in all_active_non_coreported_surveys if s._status == status_value_str]
         surveys_total_all_non_coreporting_count = len(surveys_total_non_coreporting)
         row.append('%d (%d)' % (surveys_total_all_non_coreporting_count, surveys_total_all_count))
 
     surveys_total_total_all_count = len(all_active_surveys)
+    #surveys_total_total_self_reporting_count = len([s for s in all_active_surveys if s.library.sigel in s.selected_libraries])
     surveys_total_total_all_non_coreporting_count = len(all_active_non_coreported_surveys)
     row.append('%d (%d)' % (surveys_total_total_all_non_coreporting_count, surveys_total_total_all_count))
 
@@ -244,8 +292,6 @@ def surveys_statuses(request):
 
         surveys.filter(_status__ne="published").update(set___status=status)
         message = u"Ändrade status på {} stycken enkäter.".format(len(survey_response_ids))
-
-    #TODO: change status of co-reported surveys as well?
 
     request.session["message"] = message
     return _surveys_redirect(request)
