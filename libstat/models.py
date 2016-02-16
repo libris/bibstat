@@ -351,7 +351,7 @@ class SurveyQuerySet(QuerySet):
                                       is_active_query).exclude("observations")
 
         if exclude_co_reported_by_other:
-            co_reported_by_others = filtered_result.filter(selected_libraries__size=0, library__sigel__in=Survey.objects.all().distinct("selected_libraries")).exclude("observations")
+            co_reported_by_others = filtered_result.filter(selected_libraries__size=0, library__sigel__in=Survey.objects.filter(sample_year=sample_year).distinct("selected_libraries")).exclude("observations")
             filtered_result = set(filtered_result).difference(set(co_reported_by_others))
 
         return filtered_result
