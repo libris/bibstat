@@ -141,9 +141,9 @@ class TestReportGeneration(MongoTestCase):
         variable2 = self._dummy_variable(key="key2")
         variable3 = self._dummy_variable(key="key3")
 
-        library1 = self._dummy_library()
-        library2 = self._dummy_library()
-        library3 = self._dummy_library()
+        library1 = self._dummy_library(sigel="sigel1")
+        library2 = self._dummy_library(sigel="sigel2")
+        library3 = self._dummy_library(sigel="sigel3")
 
         survey1 = self._dummy_survey(
             sample_year=2016,
@@ -178,6 +178,14 @@ class TestReportGeneration(MongoTestCase):
             ])
 
         survey5 = self._dummy_survey(
+            sample_year=2015,
+            library=library2,
+            observations=[
+                self._dummy_observation(variable=variable1, value=8),
+                self._dummy_observation(variable=variable2, value=9)
+            ])
+
+        survey6 = self._dummy_survey(
             sample_year=2014,
             library=library1,
             observations=[
@@ -185,11 +193,21 @@ class TestReportGeneration(MongoTestCase):
                 self._dummy_observation(variable=variable2, value=23)
             ])
 
+        survey7 = self._dummy_survey(
+            sample_year=2014,
+            library=library2,
+            observations=[
+                self._dummy_observation(variable=variable1, value=21),
+                self._dummy_observation(variable=variable2, value=22)
+            ])
+
         survey1.publish()
         survey2.publish()
         survey3.publish()
         survey4.publish()
         survey5.publish()
+        survey6.publish()
+        survey7.publish()
 
         template = ReportTemplate(groups=[
             Group(rows=[Row(variable_key="key1")]),
@@ -201,15 +219,15 @@ class TestReportGeneration(MongoTestCase):
         observations = pre_cache_observations(template, [survey1, survey2], 2016)
         expected_observations = {
             "key1": {
-                2014: 19.0,
-                2015: 7.0,
+                2014: (19.0 + 21.0),
+                2015: (7.0 + 8.0),
                 2016: (1.0 + 3.0),
                 "total": (1.0 + 3.0),
                 "incomplete_data": []
             },
             "key2": {
-                2014: 23.0,
-                2015: 11.0,
+                2014: (23.0 + 22.0),
+                2015: (11.0 + 9.0),
                 2016: 2.0,
                 "total": (2.0 + 13.0),
                 "incomplete_data": [2016]
