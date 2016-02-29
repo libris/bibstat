@@ -575,15 +575,12 @@ class Survey(SurveyBase):
 
     def previous_years_survey(self):
         previous_year = self.sample_year - 1
-        if previous_year <= 2013:
-            previous_surveys = Survey.objects.filter(_status=u"published", sample_year=previous_year,
-                                                     library__name__icontains=self.library.name)
-        else:
-            previous_surveys = Survey.objects.filter(_status=u"published", sample_year=previous_year,
-                                                     library__sigel=self.library.sigel)
-        if len(previous_surveys) == 0:
-            return None
-        return previous_surveys[0]
+        previous_survey = Survey.objects.filter(_status=u"published", sample_year=previous_year,
+                                                     library__sigel=self.library.sigel).first()
+        if not previous_survey:
+            previous_survey = Survey.objects.filter(_status=u"published", sample_year=previous_year,
+                                                     library__name__iexact=self.library.name).first()
+        return previous_survey
 
     def previous_years_value(self, variable, previous_years_survey=None):
         # allow passing previous survey to reduce db lookups
