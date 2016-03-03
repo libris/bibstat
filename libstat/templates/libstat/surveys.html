@@ -112,6 +112,14 @@
                                         </option>
                                     {% endfor %}
                                 </select>
+                                <input type="text" name="sigel" value="{{ sigel }}"
+                                       placeholder="Sigel"
+                                        class="form-control survey-popover"
+                                        data-placement="top"
+                                        data-toggle="tooltip"
+                                        size="11"
+                                        maxlength="10"
+                                        data-original-title="Sök på bibliotekssigel">
                                 <input type="text" name="free_text" value="{{ free_text }}"
                                        placeholder="Sökord"
                                        class="form-control survey-popover"

@@ -47,6 +47,7 @@ def surveys(request, *args, **kwargs):
     email_choices = [("all", "Oavsett email"), ("with", "Med email"), ("invalid", "Med ogiltig email"),
                      ("without", "Utan email")]
     email = request.GET.get("email", "all")
+    sigel = request.GET.get("sigel", "").strip()
 
     surveys = []
     active_surveys = []
@@ -66,7 +67,8 @@ def surveys(request, *args, **kwargs):
             without_email=(email == "without"),
             invalid_email=(email == "invalid"),
             is_active=True,
-            exclude_co_reported_by_other=exclude_co_reported_by_other)
+            exclude_co_reported_by_other=exclude_co_reported_by_other,
+            sigel=sigel)
         inactive_surveys = Survey.objects.by(
             sample_year=sample_year,
             target_group=target_group,
@@ -77,7 +79,8 @@ def surveys(request, *args, **kwargs):
             without_email=(email == "without"),
             invalid_email=(email == "invalid"),
             is_active=False,
-            exclude_co_reported_by_other=exclude_co_reported_by_other)
+            exclude_co_reported_by_other=exclude_co_reported_by_other,
+            sigel=sigel)
         surveys = active_surveys if surveys_state == "active" else inactive_surveys
 
     # Triggering lazy loading of the list of surveys before iterating over it in the
@@ -106,7 +109,8 @@ def surveys(request, *args, **kwargs):
         'bibdb_library_base_url': u"{}/library".format(settings.BIBDB_BASE_URL),
         'nav_surveys_css': 'active',
         'num_active_surveys': len(active_surveys),
-        'num_inactive_surveys': len(inactive_surveys)
+        'num_inactive_surveys': len(inactive_surveys),
+        'sigel': sigel
     }
 
     return render(request, 'libstat/surveys.html', context)

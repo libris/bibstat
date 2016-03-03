@@ -314,6 +314,28 @@ class TestSurveyView(MongoTestCase):
 
         self.assertContains(response, 'value="{}"'.format(survey.id))
 
+    def test_should_list_survey_when_searching_for_sigel(self):
+        library1 = self._dummy_library(sigel="Abc")
+        survey1 = self._dummy_survey(sample_year=2014, library=library1)
+
+        response = self._get("surveys", params={"action": "list", "sample_year": "2014", "sigel": "Abc"})
+        self.assertContains(response, 'value="{}"'.format(survey1.id))
+
+    def test_should_not_list_survey_when_searching_for_sigel_and_no_match(self):
+        library1 = self._dummy_library(sigel="Xyz")
+        survey1 = self._dummy_survey(sample_year=2014, library=library1)
+
+        response = self._get("surveys", params={"action": "list", "sample_year": "2014", "sigel": "Abc"})
+        self.assertEquals(len(response.context["survey_responses"]), 0)
+
+    def test_should_not_list_co_reported_survey(self):
+        library1 = self._dummy_library(sigel="Abc")
+        library2 = self._dummy_library(sigel="Co")
+        survey1 = self._dummy_survey(sample_year=2014, library=library1, selected_libraries=['Abc', 'Co'])
+        survey2 = self._dummy_survey(sample_year=2014, library=library2, selected_libraries=[])
+
+        response = self._get("surveys", params={"action": "list", "sample_year": "2014", "exclude_co_reported_by_other": "on"})
+        self.assertNotContains(response, 'value="{}"'.format(survey2.id))
 
 class TestSurveyState(MongoTestCase):
     def setUp(self):

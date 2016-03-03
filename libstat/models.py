@@ -316,13 +316,15 @@ class SurveyObservation(EmbeddedDocument):
 
 class SurveyQuerySet(QuerySet):
     def by(self, sample_year=None, target_group=None, status=None, municipality_code=None, free_text=None,
-           is_active=None, with_email=False, without_email=False, invalid_email=False, exclude_co_reported_by_other=False):
+           is_active=None, with_email=False, without_email=False, invalid_email=False, exclude_co_reported_by_other=False, sigel=None):
         target_group_query = Q(library__library_type=target_group) if target_group else Q()
         sample_year_query = Q(sample_year=sample_year) if sample_year else Q()
         status_query = Q(_status=status) if status else Q()
         is_active_query = Q(is_active=is_active) if is_active is not None else Q()
         municipality_code_query = (Q(library__municipality_code=municipality_code)
                                    if municipality_code else Q())
+
+        order_by_field = "library__name"
 
         email_query = Q()
         if with_email:
@@ -346,9 +348,14 @@ class SurveyQuerySet(QuerySet):
             free_text_query = (free_text_municipality_code_query | free_text_email_query | free_text_library_name_query
                                | free_text_municipality_name_query)
 
+        sigel_query = Q()
+        if sigel:
+            sigel_query = Q(library__sigel__iexact=sigel)
+            order_by_field = "library__sigel"
+
         filtered_result = self.filter(target_group_query & sample_year_query & status_query &
                                       municipality_code_query & email_query & free_text_query &
-                                      is_active_query).exclude("observations")
+                                      is_active_query & sigel_query).exclude("observations").order_by(order_by_field)
 
         if exclude_co_reported_by_other:
             co_reported_by_others = filtered_result.filter(selected_libraries__size=0, library__sigel__in=Survey.objects.filter(sample_year=sample_year).distinct("selected_libraries")).exclude("observations")
