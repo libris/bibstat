@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 import requests
+from bibstat import settings
 from libstat.models import Library, ExternalIdentifier
 from libstat.utils import SURVEY_TARGET_GROUPS
 
@@ -51,7 +52,7 @@ def fetch_libraries():
     # bibdb api pages by 200, let 30 000 be upper limit in case api is broken
     for start_index in range(0, 30000, 200):
         response = requests.get(
-            url="http://bibdb.libris.kb.se/api/lib?dump=true&start=%d" % start_index,
+            url="%s/api/lib?dump=true&start=%d" % (settings.BIBDB_BASE_URL, start_index),
             headers={"APIKEY_AUTH_HEADER": "bibstataccess"})
 
         if not response.json().get("libraries", None):
