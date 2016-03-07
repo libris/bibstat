@@ -12,6 +12,47 @@ class TestBibdbIntegration(MongoTestCase):
             "name": "lib1",
             "library_type": "sjukbib",
             "municipality_code": "1793",
+            "school_code": "12345678",
+            "address":
+                [
+                    {
+                        "address_type": "gen",
+                        "city": "lib1_city",
+                        "street": "street1"
+                    },
+                    {
+                        "address_type": "ill",
+                        "city": "ill_lib1_city",
+                        "street": "ill_street1"
+                    },
+                    {
+                        "address_type": "stat",
+                        "city": "stat_lib1_city",
+                        "street": "stat_street1",
+                        "zip_code": "123 45"
+                    }
+                ],
+            "contact":
+                [
+                    {
+                        "contact_type": "orgchef",
+                        "email": "dont@care.atall"
+                    },
+                    {
+                        "contact_type": "statans",
+                        "email": "lib1@dom.top"
+                    }
+                ]
+        }
+
+        self._dummy_json_data_1 = {
+            "country_code": "se",
+            "sigel": "lib1_sigel",
+            "statistics": "true",
+            "name": "lib1",
+            "library_type": "sjukbib",
+            "municipality_code": "1793",
+            "school_code": None,
             "address":
                 [
                     {
@@ -59,6 +100,25 @@ class TestBibdbIntegration(MongoTestCase):
         self.assertEquals(library.municipality_code, "1793")
         self.assertEquals(library.library_type, "sjukbib")
         self.assertEquals(library.zip_code, "123 45")
+        self.assertEquals(library.external_identifiers[0].type, "school_code")
+        self.assertEquals(library.external_identifiers[0].identifier, "12345678")
+
+    def test_creates_library_from_dict_without_external_id_if_school_code_is_none(self):
+        json_data = self._dummy_json_data_1
+        library = None
+
+        if check_library_criteria(json_data):
+            library = library_from_json(json_data)
+
+        self.assertEquals(library.sigel, "lib1_sigel")
+        self.assertEquals(library.name, "lib1")
+        self.assertEquals(library.city, "stat_lib1_city")
+        self.assertEquals(library.address, "stat_street1")
+        self.assertEquals(library.email, "lib1@dom.top")
+        self.assertEquals(library.municipality_code, "1793")
+        self.assertEquals(library.library_type, "sjukbib")
+        self.assertEquals(library.zip_code, "123 45")
+        self.assertEquals(library.external_identifiers, None)
 
     def test_does_not_import_non_swedish_libraries(self):
         json_data = self._dummy_json_data

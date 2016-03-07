@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 import requests
-from libstat.models import Library
+from libstat.models import Library, ExternalIdentifier
 from libstat.utils import SURVEY_TARGET_GROUPS
 
 def check_library_criteria(json_data):
@@ -38,6 +38,11 @@ def library_from_json(json_data):
     if contacts:
         library.email = next((c["email"] for c in contacts
                             if "email" in c and c["contact_type"] == "statans"), None)
+    school_code = json_data.get("school_code", None)
+    if school_code:
+        external_identifier = ExternalIdentifier(type="school_code", identifier=school_code)
+        library.external_identifiers = [external_identifier]
+
     return library
 
 
