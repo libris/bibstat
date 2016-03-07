@@ -11,7 +11,7 @@ from django.test import TestCase
 from django.conf import settings
 from django.core.urlresolvers import reverse
 
-from libstat.models import Variable, OpenData, Survey, Library, SurveyObservation, Article, Dispatch
+from libstat.models import Variable, OpenData, Survey, Library, SurveyObservation, Article, Dispatch, ExternalIdentifier
 
 
 class MongoEngineTestRunner(DiscoverRunner):
@@ -49,11 +49,11 @@ class MongoTestCase(TestCase):
             return self.client.post(reverse(action, kwargs=kwargs))
 
     def _dummy_library(self, name="dummy_name", sigel=None, bibdb_id="dummy_id", city="dummy_city",
-                       municipality_code="dummy_code", library_type="folkbib"):
+                       municipality_code="dummy_code", library_type="folkbib", external_identifiers=None):
         if not sigel:
             sigel = Library._random_sigel()
         return Library(name=name, sigel=sigel, bibdb_id=bibdb_id, city=city,
-                       municipality_code=municipality_code, library_type=library_type)
+                       municipality_code=municipality_code, library_type=library_type, external_identifiers=external_identifiers)
 
     def _dummy_variable(self, key=None, description=u"dummy description", type="integer", is_public=True,
                         target_groups=["folkbib"], is_draft=False, replaced_by=None, save=True, question=None,
@@ -121,6 +121,10 @@ class MongoTestCase(TestCase):
         dispatch.save()
         dispatch.reload()
         return dispatch
+
+    def _dummy_external_identifier(self, type="school_code", identifier="12345678"):
+        external_identifier = ExternalIdentifier(type=type, identifier=identifier)
+        return external_identifier
 
     def _fixture_setup(self):
         from mongoengine.connection import connect, disconnect

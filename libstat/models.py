@@ -265,6 +265,14 @@ class VariableVersion(VariableBase):
     }
 
 
+class ExternalIdentifier(EmbeddedDocument):
+    ID_TYPES = (
+        (u"school_code", u"Skolenhetskod")
+    )
+    identifier = StringField(required=True)
+    type = StringField(required=True, choices=ID_TYPES)
+
+
 class Library(EmbeddedDocument):
     name = StringField()
     bibdb_id = StringField()
@@ -275,6 +283,7 @@ class Library(EmbeddedDocument):
     address = StringField()
     zip_code = StringField()
     library_type = StringField(choices=SURVEY_TARGET_GROUPS)
+    external_identifiers = ListField(EmbeddedDocumentField(ExternalIdentifier), required=False, default=None)
 
     meta = {
         'collection': 'libstat_libraries'
