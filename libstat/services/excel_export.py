@@ -42,11 +42,11 @@ def _cached_workbook_exists_and_is_valid(year, file_name="public_export_{} {}.xs
     cache_date = datetime.datetime.strptime(paths[-1].split(" ")[-1].split(".")[0], DATE_FORMAT)
     
     if workbook_is_public:
-        latest_publication = OpenData.objects.first().date_modified
+        latest_modification = OpenData.objects.first().date_modified
     else:
-        latest_publication = Survey.objects.all().order_by("-date_modified").first().date_modified
+        latest_modification = Survey.objects.all().order_by("-date_modified").first().date_modified
         
-    return cache_date > latest_publication
+    return cache_date > latest_modification
 
 
 def _cache_workbook(workbook, year, file_name_str="public_export_{} {}.xslx", workbook_is_public=True):
@@ -81,10 +81,10 @@ def _published_open_data_as_workbook(year):
     for open_data in OpenData.objects.filter(is_active=True, sample_year=year, variable_key__in=public_variables).only("library_name", "variable_key", "sigel", "value"):
         libraries[open_data.sigel][open_data.variable_key] = open_data.value
 
-    header = ["Bibliotek", "Sigel", "Bibliotekstyp", "Kommunkod", "Stad"]
+    header = ["Bibliotek", "Sigel", "Bibliotekstyp", "Kommunkod", "Stad", "Externt id"]
     variable_index = {}
     for index, key in enumerate(variable_keys):
-        variable_index[key] = index + 5
+        variable_index[key] = index + 6
         header.append(key)
     worksheet.append(header)
 
@@ -96,6 +96,7 @@ def _published_open_data_as_workbook(year):
         row[2] = library.library_type
         row[3] = library.municipality_code
         row[4] = library.city
+        row[5] = library.external_identifiers[0].identifier if library.external_identifiers and len(library.external_identifiers) > 0 and library.external_identifiers[0].identifier else ""
 
         for key in variable_keys:
             row[variable_index[key]] = libraries[sigel][key]
