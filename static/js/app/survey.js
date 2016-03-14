@@ -352,6 +352,30 @@ define(['jquery', 'bootbox', 'survey.sum', 'survey.cell', 'surveys.dispatch', 'b
                     feedbackIcons: null
 
                 }).on('error.validator.bv', function (e, data) { // http://bootstrapvalidator.com/examples/changing-default-behaviour/#showing-one-message-each-time
+
+                    var submit_action = $('#submit_action').val();
+                    var showValMessage = $('#valMessageShown').val();
+
+                    if (submit_action && showValMessage == 'true') {
+                        $('#print-survey-btn, #save-survey-btn, #submit-survey-btn').removeClass('disabled');
+                        $('#save-survey-btn').html('Spara');
+                        $('#submit-survey-btn').html('Skicka');
+
+                        var messageShown = null;
+                        if (submit_action == 'save') {
+                            messageShown = "Något eller några värden behöver korrigeras innan du kan spara enkäten. Du måste se till att det inte dykt upp ett rödmarkerat felmeddelande under någon av inmatningsrutorna. Om du inte har möjlighet att ange ett värde kan du klicka på pilen bredvid inmatningsfältet för att välja 'värdet är okänt' i rullisten, alternativt kan du ange '-' om värdet inte är relevant.";
+                        }
+                        if (submit_action == 'presubmit') {
+                            messageShown = "Något eller några värden behöver korrigeras innan du kan skicka in enkäten. Alla obligatoriska fält behöver vara ifyllda och du måste se till att det inte dykt upp ett rödmarkerat felmeddelande under någon av inmatningsrutorna. Om du inte har möjlighet att ange ett värde kan du klicka på pilen bredvid inmatningsfältet för att välja 'värdet är okänt' i rullisten, alternativt kan du ange '-' om värdet inte är relevant.";
+                        }
+
+                        bootbox.alert(messageShown, function() {
+                        });
+
+                    }
+
+                    $('#valMessageShown').val('false');
+
                     data.element
                         .data('bv.messages')
                         .find('.help-block[data-bv-for="' + data.field + '"]').hide()
@@ -362,7 +386,9 @@ define(['jquery', 'bootbox', 'survey.sum', 'survey.cell', 'surveys.dispatch', 'b
                     if (!submit_action)
                         return;
 
-                    var continuePosting = false; //only continue posting if sum checks are passed
+                    $('#valMessageShown').val('false');
+
+                    var continuePosting = true; //continue posting if sum checks are passed
 
                     var showBootBox = false;
                     var messageToShow = null;
@@ -380,13 +406,11 @@ define(['jquery', 'bootbox', 'survey.sum', 'survey.cell', 'surveys.dispatch', 'b
                         }
                     }
                     if (!allOk) {
+                        continuePosting = false;
                         showBootBox = true;
                         messageToShow = 'Något eller några av värdena under aktiviteter för barn och unga i den andra kolumnen på fråga 23 är större än det totala antalet aktiviteter som angetts. Du behöver korrigera värdena.';
                         elementToFocusOn = '#Publ201';
                         elementToScrollTo = '#Publ101';
-
-                    } else {
-                        continuePosting = true;
                     }
 
                     //Check question 14 to make sure sums match
@@ -400,39 +424,33 @@ define(['jquery', 'bootbox', 'survey.sum', 'survey.cell', 'surveys.dispatch', 'b
                     if (inilanEntered && omlanEntered && utlanEntered) {
                         if (Number(inilan199Value) + Number(omlan299Value) == Number(utlan399Value)) {
                             // Sum is correct
-                            continuePosting = true;
                         } else {
-
+                            continuePosting = false;
                             showBootBox = true;
                             messageToShow = 'Summan för totalt antal utlån på fråga 14 stämmer inte överens med det totala antalet initiala utlån och omlån. Du måste antingen ändra värdena i kolumnen under Totalt antal utlån eller korrigera summorna för totalt antal initiala utlån samt omlån.';
                             elementToFocusOn = '#Inilan199';
                             elementToScrollTo = '#Inilan101';
                        }
 
-                    } else {
-                        // Question 14 sums don't need checking
-                        continuePosting = true;
                     }
 
                     //Check question 14 course literature
                     var q14CourseLitPartSums = ['#Inilan102','#Omlan202','#Utlan302']
                     var q14CourseLitSums = ['#Inilan101','#Omlan201','#Utlan301']
 
-                    var allOk = true;
+                    allOk = true;
                     for (var i=0; i < 4; i++) {
                         if (!checkPartSum(q14CourseLitPartSums[i], q14CourseLitSums[i])) {
                             allOk = false;
                         }
                     }
                     if (!allOk) {
-
+                        continuePosting = false;
                         showBootBox = true;
                         messageToShow = 'Något eller några av värdena för antal kursböcker, studielitteratur, läromedel samt skolböcker på fråga 14, andra raden, är större än det totala antalet böcker med skriven text som angetts. Du behöver korrigera värdena.';
                         elementToFocusOn = '#Inilan102';
                         elementToScrollTo = '#Inilan101';
 
-                    } else {
-                        continuePosting = true;
                     }
 
                     //Check question 12 to make sure sums match
@@ -447,61 +465,53 @@ define(['jquery', 'bootbox', 'survey.sum', 'survey.cell', 'surveys.dispatch', 'b
 
                     if (titlar199Entered && titlar299Entered && titlar399Entered && titlar499Entered) {
                         if (Number(titlar199Value) + Number(titlar299Value) + Number(titlar399Value) == Number(titlar499Value)) {
-                            // Sum is correct
-                            continuePosting = true;
+                            // Sum is correct;
                         } else {
-
+                            continuePosting = false;
                             showBootBox = true;
                             messageToShow = 'Summan för totalt antal titlar på fråga 12 stämmer inte överens med det totala antalet titlar på svenska, nationella minoritetsspråk och utländska språk. Du måste antingen ändra värdena i kolumnen under Totalt antal titlar eller korrigera summorna för totalt antal titlar på svenska, minoritetsspråk samt utländska språk.';
                             elementToFocusOn = '#Titlar199';
                             elementToScrollTo = '#Titlar101';
                         }
 
-                    } else {
-                        // Question 12 sums don't need checking
-                        continuePosting = true;
                     }
 
                     //Check question 10 part sums
                     var q10partSums = ['#Bestand201','#Bestand202','#Bestand203','#Bestand204','#Bestand205','#Bestand206','#Bestand207','#Bestand208','#Bestand209','#Bestand210','#Bestand211','#Bestand212','#Bestand213','#Bestand299']
                     var q10Sums = ['#Bestand101','#Bestand102','#Bestand103','#Bestand104','#Bestand105','#Bestand106','#Bestand107','#Bestand108','#Bestand109','#Bestand110','#Bestand111','#Bestand112','#Bestand113','#Bestand199']
 
-                    var allOk = true;
+                    allOk = true;
                     for (var i=0; i < 14; i++) {
                         if (!checkPartSum(q10partSums[i], q10Sums[i])) {
                             allOk = false;
                         }
                     }
                     if (!allOk) {
-
+                        continuePosting = false;
                         showBootBox = true;
                         messageToShow = 'Något eller några av värdena under fysiskt nyförvärv i den andra kolumnen på fråga 10 är större än det totala fysiska beståndet som angetts. Du behöver korrigera värdena.';
                         elementToFocusOn = '#Bestand201';
                         elementToScrollTo = '#Bestand101';
 
-                    } else {
-                        continuePosting = true;
                     }
 
                     //Check question 10 course literature
                     var q10CourseLitPartSums = ['#Bestand102','#Bestand202','#Bestand302']
                     var q10CourseLitSums = ['#Bestand101','#Bestand201','#Bestand301']
 
-                    var allOk = true;
+                    allOk = true;
                     for (var i=0; i < 4; i++) {
                         if (!checkPartSum(q10CourseLitPartSums[i], q10CourseLitSums[i])) {
                             allOk = false;
                         }
                     }
                     if (!allOk) {
-
+                        continuePosting = false;
                         showBootBox = true;
                         messageToShow = 'Något eller några av värdena för antal kursböcker, studielitteratur, läromedel samt skolböcker på fråga 10, andra raden, är större än det antal böcker med skriven text som angetts. Du behöver korrigera värdena.';
                         elementToFocusOn = '#Bestand102';
                         elementToScrollTo = '#Bestand101';
 
-                    } else {
-                        continuePosting = true;
                     }
 
                     //Warn user by showing message box
@@ -713,6 +723,12 @@ define(['jquery', 'bootbox', 'survey.sum', 'survey.cell', 'surveys.dispatch', 'b
 
                     $('#submit_action').val('save');
 
+                    if ($('#valMessageShown').length) {
+                        $('#valMessageShown').val('true');
+                    } else {
+                        survey.form().append('<input type="hidden" id="valMessageShown" value="true">');
+                    }
+
                     var saveButton = $(this);
                     var saveButtonHtml = saveButton.html();
                     var otherButtons = $('#submit-survey-btn,#print-survey-btn');
@@ -734,6 +750,12 @@ define(['jquery', 'bootbox', 'survey.sum', 'survey.cell', 'surveys.dispatch', 'b
                     e.preventDefault();
 
                     $('#submit_action').val('presubmit');
+
+                    if ($('#valMessageShown').length) {
+                        survey.form('#valMessageShown').val('true');
+                    } else {
+                        survey.form().append('<input type="hidden" id="valMessageShown" value="true">');
+                    }
 
                     var submitButton = $(this);
                     var submitButtonHtml = submitButton.html();

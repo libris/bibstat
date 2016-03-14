@@ -149,7 +149,7 @@ describe('Bibstat', function() {
           .getAttribute('#fg-Arsverke01 small[data-bv-validator=regexp]', 'data-bv-result').then(function(attr) {
             expect(attr).toBe('VALID')
         })
-          setValue('#Arsverke01', '')
+          .setValue('#Arsverke01', '')
         .call(done);
     });
   });
