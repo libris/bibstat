@@ -334,15 +334,18 @@ define(['jquery', 'bootbox', 'survey.sum', 'survey.cell', 'surveys.dispatch', 'b
                 //Warn user if they leave page before saving changes
 
                 $(window).on('beforeunload', function(event) {
+
                     if (!isDirty) {
+                        $.get('/surveys/unlock/' + $('#id_key').val(), function() {});
                         return undefined;
-                    }
-                    else {
+
+                    } else {
                         var confirmMessage = "Det finns osparade ändringar i enkäten.";
                         (event || $(window).event).returnValue = confirmMessage; //Gecko + IE
                         return confirmMessage; //Gecko + Webkit, Safari, Chrome etc.
                     }
                 });
+
 
                 //Validate fields with Bootstrap validator
 

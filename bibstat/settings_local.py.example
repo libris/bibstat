@@ -47,3 +47,5 @@ RELEASE_VERSION = latest_version
 
 # SECURITY WARNING: keep the pass for bibdb library updates in production secret!
 BIBDB_UPDATE_PASS = 'password'
+
+SURVEY_EDITING_LOCK_TIMEOUT_HOURS = 8

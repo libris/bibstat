@@ -963,6 +963,33 @@ class CachedReport(Document):
         ],
     }
 
+class SurveyEditingLock(Document):
+    survey_id = ObjectIdField(required=True)
+    date_locked = DateTimeField(required=True, default=datetime.utcnow)
+
+    meta = {
+        'collection': 'libstat_survey_locks',
+        'indexes': ['survey_id']
+    }
+
+    def renew_lock(self):
+        self.date_locked = datetime.utcnow()
+        self.save()
+
+    @classmethod
+    def lock_survey(cls, survey_id):
+        surveyEditingLock = SurveyEditingLock(survey_id = survey_id,
+                                              date_locked = datetime.utcnow())
+        surveyEditingLock.save()
+
+    @classmethod
+    def release_lock_on_survey(cls, survey_id):
+        locked_survey = SurveyEditingLock.objects.filter(survey_id=survey_id).first()
+        if locked_survey:
+            locked_survey.delete()
+            return True
+        return False
+
 
 signals.pre_save.connect(Survey.pre_save, sender=Survey)
 signals.pre_save.connect(Variable.store_version_and_update_date_modified, sender=Variable)

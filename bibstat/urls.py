@@ -28,7 +28,8 @@ from libstat.views.survey import (survey,
                                   survey_status,
                                   survey_notes,
                                   example_survey,
-                                  sigel_survey)
+                                  sigel_survey,
+                                  release_survey_lock)
 from libstat.views.variables import (variables,
                                      edit_variable,
                                      create_variable, replaceable_variables)
@@ -84,6 +85,7 @@ urlpatterns = patterns('',
     url(r'^surveys/notes/(?P<survey_id>\w+)$', survey_notes, name='survey_notes'),
     url(r'^surveys/update_library$', surveys_update_library, name='surveys_update_library'),
     url(r'^surveys/sigel/(?P<sigel>\w+)$', sigel_survey, name='sigel_survey'),
+    url(r'^surveys/unlock/(?P<survey_id>\w+)$', release_survey_lock, name='release_survey_lock'),
     url(r'^surveys/(?P<survey_id>\w+)$', survey, name='survey'),
 
     # Dispatch

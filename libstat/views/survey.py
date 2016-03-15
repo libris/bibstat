@@ -2,16 +2,17 @@
 import logging
 import time
 import json
+from datetime import datetime, timedelta
 
 from django.core.urlresolvers import reverse
 from django.shortcuts import render, redirect
-from django.http import HttpResponseNotFound, HttpResponseForbidden, HttpResponse
+from django.http import HttpResponseNotFound, HttpResponseForbidden, HttpResponse, HttpResponseNotAllowed
 from django.contrib.auth.decorators import permission_required
 from django.forms.util import ErrorList
 
 from bibstat import settings
 
-from libstat.models import Survey, Variable, SurveyObservation, Library
+from libstat.models import Survey, Variable, SurveyObservation, Library, SurveyEditingLock
 from libstat.forms.survey import SurveyForm
 from libstat.survey_templates import survey_template
 
@@ -140,7 +141,22 @@ def survey(request, survey_id):
             logger.debug("ERRORS: ")
             logger.debug(json.dumps(errors))
             return HttpResponse(json.dumps(errors), content_type="application/json")
+
         else:
+
+            if not request.user.is_superuser:
+
+                # Check survey lock before returning survey form
+                # Each survey is locked to one session for a maximum of SURVEY_EDITING_LOCK_TIMEOUT_HOURS, or until browser window unloads
+                survey_lock = SurveyEditingLock.objects.filter(survey_id=survey.id).first()
+                if survey_lock:
+                    if datetime.utcnow() < survey_lock.date_locked + timedelta(hours=settings.SURVEY_EDITING_LOCK_TIMEOUT_HOURS):
+                        return render(request, 'libstat/locked.html')
+                    else: # There is a lock but it has timed out
+                        survey_lock.renew_lock()
+                else: # Lock
+                    SurveyEditingLock.lock_survey(survey.id)
+
             context["form"] = SurveyForm(survey=survey, authenticated=request.user.is_authenticated())
             return render(request, 'libstat/survey.html', context)
 
@@ -152,6 +168,15 @@ def survey(request, survey_id):
             context["wrong_password"] = True
 
     return render(request, 'libstat/survey/password.html', context)
+
+
+def release_survey_lock(request, survey_id):
+    if request.method == "GET":
+        if SurveyEditingLock.release_lock_on_survey(survey_id):
+            return HttpResponse()
+        else:
+            return HttpResponseNotFound()
+    return HttpResponseNotAllowed(permitted_methods=['GET'])
 
 
 @permission_required('is_superuser', login_url='index')
