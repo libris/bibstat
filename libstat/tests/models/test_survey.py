@@ -4,7 +4,7 @@ from sets import Set
 from data.principals import PRINCIPALS
 
 from libstat.tests import MongoTestCase
-from libstat.models import OpenData, Survey, SurveyVersion
+from libstat.models import OpenData, Survey, SurveyVersion, SurveyEditingLock
 
 
 class TestSurveyModel(MongoTestCase):
@@ -1057,5 +1057,26 @@ class TestSurveyReporting(MongoTestCase):
         survey2 = self._dummy_survey(library=library2, selected_libraries=["Z", "X"])
 
         self.assertTrue(survey2.is_reporting_for_others())
+
+
+class TestLockSurvey(MongoTestCase):
+    def test_creates_a_lock(self):
+        survey = self._dummy_survey()
+        SurveyEditingLock.lock_survey(survey_id=survey.id)
+        self.assertTrue(SurveyEditingLock.objects.filter(survey_id=survey.id).first() != None)
+
+    def test_changes_time_when_renewing_lock(self):
+        survey = self._dummy_survey()
+        SurveyEditingLock.lock_survey(survey_id=survey.id)
+        lock = SurveyEditingLock.objects.filter(survey_id=survey.id).first()
+        time = lock.date_locked
+        lock.renew_lock()
+        self.assertTrue(lock.date_locked > time)
+
+    def test_releases_lock(self):
+        survey = self._dummy_survey()
+        SurveyEditingLock.release_lock_on_survey(survey_id=survey.id)
+        self.assertEqual(len(SurveyEditingLock.objects.filter(survey_id=survey.id)), 0)
+
 
 
