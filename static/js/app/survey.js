@@ -335,8 +335,10 @@ define(['jquery', 'bootbox', 'survey.sum', 'survey.cell', 'surveys.dispatch', 'b
 
                 $(window).on('beforeunload', function(event) {
 
+                    // Unlock survey before leaving page
+                    //$.get('/surveys/unlock/' + $('#id_key').val(), function() {});
+
                     if (!isDirty) {
-                        $.get('/surveys/unlock/' + $('#id_key').val(), function() {});
                         return undefined;
 
                     } else {

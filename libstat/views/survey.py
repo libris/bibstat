@@ -144,18 +144,18 @@ def survey(request, survey_id):
 
         else:
 
-            if not request.user.is_superuser:
-
-                # Check survey lock before returning survey form
-                # Each survey is locked to one session for a maximum of SURVEY_EDITING_LOCK_TIMEOUT_HOURS, or until browser window unloads
-                survey_lock = SurveyEditingLock.objects.filter(survey_id=survey.id).first()
-                if survey_lock:
-                    if datetime.utcnow() < survey_lock.date_locked + timedelta(hours=settings.SURVEY_EDITING_LOCK_TIMEOUT_HOURS):
-                        return render(request, 'libstat/locked.html')
-                    else: # There is a lock but it has timed out
-                        survey_lock.renew_lock()
-                else: # Lock
-                    SurveyEditingLock.lock_survey(survey.id)
+            # if not request.user.is_superuser:
+            #
+            #     # Check survey lock before returning survey form
+            #     # Each survey is locked to one session for a maximum of SURVEY_EDITING_LOCK_TIMEOUT_HOURS, or until browser window unloads
+            #     survey_lock = SurveyEditingLock.objects.filter(survey_id=survey.id).first()
+            #     if survey_lock:
+            #         if datetime.utcnow() < survey_lock.date_locked + timedelta(hours=settings.SURVEY_EDITING_LOCK_TIMEOUT_HOURS):
+            #             return render(request, 'libstat/locked.html')
+            #         else: # There is a lock but it has timed out
+            #             survey_lock.renew_lock()
+            #     else: # Lock
+            #         SurveyEditingLock.lock_survey(survey.id)
 
             context["form"] = SurveyForm(survey=survey, authenticated=request.user.is_authenticated())
             return render(request, 'libstat/survey.html', context)
