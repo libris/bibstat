@@ -90,7 +90,7 @@ class MongoTestCase(TestCase):
             survey.reload()
         return survey
 
-    def _dummy_open_data(self, library_name=u"dummy_lib", sigel="dummy_sigel", sample_year=2013,
+    def _dummy_open_data(self, source_survey=None, library_name=u"dummy_lib", sigel="dummy_sigel", sample_year=2013,
                          target_group="folkbib", is_active=True,
                          variable=None, value=1, date_created=None, date_modified=None, save=True):
         if not variable:
@@ -100,7 +100,7 @@ class MongoTestCase(TestCase):
             date_created = datetime(2014, 05, 27, 8, 00, 00)
         if not date_modified:
             date_modified = datetime(2014, 06, 02, 17, 57, 16)
-        open_data = OpenData(library_name=library_name, sigel=sigel, sample_year=sample_year, is_active=is_active,
+        open_data = OpenData(source_survey=source_survey, library_name=library_name, sigel=sigel, sample_year=sample_year, is_active=is_active,
                              target_group=target_group, variable=variable, value=value, date_created=date_created,
                              date_modified=date_modified)
         if save:

@@ -10,7 +10,7 @@ from mongoengine import Q
 from openpyxl.writer.excel import save_virtual_workbook
 
 from bibstat import settings
-from libstat.models import Variable, OpenData
+from libstat.models import Variable, OpenData, Survey
 from libstat.services.excel_export import public_excel_workbook
 from libstat.utils import parse_datetime_from_isodate_str
 
@@ -48,6 +48,10 @@ def data_api(request):
     limit = int(request.GET.get("limit", 100))
     offset = int(request.GET.get("offset", 0))
     term = request.GET.get("term", None)
+    sigel = request.GET.get("sigel", None)
+    sample_year = request.GET.get("sample_year", None)
+    library_type = request.GET.get("library_type", None)
+    municipality_code = request.GET.get("municipality_code", None)
 
     if not from_date:
         from_date = datetime.datetime.fromtimestamp(0)
@@ -57,27 +61,37 @@ def data_api(request):
     modified_from_query = Q(date_modified__gte=from_date)
     modified_to_query = Q(date_modified__lt=to_date)
 
-    objects = []
-    if term:
-        try:
-            variable = Variable.objects.get(key=term)
-            logger.debug(
-                u"Fetching statistics data for term {} published between {} and {}, items {} to {}".format(
-                    variable.key,
+    sigel_query = Q(sigel__iexact=sigel) if sigel else Q()
+
+    sample_year_query = Q(sample_year=sample_year) if sample_year else Q()
+
+    if library_type:
+        surveys = [s for s in Survey.objects.filter(library__library_type__iexact=library_type).only("id")]
+        library_type_query = Q(source_survey__in=surveys)
+    else:
+        library_type_query = None
+
+    if municipality_code:
+        surveys = [s for s in Survey.objects.filter(library__municipality_code=municipality_code).only("id")]
+        mun_code_query = Q(source_survey__in=surveys)
+    else:
+        mun_code_query = None
+
+    variable = Variable.objects.filter(key=term).first() if term else None
+    variable_query = Q(variable=variable) if variable else Q()
+
+    logger.debug(
+                u"Fetching statistics data for term {} and sigel {} sample_year {} published between {} and {}, items {} to {}".format(
+                    variable.key if variable else "None",
+                    sigel if sigel else "None",
+                    sample_year if sample_year else "None",
                     from_date,
                     to_date,
                     offset,
                     offset + limit))
-            objects = OpenData.objects.filter(Q(variable=variable) & modified_from_query & modified_to_query).skip(
-                offset).limit(limit)
-        except Exception:
-            logger.warn(u"Unknown variable {}, skipping..".format(term))
 
-    else:
-        logger.debug(
-            u"Fetching statistics data published between {} and {}, items {} to {}".format(
-                from_date, to_date, offset, offset + limit))
-        objects = OpenData.objects.filter(modified_from_query & modified_to_query).skip(offset).limit(limit)
+    objects = OpenData.objects.filter(variable_query & sigel_query & sample_year_query & library_type_query & mun_code_query & modified_from_query & modified_to_query).skip(
+                offset).limit(limit)
 
     observations = []
     for item in objects:
