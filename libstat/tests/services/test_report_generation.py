@@ -1,10 +1,10 @@
 # -*- coding: utf-8 -*-
 from pprint import pprint
 from libstat.tests import MongoTestCase
-from libstat.models import CachedReport
+from libstat.models import CachedReport, Variable
 from libstat.report_templates import ReportTemplate, Group, Row
 
-from libstat.services.report_generation import generate_report, pre_cache_observations, get_report, is_variable_to_be_included
+from libstat.services.report_generation import generate_report, pre_cache_observations, pre_cache_observations_for_library_comparison_report, get_report, is_variable_to_be_included
 from libstat.services import report_generation
 from libstat.report_templates import report_template_base
 
@@ -437,3 +437,44 @@ class TestReportCaching(MongoTestCase):
         self.assertEqual(CachedReport.objects.all()[0].report["id"], report4["id"])
         self.assertEqual(CachedReport.objects.all()[1].report["id"], report3["id"])
         self.assertEqual(CachedReport.objects.all()[2].report["id"], report2["id"])
+
+
+class TestLibraryComparisonReport(MongoTestCase):
+
+    def setUp(self):
+        report_template = report_template_base()
+        for var in report_template.all_variable_keys:
+            self._dummy_variable(key=var)
+
+    def test_pre_cache_observations_for_library_comparison_report(self):
+        beman_service_01_var = Variable.objects.filter(key="BemanService01").first()
+        integrerad_01_var = Variable.objects.filter(key="Integrerad01").first()
+        utlan_301_var = Variable.objects.filter(key="Utlan301").first()
+
+        observations1 = [self._dummy_observation(variable=beman_service_01_var, value=3),
+                         self._dummy_observation(variable=integrerad_01_var, value=1)]
+        library1 = self._dummy_library(name='Library 1', sigel="lib1")
+        survey1 = self._dummy_survey(sample_year=2015, publish=True, library=library1, observations=observations1)
+
+        observations2 = [self._dummy_observation(variable=beman_service_01_var, value=5)]
+        library2 = self._dummy_library(name='Library 2', sigel="lib2")
+        survey2 = self._dummy_survey(sample_year=2015, publish=True, library=library2, observations=observations2)
+
+        observations3 = [self._dummy_observation(variable=beman_service_01_var, value=6),
+                         self._dummy_observation(variable=utlan_301_var, value=600)]
+        library3 = self._dummy_library(name='Library 3', sigel="lib3")
+        survey3 = self._dummy_survey(sample_year=2015, publish=True, library=library3, observations=observations3)
+
+        surveys = [survey1, survey2, survey3]
+        report_template = report_template_base()
+
+        returns = pre_cache_observations_for_library_comparison_report(report_template, surveys, 2015)
+
+        self.assertIsNotNone(returns['lib1'])
+        self.assertIsNotNone(returns['lib3']['name'])
+        self.assertEqual(returns['lib1']['name'], u'Library 1 (lib1)')
+        self.assertEqual(returns['lib3']['name'], u'Library 3 (lib3)')
+        self.assertEqual(returns['lib1']['Integrerad01'], 1)
+        self.assertEqual(returns['lib2']['BemanService01'], 5)
+        self.assertEqual(returns['lib3']['Utlan301'], 600)
+        self.assertIsNone(returns['lib1']['Publ204'])

@@ -952,6 +952,7 @@ class CachedReport(Document):
     surveys = ListField(ReferenceField(Survey))
     report = DictField()
     year = IntField()
+    library_comparison_type = BooleanField(default=False)
     date_created = DateTimeField(default=datetime.utcnow)
 
     meta = {

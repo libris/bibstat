@@ -10,28 +10,28 @@ logger = logging.getLogger(__name__)
 
 REPORT_CACHE_LIMIT = 500
 
-def get_cached_report(surveys, year):
+def get_cached_report(surveys, year, library_comparison_type=False):
     if (CachedReport.objects.count() != 0 and
             ((OpenData.objects.count() != 0
               and OpenData.objects.first().date_modified > CachedReport.objects.first().date_created) or
                  (Variable.objects.count() != 0 and Variable.objects.all().order_by("-date_modified").first().date_modified > CachedReport.objects.first().date_created))):
         CachedReport.drop_collection()
 
-    reports = CachedReport.objects.filter(surveys__all=surveys, surveys__size=len(surveys), year=str(year))
+    reports = CachedReport.objects.filter(surveys__all=surveys, surveys__size=len(surveys), year=str(year), library_comparison_type=library_comparison_type)
     report = reports[0].report if reports.count() == 1 else None
 
     return report
 
 
-def store_cached_report(report, surveys, year):
+def store_cached_report(report, surveys, year, library_comparison_type=False):
     if not get_cached_report(surveys, year):
-        cached_report = CachedReport(report=report, surveys=surveys, year=str(year))
+        cached_report = CachedReport(report=report, surveys=surveys, year=str(year), library_comparison_type=library_comparison_type)
         cached_report.save()
     CachedReport.objects[REPORT_CACHE_LIMIT:].filter().delete()
 
 
-def get_report(surveys, year):
-    cached_report = get_cached_report(surveys, year)
+def get_report(surveys, year, library_comparison_type=False):
+    cached_report = get_cached_report(surveys, year, library_comparison_type)
 
     if cached_report:
         return cached_report
@@ -50,8 +50,6 @@ def get_report(surveys, year):
         else:
             report_template = report_template_base_with_target_group_calculations()
 
-        observations = pre_cache_observations(report_template, surveys, year)
-
         sigels = [sigel for survey in surveys for sigel in survey.selected_libraries]
         libraries = [survey.library for survey in Survey.objects.filter(sample_year=year, library__sigel__in=sigels)]
 
@@ -59,6 +57,13 @@ def get_report(surveys, year):
             return library.name.lower()
 
         libraries.sort(key=sort_key)
+
+        if library_comparison_type:
+            observations = pre_cache_observations_for_library_comparison_report(report_template, surveys, year)
+            measurements = generate_library_comparison_report(report_template, year, observations, library_types)
+        else:
+            observations = pre_cache_observations(report_template, surveys, year)
+            measurements = generate_report(report_template, year, observations, library_types)
 
         report = {
             "id": str(uuid.uuid1()),
@@ -70,10 +75,10 @@ def get_report(surveys, year):
                     "address": library.address,
                     "city": library.city
                 } for library in libraries],
-            "measurements": generate_report(report_template, year, observations, library_types)
+            "measurements": measurements
         }
 
-        store_cached_report(report, surveys, year)
+        store_cached_report(report, surveys, year, library_comparison_type)
 
         return report
 
@@ -180,9 +185,108 @@ def generate_report(report_template, year, observations, library_types):
     return report
 
 
+def generate_library_comparison_report(report_template, year, observations, library_types):
+    sigel1 = observations["lib1"]["sigel"] if observations.get("lib1", None) else None
+    sigel2 = observations["lib2"]["sigel"] if observations.get("lib2", None) else None
+    sigel3 = observations["lib3"]["sigel"] if observations.get("lib3", None) else None
+    libname1 = observations["lib1"]["name"]
+    libname2 = observations["lib2"]["name"] if observations.get("lib2", None) else None
+    libname3 = observations["lib3"]["name"] if observations.get("lib3", None) else None
+    libraries = [libname1, libname2, libname3]
+
+    def values_for(variable_keys, year):
+        values = []
+        for key in variable_keys:
+            value = observations.get(key, {}).get(year)
+            values.append(float(value) if value is not None else None)
+        return values
+
+    def group_skeleton(template_group):
+        return {
+            "title": template_group.title,
+            "libraries": libraries,
+            "rows": [],
+            "extra": template_group.extra,
+            "show_chart": template_group.show_chart
+        }
+
+    def row_skeleton(template_row):
+        return {
+            sigel1: None,
+            sigel2: None,
+            sigel3: None,
+            #"total": None,
+            #"extra": None,
+            "incomplete_data": [],
+            "description": template_row.explanation,
+            "show_in_chart": template_row.show_in_chart if template_row.variable_key else False,
+            "is_key_figure": None,
+            "is_sum": template_row.is_sum if template_row.is_sum else None,
+            "label": template_row.description,
+            "label_only": template_row.label_only if template_row.label_only else None,
+            "percentage": template_row.percentage if template_row.percentage else None
+        }
+
+    def clear_nones(a_dict):
+        return dict([(k, v) for k, v in a_dict.iteritems() if v is not None])
+
+    report = []
+    for template_group in report_template.groups:
+        group = group_skeleton(template_group)
+
+        for template_row in template_group.rows:
+
+            row = None
+
+            if template_row.variable_key and is_variable_to_be_included(template_row.variable_key, library_types):
+                row = row_skeleton(template_row)
+                observation = observations.get(template_row.variable_key, {})
+                row[sigel1] = observation.get(year, None)
+                row[sigel2] = observation.get(year - 1, None)
+                row[sigel3] = observation.get(year - 2, None)
+                row["total"] = observation.get("total", None)
+                row["incomplete_data"] = observations.get(template_row.variable_key, {}).get("incomplete_data", None)
+                if template_row.computation:
+                    row["extra"] = template_row.compute(values_for(template_row.variable_keys, year))
+                    row["extra"] = row["extra"] * 100 if row["extra"] is not None else None
+
+            elif template_row.variable_keys and all(
+                    is_variable_to_be_included(variable_key, library_types) for variable_key in
+                    template_row.variable_keys):
+                row = row_skeleton(template_row)
+                row["is_key_figure"] = True
+                for y in (sigel1, sigel2, sigel3):
+                    row[y] = template_row.compute(values_for(template_row.variable_keys, int(y)))
+                    for key in template_row.variable_keys:
+                        if int(y) in observations.get(key, {}).get("incomplete_data", []) and int(y) not in row[
+                            "incomplete_data"]:
+                            row["incomplete_data"].append(int(y))
+
+            elif not template_row.variable_key and not template_row.variable_keys:
+                row = row_skeleton(template_row)
+
+            if row:
+                if row[sigel1] == 0 and row[sigel2] == 0:
+                    row["diff"] = 0.0
+                elif row[sigel1] is not None and row[sigel2]:
+                    row["diff"] = ((row[sigel1] / row[sigel2]) - 1) * 100
+
+                if row[sigel1] == 0 and row[sigel2] == 0:
+                    row["nation_diff"] = 0.0
+                elif row[sigel1] is not None and row["total"]:
+                    row["nation_diff"] = (row[sigel1] / row["total"]) * 1000
+
+                row["incomplete_data"] = [str(a) for a in row["incomplete_data"]] if row["incomplete_data"] else None
+
+                row["total"] = None
+                group["rows"].append(clear_nones(row))
+        report.append(clear_nones(group))
+    return report
+
+def is_number(obj):
+    return isinstance(obj, (int, long, float, complex))
+
 def pre_cache_observations(template, surveys, year):
-    def is_number(obj):
-        return isinstance(obj, (int, long, float, complex))
 
     def survey_ids_three_latest_years():
         survey_ids = {
@@ -259,4 +363,34 @@ def pre_cache_observations(template, surveys, year):
             if open_data.count() < len(survey_ids[y]) and y not in observations[key]["incomplete_data"]:
                 observations[key]["incomplete_data"].append(y)
 
+    return observations
+
+def pre_cache_observations_for_library_comparison_report(template, surveys, year):
+
+    def observation_skeleton(surveys):
+        returns = {}
+        for survey in surveys:
+            selected_library_string = ''.join('%s ' % sigel for sigel in survey.selected_libraries).strip()
+            returns[survey.library.sigel] = {
+                'name': '%s (%s)' % (survey.library.name, selected_library_string)
+            }
+        return returns
+
+    observations = observation_skeleton(surveys)
+
+    for key in template.all_variable_keys:
+        variable = Variable.objects.filter(key=key).first()
+        for survey in surveys:
+            open_data = OpenData.objects.filter(sample_year=year, source_survey=survey.pk, variable=variable, is_active=True).first()
+            if not open_data: # If no open_data is found, try to find value for replaced variable
+                if len(variable.replaces) > 0:
+                    open_data = OpenData.objects.filter(sample_year=year, source_survey=survey.pk, variable=variable.replaces[0], is_active=True).first()
+            try:
+                if is_number(open_data.value):
+                    value = open_data.value
+                else:
+                    value = float(open_data.value)
+            except:
+                value = None
+            observations[survey.library.sigel][key] = value
     return observations

@@ -58,6 +58,31 @@
                 </div>
             </div>
         {% else %}
+            <form class="form form-inline" action="" method="get">
+            <div class="row">
+                <div class="col-xs-12 col-sm-11 col-lg-8 reports-selection-group">
+                    <h2 class="subsection-title">Välj typ av rapport</h2>
+
+                    <table>
+                        <tr>
+                            <td width="20">
+                                <input type="radio" name="report_type" value="yearly-comparison" {% if report_type == 'yearly-comparison' %}checked{% endif %}/>
+                            </td>
+                            <td class="subsection-text">
+                               Visa rapport för en eller flera biblioteksverksamheter med årsutveckling (välj en eller flera verksamheter nedan)
+                            </td>
+                        </tr>
+                        <tr>
+                            <td width="20">
+                                <input type="radio" name="report_type" value="library-comparison" {% if report_type == 'library-comparison' %}checked{% endif %}/>
+                            </td>
+                            <td class="subsection-text">
+                                Visa rapport med jämförelse mellan biblioteksverksamheter (välj max tre verksamheter att jämföra)
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
             <div class="row">
                 <div class="col-xs-12 col-sm-11 col-lg-8 reports-selection-group {% if sample_year %}scroll-start{% endif %}">
                     {% if sample_years|length > 0 %}
@@ -71,7 +96,7 @@
                                 </div>
                             </div>
                         {% endif %}
-                        <form class="form form-inline" action="" method="get">
+
                             {% csrf_token %}
 
                             <div id="reports-filter-selection" class="form-group">
@@ -141,6 +166,7 @@
 
                         <form id="form-libraries" class="form" method="post" action="{% url 'report' %}">
                             {% csrf_token %}
+                            <input type="hidden" name="report_type" value="{{ report_type }}">
                             <input type="hidden" name="sample_year" value="{{ sample_year }}">
                             <input type="hidden" name="municipality_code" value="{{ municipality_code }}">
                             <input type="hidden" name="principal" value="{{ principal }}">

@@ -20,6 +20,7 @@ def report(request):
         return redirect(reverse("reports"))
 
     sample_year = int(request.POST.get("sample_year", None))
+    report_type = request.POST.get("report_type", "yearly-comparison")
     sigels = request.POST.getlist("surveys", [])
     number_of_sigel_choices = int(request.POST.get("number_of_sigel_choices", 0))
     municipality_code = request.POST.get("municipality_code", None)
@@ -27,7 +28,11 @@ def report(request):
 
     surveys = list(Survey.objects.filter(_status=u"published", sample_year=sample_year, library__sigel__in=sigels))
 
-    context = get_report(surveys, sample_year)
+    if report_type == 'library-comparison':
+        library_comparison = True
+    else:
+        library_comparison = False
+    context = get_report(surveys, sample_year, library_comparison)
     context["previous_url"] = previous_url
 
     if len(sigels) == number_of_sigel_choices:
@@ -68,6 +73,8 @@ def reports(request):
     if request.method == "GET":
         surveys = Survey.objects.filter(_status=u"published").exclude("observations").order_by("library.name")
 
+        report_type = request.GET.get("report_type", "yearly-comparison")
+
         sample_year = request.GET.get("sample_year", "")
         municipality_code = request.GET.get("municipality_code", "")
         principal = request.GET.get("principal", "")
@@ -99,6 +106,7 @@ def reports(request):
                 message = u"Det finns inga bibliotek att visa för den valda verksamheten."
 
         context = {
+            "report_type": report_type,
             "sample_year": sample_year,
             "sample_years": sample_years,
             "message": message,
