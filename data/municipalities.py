@@ -24,7 +24,7 @@ MUNICIPALITIES = (
     (u"Tyresö", u"0138"),
     (u"Täby", u"0160"),
     (u"Upplands-Bro", u"0139"),
-    (u"Upplands-Väsby", u"0114"),
+    (u"Upplands Väsby", u"0114"),
     (u"Vallentuna", u"0115"),
     (u"Vaxholm", u"0187"),
     (u"Värmdö", u"0120"),
