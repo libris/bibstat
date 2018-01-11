@@ -53,7 +53,7 @@ def fetch_libraries():
     for start_index in range(0, 30000, 200):
         response = requests.get(
             url="%s/api/lib?dump=true&start=%d" % (settings.BIBDB_BASE_URL, start_index),
-            headers={"APIKEY_AUTH_HEADER": "bibstataccess"})
+            headers={"APIKEY-AUTH-HEADER": "bibstataccess"}) # KP 180110
 
         if not response.json().get("libraries", None):
             break
