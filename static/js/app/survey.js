@@ -573,7 +573,7 @@ define(['jquery', 'bootbox', 'survey.sum', 'survey.cell', 'surveys.dispatch', 'b
                         $.ajax({
                             url: '/surveys/' + $('#id_key').val(),
                             type: 'POST',
-                            data: $('#survey-form').serialize(),
+                            data: $('#survey-form').serialize().replace(/Obligatorisk/g, ''), //KP
                             success: function (result) {
                                 $('#print-survey-btn, #save-survey-btn, #submit-survey-btn').removeClass('disabled');
                                 $('#save-survey-btn').html('Spara');
