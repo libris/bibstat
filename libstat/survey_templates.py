@@ -2,9 +2,9 @@
 from libstat.models import Section, Group, Cell, Row, SurveyTemplate
 
 
-def _survey_template_base():
+def _survey_template_base(intro_text_variable_key="Introtext2014"):
     return SurveyTemplate(
-        intro_text_variable_key="Introtext2014",
+        intro_text_variable_key=intro_text_variable_key,
         sections=[
             Section(title=u"Frågor om biblioteksorganisationen",
                     groups=[
@@ -505,7 +505,8 @@ def _default_template_from_survey(survey):
 
 def survey_template(year, survey=None):
     year = int(year)
+    if year >= 2018:
+        return _survey_template_base(intro_text_variable_key="Introtext2018")
     if year >= 2014:
-        return _survey_template_base()
-
+        return _survey_template_base(intro_text_variable_key="Introtext2014")
     return _default_template_from_survey(survey)
