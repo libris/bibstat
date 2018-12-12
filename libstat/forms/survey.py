@@ -31,6 +31,9 @@ class SurveyForm(forms.Form):
             attrs["data-bv-notempty"] = ""
             attrs["placeholder"] = "Obligatorisk"
 
+        if variable_type in ["integer", "decimal"]:
+            attrs["class"] = "{} numerical".format(attrs["class"])
+
         # Utgifter and Intakter max 999999999 or 999999999,999
         if "Utgift" in cell.variable_key or "Intakt" in cell.variable_key:
             attrs["data-bv-regexp"] = ""

@@ -599,6 +599,10 @@ label.sub-label {
     font-size: 27px;
 }
 
+.page-survey input.form-control.numerical {
+    text-align: right;
+}
+
 @media (min-width: 1200px) {
   .container-extended {
       width: 1250px;
