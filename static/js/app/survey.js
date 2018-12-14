@@ -729,6 +729,26 @@ define(['jquery', 'bootbox', 'survey.sum', 'survey.cell', 'surveys.dispatch', 'b
                 });
                 numericalInputs.trigger('keyup');
 
+                // Make input text red if value far from previous year's value
+                numericalInputs.change(function (e) {
+                    var value = cell.number(this);
+                    var previousValue = Number(
+                        $(this).attr('data-previous-value')
+                    );
+                    if (isNaN(value) || isNaN(previousValue)) {
+                        $(this).removeClass('largeDiffFromPrevious');
+                        return;
+                    }
+                    var tolerance = 0.1  // 10% of previous year's value
+                    var diffLimit = Math.abs(tolerance * previousValue);
+                    if (Math.abs(value - previousValue) > diffLimit) {
+                        $(this).addClass('largeDiffFromPrevious');
+                    } else {
+                        $(this).removeClass('largeDiffFromPrevious');
+                    }
+                });
+                numericalInputs.trigger('change');
+
                 survey.form('#save-survey-btn').click(function (e) {
                     e.preventDefault();
 

@@ -31,10 +31,15 @@ class SurveyForm(forms.Form):
             attrs["data-bv-notempty"] = ""
             attrs["placeholder"] = "Obligatorisk"
 
-        # Numerical fields need special treatment with JS because of thousands
-        # separators. The class "numerical" is how they can be selected.
         if variable_type in ["integer", "decimal"]:
+            # Numerical fields need special treatment with JS because of
+            # thousands separators. The class "numerical" is how they can be
+            # selected.
             attrs["class"] = "{} numerical".format(attrs["class"])
+            if cell.previous_value is not None and cell.previous_value != '':
+                attrs["data-previous-value"] = cell.previous_value
+            else:
+                attrs["data-previous-value"] = 'null'
 
         # Utgifter and Intakter max 999 999 999 or 999 999 999,999
         if "Utgift" in cell.variable_key or "Intakt" in cell.variable_key:
