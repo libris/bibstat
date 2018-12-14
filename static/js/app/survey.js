@@ -722,6 +722,13 @@ define(['jquery', 'bootbox', 'survey.sum', 'survey.cell', 'surveys.dispatch', 'b
                         .removeClass('expanded');
                 });
 
+                // Update thousands separators (spaces)
+                var numericalInputs = survey.form('input.numerical');
+                numericalInputs.keyup(function (e) {
+                    cell.updateThousandsSeparators(this);
+                });
+                numericalInputs.trigger('keyup');
+
                 survey.form('#save-survey-btn').click(function (e) {
                     e.preventDefault();
 

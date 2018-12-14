@@ -179,7 +179,11 @@
                                                                 {% endif %}
                                                                 {% if group.columns != 4 %}
                                                                     <div class="tooltip-wrapper" data-title="Föregående års värde">
-                                                                        <button class="btn btn-default disabled btn-prev-year" tabindex="-1">{% if cell.previous_value %}{{ cell.previous_value|floatformat:"-2" }}{% else %} &mdash;{% endif %}</button>
+                                                                        {% if "integer" in cell.types or "decimal" in cell.types %}
+                                                                            <button class="btn btn-default disabled btn-prev-year" tabindex="-1">{% if cell.previous_value %}{{ cell.previous_value_thousands_separators }}{% else %} &mdash;{% endif %}</button>
+                                                                        {% else %}
+                                                                            <button class="btn btn-default disabled btn-prev-year" tabindex="-1">{% if cell.previous_value %}{{ cell.previous_value|floatformat:"-2" }}{% else %} &mdash;{% endif %}</button>
+                                                                        {% endif %}
                                                                     </div>
                                                                 {% endif %}
                                                             </div>

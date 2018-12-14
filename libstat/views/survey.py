@@ -74,9 +74,13 @@ def _save_survey_response_from_form(survey, form):
             if field in all_variable_keys:
                 variable_type = Variable.objects.filter(key=field).first().type
                 if variable_type == "integer" and value != "" and value != "-":
-                    value = int(value)
-                elif variable_type == "decimal" and value != "" and value != "-":
-                    value = float(value.replace(",", ".")) # decimals are entered with comma in the form
+                    # spaces are used as thousands separators
+                    value = int(value.replace(" ", ""))
+                elif variable_type == "decimal" and value != "" \
+                        and value != "-":
+                    # decimals are entered with comma in the form
+                    # spaces are used as thousands separators
+                    value = float(value.replace(" ", "").replace(",", "."))
             observation = survey.get_observation(field)
             if observation:
                 if field in altered_fields:

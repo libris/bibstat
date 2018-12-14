@@ -886,6 +886,13 @@ class Cell(EmbeddedDocument):
     def explanation(self):
         return self.variable.description
 
+    @property
+    def previous_value_thousands_separators(self):
+        prev = self.previous_value
+        if type(prev) in (int, float):
+            return "{:,}".format(prev).replace(",", " ").replace(".", ",")
+        return prev
+
 
 class Row(EmbeddedDocument):
     cells = ListField(EmbeddedDocumentField(Cell))

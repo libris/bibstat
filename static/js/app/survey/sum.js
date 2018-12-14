@@ -4,17 +4,26 @@ define(['jquery', 'bootbox', 'survey.cell'], function($, bootbox, cell) {
 
         $.each(elements, function (index, element) {
             var number = cell.number(element);
-            if (!isNaN(number) && cell.value(element) != "") {
-                if(sum == null){
-                    sum = 0;
-                }
-                sum += number
+            var strval = cell.value(element);
+            if (strval == '') {
+                return;
             }
+            if (isNaN(number)) {
+                return;
+            }
+            if(sum == null){
+                sum = 0;
+            }
+            sum += number;
         });
+
+        if (sum == null) {
+            return null;
+        }
+
         // Max 3 decimals
         if(sum % 1 != 0) sum = sum.toFixed(3);
-
-        return sum != null ? sum : '';
+        return sum;
     };
 
     var setupSum = function(setup) { //setup contains key = sumfield-id and array of all subfields to be included in sum
@@ -23,7 +32,13 @@ define(['jquery', 'bootbox', 'survey.cell'], function($, bootbox, cell) {
         var childCallback = function(parent, child, children) {
             cell.onChange(child, function() {
                 if(!$(parent).prop("disabled")) {
-                    $(parent).val(String(sumOf(children)).replace(".", ",").replace("-", ""));
+                    var sum = sumOf(children);
+                    if (sum == null){
+                        $(parent).val('-');
+                    } else {
+                        $(parent).val(String(sum).replace(".", ","));
+                    }
+                    cell.updateThousandsSeparators(parent);
                     $(parent).change();
                 }
             });
@@ -36,58 +51,54 @@ define(['jquery', 'bootbox', 'survey.cell'], function($, bootbox, cell) {
             });
         };
 
-            //Warn if sum of subfields does not match sumfield value
-            $(parent).blur(function () {
+        $(parent).blur(function () {
+            var sumFieldValue = cell.number(this);
+            if (isNaN(sumFieldValue)) {
+                return;
+            }
 
-                var sumValue = $.trim(String(this.value).replace(".", ","));
+            // Array of subfield elements
+            childels = $.map(setup[parent], function (child) {
+                return $(child);
+            });
 
-                //Check if all subfields contain '-'
-                var allIrrelevantChildren = function (children) {
-                    var allIrrelevant = true;
-                    $.each(children, function (index, childElement) {
-                       if (cell.value(childElement) != "-") {
-                           allIrrelevant = false;
-                       }
-                    });
-                    return allIrrelevant;
-                }
-
-                //Array of subfield elements
-                childels = $.map(setup[parent], function (child) {
-                    return $(child);
-                });
-
-                if (sumValue != "-" && !allIrrelevantChildren(childels)) {
-
-                    //Calculate sum of subfields
-                    childsum = String(sumOf(childels)).replace(".", ",").replace("-", "");
-
-                    //Compare subfield sum with value in sumfield
-                    if (childsum != "" && sumValue != childsum) {
-
-                        // Varna användaren om summan skiljer sig från totalfältet
-                        bootbox.confirm('Du har angivit värden i delfälten som inte kan summeras till värdet i totalfältet. Om du istället vill ange värde i summeringsfältet kommer delfälten att raderas. Klicka OK för att radera värden i delfälten eller Avbryt för att korrigera summeringfältet.', function (result) {
-
-                            if (result) {
-
-                                // Blank subfields and put focus on sumfield
-                                $.each(childels, function (index, child) {
-                                    child.val("");
-                                });
-
-                                $(parent).focus()
-
-                            } else {
-
-                                // Trigger change on one of the subfields to change the sum
-                                childels[0].change()
-                            }
-                        });
-                    } else {
-                        //Sum is correct, ignore
-                    }
+            // Check if all subfields contain '-' or other NaN
+            var allChildrenIrrelevant = true;
+            $.each(childels, function (index, childElement) {
+                if (!isNaN(cell.number(childElement))) {
+                    // Child contains number
+                    allChildrenIrrelevant = false;
                 }
             });
+            if (allChildrenIrrelevant) {
+                return;
+            }
+
+            // Compare calculated sum of subfields with value in sum field
+            calculatedSum = sumOf(childels);
+            if (sumFieldValue == calculatedSum) {
+                // Everything is OK
+                return;
+            }
+
+            // Warn user that calculated sum of subfields does not match sum
+            // field value
+            bootbox.confirm('Du har angivit värden i delfälten som inte kan summeras till värdet i totalfältet. Om du istället vill ange värde i summeringsfältet kommer delfälten att raderas. Klicka OK för att radera värden i delfälten eller Avbryt för att korrigera summeringfältet.', function (result) {
+                if (result) {
+                    // User clicks OK
+                    // Clear subfields and put focus on sum field
+                    $.each(childels, function (index, child) {
+                        child.val("");
+                    });
+                    $(parent).focus()
+                } else {
+                    // User clicks Cancel
+                    // Trigger change on one of the subfields to change
+                    // the sum
+                    childels[0].change()
+                }
+            });
+        });
     };
 
     var initSum = function(setup) {
