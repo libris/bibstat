@@ -56,6 +56,7 @@ def data_api(request):
 
     modified_from_query = Q(date_modified__gte=from_date)
     modified_to_query = Q(date_modified__lt=to_date)
+    is_active_query = Q(is_active=True)
 
     objects = []
     if term:
@@ -68,8 +69,11 @@ def data_api(request):
                     to_date,
                     offset,
                     offset + limit))
-            objects = OpenData.objects.filter(Q(variable=variable) & modified_from_query & modified_to_query).skip(
-                offset).limit(limit)
+            objects = OpenData.objects.filter(
+                Q(variable=variable)
+                & modified_from_query
+                & modified_to_query
+                & is_active_query).skip(offset).limit(limit)
         except Exception:
             logger.warn(u"Unknown variable {}, skipping..".format(term))
 
@@ -77,12 +81,14 @@ def data_api(request):
         logger.debug(
             u"Fetching statistics data published between {} and {}, items {} to {}".format(
                 from_date, to_date, offset, offset + limit))
-        objects = OpenData.objects.filter(modified_from_query & modified_to_query).skip(offset).limit(limit)
+        objects = OpenData.objects.filter(
+            modified_from_query
+            & modified_to_query
+            & is_active_query).skip(offset).limit(limit)
 
     observations = []
     for item in objects:
-        if item.is_active:
-            observations.append(item.to_dict())
+        observations.append(item.to_dict())
 
     data = dict(data_set, observations=observations)
     if len(observations) >= limit:
