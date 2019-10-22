@@ -11,10 +11,9 @@ Denna finns inkluderad tillsammans med Python 2.7.9 eller senare.
 ## Installation
 
 Nedan är ett exempel på en minimal installation för Mac OS X.  
-Detta kräver att du redan har installerat [Homebrew](http://brew.sh) sedan tidigare.
 
 	# Installera beroenden
-	$ brew install git mongodb python
+	https://docs.mongodb.com/v2.6/tutorial/install-mongodb-on-os-x/
 	$ pip install virtualenvwrapper
 
 	# Klona projektet
@@ -49,14 +48,17 @@ Detta kräver att du redan har installerat [Homebrew](http://brew.sh) sedan tidi
 Efter en första installation kommer det inte finnas någon data i den lokala miljön.  
 Nedan är instruktioner för att göra en dump av produktionsdatabasen och importera den.
 
-    # Gör en dump av produktionsdatabasen
-    $ ssh root@bibstat.kb.se
+    # Gör en dump av produktionsdatabasen genom att ssh:a till bibstat.kb.se 
+    # - <user> är dit eget (AD kopplat, kontakts drift om behörighet saknas)
+    # - <username> och <password> till bibstat mongodb finns i Team Gul Vault
+    #
+    $ ssh <user>@bibstat.kb.se
     $ mongodump -d bibstat -u <username> -p <password>
     $ exit
 
     # Hämta ned dump till lokala maskinen
-    $ sftp root@bibstat.kb.se
-    $ get dump
+    $ sftp  <user>@bibstat.kb.se
+    $ get -r dump
     $ exit
 
     # Importera produktionsdata
