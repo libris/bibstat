@@ -43,6 +43,21 @@ Nedan är ett exempel på en minimal installation för Mac OS X.
 	# Starta servern
 	$ python manage.py runserver
 
+### MongoDB i Docker
+
+Ett alternativ till att installera MongoDB är att köra det i Docker.
+https://hub.docker.com/_/mongo?tab=description&page=1&name=2.6
+
+```sh
+docker run --name bibstat_mongodb -v /abs/path/to/repo/mongodb:/data/db -d mongo:2.6
+```
+
+Konfigurera då `MONGODB_HOST` i `bibstat/settings_local.py` till returvärdet av
+
+```sh
+docker inspect -f '{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' bibstat_mongodb
+```
+
 ### Produktionsdata
 
 Efter en första installation kommer det inte finnas någon data i den lokala miljön.  
@@ -129,19 +144,19 @@ Det finns en [sammanfattning](docs/servers.md) av hur miljöerna sattes upp.
 
 ### Stage
 
-Redhat Enterprise Linux Server 6.7
+Redhat Enterprise Linux Server 6.10  
 Adress: [bibstat-stg.kb.se](http://bibstat-stg.kb.se)  
-Hårdvara: 2 GB Minne, 80 GB Hårddisk  
-Deploy: `fab conf.stgbibstat app.bibstat.deploy`  
-Inloggning: Fråga en involverad utvecklare efter uppgifterna.
+Hårdvara: 8 GB Minne, 80 GB Hårddisk  
+Deploy: `fab conf.bibstat_stg app.bibstat.deploy -u <username>`  
+Inloggning: Fråga IT-drift om `sudo`-åtkomst eller inloggningsuppgifter.
 
 ### Produktion
 
-Redhat Enterprise Linux Server 6.7
+Redhat Enterprise Linux Server 6.10  
 Adress: [bibstat.kb.se](http://bibstat.kb.se)  
-Hårdvara: 16 GB Minne, 80 GB Hårddisk  
-Deploy: `fab conf.prodbibstat app.bibstat.deploy`  
-Inloggning: Fråga en involverad utvecklare efter uppgifterna.
+Hårdvara: 23 GB Minne, 80 GB Hårddisk  
+Deploy: `fab conf.bibstat_prod app.bibstat.deploy -u <username>`  
+Inloggning: Fråga IT-drift om `sudo`-åtkomst eller inloggningsuppgifter.
 
 ## Import
 
