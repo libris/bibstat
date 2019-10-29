@@ -96,7 +96,10 @@ def debug_enabled(_):
 
 @register.filter
 def format_number(number, digits=1):
-    locale.setlocale(locale.LC_NUMERIC, 'sv_SE')
+    try:
+        locale.setlocale(locale.LC_NUMERIC, 'sv_SE')
+    except Exception:
+        locale.setlocale(locale.LC_NUMERIC, 'sv_SE.UTF-8')
     return locale.format("%d" if number == int(number) else "%.{}f".format(digits), number, grouping=True)
 
 @register.filter
