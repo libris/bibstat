@@ -724,7 +724,7 @@ define(['jquery', 'bootbox', 'survey.sum', 'survey.cell', 'surveys.dispatch', 'b
 
                 // Update thousands separators (spaces)
                 var numericalInputs = survey.form('input.numerical');
-                numericalInputs.keyup(function (e) {
+                numericalInputs.change(function (e) {
                     cell.updateThousandsSeparators(this);
                 });
                 numericalInputs.trigger('keyup');
