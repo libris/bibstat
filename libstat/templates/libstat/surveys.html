@@ -165,6 +165,11 @@
                                        data-target="#export-surveys-modal" disabled>
                                         Exportera
                                     </a>
+                                    <a href="#" name="action"
+                                       class="btn btn-primary btn-toggle btn-survey disabled" data-toggle="modal"
+                                       data-target="#export-surveys-with-previous-modal" disabled>
+                                        Exportera med föregående år
+                                    </a>
                                     {% if surveys_state == 'inactive' %}
                                         <a href="#" name="action"
                                            class="btn btn-primary btn-toggle btn-survey disabled" data-toggle="modal"
@@ -369,6 +374,30 @@
                         <div class="modal-content">
                             <div class="modal-header">
                                 <h4 class="modal-title">Bekräfta: Exportera</h4>
+                            </div>
+                            <div class="modal-body">
+                                <span class="selected-single hidden">
+                                    <b>Är du säker på att du vill exportera den markerade enkäten?</b>
+                                    <br>Enkäten kommer att exporteras till en fil som Excel klarar av att öppna.
+                                </span>
+                                <span class="selected-multiple selected-default">
+                                    <b>Är du säker på att du vill exportera de <span class="selected-count"></span> markerade enkäterna?</b>
+                                    <br>Enkäterna kommer att exporteras till en fil som Excel klarar av att öppna.
+                                </span>
+
+                            </div>
+                            <div class="modal-footer">
+                                <a href="#" class="btn btn-default" data-dismiss="modal">Avbryt</a>
+                                <button class="btn btn-primary btn-confirm">Exportera</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal fade" id="export-surveys-with-previous-modal" tabindex="-1" role="dialog" aria-hidden="true">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h4 class="modal-title">Bekräfta: Exportera med föregående år</h4>
                             </div>
                             <div class="modal-body">
                                 <span class="selected-single hidden">

@@ -154,17 +154,27 @@ def _surveys_redirect(request):
         format(sample_year, municipality_code, target_group, status, email, free_text, surveys_state)))
 
 
-@permission_required('is_superuser', login_url='index')
-def surveys_export(request):
+def _surveys_export_base(request, include_previous_year=False):
     if request.method == "POST":
         survey_ids = request.POST.getlist("survey-response-ids", [])
         filename = u"Exporterade enkätsvar ({}).xlsx".format(strftime("%Y-%m-%d %H.%M.%S"))
-        workbook = surveys_to_excel_workbook(survey_ids)
+        workbook = surveys_to_excel_workbook(
+            survey_ids, include_previous_year=include_previous_year
+        )
 
         response = HttpResponse(save_virtual_workbook(workbook), content_type='application/vnd.ms-excel')
         response['Content-Disposition'] = u'attachment; filename="{}"'.format(filename)
         return response
 
+
+@permission_required('is_superuser', login_url='index')
+def surveys_export(request):
+    return _surveys_export_base(request, include_previous_year=False)
+
+
+@permission_required('is_superuser', login_url='index')
+def surveys_export_with_previous(request):
+    return _surveys_export_base(request, include_previous_year=True)
 
 
 @permission_required('is_superuser', login_url='index')

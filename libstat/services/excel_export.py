@@ -115,50 +115,74 @@ def _published_open_data_as_workbook(year):
     return workbook
 
 
-def _load_surveys_and_append_worksheet_rows(surveys, worksheet, headers_columns_dict, offset=0):
+def _populate_survey_cells(survey, worksheet, headers_columns_dict, row_no):
+    if not survey:
+        return
+    worksheet.cell(row=row_no, column=headers_columns_dict["År"]).value = survey.sample_year
+    worksheet.cell(row=row_no, column=headers_columns_dict["Bibliotek"]).value = survey.library.name
+    worksheet.cell(row=row_no, column=headers_columns_dict["Sigel"]).value = survey.library.sigel
+    worksheet.cell(row=row_no, column=headers_columns_dict["Bibliotekstyp"]).value = survey.library.library_type
+    worksheet.cell(row=row_no, column=headers_columns_dict["Status"]).value = Survey.status_label(survey.status)
+    worksheet.cell(row=row_no, column=headers_columns_dict["Email"]).value = survey.library.email
+    worksheet.cell(row=row_no, column=headers_columns_dict["Kommunkod"]).value = survey.library.municipality_code
+    worksheet.cell(row=row_no, column=headers_columns_dict["Stad"]).value = survey.library.city
+    worksheet.cell(row=row_no, column=headers_columns_dict["Adress"]).value = survey.library.address
+    worksheet.cell(row=row_no, column=headers_columns_dict["Postkod"]).value = survey.library.zip_code
+    worksheet.cell(row=row_no, column=headers_columns_dict["Huvudman"]).value = principal_for_library_type[survey.library.library_type] if survey.library.library_type in principal_for_library_type else None
+    worksheet.cell(row=row_no, column=headers_columns_dict["Kan publiceras?"]).value = "Ja" if survey.can_publish() else "Nej: " + survey.reasons_for_not_able_to_publish()
+    worksheet.cell(row=row_no, column=headers_columns_dict["Samredovisar andra bibliotek"]).value = "Ja" if survey.is_reporting_for_others() else "Nej"
+    worksheet.cell(row=row_no, column=headers_columns_dict["Samredovisas"]).value = "Ja" if survey.is_reported_by_other() else "Nej"
+    worksheet.cell(row=row_no, column=headers_columns_dict["Redovisas av"]).value = ",".join(survey.reported_by())
+
+    for observation in survey.observations:
+        variable_key = observation.variable.key
+        if headers_columns_dict.get(variable_key, None):
+            value = observation.value
+            if observation.value_unknown:
+                value = u"okänt värde"
+            worksheet.cell(row=row_no, column=headers_columns_dict[variable_key]).value = value
+
+    other_sigels = [s for s in survey.selected_libraries if s != survey.library.sigel]
+    if len(other_sigels) > 0:
+        other_surveys = Survey.objects.filter(library__sigel__in=other_sigels, sample_year=survey.sample_year).only("library")
+        for other_survey in other_surveys:
+            worksheet.cell(row=row_no, column=headers_columns_dict["Samredovisat bibliotek"]).value = "%s (%s)" % (other_survey.library.name, other_survey.library.sigel)
+            worksheet.cell(row=row_no, column=headers_columns_dict["Gatuadress"]).value = other_survey.library.address
+            worksheet.cell(row=row_no, column=headers_columns_dict["Postnummer"]).value = other_survey.library.zip_code
+
+
+def _load_surveys_and_append_worksheet_rows(
+    surveys,
+    worksheet,
+    headers_columns_dict,
+    offset=0,
+    include_previous_year=False
+):
     row_no = 2 + offset
     for survey in surveys:
-        worksheet.cell(row=row_no, column=headers_columns_dict["Bibliotek"]).value = survey.library.name
-        worksheet.cell(row=row_no, column=headers_columns_dict["Sigel"]).value = survey.library.sigel
-        worksheet.cell(row=row_no, column=headers_columns_dict["Bibliotekstyp"]).value = survey.library.library_type
-        worksheet.cell(row=row_no, column=headers_columns_dict["Status"]).value = Survey.status_label(survey.status)
-        worksheet.cell(row=row_no, column=headers_columns_dict["Email"]).value = survey.library.email
-        worksheet.cell(row=row_no, column=headers_columns_dict["Kommunkod"]).value = survey.library.municipality_code
-        worksheet.cell(row=row_no, column=headers_columns_dict["Stad"]).value = survey.library.city
-        worksheet.cell(row=row_no, column=headers_columns_dict["Adress"]).value = survey.library.address
-        worksheet.cell(row=row_no, column=headers_columns_dict["Postkod"]).value = survey.library.zip_code
-        worksheet.cell(row=row_no, column=headers_columns_dict["Huvudman"]).value = principal_for_library_type[survey.library.library_type] if survey.library.library_type in principal_for_library_type else None
-        worksheet.cell(row=row_no, column=headers_columns_dict["Kan publiceras?"]).value = "Ja" if survey.can_publish() else "Nej: " + survey.reasons_for_not_able_to_publish()
-        worksheet.cell(row=row_no, column=headers_columns_dict["Samredovisar andra bibliotek"]).value = "Ja" if survey.is_reporting_for_others() else "Nej"
-        worksheet.cell(row=row_no, column=headers_columns_dict["Samredovisas"]).value = "Ja" if survey.is_reported_by_other() else "Nej"
-        worksheet.cell(row=row_no, column=headers_columns_dict["Redovisas av"]).value = ",".join(survey.reported_by())
-
-        for observation in survey.observations:
-            variable_key = observation.variable.key
-            if headers_columns_dict.get(variable_key, None):
-                value = observation.value
-                if observation.value_unknown:
-                    value = u"okänt värde"
-                worksheet.cell(row=row_no, column=headers_columns_dict[variable_key]).value = value
-
-        other_sigels = [s for s in survey.selected_libraries if s != survey.library.sigel]
-        if len(other_sigels) > 0:
-            other_surveys = Survey.objects.filter(library__sigel__in=other_sigels, sample_year=survey.sample_year).only("library")
-            for other_survey in other_surveys:
-                worksheet.cell(row=row_no, column=headers_columns_dict["Samredovisat bibliotek"]).value = "%s (%s)" % (other_survey.library.name, other_survey.library.sigel)
-                worksheet.cell(row=row_no, column=headers_columns_dict["Gatuadress"]).value = other_survey.library.address
-                worksheet.cell(row=row_no, column=headers_columns_dict["Postnummer"]).value = other_survey.library.zip_code
-
-        row_no += 1
+        _populate_survey_cells(survey, worksheet, headers_columns_dict, row_no)
+        if include_previous_year:
+            previous = survey.previous_years_survey()
+            if previous:
+                _populate_survey_cells(
+                    previous,
+                    worksheet,
+                    headers_columns_dict,
+                    row_no + 1,
+                )
+            row_no += 2
+        else:
+            row_no += 1
 
 
-def surveys_to_excel_workbook(survey_ids):
+def surveys_to_excel_workbook(survey_ids, include_previous_year=False):
     bulk_size = 300
     bulks = int(math.ceil(len(survey_ids) / bulk_size))
 
     headers_dict = {}
 
     headers = [
+        "År",
         "Bibliotek",
         "Sigel",
         "Bibliotekstyp",
@@ -198,7 +222,13 @@ def surveys_to_excel_workbook(survey_ids):
 
         surveys = Survey.objects.filter(id__in=ids).order_by('library__name')
 
-        _load_surveys_and_append_worksheet_rows(surveys, worksheet, headers_dict, offset=offset)
+        _load_surveys_and_append_worksheet_rows(
+            surveys,
+            worksheet,
+            headers_dict,
+            offset=offset,
+            include_previous_year=include_previous_year
+        )
         offset += bulk_size
 
     return workbook

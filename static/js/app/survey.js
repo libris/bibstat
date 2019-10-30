@@ -671,6 +671,11 @@ define(['jquery', 'bootbox', 'survey.sum', 'survey.cell', 'surveys.dispatch', 'b
                     $('#export-surveys-modal').modal('hide');
                     submitTo('surveys_export', true);
                 });
+                $('#export-surveys-with-previous-modal .btn-confirm').click(function (e) {
+                    e.preventDefault();
+                    $('#export-surveys-with-previous-modal').modal('hide');
+                    submitTo('surveys_export_with_previous', true);
+                });
                 $('.btn-change-status').click(function (e) {
                     e.preventDefault();
                     submitTo('surveys_statuses', true);
