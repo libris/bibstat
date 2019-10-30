@@ -170,11 +170,12 @@ class TestSurveysExport(MongoTestCase):
 
         worksheet = surveys_to_excel_workbook([survey1.pk, survey2.pk]).active
 
-        self.assertEquals(worksheet["A1"].value, "Bibliotek")
-        self.assertEquals(worksheet["F1"].value, "Kommunkod")
-        self.assertEquals(worksheet["A2"].value, "lib1_name")
-        self.assertEquals(worksheet["A3"].value, "lib2_name")
-        self.assertEquals(worksheet["D3"].value, "Kontrollerad")
+        self.assertEquals(worksheet["A1"].value, u"År")
+        self.assertEquals(worksheet["B1"].value, "Bibliotek")
+        self.assertEquals(worksheet["G1"].value, "Kommunkod")
+        self.assertEquals(worksheet["B2"].value, "lib1_name")
+        self.assertEquals(worksheet["B3"].value, "lib2_name")
+        self.assertEquals(worksheet["E3"].value, "Kontrollerad")
 
 
 class TestLibraryImport(MongoTestCase):

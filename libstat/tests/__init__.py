@@ -130,7 +130,7 @@ class MongoTestCase(TestCase):
         from mongoengine.connection import connect, disconnect
 
         disconnect()
-        connect(self.mongodb_name)
+        connect(self.mongodb_name, host=settings.MONGODB_HOST)
         from mongoengine.django.mongo_auth.models import MongoUser
 
         if MongoUser.objects.filter(username="admin").count() == 0:
