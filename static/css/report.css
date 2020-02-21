@@ -97,32 +97,32 @@ td {
 
 th.observation-label {
     text-align: left;
-    background-color: rgb(0, 158, 224) !important;
+    background-color: #2e3592 !important;
 }
 
 th.observation-previous-previous-year {
-    background-color: rgb(152, 163, 56) !important;
+    background-color: #c74d03 !important;
     width: 130px;
 }
 
 th.observation-previous-year {
-    background-color: rgb(185, 203, 0) !important;
+    background-color: #018804 !important;
     width: 130px;
 }
 
 th.observation-sample-year {
-    background-color: rgb(242, 148, 0) !important;
+    background-color: #8e00db !important;
     width: 130px;
 }
 
 th.observation-difference {
-    background-color: rgb(216, 136, 37) !important;
+    background-color: #007db3 !important;
     width: 110px;
     white-space: nowrap;
 }
 
 th.observation-difference-total {
-    background-color: rgb(226, 0, 122) !important;
+    background-color: #c74d03 !important;
     width: 100px;
 }
 
@@ -174,7 +174,7 @@ tr.key-figure.even td:not(.observation-label) {
 
 tr.label-only td {
     color: white !important;
-    background-color: rgb(212, 104, 102) !important;
+    background-color: #587885 !important;
     font-weight: bold;
 }
 

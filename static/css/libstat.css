@@ -50,7 +50,7 @@ a[disabled] {
 }
 
 .tablesorter-header-inner {
-   cursor: pointer !important;
+    cursor: pointer !important;
 }
 
 .tablesorter .tablesorter-headerAsc .fa:before {
@@ -409,8 +409,8 @@ label.sub-label {
 .page-survey .sum-of {
     position: absolute;
     left: -13px;
-    background: #F29400;
-    border: 1px solid #DB8804;
+    background: #007db3;
+    border: 1px solid #007db3;
     border-right: 0;
     padding: 5px 2px 7px;
     border-radius: 3px 0 0 3px;
@@ -422,7 +422,7 @@ label.sub-label {
     font-weight: bold;
 }
 .page-survey .final-words {
-    background-color: rgb(242, 148, 0) !important;
+    background-color: #007db3 !important;
     font-size: 30px;
     font-weight: bold;
     color: white;
@@ -438,34 +438,34 @@ label.sub-label {
 }
 
 .page-survey .panel-body {
-    background-color: rgb(255, 209, 142);
-    border-top-color: rgb(219, 136, 4) !important;
+    background-color: #e8eef1;
+    border-top-color: #007db3 !important;
     border-bottom: 0px !important;
     border-bottom-left-radius: 3px !important;
     border-bottom-right-radius: 3px !important;
 }
 
 .page-survey .panel-heading {
-    background-color: rgb(242, 148, 0) !important;
+    background-color: #007db3 !important;
     color: white !important;
-    border-color: rgb(219, 136, 4) !important;
+    border-color: #007db3 !important;
 }
 
 .page-survey .panel-footer {
-    background-color: rgb(242, 148, 0) !important;
+    background-color: #007db3 !important;
     color: white !important;
 }
 
 .page-survey .panel {
-    border-color: rgb(219, 136, 4) !important;
+    border-color: #007db3 !important;
 }
 
 .page-survey .container hr {
-    border-color: rgb(219, 136, 4) !important;
+    border-color: #007db3 !important;
 }
 
 .page-survey th {
-    border-bottom-color: rgb(219, 136, 4) !important;
+    border-bottom-color: #007db3 !important;
 }
 
 .page-survey .group-description {
@@ -474,10 +474,9 @@ label.sub-label {
 }
 
 .page-survey .section-title {
-    color: rgb(0, 158, 224);
+    color: #007db3;
     font-weight: bold;
     margin-top: 40px;
-    padding-left: 14px;
 }
 
 .page-survey .section-comment {
@@ -515,7 +514,7 @@ label.sub-label {
 }
 
 .page-survey .navbar-library-info {
-    background-color: rgb(0, 158, 224);
+    background-color: #007db3;
 }
 
 .page-survey .navbar-library-info .navbar-text {
@@ -582,11 +581,11 @@ label.sub-label {
 }
 
 .page-survey .table tbody tr td {
-    border-top-color: rgb(219, 136, 4);
+    border-top-color: #007db3;
 }
 
 .page-survey .jumbotron.jumbotron-submitted {
-    background-color: rgb(0, 158, 224);
+    background-color: #007db3;
     color: white;
 }
 

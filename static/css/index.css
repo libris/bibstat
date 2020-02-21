@@ -21,6 +21,10 @@ h1, h2, h3, h4, h5, h6 {
     letter-spacing: 1px;
 }
 
+h3 small {
+    color: #5c5c5c;
+}
+
 p {
     margin: 0 0 25px;
     font-size: 18px;
@@ -28,14 +32,14 @@ p {
 }
 
 a {
-    color: #219ab3;
+    color: #2a74b5;
+    text-decoration: underline;
     -webkit-transition: all .2s ease-in-out;
     -moz-transition: all .2s ease-in-out;
     transition: all .2s ease-in-out;
 }
 
 a:hover, a:focus {
-    text-decoration: none;
     color: #11505d;
 }
 
@@ -184,11 +188,11 @@ hr {
 }
 
 .subsection-reports {
-    border-left: 10px solid rgb(185, 203, 0);
+    border-left: 10px solid #018804;
 }
 
 .reports-selection-group {
-    border-left: 10px solid rgb(185, 203, 0);
+    border-left: 10px solid #018804;
 }
 
 .subsection-reports .subsection-text {
@@ -221,11 +225,11 @@ hr {
 }
 
 .subsection-articles {
-    border-left: 10px solid rgb(0, 158, 224);
+    border-left: 10px solid #007db3;
 }
 
 .subsection-opendata {
-    border-left: 10px solid rgb(242, 148, 0);
+    border-left: 10px solid #8e00db;
 }
 
 .subsection-opendata .subsection-title {
@@ -278,6 +282,7 @@ dd:last-child {
 
 .btn {
     font-weight: 600;
+    text-decoration: none;
 }
 
 .btn-help
@@ -304,17 +309,14 @@ dd:last-child {
 }
 
 .btn-articles {
-    border: 1px solid rgb(0, 158, 224);
-    color: rgb(0, 158, 224);
-    background-color: transparent;
+    color: white;
+    background-color: #007db3;
 }
 
 .btn-articles:hover,
 .btn-articles:focus {
-    border: 1px solid rgb(0, 158, 224);
-    outline: 0;
     color: white;
-    background-color: rgb(0, 158, 224);
+    background-color: #01658e;
 }
 
 .btn-articles-expand {
@@ -332,9 +334,8 @@ dd:last-child {
 }
 
 .btn-reports {
-    border: 1px solid rgb(185, 203, 0);
-    color: rgb(185, 203, 0);
-    background-color: transparent;
+    color: white;
+    background-color: #018804;
 }
 
 .btn-reports.btn-print {
@@ -344,10 +345,8 @@ dd:last-child {
 
 .btn-reports:hover,
 .btn-reports:focus {
-    border: 1px solid rgb(185, 203, 0);
-    outline: 0;
+    background-color: #016b03;
     color: white;
-    background-color: rgb(185, 203, 0);
 }
 
 .btn-reports.btn-print:hover,
@@ -358,47 +357,41 @@ dd:last-child {
 }
 
 .btn-opendata {
-    border: 1px solid rgb(242, 148, 0);
-    color: rgb(242, 148, 0);
-    background-color: transparent;
+    color: white;
+    background-color: #8e00db;
 }
 
 .btn-opendata:hover,
 .btn-opendata:focus {
-    border: 1px solid rgb(242, 148, 0);
-    outline: 0;
     color: white;
-    background-color: rgb(242, 148, 0);
+    background-color: #7000ad;
 }
 
 .btn-moreinfo {
-    border: 1px solid rgb(226, 0, 122);
-    color: rgb(226, 0, 122);
-    background-color: transparent;
+    color: white;
+    background-color: #c74d03;
 }
 
 .btn-moreinfo:hover,
 .btn-moreinfo:focus {
-    border: 1px solid rgb(226, 0, 122);
-    outline: 0;
     color: white;
-    background-color: rgb(226, 0, 122);
+    background-color: #aa4202;
 }
 
 .color-articles {
-    color: rgb(0, 158, 224);
+    color: #007db3;
 }
 
 .color-reports {
-    color: rgb(185, 203, 0);
+    color: #018804;
 }
 
 .color-opendata {
-    color: rgb(242, 148, 0);
+    color: #8e00db;
 }
 
 .color-moreinfo {
-    color: rgb(226, 0, 122);
+    color: #c74d03;
 }
 
 .form.form-inline .form-group {
