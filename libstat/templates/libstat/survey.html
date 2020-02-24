@@ -39,7 +39,8 @@
 
             <p>Enkäten är nu inskickad. Du kan fortfarande se dina inskickade svar, men enkäten är nu låst.<br>
             Om du skulle vilja ändra ett svar i efterhand, kontakta <a href="{{ form.mailto }}">biblioteksstatistik@kb.se</a>.</p>
-            <p><a href="javascript:if(window.print)window.print()"><i class="fa fa-print fa-inline"></i>Skriv ut enkäten</a></p>
+            <p><a href="javascript:if(window.print)window.print()" role="button" aria-label="Skriv ut">
+                <i class="fa fa-print fa-inline"></i>Skriv ut enkäten</a></p>
         </div>
 
         <div class="row">
@@ -173,7 +174,15 @@
                                                                     {% endwith %}
                                                                 {% endif %}
                                                                 {% if cell.explanation %}
-                                                                    <a class="btn btn-default btn-help" href="#" tabindex="-1" data-toggle="popover" data-placement="top" data-content="{{ cell.explanation }}" title="Förklaring">
+                                                                    <a class="btn btn-default btn-help" 
+                                                                        href="#"
+                                                                        role="button"
+                                                                        tabindex="0"
+                                                                        data-toggle="popover" 
+                                                                        data-placement="top" 
+                                                                        data-content="{{ cell.explanation }}" 
+                                                                        title="Förklaring"
+                                                                        aria-label="Hjälp">
                                                                         <i class="fa fa-question"></i>
                                                                     </a>
                                                                 {% endif %}
@@ -224,14 +233,15 @@
 
                                 <div class="progress answers-progress" style="width: 250px">
                                     <div class="progress-bar progress-bar-success progress-bar-striped"
-                                         role="progressbar">
+                                        role="progressbar">
                                     </div>
                                 </div>
                             </div>
                         </div>
                         <div class="navbar-right navbar-submit">
                             <a id="faq-survey-btn" class="btn btn-default"><i class="fa fa-question fa-inline"></i>Vanliga frågor</a>
-                            <a id="print-survey-btn" class="btn btn-default" href="javascript:if(window.print)window.print()"><i class="fa fa-print fa-inline"></i>Skriv ut</a>
+                            <a id="print-survey-btn" class="btn btn-default" aria-label="Skriv ut" href="javascript:if(window.print)window.print()">
+                                <i class="fa fa-print fa-inline"></i>Skriv ut</a>
                             <div id="unsaved-changes-label" class="navbar-text"></div>
                             <a href="#" id="save-survey-btn" class="btn btn-primary navbar-btn">Spara</a>
                             {% if form.can_submit %}

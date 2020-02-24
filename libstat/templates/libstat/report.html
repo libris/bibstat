@@ -74,7 +74,8 @@
 
             <span><span class="example-total"></span> = Totalbelopp</span>
 
-            <span class="print-report"><a class="fa fa-print" href="javascript:if(window.print)window.print()"></a></span>
+            <span class="print-report">
+                <a class="fa fa-print" aria-label="Skriv ut" role="button" href="javascript:if(window.print)window.print()"></a></span>
         </div>
         <div class="row measurements">
             {% for group in measurements %}
@@ -114,12 +115,15 @@
                                     <td class="observation-label">
                                         {{ row|access:"label" }}
                                         {% if row|access:"description" %}
-                                            <a type="button" class="report-explanation btn-help"
+                                            <a  class="report-explanation btn-help"
                                                 href="#"
-                                                tabindex="-1"
-                                                data-toggle="popover" data-placement="top"
+                                                role="button"
+                                                tabindex="0"
+                                                data-toggle="popover" 
+                                                data-placement="top"
                                                 data-content="{{ row|access:"description" }}"
-                                                data-trigger="click">
+                                                data-trigger="focus"
+                                                aria-label="Hjälp">
                                                 <i class="fa fa-question-circle"></i>
                                             </a>
                                         {% endif %}

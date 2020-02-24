@@ -279,7 +279,7 @@ define(['jquery', 'bootbox', 'survey.sum', 'survey.cell', 'surveys.dispatch', 'b
             $('.btn-help').popover({
                 container: 'body',
                 html: true,
-                trigger: 'click'
+                trigger: 'focus'
             }).click(function (e) {
                 e.preventDefault();
             });
