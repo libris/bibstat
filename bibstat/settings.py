@@ -47,7 +47,7 @@ ALLOWED_HOSTS = [
     ".bibstat-stg.libris.kb.se"
 ]
 
-BIBSTAT_BLOG_BASE_URL = "http://biblioteksstatistik.blogg.kb.se"
+BIBSTAT_BLOG_BASE_URL = "https://www.kb.se/biblioteksstatistik"
 
 # DB connection details
 MONGODB_HOST = 'localhost'

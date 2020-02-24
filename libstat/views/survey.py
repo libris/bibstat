@@ -2,7 +2,7 @@
 import logging
 import time
 import json
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, date
 
 from django.core.urlresolvers import reverse
 from django.shortcuts import render, redirect
@@ -20,7 +20,7 @@ logger = logging.getLogger(__name__)
 
 
 def example_survey(request):
-    sample_year = 2014
+    sample_year = date.today().year - 1
 
     context = {
         "hide_navbar": True,
