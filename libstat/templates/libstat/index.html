@@ -2,27 +2,29 @@
 {% load libstat_tags %}
 
 {% block content %}
-    <header class="intro">
-        <div class="intro-body">
-            <div class="container">
-                <div class="row">
-                    <div class="col-md-10 col-md-offset-1">
-                        <img src="/static/img/kb.svg" class="intro-logo" alt="Kungliga bibliotekets logotyp">
-                        <h1 class="intro-title">Biblioteksstatistik{% if environment and environment != 'prod' %} *** {{ environment }} ***{% endif %}</h1>
-                        <p class="intro-text">Biblioteksstatistiken visar uppgifter om de offentligt finansierade bibliotekens verksamhet. Alla bibliotekstyper som finansieras av staten, en kommun eller ett landsting ingår.</p>
-
+<header class="intro">
+    <div class="intro-body">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-10 col-md-offset-1">
+                    <img src="/static/img/kb.svg" class="intro-logo" alt="Kungliga bibliotekets logotyp">
+                    <h1 class="intro-title">Biblioteksstatistik{% if environment and environment != 'prod' %} *** {{ environment }} ***{% endif %}</h1>
+                    <p class="intro-text">Biblioteksstatistiken visar uppgifter om de offentligt finansierade bibliotekens verksamhet. Alla bibliotekstyper som finansieras av staten, en kommun eller ett landsting ingår.</p>
+                    <nav>
                         <ul class="list-inline intro-buttons">
                             <li><a href="#articles" class="btn btn-articles btn-lg scroll"><i class="fa fa-newspaper-o fa-fw"></i> Om statistiken</a></li>
                             <li><a href="#reports" class="btn btn-reports btn-lg scroll"><i class="fa fa-line-chart fa-fw"></i> Rapporter</a></li>
                             <li><a href="#opendata" class="btn btn-opendata btn-lg scroll"><i class="fa fa-database fa-fw"></i> Öppna data</a></li>
                             <li><a href="#moreinfo" class="btn btn-moreinfo btn-lg scroll"><i class="fa fa-info-circle fa-fw"></i> Läs mer</a></li>
                         </ul>
-                    </div>
+                    </nav>
                 </div>
             </div>
         </div>
-    </header>
+    </div>
+</header>
 
+<main>
     <section class="container section">
         <div class="row">
             <div class="col-xs-12 col-sm-6">
@@ -200,11 +202,11 @@
         {% for chunk in articles|chunks:2 %}
             <div class="row {% if forloop.counter > 2 %}row-article hidden{% endif %}">
                 {% for article in chunk %}
-                    <div class="col-xs-12 col-sm-6 subsection-article">
+                    <article class="col-xs-12 col-sm-6 subsection-article">
                         <h2 class="subsection-title">{{ article.title }}</h2>
                         <p class="subsection-text">{{ article.content }}</p>
                         <p class="subsection-footer"><i>Publicerad {{ article.date_published }}.</i></p>
-                    </div>
+                    </article>
                 {% endfor %}
             </div>
 
@@ -217,6 +219,7 @@
             {% endif %}
         {% endfor %}
     </section>
+</main>
 {% endblock %}
 
 {% block footer %}

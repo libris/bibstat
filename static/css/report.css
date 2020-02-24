@@ -154,6 +154,7 @@ th.observation-extra {
 .libraries {
     border-left: 1px solid #d6d6d6 !important;
     padding-left: 15px;
+    list-style-type: none;
 }
 
 tr.sum td:not(.observation-label) {

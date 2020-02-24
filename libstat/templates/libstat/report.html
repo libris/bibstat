@@ -8,20 +8,21 @@
                 <div class="row">
                     <div class="col-md-10 col-md-offset-1">
                         <img class="intro-logo" src="/static/img/kb.svg" alt="Kungliga bibliotekets logotyp">
-
                         <h1 class="intro-title">Biblioteksstatistik</h1>
-                        <a href="{{ previous_url }}" class="btn btn-reports btn-lg">
-                            <i class="fa fa-arrow-circle-left fa-fw"></i> Till rapportvalen
-                        </a>
-                        <a href="{% url "index" %}" class="btn btn-reports btn-lg">
-                            <i class="fa fa-arrow-circle-left fa-fw"></i> Till startsidan</a>
+                        <nav>
+                            <a href="{{ previous_url }}" class="btn btn-reports btn-lg">
+                                <i class="fa fa-arrow-circle-left fa-fw"></i> Till rapportvalen
+                            </a>
+                            <a href="{% url "index" %}" class="btn btn-reports btn-lg">
+                                <i class="fa fa-arrow-circle-left fa-fw"></i> Till startsidan</a>
+                        </nav>
                     </div>
                 </div>
             </div>
         </div>
     </header>
 
-    <div class="report">
+    <main class="report">
         <h2 class="section-title scroll-start">Verksamhetsrapport {{ year }}</h2>
         {% if municipality_code or principal %}
             <p class="section-text">Denna rapport gäller för:</p>
@@ -43,23 +44,23 @@
         {% else %}
             <p class="section-text">Denna rapport gäller för bibliotek:</p>
             <div class="row library-section">
-                <div class="col-md-6 libraries">
+                <ul class="col-md-6 libraries">
                     {% for library in libraries|two_parts|first %}
-                        <div class="library">
+                        <li class="library">
                             {{ library.name }}{% if library.address %} | {{ library.address }}{% endif %}
                             {% if library.city %} |
-                                {{ library.city }}{% endif %}</div>
+                                {{ library.city }}{% endif %}</li>
                     {% endfor %}
-                </div>
+                        </ul>
                 {% if libraries|two_parts|last|length > 0 %}
-                    <div class="col-md-6 libraries">
+                    <ul class="col-md-6 libraries">
                         {% for library in libraries|two_parts|last %}
-                            <div class="library">
+                            <li class="library">
                                 {{ library.name }}{% if library.address %} | {{ library.address }}{% endif %}
                                 {% if library.city %} |
-                                    {{ library.city }}{% endif %}</div>
+                                    {{ library.city }}{% endif %}</li>
                         {% endfor %}
-                    </div>
+                            </ul>
                 {% endif %}
             </div>
         {% endif %}
@@ -85,7 +86,7 @@
                             <th class="observation-previous-year">{{ group.years.1 }}</th>
                             <th class="observation-sample-year">{{ group.years.2 }}</th>
                             <th class="observation-difference">Utveckling<br>{{ group.years.1 }} - {{ group.years.2 }}</th>
-                           <!-- <th class="observation-difference-total">Andel av riket</th> -->
+                            <!-- <th class="observation-difference-total">Andel av riket</th> -->
                             <th class="observation-extra">{{ group.extra|default:"" }}</th>
                         </tr>
                         {% for row in group|access:"rows" %}
@@ -105,20 +106,20 @@
                             </tr>
                             {% else %}
                                 <tr class="{% if row.is_key_figure %} key-figure
-                                           {% elif row.is_sum %} sum
-                                           {% endif %}
-                                           {% if forloop.counter|divisibleby:2 %} even
-                                           {% else %} odd
-                                           {% endif %}">
+                                            {% elif row.is_sum %} sum
+                                            {% endif %}
+                                            {% if forloop.counter|divisibleby:2 %} even
+                                            {% else %} odd
+                                            {% endif %}">
                                     <td class="observation-label">
                                         {{ row|access:"label" }}
                                         {% if row|access:"description" %}
                                             <a type="button" class="report-explanation btn-help"
-                                               href="#"
-                                               tabindex="-1"
-                                               data-toggle="popover" data-placement="top"
-                                               data-content="{{ row|access:"description" }}"
-                                               data-trigger="click">
+                                                href="#"
+                                                tabindex="-1"
+                                                data-toggle="popover" data-placement="top"
+                                                data-content="{{ row|access:"description" }}"
+                                                data-trigger="click">
                                                 <i class="fa fa-question-circle"></i>
                                             </a>
                                         {% endif %}
@@ -179,7 +180,7 @@
                                             &mdash;
                                         {% endif %}
                                     </td>
-                                   <!-- <td class="observation-difference-total">
+                                    <!-- <td class="observation-difference-total">
                                         {% if row.nation_diff != None %}
                                             {{ row.nation_diff|floatformat:"0" }}&permil;
                                             {% if group.years.2 in row|access:'incomplete_data' %}
@@ -203,11 +204,11 @@
                 </div>
                 {% if group.show_chart %}
                     <div id="chart-{{ forloop.counter }}"
-                         class="chart"
-                         data-years="{{ group.years|as_json }}"
-                         data-chart='{{ group.rows|show_in_chart|as_json }}'></div>
+                        class="chart"
+                        data-years="{{ group.years|as_json }}"
+                        data-chart='{{ group.rows|show_in_chart|as_json }}'></div>
                 {% endif %}
             {% endfor %}
         </div>
-    </div>
+    </main>
 {% endblock %}

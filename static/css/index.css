@@ -158,7 +158,8 @@ hr {
     }
 }
 
-.section .row div {
+.section .row div,
+.section .row article {
     margin-top: 35px;
 }
 
