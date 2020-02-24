@@ -358,6 +358,7 @@ define(['jquery', 'bootbox', 'survey.sum', 'survey.cell', 'surveys.dispatch', 'b
 
                 }).on('error.validator.bv', function (e, data) { // http://bootstrapvalidator.com/examples/changing-default-behaviour/#showing-one-message-each-time
 
+                    isDirty = true;
                     var submit_action = $('#submit_action').val();
                     var showValMessage = $('#valMessageShown').val();
 
@@ -391,6 +392,7 @@ define(['jquery', 'bootbox', 'survey.sum', 'survey.cell', 'surveys.dispatch', 'b
                     if (!submit_action)
                         return;
 
+                    isDirty = true;
                     $('#valMessageShown').val('false');
 
                     var continuePosting = true; //continue posting if sum checks are passed
@@ -541,11 +543,11 @@ define(['jquery', 'bootbox', 'survey.sum', 'survey.cell', 'surveys.dispatch', 'b
                         // On successful form-format-validation and sum checks, if submit_action -> ajax post form
 
                         if (submit_action == "save") {
-                            $('#save-survey-btn').html('<i class="fa fa-spinner fa-spin"></i> Sparar...');
+                            $('#save-survey-btn').html('<i class="fa fa-spinner fa-spin"></i> Sparar... (STÄNG EJ WEBBLÄSARFLIKEN)');
                         } else if (submit_action == "presubmit") {
-                            $('#submit-survey-button').html('<i class="fa fa-spinner fa-spin"></i> Sparar...');
+                            $('#submit-survey-button').html('<i class="fa fa-spinner fa-spin"></i> Sparar... (STÄNG EJ WEBBLÄSARFLIKEN)');
                         } else if (submit_action == "submit") {
-                            $('#submit-survey-button').html('<i class="fa fa-spinner fa-spin"></i> Skickar...');
+                            $('#submit-survey-button').html('<i class="fa fa-spinner fa-spin"></i> Skickar... (STÄNG EJ WEBBLÄSARFLIKEN)');
                         }
 
                         $('#altered_fields').val(survey.changeableInputs().filter(function () {
@@ -757,6 +759,7 @@ define(['jquery', 'bootbox', 'survey.sum', 'survey.cell', 'surveys.dispatch', 'b
                 survey.form('#save-survey-btn').click(function (e) {
                     e.preventDefault();
 
+                    isDirty = true;
                     $('#submit_action').val('save');
 
                     if ($('#valMessageShown').length) {
@@ -769,7 +772,7 @@ define(['jquery', 'bootbox', 'survey.sum', 'survey.cell', 'surveys.dispatch', 'b
                     var saveButtonHtml = saveButton.html();
                     var otherButtons = $('#submit-survey-btn,#print-survey-btn');
 
-                    saveButton.html('<i class="fa fa-spinner fa-spin"></i> Kontrollerar...').addClass('disabled');
+                    saveButton.html('<i class="fa fa-spinner fa-spin"></i> Kontrollerar... (STÄNG EJ WEBBLÄSARFLIKEN)').addClass('disabled');
                     otherButtons.addClass('disabled');
 
                     setTimeout(function () {
@@ -785,6 +788,7 @@ define(['jquery', 'bootbox', 'survey.sum', 'survey.cell', 'surveys.dispatch', 'b
                 survey.form('#submit-survey-btn').click(function (e) {
                     e.preventDefault();
 
+                    isDirty = true;
                     $('#submit_action').val('presubmit');
 
                     if ($('#valMessageShown').length) {
@@ -797,7 +801,7 @@ define(['jquery', 'bootbox', 'survey.sum', 'survey.cell', 'surveys.dispatch', 'b
                     var submitButtonHtml = submitButton.html();
                     var otherButtons = $('#save-survey-btn,#print-survey-btn');
 
-                    submitButton.html('<i class="fa fa-spinner fa-spin"></i> Kontrollerar...').addClass('disabled');
+                    submitButton.html('<i class="fa fa-spinner fa-spin"></i> Kontrollerar... (STÄNG EJ WEBBLÄSARFLIKEN)').addClass('disabled');
                     otherButtons.addClass('disabled');
 
                     setTimeout(function () {
@@ -846,6 +850,7 @@ define(['jquery', 'bootbox', 'survey.sum', 'survey.cell', 'surveys.dispatch', 'b
                 $('#confirm-submit-survey-btn').click(function (e) {
                     e.preventDefault();
 
+                    isDirty = true;
                     $('#submit_action').val('submit');
 
                     setTimeout(function () {
