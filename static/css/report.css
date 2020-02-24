@@ -72,6 +72,10 @@
     margin-right: 0px;
 }
 
+label {
+    font-weight: initial;
+}
+
 th {
     color: white !important;
     text-align: left;

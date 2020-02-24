@@ -173,13 +173,14 @@
                                 <tbody>
                                 {% for survey in surveys %}
                                     <tr>
-                                        <td width="20px">
+                                        <td>
                                             <input type="checkbox" name="surveys" class="checkbox-survey"
-                                                   value="{{ survey.library.sigel }}" style="margin-right: 5px;">
+                                                value="{{ survey.library.sigel }}" id="{{ survey.library.sigel }}" >
                                         </td>
                                         <td>
                                             {% for sigel in survey.selected_libraries %}
-                                                {{ library_name_for_sigel|access:sigel }}{% if not forloop.last %},
+                                                <label for="{{ survey.library.sigel }}">{{ library_name_for_sigel|access:sigel }}{% if not forloop.last %},
+                                                </label>
                                                 {% endif %}
                                             {% endfor %}
                                         </td>
