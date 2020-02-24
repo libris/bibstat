@@ -12,10 +12,10 @@
                     <p class="intro-text">Biblioteksstatistiken visar uppgifter om de offentligt finansierade bibliotekens verksamhet. Alla bibliotekstyper som finansieras av staten, en kommun eller ett landsting ingår.</p>
                     <nav>
                         <ul class="list-inline intro-buttons">
-                            <li><a href="#articles" class="btn btn-articles btn-lg scroll"><i class="fa fa-newspaper-o fa-fw"></i> Om statistiken</a></li>
-                            <li><a href="#reports" class="btn btn-reports btn-lg scroll"><i class="fa fa-line-chart fa-fw"></i> Rapporter</a></li>
-                            <li><a href="#opendata" class="btn btn-opendata btn-lg scroll"><i class="fa fa-database fa-fw"></i> Öppna data</a></li>
-                            <li><a href="#moreinfo" class="btn btn-moreinfo btn-lg scroll"><i class="fa fa-info-circle fa-fw"></i> Läs mer</a></li>
+                            <li><a href="#articles" class="btn btn-articles btn-lg scroll" role="button"><i class="fa fa-newspaper-o fa-fw"></i> Om statistiken</a></li>
+                            <li><a href="#reports" class="btn btn-reports btn-lg scroll" role="button"><i class="fa fa-line-chart fa-fw"></i> Rapporter</a></li>
+                            <li><a href="#opendata" class="btn btn-opendata btn-lg scroll" role="button"><i class="fa fa-database fa-fw"></i> Öppna data</a></li>
+                            <li><a href="#moreinfo" class="btn btn-moreinfo btn-lg scroll" role="button"><i class="fa fa-info-circle fa-fw"></i> Läs mer</a></li>
                         </ul>
                     </nav>
                 </div>
@@ -179,7 +179,7 @@
 
                 {% if open_data_years %}
                 <form class="form form-inline" method="get" action="{% url "export_api" %}">
-                    <select name="sample_year" class="form-control">
+                    <select aria-label="Välj år" name="sample_year" class="form-control">
                         {% for year in open_data_years %}
                             <option value="{{ year }}">{{ year }}</option>
                         {% endfor %}
@@ -202,8 +202,8 @@
         {% for chunk in articles|chunks:2 %}
             <div class="row {% if forloop.counter > 2 %}row-article hidden{% endif %}">
                 {% for article in chunk %}
-                    <article class="col-xs-12 col-sm-6 subsection-article">
-                        <h2 class="subsection-title">{{ article.title }}</h2>
+                    <article class="col-xs-12 col-sm-6 subsection-article" aria-labelledby="article-{{forloop.parentloop.counter}}-{{forloop.counter}}">
+                        <h2 id="article-{{forloop.parentloop.counter}}-{{forloop.counter}}" class="subsection-title">{{ article.title }}</h2>
                         <p class="subsection-text">{{ article.content }}</p>
                         <p class="subsection-footer"><i>Publicerad {{ article.date_published }}.</i></p>
                     </article>

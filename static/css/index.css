@@ -329,7 +329,6 @@ dd:last-child {
 .btn-articles-expand:hover,
 .btn-articles-expand:focus {
     border: 1px solid rgb(102, 102, 103);
-    outline: 0;
     color: white;
     background-color: rgb(102, 102, 103);
 }

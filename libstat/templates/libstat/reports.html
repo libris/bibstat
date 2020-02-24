@@ -82,7 +82,7 @@
                             {% csrf_token %}
 
                             <div id="reports-filter-selection" class="form-group">
-                                <select name="sample_year" class="form-control">
+                                <select name="sample_year" aria-label="Välj år" class="form-control">
                                     {% for year in sample_years %}
                                         <option value="{{ year }}"
                                                 {% ifequal year|slugify sample_year %}
@@ -92,7 +92,7 @@
                                         </option>
                                     {% endfor %}
                                 </select>
-                                <select name="municipality_code" class="form-control">
+                                <select name="municipality_code" class="form-control" aria-label="Välj kommun">
                                     {% comment %}
                                         <option value=""
                                                 {% if not municipality_codes or not municipality_code %}
@@ -110,7 +110,7 @@
                                         </option>
                                     {% endfor %}
                                 </select>
-                                <select name="principal" class="form-control">
+                                <select name="principal" class="form-control" aria-label="Välj huvudman">
                                     <option value=""
                                             {% if not principals or not principal %}
                                             selected="selected"
