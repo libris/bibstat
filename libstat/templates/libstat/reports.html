@@ -68,7 +68,7 @@
             <div class="row">
                 <div class="col-xs-12 col-sm-11 col-lg-8 reports-selection-group {% if sample_year %}scroll-start{% endif %}">
                     {% if sample_years|length > 0 %}
-                        <h2 class="subsection-title">Välj den biblioteksverksamhet som ska ingå i rapporten</h2>
+                        <h2 id="reports-selection-header" class="subsection-title">Välj den biblioteksverksamhet som ska ingå i rapporten</h2>
                         {% if message %}
                             <div class="row row-inside">
                                 <div class="col-xs-12 col-sm-10 col-lg-8 col-inside">
@@ -81,7 +81,7 @@
                         <form class="form form-inline" action="" method="get">
                             {% csrf_token %}
 
-                            <div id="reports-filter-selection" class="form-group">
+                            <div id="reports-filter-selection" class="form-group" role="group" aria-labelledby="reports-selection-header">
                                 <select name="sample_year" aria-label="Välj år" class="form-control">
                                     {% for year in sample_years %}
                                         <option value="{{ year }}"
@@ -129,13 +129,13 @@
                                 <button type="submit" class="btn btn-reports">Visa bibliotek</button>
                             </div>
                             {% if surveys|length > 0 %}
-                                <div id="reports-filter-info" class="subsection-text">Visar de {{ surveys|length }}
+                                <p id="reports-filter-info" class="subsection-text">Visar de {{ surveys|length }}
                                     bibliotek som
                                     svarat år
                                     <i>{{ sample_year }}</i>{% if municipality_name %} i
                                         <i>{{ municipality_name }}</i>{% endif %}{% if principal %} och har
                                         <i>{{ principal }}</i> som huvudman{% endif %}.
-                                </div>
+                                </p>
                             {% endif %}
                         </form>
                     {% else %}
@@ -156,7 +156,7 @@
                             <h2 class="subsection-title">Välj de bibliotek som ska ingå i rapporten</h2>
 
                             <div id="reports-library-selection" class="form-group">
-                                <button type="button" class="btn btn-default btn-checked">
+                                <button class="btn btn-default btn-checked">
                                     Markera alla
                                 </button>
                                 <button id="form-libraries-submit" type="submit" class="btn btn-reports">Visa
@@ -180,11 +180,12 @@
                                                 value="{{ survey.library.sigel }}" id="{{ survey.library.sigel }}" >
                                         </td>
                                         <td>
-                                            {% for sigel in survey.selected_libraries %}
-                                                <label for="{{ survey.library.sigel }}">{{ library_name_for_sigel|access:sigel }}{% if not forloop.last %},
-                                                </label>
-                                                {% endif %}
-                                            {% endfor %}
+                                            <label for="{{ survey.library.sigel }}">
+                                                {% for sigel in survey.selected_libraries %}
+                                                    {{ library_name_for_sigel|access:sigel }}{% if not forloop.last %},
+                                                    {% endif %}
+                                                {% endfor %}
+                                            </label>
                                         </td>
                                     </tr>
                                 {% endfor %}
