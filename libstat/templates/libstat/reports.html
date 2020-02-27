@@ -58,7 +58,7 @@
         {% if not sample_years %}
             <div class="row row-inside">
                 <div class="col-xs-12 col-sm-10 col-lg-8 col-inside reports-selection-group">
-                    <div class="alert alert-danger alert-reports" role="alert">
+                    <div class="alert alert-danger alert-reports" role="alert" aria-live="assertive">
                         <p><span class='fa fa-warning fa-fw' aria-hidden="true"></span>Det finns ingen publicerad data att generera rapporter
                             utifrån.</p>
                     </div>
@@ -72,7 +72,7 @@
                         {% if message %}
                             <div class="row row-inside">
                                 <div class="col-xs-12 col-sm-10 col-lg-8 col-inside">
-                                    <div class="alert alert-danger alert-reports" role="alert">
+                                    <div class="alert alert-danger alert-reports" role="alert" aria-live="assertive">
                                         <p><i class='fa fa-warning fa-fw'></i> {{ message|linebreaksbr }}</p>
                                     </div>
                                 </div>
@@ -168,7 +168,7 @@
                             </div>
                             <div class="row row-inside row-alert hidden">
                                 <div class="col-xs-12 col-sm-10 col-lg-8 col-inside">
-                                    <div class="alert alert-danger alert-reports" role="alert">
+                                    <div class="alert alert-danger alert-reports" role="alert" aria-live="assertive">
                                         <p><i class='fa fa-warning fa-fw'></i> Du måste välja minst ett
                                             biblioteken i listan.</p>
                                     </div>
