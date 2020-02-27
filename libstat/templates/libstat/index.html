@@ -7,15 +7,15 @@
         <div class="container">
             <div class="row">
                 <div class="col-md-10 col-md-offset-1">
-                    <img src="/static/img/kb.svg" class="intro-logo" alt="Kungliga bibliotekets logotyp">
+                    <img src="/static/img/kb.svg" class="intro-logo" alt="Kungliga biblioteket">
                     <h1 class="intro-title">Biblioteksstatistik{% if environment and environment != 'prod' %} *** {{ environment }} ***{% endif %}</h1>
                     <p class="intro-text">Biblioteksstatistiken visar uppgifter om de offentligt finansierade bibliotekens verksamhet. Alla bibliotekstyper som finansieras av staten, en kommun eller ett landsting ingår.</p>
                     <nav>
                         <ul class="list-inline intro-buttons">
-                            <li><a href="#articles" class="btn btn-articles btn-lg scroll" role="button"><i class="fa fa-newspaper-o fa-fw"></i> Om statistiken</a></li>
-                            <li><a href="#reports" class="btn btn-reports btn-lg scroll" role="button"><i class="fa fa-line-chart fa-fw"></i> Rapporter</a></li>
-                            <li><a href="#opendata" class="btn btn-opendata btn-lg scroll" role="button"><i class="fa fa-database fa-fw"></i> Öppna data</a></li>
-                            <li><a href="#moreinfo" class="btn btn-moreinfo btn-lg scroll" role="button"><i class="fa fa-info-circle fa-fw"></i> Läs mer</a></li>
+                            <li><a href="#articles" class="btn btn-articles btn-lg scroll" role="button"><span class="fa fa-newspaper-o fa-fw" aria-hidden="true"></span> Om statistiken</a></li>
+                            <li><a href="#reports" class="btn btn-reports btn-lg scroll" role="button"><span class="fa fa-line-chart fa-fw" aria-hidden="true"></span> Rapporter</a></li>
+                            <li><a href="#opendata" class="btn btn-opendata btn-lg scroll" role="button"><span class="fa fa-database fa-fw" aria-hidden="true"></span> Öppna data</a></li>
+                            <li><a href="#moreinfo" class="btn btn-moreinfo btn-lg scroll" role="button"><span class="fa fa-info-circle fa-fw" aria-hidden="true"></span> Läs mer</a></li>
                         </ul>
                     </nav>
                 </div>
@@ -28,12 +28,12 @@
     <section class="container section">
         <div class="row">
             <div class="col-xs-12 col-sm-6">
-                <h2 id="articles" class="section-title"><i class="fa fa-newspaper-o fa-fw color-articles"></i> Om statistiken</h2>
+                <h2 id="articles" class="section-title"><span class="fa fa-newspaper-o fa-fw color-articles" aria-hidden="true"></span> Om statistiken</h2>
                 <p class="section-text">Regeringen utsåg 2011 KB till statistikansvarig myndighet för den officiella biblioteksstatistiken. Statistiken samlas in varje år och gäller då det föregående kalenderåret.</p>
                 <a href="#articles-section" class="btn btn-articles btn-lg scroll-section">Läs mer om statistiken</a>
             </div>
             <div class="col-xs-12 col-sm-6">
-                <h2 id="reports" class="section-title"><i class="fa fa-line-chart fa-fw color-reports"></i> Rapporter</h2>
+                <h2 id="reports" class="section-title"><span class="fa fa-line-chart fa-fw color-reports" aria-hidden="true"></span> Rapporter</h2>
                 <p class="section-text">Utifrån publicerad data finns möjligheten att ta fram rapporter för biblioteksverksamheten. Dessa verksamhetsrapporter kan tas fram för hela landet, för län, kommuner eller enskilda bibliotek.</p>
                 <a href="{% url "reports" %}" class="btn btn-reports btn-lg">Till rapporterna &raquo;</a>
             </div>
@@ -43,15 +43,14 @@
     <section class="container section">
         <div class="row">
             <div class="col-xs-12 col-sm-6">
-                <h2 id="opendata" class="section-title"><i class="fa fa-database fa-fw color-opendata"></i> Öppna data</h2>
+                <h2 id="opendata" class="section-title"><span class="fa fa-database fa-fw color-opendata" aria-hidden="true"></span> Öppna data</h2>
                 <p class="section-text">För att göra insamlad data mer tillgänglig för allmänheten, så går all publicerad data att komma åt som öppna data. Det är denna data som används för verksamhetsrapporterna.</p>
                 <a href="#opendata-section" class="btn btn-opendata btn-lg scroll-section">Läs mer om öppna data</a>
             </div>
             <div class="col-xs-12 col-sm-6">
-                <h2 id="moreinfo" class="section-title"><i class="fa fa-info-circle fa-fw color-moreinfo"></i> Läs mer</h2>
+                <h2 id="moreinfo" class="section-title"><span class="fa fa-info-circle fa-fw color-moreinfo" aria-hidden="true"></span> Läs mer</h2>
                 <p class="section-text">Om du är nyfiken och vill veta mer om biblioteksstatistik, så finns det mycket att läsa på 
-                    <a href="{{ blog_url }}">Biblioteksstatistikbloggen 
-                        <i class="fa fa-external-link"></i></a>. Där publiceras fortlöpande information runt insamlingarna.</p>
+                    <a href="{{ blog_url }}">Biblioteksstatistikbloggen</a>. Där publiceras fortlöpande information runt insamlingarna.</p>
                 <a href="{{ blog_url }}" class="btn btn-moreinfo btn-lg">Vidare till bloggen &raquo;</a>
             </div>
         </div>
@@ -62,7 +61,7 @@
 
         <div class="row">
             <div class="col-xs-12 col-sm-10 col-lg-8 subsection-articles">
-                <h2 class="section-title"><i class="fa fa-newspaper-o fa-fw color-articles"></i> Om statistiken</h2>
+                <h2 class="section-title"><span class="fa fa-newspaper-o fa-fw color-articles" aria-hidden="true"></span> Om statistiken</h2>
                 <p class="subsection-text" style="margin-bottom: 0;">Regeringen utsåg 2011 KB till statistikansvarig myndighet för den officiella biblioteksstatistiken. Statistiken samlas in varje år och gäller då det föregående kalenderåret. De bibliotek som ingår i den officiella bibliotekstatistiken är de offentligt finansierade biblioteken. Från och med den statistik som samlas in under 2015 har de variabler som efterfrågas och urvalsramen förändrats något jämfört med tidigare år.</p>
             </div>
         </div>
@@ -88,7 +87,7 @@
 
         <div class="row">
             <div class="col-xs-12 col-sm-10 col-lg-8 subsection-opendata">
-                <h2 class="section-title"><i class="fa fa-database fa-fw color-opendata"></i> Öppna data</h2>
+                <h2 class="section-title"><span class="fa fa-database fa-fw color-opendata" aria-hidden="true"></span> Öppna data</h2>
                 <p class="subsection-text">
                     Den officiella biblioteksstatistiken finns tillgänglig som öppen länkad data via Kungliga
                     Bibliotekets API:er. Data finns för folkbibliotek, forskningsbibliotek, sjukhusbibliotek
@@ -215,7 +214,7 @@
             {% if forloop.counter == 3 %}
                 <div class="row">
                     <div class="col-xs-12">
-                        <button class="btn btn-lg btn-articles-expand"><i class="fa fa-plus-circle fa-fw"></i> Visa tidigare inlägg</button>
+                        <button class="btn btn-lg btn-articles-expand"><span class="fa fa-plus-circle fa-fw" aria-hidden="true"></span> Visa tidigare inlägg</button>
                     </div>
                 </div>
             {% endif %}

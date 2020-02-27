@@ -7,14 +7,14 @@
             <div class="container">
                 <div class="row">
                     <div class="col-md-10 col-md-offset-1">
-                        <img class="intro-logo" src="/static/img/kb.svg" alt="Kungliga bibliotekets logotyp">
+                        <img class="intro-logo" src="/static/img/kb.svg" alt="Kungliga biblioteket">
                         <h1 class="intro-title">Biblioteksstatistik</h1>
                         <nav>
                             <a href="{{ previous_url }}" class="btn btn-reports btn-lg">
-                                <i class="fa fa-arrow-circle-left fa-fw"></i> Till rapportvalen
+                                <span class="fa fa-arrow-circle-left fa-fw" aria-hidden="true"></span> Till rapportvalen
                             </a>
                             <a href="{% url "index" %}" class="btn btn-reports btn-lg">
-                                <i class="fa fa-arrow-circle-left fa-fw"></i> Till startsidan</a>
+                                <span class="fa fa-arrow-circle-left fa-fw" aria-hidden="true"></span> Till startsidan</a>
                         </nav>
                     </div>
                 </div>
@@ -80,9 +80,9 @@
         <div class="row measurements">
             {% for group in measurements %}
                 <div class="observation-group">
-                    <table class="observation">
+                    <table class="observation" aria-describedby="observation-label-{{forloop.counter}}">
                         <tr>
-                            <th class="observation-label">{{ group.title }}</th>
+                            <th class="observation-label" id="observation-label-{{forloop.counter}}">{{ group.title }}</th>
                             <th class="observation-previous-previous-year">{{ group.years.0 }}</th>
                             <th class="observation-previous-year">{{ group.years.1 }}</th>
                             <th class="observation-sample-year">{{ group.years.2 }}</th>
@@ -124,7 +124,7 @@
                                                 data-content="{{ row|access:"description" }}"
                                                 data-trigger="focus"
                                                 aria-label="Hjälp">
-                                                <i class="fa fa-question-circle"></i>
+                                                <span class="fa fa-question-circle" aria-hidden="true"></span>
                                             </a>
                                         {% endif %}
                                     </td>
