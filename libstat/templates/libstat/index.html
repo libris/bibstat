@@ -180,7 +180,8 @@
 
                 {% if open_data_years %}
                 <form class="form form-inline" method="get" action="{% url "export_api" %}">
-                    <select aria-label="Välj år" name="sample_year" class="form-control">
+                    <label class="sr-only" for="sample-year">Välj år</label>
+                    <select id="sample-year" name="sample_year" class="form-control">
                         {% for year in open_data_years %}
                             <option value="{{ year }}">{{ year }}</option>
                         {% endfor %}

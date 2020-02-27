@@ -82,7 +82,8 @@
                             {% csrf_token %}
 
                             <div id="reports-filter-selection" class="form-group" role="group" aria-labelledby="reports-selection-header">
-                                <select name="sample_year" aria-label="Välj år" class="form-control">
+                                <label class="sr-only" for="select-sample-year">År</label>
+                                <select id="select-sample-year" name="sample_year" class="form-control">
                                     {% for year in sample_years %}
                                         <option value="{{ year }}"
                                                 {% ifequal year|slugify sample_year %}
@@ -92,7 +93,8 @@
                                         </option>
                                     {% endfor %}
                                 </select>
-                                <select name="municipality_code" class="form-control" aria-label="Välj kommun">
+                                <label class="sr-only" for="select-municipality-code">Kommun</label>
+                                <select id="select-municipality-code" name="municipality_code" class="form-control">
                                     {% comment %}
                                         <option value=""
                                                 {% if not municipality_codes or not municipality_code %}
@@ -110,7 +112,8 @@
                                         </option>
                                     {% endfor %}
                                 </select>
-                                <select name="principal" class="form-control" aria-label="Välj huvudman">
+                                <label class="sr-only" for="select-principal">Huvudman</label>
+                                <select id="select-principal" name="principal" class="form-control">
                                     <option value=""
                                             {% if not principals or not principal %}
                                             selected="selected"
