@@ -161,7 +161,7 @@
                                                                 <!-- Skip dropdown for inputs in first group of first section. -->
                                                                 {% if not forloop.parentloop.parentloop.parentloop.first or not forloop.parentloop.parentloop.first %}
                                                                     {% with variable=form|access:cell.variable_key %}
-                                                                        <button type="button" class="btn btn-default btn-dropdown dropdown-toggle" data-toggle="dropdown" tabindex="-1"{% if form.is_read_only %} disabled{% endif %} title="Visa alternativ"><span class="caret"></span></button>
+                                                                        <button class="btn btn-default btn-dropdown dropdown-toggle" data-toggle="dropdown" {% if form.is_read_only %} disabled{% endif %} title="Visa alternativ"><span class="caret"></span></button>
                                                                         <ul class="dropdown-menu dropdown-menu-right {% if cell.value_unknown %}value-unknown{% endif %}" role="menu">
                                                                         {% if cell.value_unknown %}
                                                                             <li class="active"><a href="#" class="menu-disable-input">Värdet är okänt</a></li>
