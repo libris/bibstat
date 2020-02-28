@@ -628,10 +628,6 @@ label.sub-label {
         width: 900px;
     }
 
-    #kundo_button_container {
-        display: None !important;
-    }
-
     @page {
         margin: 2.0cm;
     }

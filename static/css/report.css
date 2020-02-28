@@ -15,10 +15,6 @@
         page-break-after: always !important;
     }
 
-    #kundo_button_container {
-        display: None !important;
-    }
-
     @page {
         margin: 2.0cm;
     }
