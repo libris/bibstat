@@ -40,7 +40,7 @@
         {% if not sample_years %}
             <div class="row row-inside">
                 <div class="col-xs-12 col-sm-10 col-lg-8 col-inside reports-selection-group">
-                    <div class="alert alert-danger alert-reports" role="alert" aria-live="assertive">
+                    <div class="alert alert-danger alert-reports" role="alert" aria-live="assertive" aria-atomic="true">
                         <p><span class='fa fa-warning fa-fw' aria-hidden="true"></span>Det finns ingen publicerad data att generera rapporter
                             utifrån.</p>
                     </div>
@@ -54,7 +54,7 @@
                         {% if message %}
                             <div class="row row-inside">
                                 <div class="col-xs-12 col-sm-10 col-lg-8 col-inside">
-                                    <div class="alert alert-danger alert-reports" role="alert" aria-live="assertive">
+                                    <div class="alert alert-danger alert-reports" role="alert" aria-live="assertive" aria-atomic="true">
                                         <p><i class='fa fa-warning fa-fw'></i> {{ message|linebreaksbr }}</p>
                                     </div>
                                 </div>
@@ -75,7 +75,7 @@
                                         </option>
                                     {% endfor %}
                                 </select>
-                                <label class="sr-only" for="select-municipality-code">Kommun</label>
+                                <label class="sr-only" for="select-municipality-code">Län/kommun</label>
                                 <select id="select-municipality-code" name="municipality_code" class="form-control">
                                     {% comment %}
                                         <option value=""
@@ -150,32 +150,27 @@
                             </div>
                             <div class="row row-inside row-alert hidden">
                                 <div class="col-xs-12 col-sm-10 col-lg-8 col-inside">
-                                    <div class="alert alert-danger alert-reports" role="alert" aria-live="assertive">
+                                    <div class="alert alert-danger alert-reports" role="alert" aria-live="assertive" aria-atomic="true">
                                         <p><i class='fa fa-warning fa-fw'></i> Du måste välja minst ett
                                             biblioteken i listan.</p>
                                     </div>
                                 </div>
                             </div>
-                            <table id="reports-library-list" class="table table-hover table-condensed">
-                                <tbody>
-                                {% for survey in surveys %}
-                                    <tr>
-                                        <td>
-                                            <input type="checkbox" name="surveys" class="checkbox-survey"
-                                                value="{{ survey.library.sigel }}" id="{{ survey.library.sigel }}" >
-                                        </td>
-                                        <td>
-                                            <label for="{{ survey.library.sigel }}">
-                                                {% for sigel in survey.selected_libraries %}
-                                                    {{ library_name_for_sigel|access:sigel }}{% if not forloop.last %},
-                                                    {% endif %}
-                                                {% endfor %}
-                                            </label>
-                                        </td>
-                                    </tr>
-                                {% endfor %}
-                                </tbody>
-                            </table>
+                            <fieldset id="reports-library-list">
+                            <legend class="sr-only">Välj de bibliotek som ska ingå i rapporten</legend>
+                            {% for survey in surveys %}
+                                <span class="reports-library checkbox">
+                                    <label>
+                                    <input type="checkbox" name="surveys" class="checkbox-survey"
+                                        value="{{ survey.library.sigel }}">
+                                        {% for sigel in survey.selected_libraries %}
+                                            {{ library_name_for_sigel|access:sigel }}{% if not forloop.last %},
+                                            {% endif %}
+                                        {% endfor %}
+                                    </label>
+                                </span>
+                            {% endfor %}
+                            </fieldset>
                         </form>
                     </div>
                 {% endif %}

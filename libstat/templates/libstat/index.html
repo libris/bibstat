@@ -10,12 +10,12 @@
                     <img src="/static/img/kb.svg" class="intro-logo" alt="Kungliga biblioteket">
                     <h1 class="intro-title">Biblioteksstatistik{% if environment and environment != 'prod' %} *** {{ environment }} ***{% endif %}</h1>
                     <p class="intro-text">Biblioteksstatistiken visar uppgifter om de offentligt finansierade bibliotekens verksamhet. Alla bibliotekstyper som finansieras av staten, en kommun eller ett landsting ingår.</p>
-                    <nav>
-                        <ul class="list-inline intro-buttons">
-                            <li><a href="#articles" class="btn btn-articles btn-lg scroll" role="button"><span class="fa fa-newspaper-o fa-fw" aria-hidden="true"></span> Om statistiken</a></li>
-                            <li><a href="#reports" class="btn btn-reports btn-lg scroll" role="button"><span class="fa fa-line-chart fa-fw" aria-hidden="true"></span> Rapporter</a></li>
-                            <li><a href="#opendata" class="btn btn-opendata btn-lg scroll" role="button"><span class="fa fa-database fa-fw" aria-hidden="true"></span> Öppna data</a></li>
-                            <li><a href="#moreinfo" class="btn btn-moreinfo btn-lg scroll" role="button"><span class="fa fa-info-circle fa-fw" aria-hidden="true"></span> Läs mer</a></li>
+                    <nav aria-label="länkar i sidhuvud">
+                        <ul class="list-inline intro-buttons" role="menu">
+                            <li><a href="#articles" class="btn btn-articles btn-lg scroll" role="menuitem"><span class="fa fa-newspaper-o fa-fw" aria-hidden="true"></span> Om statistiken</a></li>
+                            <li><a href="#reports" class="btn btn-reports btn-lg scroll" role="menuitem"><span class="fa fa-line-chart fa-fw" aria-hidden="true"></span> Rapporter</a></li>
+                            <li><a href="#opendata" class="btn btn-opendata btn-lg scroll" role="menuitem"><span class="fa fa-database fa-fw" aria-hidden="true"></span> Öppna data</a></li>
+                            <li><a href="#moreinfo" class="btn btn-moreinfo btn-lg scroll" role="menuitem"><span class="fa fa-info-circle fa-fw" aria-hidden="true"></span> Läs mer</a></li>
                         </ul>
                     </nav>
                 </div>
