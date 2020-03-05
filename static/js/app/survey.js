@@ -355,6 +355,21 @@ define(['jquery', 'bootbox', 'survey.sum', 'survey.cell', 'surveys.dispatch', 'b
                     excluded: ['.disable-validation', ':disabled', ':hidden', ':not(:visible)'],
                     trigger: 'blur',
                     feedbackIcons: null
+                }).on('status.field.bv', function(e, data) {
+                    // monitor status changes and add accessible attributes accordingly
+                    if (data.status === 'VALID') {
+                        e.target.removeAttribute('aria-invalid');
+                    }
+                    if (data.status === 'INVALID') {
+                        e.target.setAttribute('aria-invalid', 'true');
+                        var parent = e.target.parentElement.parentElement;
+                        if (parent) {
+                            var helpBlock = parent.getElementsByClassName('help-block')[0];
+                            if (helpBlock) {
+                                helpBlock.setAttribute('aria-role', 'alert');
+                            }
+                        }
+                    }
 
                 }).on('error.validator.bv', function (e, data) { // http://bootstrapvalidator.com/examples/changing-default-behaviour/#showing-one-message-each-time
 
