@@ -18,21 +18,21 @@
     <div class="loading"><p><span class="loading-text">Laddar enkät</span><br><br><i class="fa fa-2x fa-spinner fa-spin"></i></p></div>
     <div class="saving" style="display: none;"><p><span class="saving-text">Sparar enkät</span><br><br><i class="fa fa-2x fa-spinner fa-spin"></i></p></div>
 
-    <div class="navbar navbar-default navbar-static-top navbar-library-info" role="navigation">
+    <div class="navbar navbar-default navbar-static-top navbar-library-info">
         <div class="container">
             <div class="navbar-left">
-                <div class="navbar-text">
+                <h1 class="navbar-text">
                     Välkommen till {{ form.sample_year }} års enkät för
                     <b><u>{{ form.library_name }}</u></b>
                     {% if form.city %} i <b><u>{{ form.city }}</u></b>{% endif %}
-                </div>
+                </h1>
             </div>
         </div>
     </div>
     {% if user.is_authenticated and not hide_admin_panel%}
         {% include 'libstat/survey/headers/admin.html' %}
     {% endif %}
-    <div class="container container-survey">
+    <main class="container container-survey">
 
         <div class="jumbotron jumbotron-submitted" {% if form.is_user_read_only %}{% else %} style="display: none;" {% endif %}>
             <h1>Stort tack för att du besvarade biblioteksstatistiken!</h1>
@@ -44,10 +44,10 @@
         </div>
 
         <div class="row">
-            <div class="col-xs-11 col-sm-10 col-md-7">
+            <article class="col-xs-11 col-sm-10 col-md-7">
                 <h2 class="section-title">Läs detta först!</h2>
                 {% include "libstat/survey/questions.html" %}
-            </div>
+            </article>
             <div class="col-xs-1 pull-right">
                 <img src="/static/img/kb-survey.svg" alt="Kungliga biblioteket">
             </div>
@@ -102,9 +102,9 @@
             {% for section in form.sections %}
                 <h2 class="section-title">{{ section.title }}</h2>
                 {% for group in section.groups %}
-                    <div class="panel panel-default">
+                    <fieldset class="panel panel-default">
                         {% if group.description %}
-                            <div class="panel-heading group-heading">
+                            <legend class="panel-heading group-heading">
                                 <div class="row">
                                     <div class="col-sm-8 group-description">
                                     {% with description=group.description|split_into_number_and_body %}
@@ -113,7 +113,7 @@
                                     {% endwith %}
                                     </div>
                                 </div>
-                            </div>
+                            </legend>
                         {% endif %}
 
                         <div class="panel-body group-body">
@@ -139,12 +139,12 @@
                                 {% else %}
 
                                     <div class="row">
-                                        <div class="{% if row.cells and row.cells.0 and row.cells.0.sum_of %}sum-description {% endif %}{% if group.columns <= 2 %}col-sm-4{% elif group.columns == 3 %}col-sm-3{% elif group.columns == 4 %}col-sm-4{% endif %}">
+                                        <label for="{{row.cells.0.variable_key}}" class="form-label {% if row.cells and row.cells.0 and row.cells.0.sum_of %}sum-description {% endif %}{% if group.columns <= 2 %}col-sm-4{% elif group.columns == 3 %}col-sm-3{% elif group.columns == 4 %}col-sm-4{% endif %}">
                                         {{ row.description }}
                                         {% if row.description|length > 70 and not forloop.last %}
                                             <hr class="description-separator">
                                         {% endif %}
-                                        </div>
+                                        </label>
                                         {% for cell in row.cells %}
                                             {% if form|access:cell.variable_key != None %}
                                                 {% if row.cells and row.cells.0 %}
@@ -183,15 +183,15 @@
                                                                         data-content="{{ cell.explanation }}" 
                                                                         title="Förklaring"
                                                                         aria-label="Hjälp">
-                                                                        <i class="fa fa-question"></i>
+                                                                        <span class="fa fa-question" aria-hidden="true"></span>
                                                                     </a>
                                                                 {% endif %}
                                                                 {% if group.columns != 4 %}
                                                                     <div class="tooltip-wrapper" data-title="Föregående års värde">
                                                                         {% if "integer" in cell.types or "decimal" in cell.types %}
-                                                                            <button class="btn btn-default disabled btn-prev-year" tabindex="-1">{% if cell.previous_value != None and cell.previous_value != '' %}{{ cell.previous_value_thousands_separators }}{% else %} &mdash;{% endif %}</button>
+                                                                            <button class="btn btn-default disabled btn-prev-year" aria-label="Föregående års värde" tabindex="-1">{% if cell.previous_value != None and cell.previous_value != '' %}{{ cell.previous_value_thousands_separators }}{% else %} &mdash;{% endif %}</button>
                                                                         {% else %}
-                                                                            <button class="btn btn-default disabled btn-prev-year" tabindex="-1">{% if cell.previous_value != None and cell.previous_value != '' %}{{ cell.previous_value|floatformat:"-2" }}{% else %} &mdash;{% endif %}</button>
+                                                                            <button class="btn btn-default disabled btn-prev-year" aria-label="Föregående års värde" tabindex="-1">{% if cell.previous_value != None and cell.previous_value != '' %}{{ cell.previous_value|floatformat:"-2" }}{% else %} &mdash;{% endif %}</button>
                                                                         {% endif %}
                                                                     </div>
                                                                 {% endif %}
@@ -211,7 +211,7 @@
                                     {% endif %}
                             {% endfor %}
                         </div>
-                    </div>
+                    </fieldset>
                 {% endfor %}
             {% endfor %}
             <div class="panel panel-default">
@@ -267,7 +267,7 @@
                 </div>
             {% endif %}
         </form>
-    </div>
+    </main>
     <div class="modal fade" id="submit-confirm-modal" tabindex="-1" role="dialog" aria-hidden="true" aria-labelledby="confirm-submit-title">
         <div class="modal-dialog">
             <div class="modal-content">

@@ -19,8 +19,7 @@ class SurveyForm(forms.Form):
     def _cell_to_input_field(self, cell, observation, authenticated, variable_type):
         attrs = {"class": "form-control",
                  "id": cell.variable_key,
-                 "name": cell.variable_key,
-                 "aria-labelledby": cell.variable_key}
+                 "name": cell.variable_key}
 
         if cell.sum_of:
             attrs["data-sum-of"] = " ".join(map(lambda s: s, cell.sum_of))
@@ -30,6 +29,7 @@ class SurveyForm(forms.Form):
         if cell.required == True:
             attrs["data-bv-notempty"] = ""
             attrs["placeholder"] = "Obligatorisk"
+            attrs["aria-required"] = "true"
 
         if variable_type in ["integer", "decimal"]:
             # Numerical fields need special treatment with JS because of

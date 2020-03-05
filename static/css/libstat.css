@@ -283,9 +283,11 @@ a[disabled] {
     font-weight: bold;
 }
 
-label.sub-label {
+label.sub-label,
+.form-label {
     font-weight: normal;
 }
+
 
 .jumbotron-password p.alert {
     margin-top: 20px;
@@ -449,6 +451,7 @@ label.sub-label {
     background-color: #007db3 !important;
     color: white !important;
     border-color: #007db3 !important;
+    margin: 0;
 }
 
 .page-survey .panel-footer {
@@ -457,7 +460,7 @@ label.sub-label {
 }
 
 .page-survey .panel {
-    border-color: #007db3 !important;
+    border: 0;
 }
 
 .page-survey .container hr {
