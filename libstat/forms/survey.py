@@ -41,6 +41,13 @@ class SurveyForm(forms.Form):
             else:
                 attrs["data-previous-value"] = 'null'
 
+        if "Namn" in cell.variable_key:
+            attrs["autocomplete"] = "name"
+
+        if "Plan" in cell.variable_key:
+            attrs["type"] = "url"
+            attrs["autocomplete"] = "url"
+
         # Utgifter and Intakter max 999 999 999 or 999 999 999,999
         if "Utgift" in cell.variable_key or "Intakt" in cell.variable_key:
             attrs["data-bv-regexp"] = ""
@@ -68,6 +75,8 @@ class SurveyForm(forms.Form):
             if variable_type == "email":
                 #attrs["data-bv-emailaddress"] = ""
                 attrs["data-bv-regexp"] = ""
+                attrs["autocomplete"] = "email"
+                attrs["type"] = "email"
                 attrs["data-bv-regexp-regexp"] = "^([\w!#$%&'*+/=?`{|}~^-]+(?:\.[\w!#$%&'*+/=?`{|}~^-]+)*@(?:[A-Za-z0-9-]+\.)+[A-Za-z]{2,6})$"
                 attrs["data-bv-regexp-message"] = u"Vänligen mata in en giltig emailadress"
 
@@ -77,6 +86,8 @@ class SurveyForm(forms.Form):
 
             if variable_type == "phonenumber":
                 attrs["data-bv-regexp"] = ""
+                attrs["autocomplete"] = "tel"
+                attrs["type"] = "tel"
                 attrs["data-bv-regexp-regexp"] = "^(-|\+?(\d\d?-?)+\d(\s?\d+)*\d+)$"
                 attrs["data-bv-regexp-message"] = u"Vänligen mata in ett giltigt telefonnummer utan bokstäver och parenteser, t ex 010-709 30 00"
 
