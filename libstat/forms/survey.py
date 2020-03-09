@@ -147,10 +147,10 @@ class SurveyForm(forms.Form):
             }
 
             if self.is_read_only:
-                attrs["disabled"] = "true"
+                attrs["disabled"] = "disabled"
 
             if library.sigel in other_surveys_selected_sigels:
-                attrs["disabled"] = "true"
+                attrs["disabled"] = "disabled"
                 row["comment"] = u"Detta bibliotek rapporteras redan för i en annan enkät."
                 if current_library or library.sigel in this_surveys_selected_sigels:
                     row["comment"] = u"Rapporteringen för detta bibliotek kolliderar med en annan enkät."
@@ -158,14 +158,14 @@ class SurveyForm(forms.Form):
                     del attrs["disabled"]
 
             if current_library:
-                attrs["disabled"] = "true"
+                attrs["disabled"] = "disabled"
                 if not authenticated or library.sigel in this_surveys_selected_sigels:
-                    attrs["checked"] = "true"
+                    attrs["checked"] = "checked"
 
                 if not library.sigel in other_surveys_selected_sigels:
                     row["comment"] = u"Detta är det bibliotek som mottagit denna enkät. Om du samredovisar med andra bibliotek, glöm inte att även kryssa för dem här i listan."
             elif library.sigel in this_surveys_selected_sigels:
-                attrs["checked"] = "true"
+                attrs["checked"] = "checked"
 
             if authenticated:
                 try:
@@ -199,18 +199,18 @@ class SurveyForm(forms.Form):
         body = (
             u"%0D%0A"
             u"----------" + "%0D%0A"
-            u"Var vänlig och låt följande information stå kvar i meddelandet." + "%0D%0A"
+            u"Var%20vänlig%20och%20låt%20följande%20information%20stå%20kvar%20i%20meddelandet." + "%0D%0A"
             u"" + "%0D%0A"
-            u"Bibliotek: {} ({}) i {}".format(self.library_name, self.library_sigel, self.city) + "%0D%0A"
-            u"Kommun/län: {} ({})".format(municipalities.get(self.municipality_code, ""), self.municipality_code) + "%0D%0A"
-            u"Statistikansvarig: {}".format(self.email) + "%0D%0A"
-            u"Insamlingsår: {}".format(self.sample_year) + "%0D%0A"
+            u"Bibliotek:%20{}%20({})%20i%20{}".format(self.library_name, self.library_sigel, self.city) + "%0D%0A"
+            u"Kommun/län:%20{}%20({})".format(municipalities.get(self.municipality_code, ""), self.municipality_code) + "%0D%0A"
+            u"Statistikansvarig:%20{}".format(self.email) + "%0D%0A"
+            u"Insamlingsår:%20{}".format(self.sample_year) + "%0D%0A"
             u"----------"
         )
 
         return (
             u"mailto:biblioteksstatistik@kb.se"
-            u"?subject=Fråga för statistikenkät: {} ({})".format(self.library_name, self.library_sigel) +
+            u"?subject=Fråga%20för%20statistikenkät:%20{}%20({})".format(self.library_name, self.library_sigel) +
             u"&body={}".format(body)
         )
 

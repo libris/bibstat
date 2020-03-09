@@ -474,6 +474,7 @@ label.sub-label,
 .page-survey .group-description {
     font-family: helvetica;
     font-size: 15px;
+    padding: 0;
 }
 
 .page-survey .section-title {
@@ -549,9 +550,7 @@ label.sub-label,
 }
 
 .page-survey .description-separator {
-    margin-top: 10px;
-    margin-bottom: 10px;
-    border: 0px;
+    margin-bottom: 15px;
 }
 
 .page-survey .row-description {

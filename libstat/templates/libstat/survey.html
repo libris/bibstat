@@ -35,7 +35,7 @@
     <main class="container container-survey">
 
         <div class="jumbotron jumbotron-submitted" {% if form.is_user_read_only %}{% else %} style="display: none;" {% endif %}>
-            <h1>Stort tack för att du besvarade biblioteksstatistiken!</h1>
+            <h2>Stort tack för att du besvarade biblioteksstatistiken!</h2>
 
             <p>Enkäten är nu inskickad. Du kan fortfarande se dina inskickade svar, men enkäten är nu låst.<br>
             Om du skulle vilja ändra ett svar i efterhand, kontakta <a href="{{ form.mailto }}">biblioteksstatistik@kb.se</a>.</p>
@@ -105,14 +105,12 @@
                     <fieldset class="panel panel-default">
                         {% if group.description %}
                             <legend class="panel-heading group-heading">
-                                <div class="row">
-                                    <div class="col-sm-8 group-description">
-                                    {% with description=group.description|split_into_number_and_body %}
-                                        <b>{{ description.0 }}</b>
-                                            {{ description.1 }}
-                                    {% endwith %}
-                                    </div>
-                                </div>
+                                <span class="col-sm-8 group-description">
+                                {% with description=group.description|split_into_number_and_body %}
+                                    <b>{{ description.0 }}</b>
+                                        {{ description.1 }}
+                                {% endwith %}
+                                </span>
                             </legend>
                         {% endif %}
 
@@ -139,10 +137,9 @@
                                 {% else %}
 
                                     <div class="row">
-                                        <label for="{{row.cells.0.variable_key}}" class="form-label {% if row.cells and row.cells.0 and row.cells.0.sum_of %}sum-description {% endif %}{% if group.columns <= 2 %}col-sm-4{% elif group.columns == 3 %}col-sm-3{% elif group.columns == 4 %}col-sm-4{% endif %}">
+                                        <label for="{{row.cells.0.variable_key}}" class="description-separator form-label {% if row.cells and row.cells.0 and row.cells.0.sum_of %}sum-description {% endif %}{% if group.columns <= 2 %}col-sm-4{% elif group.columns == 3 %}col-sm-3{% elif group.columns == 4 %}col-sm-4{% endif %}">
                                         {{ row.description }}
                                         {% if row.description|length > 70 and not forloop.last %}
-                                            <hr class="description-separator">
                                         {% endif %}
                                         </label>
                                         {% for cell in row.cells %}
