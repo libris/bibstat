@@ -23,8 +23,8 @@
             <div class="navbar-left">
                 <h1 class="navbar-text">
                     Välkommen till {{ form.sample_year }} års enkät för
-                    <b><u>{{ form.library_name }}</u></b>
-                    {% if form.city %} i <b><u>{{ form.city }}</u></b>{% endif %}
+                    <b>{{ form.library_name }}</b>
+                    {% if form.city %} i <b>{{ form.city }}</b>{% endif %}
                 </h1>
             </div>
         </div>
@@ -182,7 +182,7 @@
                                                                         data-placement="top" 
                                                                         data-content="{{ cell.explanation }}" 
                                                                         title="Förklaring"
-                                                                        aria-label="Hjälp">
+                                                                        aria-label="Förklaring">
                                                                         <span class="fa fa-question" aria-hidden="true"></span>
                                                                     </a>
                                                                 {% endif %}
@@ -273,7 +273,7 @@
             <div class="modal-content">
                 <div class="modal-header">
                     <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Stäng</span></button>
-                    <h4 class="modal-title" id="confirm-submit-title">Är du säker på att du vill skicka in din enkät?</h4>
+                    <h3 class="modal-title" id="confirm-submit-title">Är du säker på att du vill skicka in din enkät?</h3>
                 </div>
                 <div class="modal-body">
                     <p>

@@ -356,21 +356,31 @@ define(['jquery', 'bootbox', 'survey.sum', 'survey.cell', 'surveys.dispatch', 'b
                     trigger: 'blur',
                     feedbackIcons: null
                 }).on('status.field.bv', function(e, data) {
+                    
                     // monitor status changes and add accessible attributes accordingly
-                    if (data.status === 'VALID') {
-                        e.target.removeAttribute('aria-invalid');
-                    }
-                    if (data.status === 'INVALID') {
-                        e.target.setAttribute('aria-invalid', 'true');
-                        var parent = e.target.parentElement.parentElement;
-                        if (parent) {
-                            var helpBlock = parent.getElementsByClassName('help-block')[0];
-                            if (helpBlock) {
-                                helpBlock.setAttribute('aria-role', 'alert');
-                            }
+                    var parent = e.target.parentElement.parentElement;
+                    if (parent) {
+                        if (parent.classList.contains('has-error')) {
+                            var el = parent.querySelector('input');
+                            el.setAttribute('aria-invalid', 'true')
+                            var helpblocks = parent.querySelectorAll('.help-block');
+                            Array.prototype.forEach.call(helpblocks, function(node) {
+                                if (node.getAttribute('data-bv-result') === 'INVALID') {
+                                    node.setAttribute('aria-role', 'alert');
+                                } else node.removeAttribute('aria-role');
+                            })
+                        }
+                        if (parent.classList.contains('has-success')) {
+                            var el = parent.querySelector('input');
+                            el.removeAttribute('aria-invalid');
+                            var helpblocks = parent.querySelectorAll('.help-block');
+                            Array.prototype.forEach.call(helpblocks, function(node){
+                                if (node.getAttribute('data-bv-result') === 'VALID') {
+                                    node.removeAttribute('aria-role');
+                                } 
+                            })
                         }
                     }
-
                 }).on('error.validator.bv', function (e, data) { // http://bootstrapvalidator.com/examples/changing-default-behaviour/#showing-one-message-each-time
 
                     isDirty = true;
