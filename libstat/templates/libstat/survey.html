@@ -23,8 +23,8 @@
             <div class="navbar-left">
                 <h1 class="navbar-text">
                     Välkommen till {{ form.sample_year }} års enkät för
-                    <b>{{ form.library_name }}</b>
-                    {% if form.city %} i <b>{{ form.city }}</b>{% endif %}
+                    <strong>{{ form.library_name }}</strong>
+                    {% if form.city %} i <strong>{{ form.city }}</strong>{% endif %}
                 </h1>
             </div>
         </div>
@@ -109,7 +109,7 @@
                             <legend class="panel-heading group-heading" id="{{group.id}}">
                                 <span class="col-sm-8 group-description">
                                 {% with description=group.description|split_into_number_and_body %}
-                                    <b>{{ description.0 }}</b>
+                                    <strong>{{ description.0 }}</strong>
                                         {{ description.1 }}
                                 {% endwith %}
                                 </span>
@@ -122,7 +122,7 @@
                                     <div class="{% if group.columns == 2 %}col-sm-4{% elif group.columns == 3 %}col-sm-3{% elif group.columns == 4 %}col-sm-4{% endif %}"></div>
                                     {% for header in group.headers %}
                                         <div class="group-header {% if group.columns <= 2 %}col-sm-4{% elif group.columns == 3 %}col-sm-3{% elif group.columns == 4 %}col-sm-2{% endif %}">
-                                            <b>{{ header }}</b>
+                                            <strong>{{ header }}</strong>
                                         </div>
                                     {% endfor %}
                                 </div>
