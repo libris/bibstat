@@ -467,8 +467,12 @@ label.sub-label,
     border-color: #007db3 !important;
 }
 
-.page-survey th {
-    border-bottom-color: #007db3 !important;
+.page-survey .column {
+    border-bottom: 2px solid #007db3 !important;
+}
+
+.page-survey .dropdown-menu > .active > a {
+    background-color: #007db3;
 }
 
 .page-survey .group-description {
