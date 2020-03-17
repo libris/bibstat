@@ -244,6 +244,10 @@ hr {
     color: #2a2a2a;
 }
 
+.subsection-emphasis {
+    font-style: italic;
+}
+
 .subsection-footer {
     color: #2a2a2a;
     font-size: 16px;

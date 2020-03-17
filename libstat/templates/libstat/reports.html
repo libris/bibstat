@@ -10,7 +10,7 @@
                         <img class="intro-logo" src="/static/img/kb.svg" alt="Kungliga biblioteket">
 
                         <h1 class="intro-title">Biblioteksstatistik</h1>
-                        <nav>
+                        <nav aria-label="Huvudmeny">
                             <a href="{% url "index" %}" class="btn btn-reports btn-lg"><span
                                 class="fa fa-arrow-circle-left fa-fw" aria-hidden="true"></span> Tillbaka till startsidan</a>
                         </nav>
@@ -55,7 +55,7 @@
                             <div class="row row-inside">
                                 <div class="col-xs-12 col-sm-10 col-lg-8 col-inside">
                                     <div class="alert alert-danger alert-reports" role="alert" aria-live="assertive" aria-atomic="true">
-                                        <p><i class='fa fa-warning fa-fw'></i> {{ message|linebreaksbr }}</p>
+                                        <p><span class='fa fa-warning fa-fw'></span> {{ message|linebreaksbr }}</p>
                                     </div>
                                 </div>
                             </div>
@@ -117,9 +117,9 @@
                                 <p id="reports-filter-info" class="subsection-text">Visar de {{ surveys|length }}
                                     bibliotek som
                                     svarat år
-                                    <i>{{ sample_year }}</i>{% if municipality_name %} i
-                                        <i>{{ municipality_name }}</i>{% endif %}{% if principal %} och har
-                                        <i>{{ principal }}</i> som huvudman{% endif %}.
+                                    <span class="subsection-emphasis">{{ sample_year }}</span>{% if municipality_name %} i
+                                        <span class="subsection-emphasis">{{ municipality_name }}</span>{% endif %}{% if principal %} och har
+                                        <span class="subsection-emphasis">{{ principal }}</span> som huvudman{% endif %}.
                                 </p>
                             {% endif %}
                         </form>
@@ -151,7 +151,7 @@
                             <div class="row row-inside row-alert hidden">
                                 <div class="col-xs-12 col-sm-10 col-lg-8 col-inside">
                                     <div class="alert alert-danger alert-reports" role="alert" aria-live="assertive" aria-atomic="true">
-                                        <p><i class='fa fa-warning fa-fw'></i> Du måste välja minst ett
+                                        <p><span class='fa fa-warning fa-fw'></span> Du måste välja minst ett
                                             biblioteken i listan.</p>
                                     </div>
                                 </div>

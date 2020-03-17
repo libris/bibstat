@@ -10,7 +10,7 @@
                     <img src="/static/img/kb.svg" class="intro-logo" alt="Kungliga biblioteket">
                     <h1 class="intro-title">Biblioteksstatistik{% if environment and environment != 'prod' %} *** {{ environment }} ***{% endif %}</h1>
                     <p class="intro-text">Biblioteksstatistiken visar uppgifter om de offentligt finansierade bibliotekens verksamhet. Alla bibliotekstyper som finansieras av staten, en kommun eller ett landsting ingår.</p>
-                    <nav aria-label="länkar i sidhuvud">
+                    <nav aria-label="Huvudmeny">
                         <ul class="list-inline intro-buttons" role="menu">
                             <li><a href="#articles" class="btn btn-articles btn-lg scroll" role="menuitem"><span class="fa fa-newspaper-o fa-fw" aria-hidden="true"></span> Om statistiken</a></li>
                             <li><a href="#reports" class="btn btn-reports btn-lg scroll" role="menuitem"><span class="fa fa-line-chart fa-fw" aria-hidden="true"></span> Rapporter</a></li>
@@ -204,7 +204,7 @@
                     <article class="col-xs-12 col-sm-6 subsection-article" aria-labelledby="article-{{forloop.parentloop.counter}}-{{forloop.counter}}">
                         <h2 id="article-{{forloop.parentloop.counter}}-{{forloop.counter}}" class="subsection-title">{{ article.title }}</h2>
                         <p class="subsection-text">{{ article.content }}</p>
-                        <p class="subsection-footer"><i>Publicerad {{ article.date_published }}.</i></p>
+                        <p class="subsection-footer subsection-emphasis">Publicerad {{ article.date_published }}.</p>
                     </article>
                 {% endfor %}
             </div>
