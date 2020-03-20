@@ -366,8 +366,8 @@ define(['jquery', 'bootbox', 'survey.sum', 'survey.cell', 'surveys.dispatch', 'b
                             var helpblocks = parent.querySelectorAll('.help-block');
                             Array.prototype.forEach.call(helpblocks, function(node) {
                                 if (node.getAttribute('data-bv-result') === 'INVALID') {
-                                    node.setAttribute('aria-role', 'alert');
-                                } else node.removeAttribute('aria-role');
+                                    node.setAttribute('role', 'alert');
+                                } else node.removeAttribute('role');
                             })
                         }
                         if (parent.classList.contains('has-success')) {
@@ -376,7 +376,7 @@ define(['jquery', 'bootbox', 'survey.sum', 'survey.cell', 'surveys.dispatch', 'b
                             var helpblocks = parent.querySelectorAll('.help-block');
                             Array.prototype.forEach.call(helpblocks, function(node){
                                 if (node.getAttribute('data-bv-result') === 'VALID') {
-                                    node.removeAttribute('aria-role');
+                                    node.removeAttribute('role');
                                 } 
                             })
                         }
