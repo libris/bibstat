@@ -411,12 +411,11 @@ label.sub-label,
 .page-survey .sum-of {
     position: absolute;
     left: -13px;
-    background: #0066CC;
-    border: 1px solid #0066CC;
+    background: #f29400;
+    border: 1px solid #f29400;
     border-right: 0;
     padding: 5px 2px 7px;
     border-radius: 3px 0 0 3px;
-    color: #fff;
     font-weight: bold;
 
 }
@@ -424,7 +423,7 @@ label.sub-label,
     font-weight: bold;
 }
 .page-survey .final-words {
-    background-color: #0066CC !important;
+    background-color: #f29400 !important;
     font-size: 30px;
     font-weight: bold;
     color: white;
@@ -440,23 +439,21 @@ label.sub-label,
 }
 
 .page-survey .panel-body {
-    background-color: #e8eef1;
-    border-top-color: #0066CC !important;
+    background-color: #ffd18e;
+    border-top-color: #f29400;
     border-bottom: 0px !important;
     border-bottom-left-radius: 3px !important;
     border-bottom-right-radius: 3px !important;
 }
 
 .page-survey .panel-heading {
-    background-color: #0066CC !important;
-    color: white !important;
-    border-color: #0066CC !important;
+    background-color: #f29400;
+    border-color: #f29400;
     margin: 0;
 }
 
 .page-survey .panel-footer {
-    background-color: #0066CC !important;
-    color: white !important;
+    background-color: #f29400;
 }
 
 .page-survey .panel {
@@ -464,11 +461,11 @@ label.sub-label,
 }
 
 .page-survey .container hr {
-    border-color: #0066CC !important;
+    border-color: #f29400
 }
 
 .page-survey .column {
-    border-bottom: 2px solid #0066CC !important;
+    border-bottom: 2px solid #f29400
 }
 
 .page-survey .dropdown-menu > .active > a {
@@ -587,11 +584,11 @@ label.sub-label,
 }
 
 .page-survey .table tbody tr td {
-    border-top-color: #0066CC;
+    border-top-color: #f29400;
 }
 
 .page-survey .jumbotron.jumbotron-submitted {
-    background-color: #0066CC;
+    background-color: #f29400;
     color: white;
 }
 
