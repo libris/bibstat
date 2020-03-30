@@ -411,8 +411,8 @@ label.sub-label,
 .page-survey .sum-of {
     position: absolute;
     left: -13px;
-    background: #007db3;
-    border: 1px solid #007db3;
+    background: #0066CC;
+    border: 1px solid #0066CC;
     border-right: 0;
     padding: 5px 2px 7px;
     border-radius: 3px 0 0 3px;
@@ -424,7 +424,7 @@ label.sub-label,
     font-weight: bold;
 }
 .page-survey .final-words {
-    background-color: #007db3 !important;
+    background-color: #0066CC !important;
     font-size: 30px;
     font-weight: bold;
     color: white;
@@ -441,21 +441,21 @@ label.sub-label,
 
 .page-survey .panel-body {
     background-color: #e8eef1;
-    border-top-color: #007db3 !important;
+    border-top-color: #0066CC !important;
     border-bottom: 0px !important;
     border-bottom-left-radius: 3px !important;
     border-bottom-right-radius: 3px !important;
 }
 
 .page-survey .panel-heading {
-    background-color: #007db3 !important;
+    background-color: #0066CC !important;
     color: white !important;
-    border-color: #007db3 !important;
+    border-color: #0066CC !important;
     margin: 0;
 }
 
 .page-survey .panel-footer {
-    background-color: #007db3 !important;
+    background-color: #0066CC !important;
     color: white !important;
 }
 
@@ -464,15 +464,15 @@ label.sub-label,
 }
 
 .page-survey .container hr {
-    border-color: #007db3 !important;
+    border-color: #0066CC !important;
 }
 
 .page-survey .column {
-    border-bottom: 2px solid #007db3 !important;
+    border-bottom: 2px solid #0066CC !important;
 }
 
 .page-survey .dropdown-menu > .active > a {
-    background-color: #007db3;
+    background-color: #0066CC;
 }
 
 .page-survey .group-description {
@@ -482,7 +482,7 @@ label.sub-label,
 }
 
 .page-survey .section-title {
-    color: #007db3;
+    color: #0066CC;
     font-weight: bold;
     margin-top: 40px;
 }
@@ -522,7 +522,7 @@ label.sub-label,
 }
 
 .page-survey .navbar-library-info {
-    background-color: #007db3;
+    background-color: #0066CC;
 }
 
 .page-survey .navbar-library-info .navbar-text {
@@ -587,11 +587,11 @@ label.sub-label,
 }
 
 .page-survey .table tbody tr td {
-    border-top-color: #007db3;
+    border-top-color: #0066CC;
 }
 
 .page-survey .jumbotron.jumbotron-submitted {
-    background-color: #007db3;
+    background-color: #0066CC;
     color: white;
 }
 

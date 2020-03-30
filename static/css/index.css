@@ -189,11 +189,11 @@ hr {
 }
 
 .subsection-reports {
-    border-left: 10px solid #018804;
+    border-left: 10px solid #008563;
 }
 
 .reports-selection-group {
-    border-left: 10px solid #018804;
+    border-left: 10px solid #008563;
 }
 
 #reports-filter-info {
@@ -221,11 +221,11 @@ hr {
 }
 
 .subsection-articles {
-    border-left: 10px solid #007db3;
+    border-left: 10px solid #0066CC;
 }
 
 .subsection-opendata {
-    border-left: 10px solid #8e00db;
+    border-left: 10px solid #993366;
 }
 
 .subsection-opendata .subsection-title {
@@ -283,6 +283,7 @@ dd:last-child {
 .btn {
     font-weight: 600;
     text-decoration: none;
+    transition: all .2s ease-in-out;
 }
 
 .btn-help
@@ -310,13 +311,13 @@ dd:last-child {
 
 .btn-articles {
     color: white;
-    background-color: #007db3;
+    background-color: #0066CC;
 }
 
 .btn-articles:hover,
 .btn-articles:focus {
     color: white;
-    background-color: #01658e;
+    background-color: #0253A5;
 }
 
 .btn-articles-expand {
@@ -334,7 +335,7 @@ dd:last-child {
 
 .btn-reports {
     color: white;
-    background-color: #018804;
+    background-color: #008563;
 }
 
 .btn-reports.btn-print {
@@ -344,7 +345,7 @@ dd:last-child {
 
 .btn-reports:hover,
 .btn-reports:focus {
-    background-color: #016b03;
+    background-color: #00654B;
     color: white;
 }
 
@@ -357,40 +358,40 @@ dd:last-child {
 
 .btn-opendata {
     color: white;
-    background-color: #8e00db;
+    background-color: #993366;
 }
 
 .btn-opendata:hover,
 .btn-opendata:focus {
     color: white;
-    background-color: #7000ad;
+    background-color: #75264E;
 }
 
 .btn-moreinfo {
     color: white;
-    background-color: #c74d03;
+    background-color: #D81888;
 }
 
 .btn-moreinfo:hover,
 .btn-moreinfo:focus {
     color: white;
-    background-color: #aa4202;
+    background-color: #B41371;
 }
 
 .color-articles {
-    color: #007db3;
+    color: #0066CC;
 }
 
 .color-reports {
-    color: #018804;
+    color: #008563;
 }
 
 .color-opendata {
-    color: #8e00db;
+    color: #993366;
 }
 
 .color-moreinfo {
-    color: #c74d03;
+    color: #D81888;
 }
 
 .form.form-inline .form-group {
