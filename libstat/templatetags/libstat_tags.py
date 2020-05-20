@@ -145,7 +145,6 @@ def footer():
     infoStr = "&copy; Kungl. biblioteket 2014-" + str(datetime.now().year)
     if settings.RELEASE_VERSION:
         infoStr = infoStr + ". Version " + settings.RELEASE_VERSION
-    infoStr = infoStr + ".  <a href=\"http://github.com/libris/bibstat/releases\" target=\"_blank\"/>Se senaste release notes</a>"
     return infoStr
 
 

@@ -5,12 +5,12 @@
 </div>
 
 <div class="panel-footer">
-    <h4 class="panel-title">
-        <i class="fa fa-question-circle"></i>
+    <h3 class="panel-title">
+        <span class="fa fa-question-circle" aria-hidden="true"></span>
         <a data-toggle="collapse" data-parent="#panel-help-top" href="#collapseTop">
             Visa vanligaste frågorna och svaren
         </a>
-    </h4>
+    </h3>
 </div>
 
 <div id="collapseTop" class="panel-collapse collapse">
@@ -19,7 +19,7 @@
 <div class="panel panel-default">
     <div class="panel-heading">
         <h4 class="panel-title">
-            <i class="fa fa-angle-right"></i>
+            <span class="fa fa-angle-right" aria-hidden="true"></span>
             <a data-toggle="collapse" data-parent="#panel-help" href="#collapseEight">
                 Hur fungerar det med automatisk summering?
             </a>
@@ -34,11 +34,11 @@
                     <div class="input-group">
                         <input class="form-control" value="5">
                         <div class="input-group-btn">
-                            <button type="button" class="btn btn-default btn-dropdown disabled">
+                            <button type="button" class="btn btn-default btn-dropdown disabled" aria-disabled="true" aria-label="visa alternativ">
                                 <span class="caret"></span>
                             </button>
 
-                            <button class="btn btn-default btn-prev-year disabled">
+                            <button class="btn btn-default btn-prev-year disabled" aria-disabled="true" aria-label="Föregående års värde">
                                 &mdash;
                             </button>
                         </div>
@@ -51,11 +51,11 @@
                     <div class="input-group">
                         <input class="form-control" value="7">
                         <div class="input-group-btn">
-                            <button type="button" class="btn btn-default btn-dropdown disabled">
+                            <button type="button" class="btn btn-default btn-dropdown disabled" aria-disabled="true" aria-label="visa alternativ">
                                 <span class="caret"></span>
                             </button>
 
-                            <button class="btn btn-default btn-prev-year disabled">
+                            <button class="btn btn-default btn-prev-year disabled" aria-disabled="true" aria-label="Föregående års värde">
                                 &mdash;
                             </button>
                         </div>
@@ -69,11 +69,11 @@
                         <div class="sum-of">=</div>
                         <input class="form-control" value="12" disabled>
                         <div class="input-group-btn">
-                            <button type="button" class="btn btn-default btn-dropdown disabled">
+                            <button type="button" class="btn btn-default btn-dropdown disabled" aria-disabled="true" aria-label="visa alternativ">
                                 <span class="caret"></span>
                             </button>
 
-                            <button class="btn btn-default btn-prev-year disabled">
+                            <button class="btn btn-default btn-prev-year disabled" aria-disabled="true" aria-label="Föregående års värde">
                                 &mdash;
                             </button>
                         </div>
@@ -83,9 +83,8 @@
 
             <p>Vid inmatning av delsummor och totaler gäller följande:</p>
             <ul>
-                <li>Ange alla delsummor in den mån det är möjligt.</li>
-                <li>Om inte alla siffror är tillgängliga går det att enbart mata in en totalsumma.</li>
-                <li>Om delsummor matas in måste de stämma överens med totalsumman.</li>
+                <li>Ange antingen alla delsummor eller ett totalvärde.</li>
+                <li>Om du angett ett totalvärde själv, kan du inte ange några enstaka delvärden.</li>
             </ul>
         </div>
     </div>
@@ -94,7 +93,7 @@
 <div class="panel panel-default">
     <div class="panel-heading">
         <h4 class="panel-title">
-            <i class="fa fa-angle-right"></i>
+            <span class="fa fa-angle-right" aria-hidden="true"></span>
             <a data-toggle="collapse" data-parent="#panel-help" href="#collapseFour">
                 Hur kan jag veta att jag fyller i rätt värde?
             </a>
@@ -102,23 +101,34 @@
     </div>
     <div id="collapseFour" class="panel-collapse collapse">
         <div class="panel-body">
-            <p>De aktuella definitionerna för värdena finns till höger om de flesta inmatningsrutorna.
-                <br>Testa till exempel att trycka på frågetecknet vid rutan nedan för att visa förklaringen. Du stänger rutan genom att klicka på frågetecknet en andra gång.</p>
+            <p>De aktuella definitionerna för värdena finns till höger om inmatningsrutorna.
+                <br>Tryck på frågetecknet för att visa förklaringen. Du stänger rutan genom att klicka på frågetecknet en andra gång.</p>
 
             <div class="row row-help">
                 <div class="col-xs-6">
                     <div class="input-group">
                         <input class="form-control" disabled>
                         <div class="input-group-btn">
-                            <button type="button" class="btn btn-default btn-dropdown disabled">
+                            <button type="button" class="btn btn-default btn-dropdown disabled" aria-disabled="true" aria-label="visa alternativ">
                                 <span class="caret"></span>
                             </button>
 
-                            <a type="button" class="btn btn-default btn-help" href="#" title="" tabindex="0" data-toggle="popover" data-placement="top" data-content="Här visas definitionen av värdet." data-trigger="click" data-original-title="Förklaring">
-                                <i class="fa fa-question"></i>
+                            <a  class="btn btn-default btn-help" 
+                                href="#"
+                                title=""
+                                role="button"
+                                tabindex="0"
+                                data-trigger="click"
+                                data-toggle="popover" 
+                                data-placement="top" 
+                                data-content="Här visas definitionen av värdet." 
+                                data-trigger="click" 
+                                data-original-title="Förklaring"
+                                aria-label="Förklaring">
+                                <span class="fa fa-question" aria-hidden="true"></span>
                             </a>
 
-                            <button class="btn btn-default btn-prev-year disabled">
+                            <button class="btn btn-default btn-prev-year disabled" aria-disabled="true" aria-label="Föregående års värde">
                                 &mdash;
                             </button>
                         </div>
@@ -126,7 +136,7 @@
                 </div>
             </div>
 
-            Definitionerna följer den nya internationella standarden för biblioteksstatistik ISO 2789 från 2013 i den mån som den inte kolliderar med svensk praxis.
+            Definitionerna följer den internationella standarden för biblioteksstatistik ISO 2789 i den mån som den inte kolliderar med svensk praxis.
         </div>
     </div>
 </div>
@@ -134,7 +144,7 @@
 <div class="panel panel-default">
     <div class="panel-heading">
         <h4 class="panel-title">
-            <i class="fa fa-angle-right"></i>
+            <span class="fa fa-angle-right" aria-hidden="true"></span>
             <a data-toggle="collapse" data-parent="#panel-help" href="#collapseThree">
                 Kan jag se inlämnade värden från föregående mätningar?
             </a>
@@ -150,11 +160,11 @@
                     <div class="input-group">
                         <input class="form-control" disabled>
                         <div class="input-group-btn">
-                            <button type="button" class="btn btn-default btn-dropdown disabled">
+                            <button type="button" class="btn btn-default btn-dropdown disabled" aria-disabled="true" aria-label="visa alternativ">
                                 <span class="caret"></span>
                             </button>
 
-                            <button class="btn btn-default btn-prev-year disabled">
+                            <button class="btn btn-default btn-prev-year disabled" aria-disabled="true" aria-label="Föregående års värde">
                                 125 750
                             </button>
                         </div>
@@ -162,19 +172,18 @@
                 </div>
             </div>
 
-            <p>Eftersom det är en ny typ av frågeformulär, så visas inte alltid föregående värde.
-                <br>Om föregående års värde inte finns tillgängligt, så visas ett streck i dess ställe.</p>
+            <p>Om föregående års värde inte lämnats, visas ett streck i dess ställe.</p>
 
             <div class="row row-help">
                 <div class="col-xs-6">
                     <div class="input-group">
                         <input class="form-control" disabled>
                         <div class="input-group-btn">
-                            <button type="button" class="btn btn-default btn-dropdown disabled">
+                            <button type="button" class="btn btn-default btn-dropdown disabled" aria-disabled="true" aria-label="visa alternativ">
                                 <span class="caret"></span>
                             </button>
 
-                            <button class="btn btn-default btn-prev-year disabled">
+                            <button class="btn btn-default btn-prev-year disabled" aria-disabled="true" aria-label="Föregående års värde">
                                 &mdash;
                             </button>
                         </div>
@@ -188,7 +197,7 @@
 <div class="panel panel-default">
     <div class="panel-heading">
         <h4 class="panel-title">
-            <i class="fa fa-angle-right"></i>
+            <span class="fa fa-angle-right" aria-hidden="true"></span>
             <a data-toggle="collapse" data-parent="#panel-help" href="#collapseSeven">
                 Måste jag fylla i samtliga fält i enkäten?
             </a>
@@ -203,11 +212,11 @@
                     <div class="input-group input-example">
                         <input class="form-control" placeholder="Obligatorisk">
                         <div class="input-group-btn">
-                            <button type="button" class="btn btn-default btn-dropdown disabled">
+                            <button type="button" class="btn btn-default btn-dropdown disabled" aria-disabled="true" aria-label="visa alternativ">
                                 <span class="caret"></span>
                             </button>
 
-                            <button class="btn btn-default btn-prev-year disabled">
+                            <button class="btn btn-default btn-prev-year disabled" aria-disabled="true" aria-label="Föregående års värde">
                                 &mdash;
                             </button>
                         </div>
@@ -218,11 +227,11 @@
                     <div class="input-group">
                         <input class="form-control">
                         <div class="input-group-btn">
-                            <button type="button" class="btn btn-default btn-dropdown disabled">
+                            <button type="button" class="btn btn-default btn-dropdown disabled" aria-disabled="true" aria-label="visa alternativ">
                                 <span class="caret"></span>
                             </button>
 
-                            <button class="btn btn-default btn-prev-year disabled">
+                            <button class="btn btn-default btn-prev-year disabled" aria-disabled="true" aria-label="Föregående års värde">
                                 &mdash;
                             </button>
                         </div>
@@ -236,7 +245,7 @@
 <div class="panel panel-default">
     <div class="panel-heading">
         <h4 class="panel-title">
-            <i class="fa fa-angle-right"></i>
+            <span class="fa fa-angle-right" aria-hidden="true"></span>
             <a data-toggle="collapse" data-parent="#panel-help" href="#collapseTwo">
                 Svarar jag för organisationen eller för ett enskilt bibliotek?
             </a>
@@ -244,7 +253,7 @@
     </div>
     <div id="collapseTwo" class="panel-collapse collapse">
         <div class="panel-body">
-            Frågorna kan besvaras för en samlad biblioteksorganisation eller ett enskilt bibliotek. Om ni måste redovisa några variabler samlat på länsnivå och resten på kommunal nivå på grund av att ni har bibliotekssystemsamarbete måste ni <a href="{{ form.mailto }}">rekvirera en ny inloggning</a> som gäller särskilt för dessa uppgifter.
+            Frågorna kan besvaras för en samlad biblioteksorganisation eller ett enskilt bibliotek. Om ni vill redovisa några variabler samlat på regionnivå och resten på kommunal nivå på grund av att ni har bibliotekssystemsamarbete måste ni <a href="{{ form.mailto }}">rekvirera en ny inloggning</a> som gäller särskilt för dessa uppgifter.
         </div>
     </div>
 </div>
@@ -252,7 +261,7 @@
 <div class="panel panel-default">
     <div class="panel-heading">
         <h4 class="panel-title">
-            <i class="fa fa-angle-right"></i>
+            <span class="fa fa-angle-right" aria-hidden="true"></span>
             <a data-toggle="collapse" data-parent="#panel-help" href="#collapseSix">
                 Vad ska jag göra om jag omöjligt kan fylla i ett värde?
             </a>
@@ -267,7 +276,7 @@
                     <div class="input-group input-example">
                         <input class="form-control" placeholder="Värdet är okänt" disabled>
                         <div class="input-group-btn">
-                            <button type="button" class="btn btn-default btn-dropdown dropdown-toggle" data-toggle="dropdown">
+                            <button type="button" class="btn btn-default btn-dropdown dropdown-toggle" data-toggle="dropdown" aria-label="visa alternativ">
                                 <span class="caret"></span>
                             </button>
 
@@ -276,7 +285,7 @@
                                 <li><a>Ange värdet</a></li>
                             </ul>
 
-                            <button class="btn btn-default btn-prev-year disabled">
+                            <button class="btn btn-default btn-prev-year disabled" aria-disabled="true" aria-label="Föregående års värde">
                                 &mdash;
                             </button>
                         </div>
@@ -288,7 +297,7 @@
             <br>För att återigen kunna skriva in ett värde i fältet, välj <i>ange värdet</i> i fältets meny.
             <br>
             <br>
-            <p>Om värdet inte alls är relevant för ditt bibliotek kan du i stället ange ett bindestreck '-' i inmatningsfältet.</p>
+            <p>Om vi frågar efter något som ni inte gör eller har, skriv värde 0.</p>
         </div>
     </div>
 </div>
@@ -296,7 +305,7 @@
 <div class="panel panel-default">
     <div class="panel-heading">
         <h4 class="panel-title">
-            <i class="fa fa-angle-right"></i>
+            <span class="fa fa-angle-right" aria-hidden="true"></span>
             <a data-toggle="collapse" data-parent="#panel-help" href="#collapseFive">
                 Var ska jag vända mig om jag har frågor?
             </a>
@@ -304,7 +313,8 @@
     </div>
     <div id="collapseFive" class="panel-collapse collapse">
         <div class="panel-body">
-            Frågor kan ställas till <a href="{{ form.mailto }}">biblioteksstatistik@kb.se</a> eller <a href="tel:+46107093639">010-709 36 39</a>. Löpande information om undersökningen kan även fås på <a href="http://biblioteksstatistik.blogg.kb.se" target="_blank">http://biblioteksstatistik.blogg.kb.se</a>.
+            Frågor kan ställas till <a href="{{ form.mailto }}">biblioteksstatistik@kb.se</a> eller <a href="tel:+46107093639">010-709 36 39</a>. Löpande information om undersökningen kan även fås på <a href="https://www.kb.se/samverkan-och-utveckling/biblioteksstatistik/lamna-in-statistik.html">Kungliga bibliotekets webbplats</a>. 
+            Information om tillgänglighet för digitala tjänster kan tas del av genom vår <a href="https://www.kb.se/digital-tillganglighet">tillgänglighetsredogörelse</a>.
         </div>
     </div>
 </div>

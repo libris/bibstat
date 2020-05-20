@@ -13,7 +13,7 @@
                 {% if message %}
                     <div class="row">
                         <div class="col-md-6">
-                            <div class="alert alert-info" role="alert">
+                            <div class="alert alert-info" aria-atomic="true" role="alert">
                                 {{ message|linebreaks }}
                             </div>
                         </div>
@@ -40,7 +40,7 @@
                     </div>
                 </div>
                 <hr>
-                <form action="" method="post" class="form-inline form-dispatches">
+                <form action="#" method="post" class="form-inline form-dispatches">
                     {% csrf_token %}
 
                     <table class="table table-dispatches table-striped">
@@ -65,9 +65,9 @@
                                 <td>{{ dispatch.library_city|default:"" }}</td>
                                 <td>{{ dispatch.library_email|default:"" }}</td>
                                 <td><a class="show-dispatch survey-popover" href="#" data-title="{{ dispatch.title }}"
-                                       data-message="{{ dispatch.message|linebreaks }}"
-                                       data-placement="top" data-toggle="tooltip"
-                                       data-original-title="Visa e-postmeddelandet">Förhandsgranska</a></td>
+                                        data-message="{{ dispatch.message|linebreaks }}"
+                                        data-placement="top" data-toggle="tooltip"
+                                        data-original-title="Visa e-postmeddelandet">Förhandsgranska</a></td>
                             </tr>
                         {% endfor %}
                         </tbody>

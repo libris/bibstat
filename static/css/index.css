@@ -1,3 +1,5 @@
+@import url('https://fonts.googleapis.com/css?family=Open+Sans:400,400i,600,700&display=swap');
+
 html {
     width: 100%;
     height: 100%;
@@ -6,17 +8,21 @@ html {
 body {
     width: 100%;
     height: 100%;
-    font-family: Lora, "Helvetica Neue", Helvetica, Arial, sans-serif;
-    font-weight: lighter;
-    font-size: 13px;
+    font-family: 'Open Sans', 'Helvetica Neue', Arial, sans-serif;
+    font-weight: 400;
+    font-size: 14px;
     background-color: white !important;
 }
 
 h1, h2, h3, h4, h5, h6 {
     margin: 0 0 35px;
-    font-family: Montserrat, "Helvetica Neue", Helvetica, Arial, sans-serif;
+    font-family: 'Helvetica Neue', Arial, sans-serif;
     font-weight: 700;
     letter-spacing: 1px;
+}
+
+h3 small {
+    color: #5c5c5c;
 }
 
 p {
@@ -25,24 +31,20 @@ p {
     line-height: 1.5;
 }
 
-@media (min-width: 767px) {
-    p {
-        margin: 0 0 35px;
-        font-size: 20px;
-        line-height: 1.6;
-    }
-}
-
 a {
-    color: #219ab3;
+    color: #2a74b5;
+    text-decoration: underline;
     -webkit-transition: all .2s ease-in-out;
     -moz-transition: all .2s ease-in-out;
     transition: all .2s ease-in-out;
 }
 
 a:hover, a:focus {
-    text-decoration: none;
     color: #11505d;
+}
+
+hr {
+    border-top-color: #d6d6d6;
 }
 
 .col-inside {
@@ -119,7 +121,7 @@ a:hover, a:focus {
     }
 
     .intro .intro-body .intro-text {
-        font-size: 25px;
+        font-size: 20px;
     }
 }
 
@@ -156,7 +158,8 @@ a:hover, a:focus {
     }
 }
 
-.section .row div {
+.section .row div,
+.section .row article {
     margin-top: 35px;
 }
 
@@ -186,15 +189,11 @@ a:hover, a:focus {
 }
 
 .subsection-reports {
-    border-left: 10px solid rgb(185, 203, 0);
+    border-left: 10px solid #008563;
 }
 
 .reports-selection-group {
-    border-left: 10px solid rgb(185, 203, 0);
-}
-
-.subsection-reports .subsection-text {
-    margin-bottom: 0;
+    border-left: 10px solid #008563;
 }
 
 #reports-filter-info {
@@ -211,17 +210,22 @@ a:hover, a:focus {
     margin-bottom: 5px;
 }
 
+#reports-filter-selection * , 
+#reports-library-selection * {
+    margin-right: 5px;
+    margin-bottom: 5px;
+}
+
 #reports-library-list {
-    margin-top: 20px;
     margin-bottom: 5px;
 }
 
 .subsection-articles {
-    border-left: 10px solid rgb(0, 158, 224);
+    border-left: 10px solid #0066CC;
 }
 
 .subsection-opendata {
-    border-left: 10px solid rgb(242, 148, 0);
+    border-left: 10px solid #993366;
 }
 
 .subsection-opendata .subsection-title {
@@ -230,14 +234,18 @@ a:hover, a:focus {
 
 .subsection-title {
     font-size: 22px;
-    margin-bottom: 5px;
+    margin-bottom: 15px;
     color: #6d6d6d;
 }
 
 .subsection-text {
-    font-size: 18px;
+    font-size: 16px;
     margin-bottom: 10px;
     color: #2a2a2a;
+}
+
+.subsection-emphasis {
+    font-style: italic;
 }
 
 .subsection-footer {
@@ -255,6 +263,7 @@ a:hover, a:focus {
 dt {
     color: #6d6d6d;
     font-size: 18px;
+    margin-bottom: 5px;
 }
 
 dl {
@@ -271,10 +280,14 @@ dd:last-child {
     margin-bottom: 0;
 }
 
+.btn {
+    font-weight: 600;
+    text-decoration: none;
+    transition: all .2s ease-in-out;
+}
+
 .btn-help
 .btn {
-    font-family: Montserrat, "Helvetica Neue", Helvetica, Arial, sans-serif;
-    font-weight: 400;
     -webkit-transition: all .3s ease-in-out;
     -moz-transition: all .3s ease-in-out;
     transition: all .3s ease-in-out;
@@ -297,17 +310,14 @@ dd:last-child {
 }
 
 .btn-articles {
-    border: 1px solid rgb(0, 158, 224);
-    color: rgb(0, 158, 224);
-    background-color: transparent;
+    color: white;
+    background-color: #0066CC;
 }
 
 .btn-articles:hover,
 .btn-articles:focus {
-    border: 1px solid rgb(0, 158, 224);
-    outline: 0;
     color: white;
-    background-color: rgb(0, 158, 224);
+    background-color: #0253A5;
 }
 
 .btn-articles-expand {
@@ -319,15 +329,13 @@ dd:last-child {
 .btn-articles-expand:hover,
 .btn-articles-expand:focus {
     border: 1px solid rgb(102, 102, 103);
-    outline: 0;
     color: white;
     background-color: rgb(102, 102, 103);
 }
 
 .btn-reports {
-    border: 1px solid rgb(185, 203, 0);
-    color: rgb(185, 203, 0);
-    background-color: transparent;
+    color: white;
+    background-color: #008563;
 }
 
 .btn-reports.btn-print {
@@ -337,10 +345,8 @@ dd:last-child {
 
 .btn-reports:hover,
 .btn-reports:focus {
-    border: 1px solid rgb(185, 203, 0);
-    outline: 0;
+    background-color: #00654B;
     color: white;
-    background-color: rgb(185, 203, 0);
 }
 
 .btn-reports.btn-print:hover,
@@ -351,47 +357,41 @@ dd:last-child {
 }
 
 .btn-opendata {
-    border: 1px solid rgb(242, 148, 0);
-    color: rgb(242, 148, 0);
-    background-color: transparent;
+    color: white;
+    background-color: #993366;
 }
 
 .btn-opendata:hover,
 .btn-opendata:focus {
-    border: 1px solid rgb(242, 148, 0);
-    outline: 0;
     color: white;
-    background-color: rgb(242, 148, 0);
+    background-color: #75264E;
 }
 
 .btn-moreinfo {
-    border: 1px solid rgb(226, 0, 122);
-    color: rgb(226, 0, 122);
-    background-color: transparent;
+    color: white;
+    background-color: #D81888;
 }
 
 .btn-moreinfo:hover,
 .btn-moreinfo:focus {
-    border: 1px solid rgb(226, 0, 122);
-    outline: 0;
     color: white;
-    background-color: rgb(226, 0, 122);
+    background-color: #B41371;
 }
 
 .color-articles {
-    color: rgb(0, 158, 224);
+    color: #0066CC;
 }
 
 .color-reports {
-    color: rgb(185, 203, 0);
+    color: #008563;
 }
 
 .color-opendata {
-    color: rgb(242, 148, 0);
+    color: #993366;
 }
 
 .color-moreinfo {
-    color: rgb(226, 0, 122);
+    color: #D81888;
 }
 
 .form.form-inline .form-group {
@@ -399,15 +399,31 @@ dd:last-child {
 }
 
 footer {
-    padding-top: 15px;
+    margin-top: 3em;
+    padding: 2em;
+    background-color: #2b2b2b;
+    color: white;
+    font-size: 1.2em;
+    font-weight: normal;
 }
 
-footer hr {
-    color: #6d6d6d;
+.footer-list {
+    list-style-type: none;
+    padding: 0;
+    line-height: 2;
 }
 
-footer p {
-    color: #6d6d6d;
-    font-size: 14px;
-    margin-bottom: 25px;
+footer a,
+footer a:hover,
+footer a:focus,
+footer a:visited {
+    color: inherit;
+}
+
+footer .logo-container {
+    margin-bottom: 1em;
+}
+
+.footer-notes {
+    font-size: 0.8em;
 }

@@ -15,40 +15,44 @@
     </div>
     <![endif]-->
 
-    <div class="loading"><p><span class="loading-text">Laddar enkät</span><br><br><i class="fa fa-2x fa-spinner fa-spin"></i></p></div>
-    <div class="saving" style="display: none;"><p><span class="saving-text">Sparar enkät</span><br><br><i class="fa fa-2x fa-spinner fa-spin"></i></p></div>
+    <div class="loading"><p><span class="loading-text" role="alert" aria-atomic="true" aria-busy="true">Laddar enkät</span><br><br><span class="fa fa-2x fa-spinner fa-spin" aria-hidden="true"></span></p></div>
+    <div class="saving" style="display: none;"><p><span class="saving-text" role="alert" aria-atomic="true" aria-busy="true">Sparar enkät</span><br><br><span class="fa fa-2x fa-spinner fa-spin" aria-hidden="true"></span></p></div>
 
-    <div class="navbar navbar-default navbar-static-top navbar-library-info" role="navigation">
+    <nav class="navbar navbar-default navbar-static-top navbar-library-info">
         <div class="container">
             <div class="navbar-left">
-                <div class="navbar-text">
+                <h1 class="navbar-text">
                     Välkommen till {{ form.sample_year }} års enkät för
-                    <b><u>{{ form.library_name }}</u></b>
-                    {% if form.city %} i <b><u>{{ form.city }}</u></b>{% endif %}
-                </div>
+                    <strong>{{ form.library_name }}</strong>
+                    {% if form.city %} i <strong>{{ form.city }}</strong>{% endif %}
+                </h1>
             </div>
         </div>
-    </div>
+    </nav>
     {% if user.is_authenticated and not hide_admin_panel%}
         {% include 'libstat/survey/headers/admin.html' %}
     {% endif %}
-    <div class="container container-survey">
+    <main class="container container-survey">
 
-        <div class="jumbotron jumbotron-submitted" {% if form.is_user_read_only %}{% else %} style="display: none;" {% endif %}>
-            <h1>Stort tack för att du besvarade biblioteksstatistiken!</h1>
+        <div class="jumbotron jumbotron-submitted" 
+            role="status" 
+            aria-live="polite" {% if form.is_user_read_only %}{% else %} style="display: none;" {% endif %}>
+            <h2>Stort tack för att du besvarade biblioteksstatistiken!</h2>
 
             <p>Enkäten är nu inskickad. Du kan fortfarande se dina inskickade svar, men enkäten är nu låst.<br>
             Om du skulle vilja ändra ett svar i efterhand, kontakta <a href="{{ form.mailto }}">biblioteksstatistik@kb.se</a>.</p>
-            <p><a href="javascript:if(window.print)window.print()"><i class="fa fa-print fa-inline"></i>Skriv ut enkäten</a></p>
+            <p>Dina resultat kommer att publiceras inom några dagar på <a href="http://bibstat.kb.se/reports">http://bibstat.kb.se/reports</a></p>
+            <p><a href="javascript:if(window.print)window.print()" role="button" aria-label="Skriv ut">
+                <span class="fa fa-print fa-inline" aria-hidden="true"></span>Skriv ut enkäten</a></p>
         </div>
 
         <div class="row">
-            <div class="col-xs-11 col-sm-10 col-md-7">
+            <article class="col-xs-11 col-sm-10 col-md-7">
                 <h2 class="section-title">Läs detta först!</h2>
                 {% include "libstat/survey/questions.html" %}
-            </div>
+            </article>
             <div class="col-xs-1 pull-right">
-                <img src="/static/img/kb-survey.svg" alt="Kungl. Biblioteket">
+                <img src="/static/img/kb-survey.svg" alt="Kungliga biblioteket">
             </div>
         </div>
         <form class="survey-content" id="survey-form" method="post">
@@ -73,7 +77,7 @@
                     <table class="table">
                         <thead>
                         <tr>
-                            <th class="column"></th>
+                            <td class="column"></td>
                             <th class="column">Namn</th>
                             <th class="column">Stad</th>
                             <th class="column">Adress</th>
@@ -101,18 +105,16 @@
             {% for section in form.sections %}
                 <h2 class="section-title">{{ section.title }}</h2>
                 {% for group in section.groups %}
-                    <div class="panel panel-default">
+                    <fieldset class="panel panel-default">
                         {% if group.description %}
-                            <div class="panel-heading group-heading">
-                                <div class="row">
-                                    <div class="col-sm-8 group-description">
-                                    {% with description=group.description|split_into_number_and_body %}
-                                        <b>{{ description.0 }}</b>
-                                            {{ description.1 }}
-                                    {% endwith %}
-                                    </div>
-                                </div>
-                            </div>
+                            <legend class="panel-heading group-heading" id="{{group.id}}">
+                                <span class="col-sm-8 group-description">
+                                {% with description=group.description|split_into_number_and_body %}
+                                    <strong>{{ description.0 }}</strong>
+                                        {{ description.1 }}
+                                {% endwith %}
+                                </span>
+                            </legend>
                         {% endif %}
 
                         <div class="panel-body group-body">
@@ -121,7 +123,7 @@
                                     <div class="{% if group.columns == 2 %}col-sm-4{% elif group.columns == 3 %}col-sm-3{% elif group.columns == 4 %}col-sm-4{% endif %}"></div>
                                     {% for header in group.headers %}
                                         <div class="group-header {% if group.columns <= 2 %}col-sm-4{% elif group.columns == 3 %}col-sm-3{% elif group.columns == 4 %}col-sm-2{% endif %}">
-                                            <b>{{ header }}</b>
+                                            <strong>{{ header }}</strong>
                                         </div>
                                     {% endfor %}
                                 </div>
@@ -131,6 +133,7 @@
                                     <div class="row">
                                         <div class="col-sm-12">
                                         {% with variable_key=row.cells.0.variable_key %}
+                                            <label class="sr-only" for="{{variable_key}}">{{ group.description }}</label>
                                             {{ form|access:variable_key }}
                                         {% endwith %}
                                         </div>
@@ -138,12 +141,11 @@
                                 {% else %}
 
                                     <div class="row">
-                                        <div class="{% if row.cells and row.cells.0 and row.cells.0.sum_of %}sum-description {% endif %}{% if group.columns <= 2 %}col-sm-4{% elif group.columns == 3 %}col-sm-3{% elif group.columns == 4 %}col-sm-4{% endif %}">
+                                        <label for="{{row.cells.0.variable_key}}" class="description-separator form-label {% if row.cells and row.cells.0 and row.cells.0.sum_of %}sum-description {% endif %}{% if group.columns <= 2 %}col-sm-4{% elif group.columns == 3 %}col-sm-3{% elif group.columns == 4 %}col-sm-4{% endif %}">
                                         {{ row.description }}
                                         {% if row.description|length > 70 and not forloop.last %}
-                                            <hr class="description-separator">
                                         {% endif %}
-                                        </div>
+                                        </label>
                                         {% for cell in row.cells %}
                                             {% if form|access:cell.variable_key != None %}
                                                 {% if row.cells and row.cells.0 %}
@@ -160,29 +162,39 @@
                                                                 <!-- Skip dropdown for inputs in first group of first section. -->
                                                                 {% if not forloop.parentloop.parentloop.parentloop.first or not forloop.parentloop.parentloop.first %}
                                                                     {% with variable=form|access:cell.variable_key %}
-                                                                        <button type="button" class="btn btn-default btn-dropdown dropdown-toggle" data-toggle="dropdown" tabindex="-1"{% if form.is_read_only %} disabled{% endif %} title="Visa alternativ"><span class="caret"></span></button>
+                                                                        <button type="button" class="btn btn-default btn-dropdown dropdown-toggle" data-toggle="dropdown" {% if form.is_read_only %} disabled{% endif %}>
+                                                                            <span class="sr-only">Visa alternativ</span>
+                                                                            <span class="caret"></span></button>
                                                                         <ul class="dropdown-menu dropdown-menu-right {% if cell.value_unknown %}value-unknown{% endif %}" role="menu">
                                                                         {% if cell.value_unknown %}
-                                                                            <li class="active"><a href="#" class="menu-disable-input">Värdet är okänt</a></li>
-                                                                            <li><a href="#" class="menu-enable">Ange värdet</a></li>
+                                                                            <li class="active"><a href="#" class="menu-disable-input" tabindex="0" role="menuitem">Värdet är okänt</a></li>
+                                                                            <li><a href="#" class="menu-enable" tabindex="0" role="menuitem">Ange värdet</a></li>
                                                                         {% else %}
-                                                                            <li><a href="#" class="menu-disable-input">Värdet är okänt</a></li>
-                                                                            <li class="active"><a href="#" class="menu-enable">Ange värdet</a></li>
+                                                                            <li><a href="#" class="menu-disable-input" tabindex="0" role="menuitem">Värdet är okänt</a></li>
+                                                                            <li class="active"><a href="#" class="menu-enable" tabindex="0" role="menuitem">Ange värdet</a></li>
                                                                         {% endif %}
                                                                         </ul>
                                                                     {% endwith %}
                                                                 {% endif %}
                                                                 {% if cell.explanation %}
-                                                                    <a class="btn btn-default btn-help" href="#" tabindex="-1" data-toggle="popover" data-placement="top" data-content="{{ cell.explanation }}" title="Förklaring">
-                                                                        <i class="fa fa-question"></i>
+                                                                    <a class="btn btn-default btn-help" 
+                                                                        href="#"
+                                                                        role="button"
+                                                                        tabindex="0"
+                                                                        data-toggle="popover" 
+                                                                        data-placement="top" 
+                                                                        data-content="{{ cell.explanation }}" 
+                                                                        title="Förklaring"
+                                                                        aria-label="Förklaring">
+                                                                        <span class="fa fa-question" aria-hidden="true"></span>
                                                                     </a>
                                                                 {% endif %}
                                                                 {% if group.columns != 4 %}
                                                                     <div class="tooltip-wrapper" data-title="Föregående års värde">
                                                                         {% if "integer" in cell.types or "decimal" in cell.types %}
-                                                                            <button class="btn btn-default disabled btn-prev-year" tabindex="-1">{% if cell.previous_value != None and cell.previous_value != '' %}{{ cell.previous_value_thousands_separators }}{% else %} &mdash;{% endif %}</button>
+                                                                            <button class="btn btn-default disabled btn-prev-year" aria-label="Föregående års värde" tabindex="-1">{% if cell.previous_value != None and cell.previous_value != '' %}{{ cell.previous_value_thousands_separators }}{% else %} &mdash;{% endif %}</button>
                                                                         {% else %}
-                                                                            <button class="btn btn-default disabled btn-prev-year" tabindex="-1">{% if cell.previous_value != None and cell.previous_value != '' %}{{ cell.previous_value|floatformat:"-2" }}{% else %} &mdash;{% endif %}</button>
+                                                                            <button class="btn btn-default disabled btn-prev-year" aria-label="Föregående års värde" tabindex="-1">{% if cell.previous_value != None and cell.previous_value != '' %}{{ cell.previous_value|floatformat:"-2" }}{% else %} &mdash;{% endif %}</button>
                                                                         {% endif %}
                                                                     </div>
                                                                 {% endif %}
@@ -202,18 +214,18 @@
                                     {% endif %}
                             {% endfor %}
                         </div>
-                    </div>
+                    </fieldset>
                 {% endfor %}
             {% endfor %}
             <div class="panel panel-default">
-                <div class="panel-body group-body final-words">
+                <h2 class="panel-body group-body final-words">
                     Stort tack för att du besvarade frågorna!
-                </div>
+                </h2>
             </div>
             <div class="panel panel-default">
-                <div class="panel-body group-body final-words">
+                <h2 class="panel-body group-body final-words">
                     Klicka på skicka-knappen för att lämna in enkäten.
-                </div>
+                </h2>
             </div>
             {% if not form.is_read_only and not hide_bottom_bar%}
                 <div class="navbar navbar-default navbar-fixed-bottom" role="navigation">
@@ -224,18 +236,19 @@
 
                                 <div class="progress answers-progress" style="width: 250px">
                                     <div class="progress-bar progress-bar-success progress-bar-striped"
-                                         role="progressbar">
+                                        role="progressbar">
                                     </div>
                                 </div>
                             </div>
                         </div>
                         <div class="navbar-right navbar-submit">
-                            <a id="faq-survey-btn" class="btn btn-default"><i class="fa fa-question fa-inline"></i>Vanliga frågor</a>
-                            <a id="print-survey-btn" class="btn btn-default" href="javascript:if(window.print)window.print()"><i class="fa fa-print fa-inline"></i>Skriv ut</a>
+                            <a id="faq-survey-btn" class="btn btn-default"><span class="fa fa-question fa-inline" aria-hidden="true"></span>Vanliga frågor</a>
+                            <a id="print-survey-btn" role="button" class="btn btn-default" aria-label="Skriv ut" href="javascript:if(window.print)window.print()">
+                                <span class="fa fa-print fa-inline" aria-hidden="true"></span>Skriv ut</a>
                             <div id="unsaved-changes-label" class="navbar-text"></div>
-                            <a href="#" id="save-survey-btn" class="btn btn-primary navbar-btn">Spara</a>
+                            <a href="#" role="button" id="save-survey-btn" class="btn btn-primary navbar-btn">Spara</a>
                             {% if form.can_submit %}
-                                <a href="#" id="submit-survey-btn" class="btn btn-success navbar-btn">Skicka</a>
+                                <a href="#" id="submit-survey-btn" role="button" class="btn btn-success navbar-btn">Skicka</a>
                             {% endif %}
                         </div>
                     </div>
@@ -244,7 +257,7 @@
                         <div class="container">
                             <div class="navbar-left">
                                 <div class="navbar-text navbar-alert">
-                                    <div class="alert alert-danger alert-navbar">
+                                    <div class="alert alert-danger alert-navbar" role="alert" aria-atomic="true" aria-live="assertive">
                                         Enkäten kan inte skickas in för att de valda biblioteken rapporteras för i flera
                                         enkäter.
                                         <br>Du kan antingen avmarkera dessa bibliotek eller kontakta <a href="{{ form.mailto }}">biblioteksstatistik@kb.se</a>
@@ -257,13 +270,13 @@
                 </div>
             {% endif %}
         </form>
-    </div>
+    </main>
     <div class="modal fade" id="submit-confirm-modal" tabindex="-1" role="dialog" aria-hidden="true" aria-labelledby="confirm-submit-title">
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
                     <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Stäng</span></button>
-                    <h4 class="modal-title" id="confirm-submit-title">Är du säker på att du vill skicka in din enkät?</h4>
+                    <h3 class="modal-title" id="confirm-submit-title">Är du säker på att du vill skicka in din enkät?</h3>
                 </div>
                 <div class="modal-body">
                     <p>
@@ -275,8 +288,8 @@
                     </p>
                 </div>
                 <div class="modal-footer">
-                    <a href="#" id="cancel-submit-survey-btn" class="btn btn-danger" data-dismiss="modal">Avbryt</a>
-                    <a href="#" id="confirm-submit-survey-btn" class="btn btn-success spinner"
+                    <a href="#" id="cancel-submit-survey-btn" role="button" class="btn btn-danger" data-dismiss="modal">Avbryt</a>
+                    <a href="#" id="confirm-submit-survey-btn" role="button" class="btn btn-success spinner"
                             data-spinner-text="Skickar... (STÄNG EJ WEBBLÄSARFLIKEN)" data-spinner-disable="#cancel-submit-survey-btn">Skicka</a>
                 </div>
             </div>

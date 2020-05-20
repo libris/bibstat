@@ -15,10 +15,6 @@
         page-break-after: always !important;
     }
 
-    #kundo_button_container {
-        display: None !important;
-    }
-
     @page {
         margin: 2.0cm;
     }
@@ -72,6 +68,10 @@
     margin-right: 0px;
 }
 
+label {
+    font-weight: initial;
+}
+
 th {
     color: white !important;
     text-align: left;
@@ -97,47 +97,42 @@ td {
 
 th.observation-label {
     text-align: left;
-    background-color: rgb(0, 158, 224) !important;
+    background-color: #575c61;
 }
 
 th.observation-previous-previous-year {
-    background-color: rgb(152, 163, 56) !important;
+    background-color: #0066CC !important;
     width: 130px;
 }
 
 th.observation-previous-year {
-    background-color: rgb(185, 203, 0) !important;
+    background-color: #008563 !important;
     width: 130px;
 }
 
 th.observation-sample-year {
-    background-color: rgb(242, 148, 0) !important;
+    background-color: #993366 !important;
     width: 130px;
 }
 
 th.observation-difference {
-    background-color: rgb(216, 136, 37) !important;
+    background-color: #575c61;
     width: 110px;
     white-space: nowrap;
 }
 
 th.observation-difference-total {
-    background-color: rgb(226, 0, 122) !important;
+    background-color: #D81888 !important;
     width: 100px;
 }
 
 th.observation-extra {
     width: 250px;
-    background-color: rgb(186, 67, 129) !important;
+    background-color: #575c61;
 }
 
 .observation-label {
     width: 500px;
-}
-
-.report-title {
-    font-size: 40px;
-    font-family: helvetica;
 }
 
 .libraries-header {
@@ -153,18 +148,9 @@ th.observation-extra {
 }
 
 .libraries {
-    border-left: 1px solid black !important;
+    border-left: 1px solid #d6d6d6 !important;
     padding-left: 15px;
-}
-
-.libraries .library {
-    padding-top: 0px;
-    top: -2px;
-    font-size: 12px;
-}
-
-.libraries .library:not(:last-child) {
-    padding-bottom: 3px;
+    list-style-type: none;
 }
 
 tr.sum td:not(.observation-label) {
@@ -189,7 +175,7 @@ tr.key-figure.even td:not(.observation-label) {
 
 tr.label-only td {
     color: white !important;
-    background-color: rgb(212, 104, 102) !important;
+    background-color: #6f767b;
     font-weight: bold;
 }
 
@@ -206,9 +192,6 @@ tr.label-only td {
 }
 
 .report-legend > span {
-    width: auto;
-    height: 1em;
-    display: inline-block;
     margin-right: 20px;
 }
 
@@ -224,8 +207,8 @@ span.print-report {
     margin-right: 0px;
     background-color: rgb(95, 96, 98) !important;
     border-radius: 50%;
-    height: 28px;
-    width: 28px;
+    height: 30px;
+    width: 30px;
     font-size: 20px;
     text-align: center;
 }

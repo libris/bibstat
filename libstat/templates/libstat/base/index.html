@@ -5,7 +5,6 @@
     <head>
         <meta charset="utf-8">
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
-        <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="description" content="Kungl. bibliotekets statistik om Sveriges offentligt finansierade bibliotek">
 
@@ -26,45 +25,26 @@
         {% endblock %}
 
         <footer>
-            <hr>
-<p style="padding:10px;text-align:center;">
-Kungliga biblioteket hanterar dina personuppgifter i enlighet med EU:s dataskyddsförordning (2018), GDPR. <a href="https://www.kb.se/omoss/dataskydd.html">Läs mer om hur det funkar här</a>.
-<br>
-Så här hanterar KB dina uppgifter vid <a href="https://www.kb.se/omoss/dataskydd.html#Bibstat">användning av denna tjänst.</a>
-</p>
-            <div class="container text-center">
-                <p>{% footer %}<br>{% block footer %}{% endblock %}</p>
+            <div class="container">
+                <div class="row">
+                    <div class="col-xs-12 col-sm-2 logo-container">
+                        <img src="/static/img/kb.svg" class="intro-logo" alt="Kungliga biblioteket">
+                    </div>
+                    <div class="col-xs-12 col-sm-10">
+                        <nav aria-label="Länkar i sidfot">
+                            <ul class="footer-list">
+                                <li><a href="https://www.kb.se/omoss/dataskydd.html#Bibstat">Om dataskydd (GDPR)</a></li>
+                                <li><a href="https://www.kb.se/digital-tillganglighet">Tillgänglighetsredogörelse</a></li>
+                                <li><a href="https://github.com/libris/bibstat/releases">Versionsinformation</a></li>
+                            </ul>
+                        </nav>
+                        <span class="footer-notes">{% footer %}<br>{% block footer %}{% endblock %}</span>
+                    </div>
+                </div>
             </div>
         </footer>
 
         <script src="/static/js/plugins/requirejs/require.js"></script>
         <script src="/static/js/main.js"></script>
-
-        <!-- Kundo forum 
-
-        <script type="text/javascript">
-            var _kundo = _kundo || {};
-            _kundo["org"] = "biblioteksstatistiken";
-            _kundo["lang"] = "sv";
-            _kundo["btn-type"] = "4";
-            _kundo["top"] = "50%";
-
-            (function() {
-                function async_load(){
-                    var s = document.createElement('script');
-                    s.type = 'text/javascript';
-                    s.async = true;
-                    s.src = ('https:' == document.location.protocol ? 'https://static-ssl' : 'http://static') +
-                            '.kundo.se/embed.js';
-                    var x = document.getElementsByTagName('script')[0];
-                    x.parentNode.insertBefore(s, x);
-                }
-                if (window.attachEvent)
-                    window.attachEvent('onload', async_load);
-                else
-                    window.addEventListener('load', async_load, false);
-            })();
-        </script>
-	-->
     </body>
 </html>

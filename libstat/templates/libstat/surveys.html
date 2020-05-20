@@ -22,13 +22,13 @@
                             data-original-title="Ny statistikinsamling för något av de nästkommande åren">Skapa ny omgång</a>
                 </span>
             </div>
-            <form id="surveys_filter_form" action="" method="GET" role="form" class="form-inline">
+            <form id="surveys_filter_form" action="#" method="GET" class="form-inline">
                 {% csrf_token %}
                 <div class="panel-body">
                     {% if message %}
                         <div class="row">
                             <div class="col-md-6">
-                                <div class="alert alert-info" role="alert">
+                                <div class="alert alert-info" aria-atomic="true" role="alert">
                                     {{ message|linebreaks }}
                                 </div>
                             </div>
@@ -39,7 +39,7 @@
                     <div class="row">
                         <div class="col-md-12">
                             <div class="form-group">
-                                <select name="sample_year" class="form-control" value={{ sample_year }}>
+                                <select name="sample_year" aria-label="Välj år" class="form-control" value={{ sample_year }}>
                                     {% if not sample_years %}
                                         <option value="" selected="selected">
                                             Välj år
@@ -113,7 +113,7 @@
                                     {% endfor %}
                                 </select>
                                 <input type="text" name="sigel" value="{{ sigel }}"
-                                       placeholder="Sigel"
+                                        placeholder="Sigel"
                                         class="form-control survey-popover"
                                         data-placement="top"
                                         data-toggle="tooltip"
@@ -121,10 +121,10 @@
                                         maxlength="10"
                                         data-original-title="Sök på bibliotekssigel">
                                 <input type="text" name="free_text" value="{{ free_text }}"
-                                       placeholder="Sökord"
-                                       class="form-control survey-popover"
-                                       data-placement="top" data-toggle="tooltip"
-                                       data-original-title="Sök efter hela eller delar av: e-postadress, biblioteksnamn, kommun och kommunkod">
+                                    placeholder="Sökord"
+                                    class="form-control survey-popover"
+                                    data-placement="top" data-toggle="tooltip"
+                                    data-original-title="Sök efter hela eller delar av: e-postadress, biblioteksnamn, kommun och kommunkod">
                                 <button type="submit" name="action" value="list"
                                         class="btn btn-primary no-margin">
                                     Visa
@@ -134,9 +134,9 @@
                                 <div class="checkbox">
                                     <label>
                                     <input type="checkbox"
-                                           id="exclude_co_reported_by_other"
-                                           name="exclude_co_reported_by_other"
-                                           {% if exclude_co_reported_by_other %}checked{% endif %}>
+                                        id="exclude_co_reported_by_other"
+                                        name="exclude_co_reported_by_other"
+                                        {% if exclude_co_reported_by_other %}checked{% endif %}>
                                     Visa inte bibliotek som samredovisas av annat bibliotek
                                     </label>
                                 </div>
@@ -151,35 +151,35 @@
 
                                 <div class="form-group">
                                     <a href="#" class="btn btn-primary btn-toggle btn-survey disabled"
-                                       data-toggle="modal"
-                                       data-target="#change-status-modal" disabled>
+                                        data-toggle="modal"
+                                        data-target="#change-status-modal" disabled>
                                         Ändra status
                                     </a>
                                     <a href="#" class="btn btn-primary btn-toggle btn-survey btn-dispatch survey-popover disabled"
-                                       data-placement="top" data-toggle="tooltip"
-                                       data-original-title="" disabled>
+                                        data-placement="top" data-toggle="tooltip"
+                                        data-original-title="" disabled>
                                         Skapa utskick
                                     </a>
                                     <a href="#" name="action"
-                                       class="btn btn-primary btn-toggle btn-survey disabled" data-toggle="modal"
-                                       data-target="#export-surveys-modal" disabled>
+                                        class="btn btn-primary btn-toggle btn-survey disabled" data-toggle="modal"
+                                        data-target="#export-surveys-modal" disabled>
                                         Exportera
                                     </a>
                                     <a href="#" name="action"
-                                       class="btn btn-primary btn-toggle btn-survey disabled" data-toggle="modal"
-                                       data-target="#export-surveys-with-previous-modal" disabled>
+                                        class="btn btn-primary btn-toggle btn-survey disabled" data-toggle="modal"
+                                        data-target="#export-surveys-with-previous-modal" disabled>
                                         Exportera med föregående år
                                     </a>
                                     {% if surveys_state == 'inactive' %}
                                         <a href="#" name="action"
-                                           class="btn btn-primary btn-toggle btn-survey disabled" data-toggle="modal"
-                                           data-target="#activate-surveys-modal" disabled>
+                                            class="btn btn-primary btn-toggle btn-survey disabled" data-toggle="modal"
+                                            data-target="#activate-surveys-modal" disabled>
                                             Aktivera
                                         </a>
                                     {% else %}
                                         <a href="#" name="action"
-                                           class="btn btn-primary btn-toggle btn-survey disabled" data-toggle="modal"
-                                           data-target="#inactivate-surveys-modal" disabled>
+                                            class="btn btn-primary btn-toggle btn-survey disabled" data-toggle="modal"
+                                            data-target="#inactivate-surveys-modal" disabled>
                                             Inaktivera
                                         </a>
                                     {% endif %}
@@ -221,8 +221,8 @@
                     </li>
                 </ul>
             </form>
-            <form id="form-surveys" action="" method="POST" role="form"
-                  class="form-inline publish-survey-responses-form">
+            <form id="form-surveys" action="#" method="POST"
+                class="form-inline publish-survey-responses-form">
                 {% if survey_responses %}
                     {% csrf_token %}
                     <input type="hidden" name="sample_year" value="{{ sample_year }}"/>
@@ -238,7 +238,7 @@
                     <tr>
                         <th class="column selection">
                             <input title="Markera alla" class="select-all"
-                                   type="checkbox" value="all"/>
+                                type="checkbox" value="all"/>
                         </th>
                         <th class="column" nowrap>Bibliotek <i class="fa fa-fw fa-sort"></i></th>
                         <th class="column" nowrap>Kommun <i class="fa fa-fw fa-sort"></i></th>
@@ -257,14 +257,14 @@
                             <tr>
                                 <td>
                                     <input title="Välj" class="select-one" name="survey-response-ids"
-                                           type="checkbox" value="{{ sr.id }}" data-library="{{ sr.library.name }}"
-                                           data-address="{{ survey_base_url }}/{{ sr.id }}" data-url-base="{{ url_base }}"
-                                           data-city="{{ sr.library.city }}"/>
+                                        type="checkbox" value="{{ sr.id }}" data-library="{{ sr.library.name }}"
+                                        data-address="{{ survey_base_url }}/{{ sr.id }}" data-url-base="{{ url_base }}"
+                                        data-city="{{ sr.library.city }}"/>
                                 </td>
                                 <td>
                                     <a title="" class="survey-popover" data-placement="top"
-                                       data-toggle="tooltip" href="{{ survey_base_url }}/{{ sr.id }}"
-                                       data-original-title="Öppna bibliotekets enkät">
+                                        data-toggle="tooltip" href="{{ survey_base_url }}/{{ sr.id }}"
+                                        data-original-title="Öppna bibliotekets enkät">
                                         {{ sr.library.name }} ({{ sr.library.sigel }})
                                     </a>
                                 </td>
@@ -280,8 +280,8 @@
                                 <td>
                                     {% if sr.library.email %}
                                         <a title="" class="survey-popover" data-placement="top"
-                                           data-toggle="tooltip" href="mailto:{{ sr.library.email }}"
-                                           data-original-title="{{ sr.library.email }} ">{{ sr.library.email|format_email }}</a>
+                                            data-toggle="tooltip" href="mailto:{{ sr.library.email }}"
+                                            data-original-title="{{ sr.library.email }} ">{{ sr.library.email|format_email }}</a>
                                     {% endif %}
                                 </td>
                                 <td nowrap>
@@ -291,9 +291,9 @@
                                     {% if sr.date_modified %}
                                         <span>
                                         <a class="modified-date-label survey-popover"
-                                           data-placement="top"
-                                           data-toggle="tooltip" href="#"
-                                           data-original-title="{{ sr.date_modified|utc_tz|date:"Y-m-d H:i" }}">
+                                            data-placement="top"
+                                            data-toggle="tooltip" href="#"
+                                            data-original-title="{{ sr.date_modified|utc_tz|date:"Y-m-d H:i" }}">
                                             {{ sr.date_modified|utc_tz|date:"Y-m-d" }}
                                         </a>
                                         </span>
@@ -302,16 +302,16 @@
                                 <td nowrap>
                                     {% if sr.is_published and not sr.latest_version_published %}
                                         <a class="label label-danger survey-popover modified-after-publish" title=""
-                                           data-placement="top"
-                                           data-toggle="tooltip" href="#"
-                                           data-original-title="Enkäten har ändrats efter publicering">
+                                            data-placement="top"
+                                            data-toggle="tooltip" href="#"
+                                            data-original-title="Enkäten har ändrats efter publicering">
                                             {{ sr.published_at|utc_tz|date:"Y-m-d H:i" }}
                                         </a>
                                     {% elif not sr.is_published and sr.published_at %}
                                         <a class="label label-danger survey-popover modified-after-publish" title=""
-                                           data-placement="top"
-                                           data-toggle="tooltip" href="#"
-                                           data-original-title="Enkätens publicering har återkallats. Inget data i enkäten är synlig för allmänheten. Publicera enkäten igen för att synliggöra datan för allmänheten.">
+                                            data-placement="top"
+                                            data-toggle="tooltip" href="#"
+                                            data-original-title="Enkätens publicering har återkallats. Inget data i enkäten är synlig för allmänheten. Publicera enkäten igen för att synliggöra datan för allmänheten.">
                                             {{ sr.published_at|utc_tz|date:"Y-m-d H:i" }}
                                         </a>
                                     {% else %}
@@ -323,8 +323,8 @@
                                 <td>
                                     {% if sr.library and sr.library.sigel %}
                                         <a title="" class="survey-popover" data-placement="top" data-toggle="tooltip"
-                                           target="_blank" href="{{ bibdb_library_base_url }}/{{ sr.library.sigel }}"
-                                           data-original-title="Visa biblioteket i biblioteksdatabasen">
+                                            target="_blank" rel="noopener noreferrer" href="{{ bibdb_library_base_url }}/{{ sr.library.sigel }}"
+                                            data-original-title="Visa biblioteket i biblioteksdatabasen">
                                             <i class="fa fa-external-link"></i>
                                         </a>
                                     {% endif %}
@@ -335,7 +335,7 @@
                     </tbody>
                 </table>
                 <div class="modal fade" id="change-status-modal" tabindex="-1" role="dialog"
-                     aria-hidden="true">
+                    aria-hidden="true">
                     <div class="modal-dialog">
                         <div class="modal-content">
                             <div class="modal-header">
@@ -483,26 +483,26 @@
                                     <label for="description" class="dispatch-label"><b>Kommentar</b> <i>(visas bara
                                         internt)</i></label>
                                     <input id="description" name="description" type="text"
-                                           data-bv-notempty
-                                           data-bv-notempty-message="Du måste ange en kommentar"
-                                           class="form-control dispatch-description"/>
+                                        data-bv-notempty
+                                        data-bv-notempty-message="Du måste ange en kommentar"
+                                        class="form-control dispatch-description"/>
                                 </div>
                                 <div class="form-group">
                                     <label for="title" class="dispatch-label"><b>Ämne</b> <i>(titel för
                                         e-postmeddelandet)</i></label>
                                     <input id="title" name="title" type="text"
-                                           data-bv-notempty
-                                           data-bv-notempty-message="Du måste ange ett ämne"
-                                           class="form-control dispatch-title"/>
+                                        data-bv-notempty
+                                        data-bv-notempty-message="Du måste ange ett ämne"
+                                        class="form-control dispatch-title"/>
                                 </div>
                                 <div class="form-group">
                                     <label for="message" class="dispatch-label"><b>Meddelande</b> <i>(innehåll i
                                         e-postmeddelandet)</i></label>
                                 <textarea id="message" name="message"
-                                          data-bv-notempty
-                                          data-bv-notempty-message="Du måste ange ett meddelande"
-                                          class="form-control dispatch-message"
-                                          rows="5"></textarea>
+                                    data-bv-notempty
+                                    data-bv-notempty-message="Du måste ange ett meddelande"
+                                    class="form-control dispatch-message"
+                                    rows="5"></textarea>
                                 </div>
                                 <div class="form-group">
                                     <div class="btn-group">
@@ -573,7 +573,7 @@
         </div>
     </div>
     <div class="modal fade" id="modal-clean-surveys" tabindex="-1" role="dialog"
-         aria-hidden="true">
+        aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
@@ -603,7 +603,7 @@
         </div>
     </div>
     <div class="modal fade" id="modal-match-libraries" tabindex="-1" role="dialog"
-         aria-hidden="true">
+        aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">

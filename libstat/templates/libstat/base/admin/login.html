@@ -1,5 +1,5 @@
 <div class="modal fade" id="loginModal" tabindex="-1" role="dialog" aria-labelledby="login-modal-title" aria-hidden="true">
-    <form role="form" class="login-form" method="post" action="">
+    <form class="login-form" method="post" action="#">
         {% csrf_token %}
 
         <div class="modal-dialog">
@@ -19,7 +19,7 @@
                     <div class="form-group">
                         <label for="username">Användarnamn</label>
                         <input id="username" name="username" type="text" value="{{ form.instance.username }}"
-                               class="form-control"/>
+                            class="form-control"/>
                         <span class="text-danger errors username"></span>
                     </div>
                     <div class="form-group">

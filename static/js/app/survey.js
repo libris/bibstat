@@ -355,7 +355,32 @@ define(['jquery', 'bootbox', 'survey.sum', 'survey.cell', 'surveys.dispatch', 'b
                     excluded: ['.disable-validation', ':disabled', ':hidden', ':not(:visible)'],
                     trigger: 'blur',
                     feedbackIcons: null
-
+                }).on('status.field.bv', function(e, data) {
+                    
+                    // monitor status changes and add accessible attributes accordingly
+                    var parent = e.target.parentElement.parentElement;
+                    if (parent) {
+                        if (parent.classList.contains('has-error')) {
+                            var el = parent.querySelector('input');
+                            el.setAttribute('aria-invalid', 'true')
+                            var helpblocks = parent.querySelectorAll('.help-block');
+                            Array.prototype.forEach.call(helpblocks, function(node) {
+                                if (node.getAttribute('data-bv-result') === 'INVALID') {
+                                    node.setAttribute('role', 'alert');
+                                } else node.removeAttribute('role');
+                            })
+                        }
+                        if (parent.classList.contains('has-success')) {
+                            var el = parent.querySelector('input');
+                            el.removeAttribute('aria-invalid');
+                            var helpblocks = parent.querySelectorAll('.help-block');
+                            Array.prototype.forEach.call(helpblocks, function(node){
+                                if (node.getAttribute('data-bv-result') === 'VALID') {
+                                    node.removeAttribute('role');
+                                } 
+                            })
+                        }
+                    }
                 }).on('error.validator.bv', function (e, data) { // http://bootstrapvalidator.com/examples/changing-default-behaviour/#showing-one-message-each-time
 
                     isDirty = true;

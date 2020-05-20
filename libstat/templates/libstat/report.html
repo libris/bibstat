@@ -2,30 +2,30 @@
 {% load libstat_tags %}
 
 {% block content %}
-    <header class="intro intro-fixed intro-report">
+    <header class="intro intro-fixed">
         <div class="intro-body">
             <div class="container">
-                <div>
-                    <img class="intro-logo" src="/static/img/kb.svg">
-
-                    <span><a href="{{ previous_url }}" class="btn btn-reports btn-lg">
-                        Tillbaka till rapportvalen
-                    </a>
-                    <a href="{% url "index" %}" class="btn btn-reports btn-lg">
-                        Till startsidan
-                    </a></span>
+                <div class="row">
+                    <div class="col-md-10 col-md-offset-1">
+                        <img class="intro-logo" src="/static/img/kb.svg" alt="Kungliga biblioteket">
+                        <h1 class="intro-title">Biblioteksstatistik</h1>
+                        <nav aria-label="Huvudmeny">
+                            <a href="{{ previous_url }}" class="btn btn-reports btn-lg">
+                                <span class="fa fa-arrow-circle-left fa-fw" aria-hidden="true"></span> Till rapportvalen
+                            </a>
+                            <a href="{% url "index" %}" class="btn btn-reports btn-lg">
+                                <span class="fa fa-arrow-circle-left fa-fw" aria-hidden="true"></span> Till startsidan</a>
+                        </nav>
+                    </div>
                 </div>
-
-                <div class="intro-header">Biblioteksstatistik</div>
-
             </div>
         </div>
     </header>
 
-    <div class="report">
-        <div class="report-title scroll-start">Verksamhetsrapport {{ year }}</div>
+    <main class="report">
+        <h2 class="section-title scroll-start">Verksamhetsrapport {{ year }}</h2>
         {% if municipality_code or principal %}
-            <div class="libraries-header">Denna rapport gäller för:</div>
+            <p class="section-text">Denna rapport gäller för:</p>
             <div class="row library-section">
                 <div class="col-md-10 libraries">
                     <div class="library">
@@ -42,25 +42,25 @@
                 </div>
             </div>
         {% else %}
-            <div class="libraries-header">Denna rapport gäller för bibliotek:</div>
+            <p class="section-text">Denna rapport gäller för bibliotek:</p>
             <div class="row library-section">
-                <div class="col-md-6 libraries">
+                <ul class="col-md-6 libraries">
                     {% for library in libraries|two_parts|first %}
-                        <div class="library">
+                        <li class="library">
                             {{ library.name }}{% if library.address %} | {{ library.address }}{% endif %}
                             {% if library.city %} |
-                                {{ library.city }}{% endif %}</div>
+                                {{ library.city }}{% endif %}</li>
                     {% endfor %}
-                </div>
+                        </ul>
                 {% if libraries|two_parts|last|length > 0 %}
-                    <div class="col-md-6 libraries">
+                    <ul class="col-md-6 libraries">
                         {% for library in libraries|two_parts|last %}
-                            <div class="library">
+                            <li class="library">
                                 {{ library.name }}{% if library.address %} | {{ library.address }}{% endif %}
                                 {% if library.city %} |
-                                    {{ library.city }}{% endif %}</div>
+                                    {{ library.city }}{% endif %}</li>
                         {% endfor %}
-                    </div>
+                            </ul>
                 {% endif %}
             </div>
         {% endif %}
@@ -68,25 +68,26 @@
         <div class="row report-legend">
             <span>&mdash; = Värdet går inte att få fram</span>
 
-            <span><i class="fa fa-asterisk fa-small incomplete-data"></i> = Värdet har inte angivits av alla bibliotek</span>
+            <span><span class="fa fa-asterisk fa-small incomplete-data"></span> = Värdet har inte angivits av alla bibliotek</span>
 
             <span><span class="example-key-figure"></span> = Beräknat nyckeltal</span>
 
             <span><span class="example-total"></span> = Totalbelopp</span>
 
-            <span class="print-report"><a class="fa fa-print" href="javascript:if(window.print)window.print()"></a></span>
+            <span class="print-report">
+                <a class="fa fa-print" aria-label="Skriv ut" title="Skriv ut" role="button" href="javascript:if(window.print)window.print()"></a></span>
         </div>
         <div class="row measurements">
             {% for group in measurements %}
                 <div class="observation-group">
-                    <table class="observation">
+                    <table class="observation" aria-describedby="observation-label-{{forloop.counter}}">
                         <tr>
-                            <th class="observation-label">{{ group.title }}</th>
+                            <th class="observation-label" id="observation-label-{{forloop.counter}}">{{ group.title }}</th>
                             <th class="observation-previous-previous-year">{{ group.years.0 }}</th>
                             <th class="observation-previous-year">{{ group.years.1 }}</th>
                             <th class="observation-sample-year">{{ group.years.2 }}</th>
                             <th class="observation-difference">Utveckling<br>{{ group.years.1 }} - {{ group.years.2 }}</th>
-                           <!-- <th class="observation-difference-total">Andel av riket</th> -->
+                            <!-- <th class="observation-difference-total">Andel av riket</th> -->
                             <th class="observation-extra">{{ group.extra|default:"" }}</th>
                         </tr>
                         {% for row in group|access:"rows" %}
@@ -106,21 +107,24 @@
                             </tr>
                             {% else %}
                                 <tr class="{% if row.is_key_figure %} key-figure
-                                           {% elif row.is_sum %} sum
-                                           {% endif %}
-                                           {% if forloop.counter|divisibleby:2 %} even
-                                           {% else %} odd
-                                           {% endif %}">
+                                            {% elif row.is_sum %} sum
+                                            {% endif %}
+                                            {% if forloop.counter|divisibleby:2 %} even
+                                            {% else %} odd
+                                            {% endif %}">
                                     <td class="observation-label">
                                         {{ row|access:"label" }}
                                         {% if row|access:"description" %}
-                                            <a type="button" class="report-explanation btn-help"
-                                               href="#"
-                                               tabindex="-1"
-                                               data-toggle="popover" data-placement="top"
-                                               data-content="{{ row|access:"description" }}"
-                                               data-trigger="click">
-                                                <i class="fa fa-question-circle"></i>
+                                            <a  class="report-explanation btn-help"
+                                                href="#"
+                                                role="button"
+                                                tabindex="0"
+                                                data-toggle="popover" 
+                                                data-placement="top"
+                                                data-content="{{ row|access:"description" }}"
+                                                data-trigger="click"
+                                                aria-label="Förklaring">
+                                                <span class="fa fa-question-circle" aria-hidden="true"></span>
                                             </a>
                                         {% endif %}
                                     </td>
@@ -132,7 +136,7 @@
                                                 {{ row|access:group.years.0|format_number }}
                                             {% endif %}
                                             {% if group.years.0 in row|access:'incomplete_data' %}
-                                                <i class="fa fa-asterisk fa-small incomplete-data"></i>
+                                                <span class="fa fa-asterisk fa-small incomplete-data"></span>
                                             {% endif %}
                                         {% else %}
                                             &mdash;
@@ -146,7 +150,7 @@
                                                 {{ row|access:group.years.1|format_number }}
                                             {% endif %}
                                             {% if group.years.1 in row|access:'incomplete_data' %}
-                                                <i class="fa fa-asterisk fa-small incomplete-data"></i>
+                                                <span class="fa fa-asterisk fa-small incomplete-data"></span>
                                             {% endif %}
                                         {% else %}
                                             &mdash;
@@ -160,7 +164,7 @@
                                                 {{ row|access:group.years.2|format_number }}
                                             {% endif %}
                                             {% if group.years.2 in row|access:'incomplete_data' %}
-                                                <i class="fa fa-asterisk fa-small incomplete-data"></i>
+                                                <span class="fa fa-asterisk fa-small incomplete-data"></span>
                                             {% endif %}
                                         {% else %}
                                             &mdash;
@@ -174,17 +178,17 @@
                                                 {{ row.diff|floatformat:"0" }}%
                                             {% endif %}
                                             {% if group.years.2 in row|access:'incomplete_data' or group.years.1 in row|access:'incomplete_data' %}
-                                                <i class="fa fa-asterisk fa-small incomplete-data"></i>
+                                                <span class="fa fa-asterisk fa-small incomplete-data"></span>
                                             {% endif %}
                                         {% else %}
                                             &mdash;
                                         {% endif %}
                                     </td>
-                                   <!-- <td class="observation-difference-total">
+                                    <!-- <td class="observation-difference-total">
                                         {% if row.nation_diff != None %}
                                             {{ row.nation_diff|floatformat:"0" }}&permil;
                                             {% if group.years.2 in row|access:'incomplete_data' %}
-                                                <i class="fa fa-asterisk fa-small incomplete-data"></i>
+                                                <span class="fa fa-asterisk fa-small incomplete-data"></span>
                                             {% endif %}
                                         {% else %}
                                             &mdash;
@@ -204,11 +208,11 @@
                 </div>
                 {% if group.show_chart %}
                     <div id="chart-{{ forloop.counter }}"
-                         class="chart"
-                         data-years="{{ group.years|as_json }}"
-                         data-chart='{{ group.rows|show_in_chart|as_json }}'></div>
+                        class="chart"
+                        data-years="{{ group.years|as_json }}"
+                        data-chart='{{ group.rows|show_in_chart|as_json }}'></div>
                 {% endif %}
             {% endfor %}
         </div>
-    </div>
+    </main>
 {% endblock %}

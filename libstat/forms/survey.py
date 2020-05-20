@@ -19,8 +19,7 @@ class SurveyForm(forms.Form):
     def _cell_to_input_field(self, cell, observation, authenticated, variable_type):
         attrs = {"class": "form-control",
                  "id": cell.variable_key,
-                 "name": cell.variable_key,
-                 "aria-labelledby": cell.variable_key}
+                 "name": cell.variable_key}
 
         if cell.sum_of:
             attrs["data-sum-of"] = " ".join(map(lambda s: s, cell.sum_of))
@@ -30,6 +29,7 @@ class SurveyForm(forms.Form):
         if cell.required == True:
             attrs["data-bv-notempty"] = ""
             attrs["placeholder"] = "Obligatorisk"
+            attrs["aria-required"] = "true"
 
         if variable_type in ["integer", "decimal"]:
             # Numerical fields need special treatment with JS because of
@@ -40,6 +40,13 @@ class SurveyForm(forms.Form):
                 attrs["data-previous-value"] = cell.previous_value
             else:
                 attrs["data-previous-value"] = 'null'
+
+        if "Namn" in cell.variable_key:
+            attrs["autocomplete"] = "name"
+
+        if "Plan" in cell.variable_key:
+            attrs["type"] = "url"
+            attrs["autocomplete"] = "url"
 
         # Utgifter and Intakter max 999 999 999 or 999 999 999,999
         if "Utgift" in cell.variable_key or "Intakt" in cell.variable_key:
@@ -68,6 +75,8 @@ class SurveyForm(forms.Form):
             if variable_type == "email":
                 #attrs["data-bv-emailaddress"] = ""
                 attrs["data-bv-regexp"] = ""
+                attrs["autocomplete"] = "email"
+                attrs["type"] = "email"
                 attrs["data-bv-regexp-regexp"] = "^([\w!#$%&'*+/=?`{|}~^-]+(?:\.[\w!#$%&'*+/=?`{|}~^-]+)*@(?:[A-Za-z0-9-]+\.)+[A-Za-z]{2,6})$"
                 attrs["data-bv-regexp-message"] = u"Vänligen mata in en giltig emailadress"
 
@@ -77,6 +86,8 @@ class SurveyForm(forms.Form):
 
             if variable_type == "phonenumber":
                 attrs["data-bv-regexp"] = ""
+                attrs["autocomplete"] = "tel"
+                attrs["type"] = "tel"
                 attrs["data-bv-regexp-regexp"] = "^(-|\+?(\d\d?-?)+\d(\s?\d+)*\d+)$"
                 attrs["data-bv-regexp-message"] = u"Vänligen mata in ett giltigt telefonnummer utan bokstäver och parenteser, t ex 010-709 30 00"
 
@@ -136,10 +147,10 @@ class SurveyForm(forms.Form):
             }
 
             if self.is_read_only:
-                attrs["disabled"] = "true"
+                attrs["disabled"] = "disabled"
 
             if library.sigel in other_surveys_selected_sigels:
-                attrs["disabled"] = "true"
+                attrs["disabled"] = "disabled"
                 row["comment"] = u"Detta bibliotek rapporteras redan för i en annan enkät."
                 if current_library or library.sigel in this_surveys_selected_sigels:
                     row["comment"] = u"Rapporteringen för detta bibliotek kolliderar med en annan enkät."
@@ -147,14 +158,14 @@ class SurveyForm(forms.Form):
                     del attrs["disabled"]
 
             if current_library:
-                attrs["disabled"] = "true"
+                attrs["disabled"] = "disabled"
                 if not authenticated or library.sigel in this_surveys_selected_sigels:
-                    attrs["checked"] = "true"
+                    attrs["checked"] = "checked"
 
                 if not library.sigel in other_surveys_selected_sigels:
                     row["comment"] = u"Detta är det bibliotek som mottagit denna enkät. Om du samredovisar med andra bibliotek, glöm inte att även kryssa för dem här i listan."
             elif library.sigel in this_surveys_selected_sigels:
-                attrs["checked"] = "true"
+                attrs["checked"] = "checked"
 
             if authenticated:
                 try:
@@ -188,18 +199,18 @@ class SurveyForm(forms.Form):
         body = (
             u"%0D%0A"
             u"----------" + "%0D%0A"
-            u"Var vänlig och låt följande information stå kvar i meddelandet." + "%0D%0A"
+            u"Var%20vänlig%20och%20låt%20följande%20information%20stå%20kvar%20i%20meddelandet." + "%0D%0A"
             u"" + "%0D%0A"
-            u"Bibliotek: {} ({}) i {}".format(self.library_name, self.library_sigel, self.city) + "%0D%0A"
-            u"Kommun/län: {} ({})".format(municipalities.get(self.municipality_code, ""), self.municipality_code) + "%0D%0A"
-            u"Statistikansvarig: {}".format(self.email) + "%0D%0A"
-            u"Insamlingsår: {}".format(self.sample_year) + "%0D%0A"
+            u"Bibliotek:%20{}%20({})%20i%20{}".format(self.library_name, self.library_sigel, self.city) + "%0D%0A"
+            u"Kommun/län:%20{}%20({})".format(municipalities.get(self.municipality_code, ""), self.municipality_code) + "%0D%0A"
+            u"Statistikansvarig:%20{}".format(self.email) + "%0D%0A"
+            u"Insamlingsår:%20{}".format(self.sample_year) + "%0D%0A"
             u"----------"
         )
 
         return (
             u"mailto:biblioteksstatistik@kb.se"
-            u"?subject=Fråga för statistikenkät: {} ({})".format(self.library_name, self.library_sigel) +
+            u"?subject=Fråga%20för%20statistikenkät:%20{}%20({})".format(self.library_name, self.library_sigel) +
             u"&body={}".format(body)
         )
 
