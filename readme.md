@@ -31,9 +31,13 @@ Nedan är ett exempel på en minimal installation för Mac OS X.
 	$ exit
 
 	# Skapa en virtuell miljö för Python
+	# OSX:
 	$ source /usr/local/bin/virtualenvwrapper.sh
 	$ mkvirtualenv -p /usr/local/bin/python bibstat
 	$ workon bibstat
+	
+	# UBUNTU:
+	$ virtualenv -p /usr/bin/python2.7 venv && source venv/bin/activate
 
 	# Installera paket och konfigurera
 	$ pip install -r requirements.txt
@@ -58,26 +62,35 @@ Konfigurera då `MONGODB_HOST` i `bibstat/settings_local.py` till returvärdet a
 docker inspect -f '{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' bibstat_mongodb
 ```
 
-### Produktionsdata
+För att lägga till användare som beskrivs ovan, anslut först en terminal till containern
+```sh
+sudo docker exec -it bibstat_mongodb bash
+```
 
-Efter en första installation kommer det inte finnas någon data i den lokala miljön.  
-Nedan är instruktioner för att göra en dump av produktionsdatabasen och importera den.
+### Importera produktionsdata till lokal utvecklingsmiljö
 
-    # Gör en dump av produktionsdatabasen genom att ssh:a till bibstat.kb.se 
-    # - <user> är dit eget (AD kopplat, kontakts drift om behörighet saknas)
-    # - <username> och <password> till bibstat mongodb finns i Team Gul Vault
-    #
+    # Gör en dump av produktionsdatabasen
     $ ssh <user>@bibstat.kb.se
     $ mongodump -d bibstat -u <username> -p <password>
     $ exit
+    
+    # där <user> är din AD-användare och
+    # <username> och <password> finns i Team Gul Vault
 
-    # Hämta ned dump till lokala maskinen
+    # Hämta hem dumpen med sftp eller scp, t.ex:
     $ sftp  <user>@bibstat.kb.se
     $ get -r dump
     $ exit
 
-    # Importera produktionsdata
+    # Läs in datadumpen
     $ mongorestore dump
+    
+    # Alternativt, för docker, kopiera datadumpen till containern
+    $ docker cp dump bibstat_mongodb:/data
+    
+    # och läs in den med
+    $ docker exec -it bibstat_mongodb mongorestore /data/dump/
+
 
 Du kan alternativt ange att bara importera en `collection`, exempelvis enbart termerna med hjälp av `mongorestore dump/bibstat/libstat_variables.bson`. Användarnamn och lösenord för produktionsdatabasen finns i `/data/appl/config/bibstat_local.py`.
 
