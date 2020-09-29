@@ -52,20 +52,29 @@ Nedan är ett exempel på en minimal installation för Mac OS X.
 Ett alternativ till att installera MongoDB är att köra det i Docker.
 https://hub.docker.com/_/mongo?tab=description&page=1&name=2.6
 
-```sh
+
+```
+# LINUX:
 docker run --name bibstat_mongodb -v /abs/path/to/repo/mongodb:/data/db -d mongo:2.6
+# OSX:
+docker run --publish 27017:27017 --name bibstat_mongodb -v /abs/path/to/repo/mongodb:/data/db -d mongo:2.6
 ```
 
-Konfigurera då `MONGODB_HOST` i `bibstat/settings_local.py` till returvärdet av
+Konfigurera `MONGODB_HOST` i `bibstat/settings_local.py` till:
 
 ```sh
+# LINUX, returvärdet av:
 docker inspect -f '{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' bibstat_mongodb
+# OSX: 
+localhost:27017
 ```
 
 För att lägga till användare som beskrivs ovan, anslut först en terminal till containern
 ```sh
 sudo docker exec -it bibstat_mongodb bash
 ```
+
+
 
 ### Importera produktionsdata till lokal utvecklingsmiljö
 
