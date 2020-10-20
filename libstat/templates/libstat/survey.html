@@ -159,7 +159,8 @@
                                                                 {{ form|access:variable_key }}
                                                             {% endwith %}
                                                             <div class="input-group-btn">
-                                                                <!-- Skip dropdown for inputs in first group of first section. -->
+                                                                <!-- Skip dropdown for inputs in first group of first section. --> 
+                                                                {% comment "This functionality is not in use right now" %}
                                                                 {% if not forloop.parentloop.parentloop.parentloop.first or not forloop.parentloop.parentloop.first %}
                                                                     {% with variable=form|access:cell.variable_key %}
                                                                         <button type="button" class="btn btn-default btn-dropdown dropdown-toggle" data-toggle="dropdown" {% if form.is_read_only %} disabled{% endif %}>
@@ -176,6 +177,7 @@
                                                                         </ul>
                                                                     {% endwith %}
                                                                 {% endif %}
+                                                                {% endcomment %}
                                                                 {% if cell.explanation %}
                                                                     <a class="btn btn-default btn-help" 
                                                                         href="#"

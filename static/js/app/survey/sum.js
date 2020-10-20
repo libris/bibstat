@@ -88,7 +88,7 @@ define(['jquery', 'bootbox', 'survey.cell'], function($, bootbox, cell) {
                     // User clicks OK
                     // Clear subfields and put focus on sum field
                     $.each(childels, function (index, child) {
-                        child.val("");
+                        child.val("-");
                     });
                     $(parent).focus()
                 } else {
