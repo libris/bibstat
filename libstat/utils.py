@@ -5,6 +5,7 @@ ALL_TARGET_GROUPS_label = "Samtliga bibliotek"
 SURVEY_TARGET_GROUPS = (
     (u'natbib', u'Nationalbibliotek'),
     (u'folkbib', u'Folkbibliotek'),
+    (u'folkskolbib', u'Folk- och skolbibliotek'),
     (u'specbib', u'Specialbibliotek'),
     (u'sjukbib', u'Sjukhusbibliotek'),
     (u'myndbib', u'Myndighetsbibliotek'),

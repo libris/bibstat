@@ -5,6 +5,7 @@ PRINCIPALS = (
     (u"muslan", u"landsting"),
     (u"muskom", u"kommun"),
     (u"folkbib", u"kommun"),
+    (u"folkskolbib", u"kommun"),
     (u"specbib", u"stat"),
     (u"univbib", u"stat"),
     (u"sjukbib", u"landsting"),
@@ -28,13 +29,13 @@ name_for_principal = {
 }
 
 principal_for_library_type = dict(PRINCIPALS)
-library_types_with_principals = [u'univbib', u'muslan', u'muskom', u'vuxbib', u'frisgym', u'skolbib', u'sjukbib', u'myndbib', u'statskol', u'folkbib', u'musstat', u'specbib', u'folkhogbib', u'friskol', u'ovrbib', u'natbib', u'gymbib']
+library_types_with_principals = [u'univbib', u'muslan', u'muskom', u'vuxbib', u'frisgym', u'skolbib', u'sjukbib', u'myndbib', u'statskol', u'folkbib', u'folkskolbib', u'musstat', u'specbib', u'folkhogbib', u'friskol', u'ovrbib', u'natbib', u'gymbib']
 
 library_types_for_principal = {
     u'stat': [u'univbib', u'myndbib', u'statskol', u'musstat', u'specbib', u'ovrbib', u'natbib'],
     u'landsting': [u'muslan', u'sjukbib', u'folkhogbib'],
     u'privat': [u'frisgym', u'friskol'],
-    u'kommun': [u'muskom', u'vuxbib', u'skolbib', u'folkbib', u'gymbib']
+    u'kommun': [u'muskom', u'vuxbib', u'skolbib', u'folkbib', u'folkskolbib', u'gymbib']
 }
 
 def get_library_types_with_same_principal(library):
