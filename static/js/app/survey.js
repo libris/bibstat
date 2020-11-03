@@ -919,7 +919,7 @@ define(['jquery', 'bootbox', 'survey.sum', 'survey.cell', 'surveys.dispatch', 'b
                 $('.survey-popover').tooltip();
                 $('input').placeholder();
 
-                sum.init();
+                sum.init(survey.form());
                 initDropdown();
                 initProgress();
 

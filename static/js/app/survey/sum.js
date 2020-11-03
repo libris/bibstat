@@ -1,4 +1,7 @@
 define(['jquery', 'bootbox', 'survey.cell'], function($, bootbox, cell) {
+
+    var theForm = null;
+
     var sumOf = function (elements) {
         var sum = null;
 
@@ -89,6 +92,8 @@ define(['jquery', 'bootbox', 'survey.cell'], function($, bootbox, cell) {
                     // Clear subfields and put focus on sum field
                     $.each(childels, function (index, child) {
                         child.val("-");
+                        // revalidate to make sure we get rid of any error messages caused by previous value
+                        theForm.bootstrapValidator('revalidateField', child.prop('name'));
                     });
                     $(parent).focus()
                 } else {
@@ -106,7 +111,8 @@ define(['jquery', 'bootbox', 'survey.cell'], function($, bootbox, cell) {
     };
 
     return {
-        'init': function() {
+        'init': function(form) {
+            theForm = form;
             $.each($('input[data-sum-of]'), function() {
 
                 var parent = $(this);
