@@ -91,6 +91,18 @@ class SurveyForm(forms.Form):
                 attrs["data-bv-regexp-regexp"] = "^(-|\+?(\d\d?-?)+\d(\s?\d+)*\d+)$"
                 attrs["data-bv-regexp-message"] = u"Vänligen mata in ett giltigt telefonnummer utan bokstäver och parenteser, t ex 010-709 30 00"
 
+        # Number of hours per week
+        if "Open103" in cell.variable_key:
+            attrs["data-bv-between"] = "true"
+            attrs["data-bv-between-min"] = "0"
+            attrs["data-bv-between-max"] = "168"
+
+        # Number of days per year
+        if "Open101" in cell.variable_key:            
+            attrs["data-bv-between"] = "true"
+            attrs["data-bv-between-min"] = "0"
+            attrs["data-bv-between-max"] = "366"
+
         if not observation or observation.value_unknown:
             attrs["disabled"] = ""
             attrs["class"] = "{} value-unknown".format(attrs["class"])
