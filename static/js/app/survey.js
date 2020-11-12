@@ -311,7 +311,7 @@ define(['jquery', 'bootbox', 'survey.sum', 'survey.cell', 'surveys.dispatch', 'b
         };
 
         var getTrimmedValue = function (element) {
-            return $.trim(element.val()).replace(",", ".").replace("-", "");
+            return $.trim(element.val()).replace(",", ".").replace("-", "").replace(" ", "");
         };
 
         var checkPartSum = function (partValueEl, valueEl) {
