@@ -311,16 +311,16 @@ define(['jquery', 'bootbox', 'survey.sum', 'survey.cell', 'surveys.dispatch', 'b
         };
 
         var getTrimmedValue = function (element) {
-          return $.trim(element.val()).replace(",", ".").replace("-", "");
+            return $.trim(element.val()).replace(",", ".").replace("-", "");
         };
 
         var checkPartSum = function (partValueEl, valueEl) {
             var partValueElVal = getTrimmedValue($(partValueEl));
             var valueElVal = getTrimmedValue($(valueEl));
-          if ($.isNumeric(partValueElVal) && $.isNumeric(valueElVal)) {
-              return parseFloat(partValueElVal) <= parseFloat(valueElVal);
-          }
-          return true;
+            if ($.isNumeric(partValueElVal) && $.isNumeric(valueElVal)) {
+                return parseFloat(partValueElVal) <= parseFloat(valueElVal);
+            }
+            return true;
         };
 
         return {
