@@ -26,6 +26,28 @@ class SurveyForm(forms.Form):
             attrs["data-bv-notempty"] = ""
             attrs["placeholder"] = "Obligatorisk"
 
+        if cell.part_of:
+            attrs["data-bv-callback"] = ""
+            if isinstance(cell.part_of, list):
+                part_of_as_string = " ".join(cell.part_of)
+                attrs["data-part-of"] = part_of_as_string
+                attrs["data-bv-callback-message"] = u"Värdet får inte vara högre än värdet i följande fält: {}".format(part_of_as_string)
+            else:
+                attrs["data-part-of"] = cell.part_of
+                attrs["data-bv-callback-message"] = u"Värdet får inte vara högre än värdet i fältet {}".format(cell.part_of)
+
+        if cell.has_part:
+            attrs["data-bv-callback"] = ""
+            if isinstance(cell.has_part, list):
+                has_part_as_string = " ".join(cell.has_part)
+                attrs["data-has-part"] = has_part_as_string
+                if not cell.part_of:
+                    attrs["data-bv-callback-message"] = u"Värdet får inte vara mindre än värdet i följande fält: {}".format(has_part_as_string)
+            else:
+                attrs["data-has-part"] = cell.has_part
+                if not cell.part_of:
+                    attrs["data-bv-callback-message"] = u"Värdet får inte vara mindre än värdet i fältet {}".format(cell.has_part)
+
         if cell.required == True:
             attrs["data-bv-notempty"] = ""
             attrs["placeholder"] = "Obligatorisk"
