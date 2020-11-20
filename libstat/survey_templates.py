@@ -72,64 +72,66 @@ def _survey_template_base():
                     groups=[
                         Group(rows=[
                             Row(cells=[
-                                Cell(variable_key=u"Bestand101", required=True),
-                                Cell(variable_key=u"Bestand201"),
-                                Cell(variable_key=u"Bestand301")]),
+                                Cell(variable_key=u"Bestand101", required=True, has_part=[u"Bestand201", u"Bestand102"]),
+                                Cell(variable_key=u"Bestand201", has_part=u"Bestand202", part_of=u"Bestand101"),
+                                Cell(variable_key=u"Bestand301", has_part=u"Bestand302")]),
                             Row(cells=[
-                                Cell(variable_key=u"Bestand102"),
-                                Cell(variable_key=u"Bestand202"),
-                                Cell(variable_key=u"Bestand302")]),
+                                Cell(variable_key=u"Bestand102", has_part=u"Bestand202", part_of=u"Bestand101"),
+                                Cell(variable_key=u"Bestand202", part_of=[u"Bestand201", u"Bestand102"]),
+                                Cell(variable_key=u"Bestand302", part_of=u"Bestand301")]),
                             Row(cells=[
-                                Cell(variable_key=u"Bestand103", required=True),
-                                Cell(variable_key=u"Bestand203"),
+                                Cell(variable_key=u"Bestand103", has_part=u"Bestand203", required=True),
+                                Cell(variable_key=u"Bestand203", part_of=u"Bestand103"),
                                 Cell(variable_key=u"Bestand303")]),
                             Row(cells=[
-                                Cell(variable_key=u"Bestand104", required=True),
-                                Cell(variable_key=u"Bestand204"),
+                                Cell(variable_key=u"Bestand104", has_part=u"Bestand204", required=True),
+                                Cell(variable_key=u"Bestand204", part_of=u"Bestand104"),
                                 Cell(variable_key=u"Bestand304")]),
                             Row(cells=[
-                                Cell(variable_key=u"Bestand105", required=True),
-                                Cell(variable_key=u"Bestand205"),
+                                Cell(variable_key=u"Bestand105", has_part=u"Bestand205", required=True),
+                                Cell(variable_key=u"Bestand205", part_of=u"Bestand105"),
                                 Cell(variable_key=u"Bestand305")]),
                             Row(cells=[
-                                Cell(variable_key=u"Bestand106", required=True),
-                                Cell(variable_key=u"Bestand206"),
+                                Cell(variable_key=u"Bestand106", has_part=u"Bestand206", required=True),
+                                Cell(variable_key=u"Bestand206", part_of=u"Bestand106"),
                                 Cell(variable_key=u"Bestand306")]),
                             Row(cells=[
-                                Cell(variable_key=u"Bestand107", required=True),
-                                Cell(variable_key=u"Bestand207"),
+                                Cell(variable_key=u"Bestand107", has_part=u"Bestand207", required=True),
+                                Cell(variable_key=u"Bestand207", part_of=u"Bestand107"),
                                 Cell(variable_key=u"Bestand307")]),
                             Row(cells=[
-                                Cell(variable_key=u"Bestand108", required=True),
-                                Cell(variable_key=u"Bestand208"),
+                                Cell(variable_key=u"Bestand108", has_part=u"Bestand208", required=True),
+                                Cell(variable_key=u"Bestand208", part_of=u"Bestand108"),
                                 Cell(variable_key=u"Bestand308")]),
                             Row(cells=[
-                                Cell(variable_key=u"Bestand109", required=True),
-                                Cell(variable_key=u"Bestand209")]),
+                                Cell(variable_key=u"Bestand109", has_part=u"Bestand209", required=True),
+                                Cell(variable_key=u"Bestand209", part_of=u"Bestand109")]),
                             Row(cells=[
-                                Cell(variable_key=u"Bestand110", required=True),
-                                Cell(variable_key=u"Bestand210"),
+                                Cell(variable_key=u"Bestand110", has_part=u"Bestand210", required=True),
+                                Cell(variable_key=u"Bestand210", part_of=u"Bestand110"),
                                 Cell(variable_key=u"Bestand310")]),
                             Row(cells=[
-                                Cell(variable_key=u"Bestand111", required=True),
-                                Cell(variable_key=u"Bestand211"),
+                                Cell(variable_key=u"Bestand111", has_part=u"Bestand211", required=True),
+                                Cell(variable_key=u"Bestand211", part_of=u"Bestand111"),
                                 Cell(variable_key=u"Bestand311")]),
                             Row(cells=[
-                                Cell(variable_key=u"Bestand112", required=True),
-                                Cell(variable_key=u"Bestand212"),
+                                Cell(variable_key=u"Bestand112", has_part=u"Bestand212", required=True),
+                                Cell(variable_key=u"Bestand212", part_of=u"Bestand112"),
                                 Cell(variable_key=u"Bestand312")]),
                             Row(cells=[
-                                Cell(variable_key=u"Bestand113", required=True),
-                                Cell(variable_key=u"Bestand213"),
+                                Cell(variable_key=u"Bestand113", has_part=u"Bestand213", required=True),
+                                Cell(variable_key=u"Bestand213", part_of=u"Bestand113"),
                                 Cell(variable_key=u"Bestand313")]),
                             Row(cells=[
                                 Cell(variable_key=u"Bestand199",
+                                     has_part=u"Bestand299",
                                      sum_of=['Bestand101', 'Bestand103',
                                              'Bestand104', 'Bestand105', 'Bestand106',
                                              'Bestand107', 'Bestand108', 'Bestand109',
                                              'Bestand110', 'Bestand111', 'Bestand112',
                                              'Bestand113']), 
                                 Cell(variable_key=u"Bestand299",
+                                     part_of=u"Bestand199",
                                      sum_of=['Bestand201', 'Bestand203',
                                              'Bestand204', 'Bestand205', 'Bestand206',
                                              'Bestand207', 'Bestand208', 'Bestand209',
@@ -190,14 +192,14 @@ def _survey_template_base():
                     groups=[
                         Group(rows=[
                             Row(cells=[
-                                Cell(variable_key=u"Inilan101"),
-                                Cell(variable_key=u"Omlan201"),
-                                Cell(variable_key=u"Utlan301",
+                                Cell(variable_key=u"Inilan101", has_part=u"Inilan102"),
+                                Cell(variable_key=u"Omlan201", has_part=u"Omlan202"),
+                                Cell(variable_key=u"Utlan301", has_part=u"Utlan302",
                                      sum_of=[u"Inilan101", u"Omlan201"])]),
                             Row(cells=[
-                                Cell(variable_key=u"Inilan102"),
-                                Cell(variable_key=u"Omlan202"),
-                                Cell(variable_key=u"Utlan302",
+                                Cell(variable_key=u"Inilan102", part_of=u"Inilan101"),
+                                Cell(variable_key=u"Omlan202", part_of=u"Omlan201"),
+                                Cell(variable_key=u"Utlan302", part_of=u"Utlan301",
                                      sum_of=[u"Inilan102", u"Omlan202"])]),
                             Row(cells=[
                                 Cell(variable_key=u"Inilan103"),
@@ -404,67 +406,68 @@ def _survey_template_base():
                     groups=[
                         Group(rows=[
                             Row(cells=[
-                                Cell(variable_key=u"Publ101", required=True),
-                                Cell(variable_key=u"Publ201")]),
+                                Cell(variable_key=u"Publ101", required=True, has_part=u"Publ201"),
+                                Cell(variable_key=u"Publ201", part_of=u"Publ101")]),
                             Row(cells=[
-                                Cell(variable_key=u"Publ102", required=True),
-                                Cell(variable_key=u"Publ202")]),
+                                Cell(variable_key=u"Publ102", required=True, has_part=u"Publ202"),
+                                Cell(variable_key=u"Publ202", part_of=u"Publ102")]),
                             Row(cells=[
-                                Cell(variable_key=u"Publ103", required=True),
-                                Cell(variable_key=u"Publ203")]),
+                                Cell(variable_key=u"Publ103", required=True, has_part=u"Publ203"),
+                                Cell(variable_key=u"Publ203", part_of=u"Publ103")]),
                             Row(cells=[
-                                Cell(variable_key=u"Publ104", required=True),
-                                Cell(variable_key=u"Publ204")]),
+                                Cell(variable_key=u"Publ104", required=True, has_part=u"Publ204"),
+                                Cell(variable_key=u"Publ204", part_of=u"Publ104")]),
                             Row(cells=[
-                                Cell(variable_key=u"Publ105", required=True),
-                                Cell(variable_key=u"Publ205")]),
+                                Cell(variable_key=u"Publ105", required=True, has_part=u"Publ205"),
+                                Cell(variable_key=u"Publ205", part_of=u"Publ105")]),
                             Row(cells=[
-                                Cell(variable_key=u"Publ106", required=True),
-                                Cell(variable_key=u"Publ206")]),
+                                Cell(variable_key=u"Publ106", required=True, has_part=u"Publ206"),
+                                Cell(variable_key=u"Publ206", part_of=u"Publ106")]),
                             Row(cells=[
-                                Cell(variable_key=u"Publ107", required=True),
-                                Cell(variable_key=u"Publ207")]),
+                                Cell(variable_key=u"Publ107", required=True, has_part=u"Publ207"),
+                                Cell(variable_key=u"Publ207", part_of=u"Publ107")]),
                             Row(cells=[
-                                Cell(variable_key=u"Publ108", required=True),
-                                Cell(variable_key=u"Publ208")]),
+                                Cell(variable_key=u"Publ108", required=True, has_part=u"Publ208"),
+                                Cell(variable_key=u"Publ208", part_of=u"Publ108")]),
                             Row(cells=[
-                                Cell(variable_key=u"Publ109", required=True),
-                                Cell(variable_key=u"Publ209")]),
+                                Cell(variable_key=u"Publ109", required=True, has_part=u"Publ209"),
+                                Cell(variable_key=u"Publ209", part_of=u"Publ109")]),
                             Row(cells=[
-                                Cell(variable_key=u"Publ110", required=True),
-                                Cell(variable_key=u"Publ210")]),
+                                Cell(variable_key=u"Publ110", required=True, has_part=u"Publ210"),
+                                Cell(variable_key=u"Publ210", part_of=u"Publ110")]),
                             Row(cells=[
-                                Cell(variable_key=u"Publ111", required=True),
-                                Cell(variable_key=u"Publ211")]),
+                                Cell(variable_key=u"Publ111", required=True, has_part=u"Publ211"),
+                                Cell(variable_key=u"Publ211", part_of=u"Publ111")]),
                             Row(cells=[
-                                Cell(variable_key=u"Publ112", required=True),
-                                Cell(variable_key=u"Publ212")]),
+                                Cell(variable_key=u"Publ112", required=True, has_part=u"Publ212"),
+                                Cell(variable_key=u"Publ212", part_of=u"Publ112")]),
                             Row(cells=[
-                                Cell(variable_key=u"Publ113", required=True),
-                                Cell(variable_key=u"Publ213")]),
+                                Cell(variable_key=u"Publ113", required=True, has_part=u"Publ213"),
+                                Cell(variable_key=u"Publ213", part_of=u"Publ113")]),
                             Row(cells=[
-                                Cell(variable_key=u"Publ114", required=True),
-                                Cell(variable_key=u"Publ214")]),
+                                Cell(variable_key=u"Publ114", required=True, has_part=u"Publ214"),
+                                Cell(variable_key=u"Publ214", part_of=u"Publ114")]),
                             Row(cells=[
-                                Cell(variable_key=u"Publ115", required=True),
-                                Cell(variable_key=u"Publ215")]),
+                                Cell(variable_key=u"Publ115", required=True, has_part=u"Publ215"),
+                                Cell(variable_key=u"Publ215", part_of=u"Publ115")]),
                             Row(cells=[
-                                Cell(variable_key=u"Publ116", required=True),
-                                Cell(variable_key=u"Publ216")]),
+                                Cell(variable_key=u"Publ116", required=True, has_part=u"Publ216"),
+                                Cell(variable_key=u"Publ216", part_of=u"Publ116")]),
                             Row(cells=[
-                                Cell(variable_key=u"Publ117", required=True),
-                                Cell(variable_key=u"Publ217")]),
+                                Cell(variable_key=u"Publ117", required=True, has_part=u"Publ217"),
+                                Cell(variable_key=u"Publ217", part_of=u"Publ117")]),
                             Row(cells=[
-                                Cell(variable_key=u"Publ118", required=True),
-                                Cell(variable_key=u"Publ218")]),
+                                Cell(variable_key=u"Publ118", required=True, has_part=u"Publ218"),
+                                Cell(variable_key=u"Publ218", part_of=u"Publ118")]),
                             Row(cells=[
-                                Cell(variable_key=u"Publ119", required=True),
-                                Cell(variable_key=u"Publ219")]),
+                                Cell(variable_key=u"Publ119", required=True, has_part=u"Publ219"),
+                                Cell(variable_key=u"Publ219", part_of=u"Publ119")]),
                             Row(cells=[
-                                Cell(variable_key=u"Publ120", required=True),
-                                Cell(variable_key=u"Publ220")]),
+                                Cell(variable_key=u"Publ120", required=True, has_part=u"Publ220"),
+                                Cell(variable_key=u"Publ220", part_of=u"Publ120")]),
                             Row(cells=[
                                 Cell(variable_key=u"Publ199",
+                                     has_part=u"Publ299",
                                      sum_of=[u"Publ101", u"Publ102", u"Publ103",
                                              u"Publ104", u"Publ105", u"Publ106",
                                              u"Publ107", u"Publ108", u"Publ109",
@@ -473,6 +476,7 @@ def _survey_template_base():
                                              u"Publ116", u"Publ117", u"Publ118",
                                              u"Publ119", u"Publ120"]),
                                 Cell(variable_key=u"Publ299",
+                                     part_of=u"Publ199",
                                      sum_of=[u"Publ201", u"Publ202", u"Publ203",
                                              u"Publ204", u"Publ205", u"Publ206",
                                              u"Publ207", u"Publ208", u"Publ209",

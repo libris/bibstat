@@ -873,6 +873,8 @@ class Cell(EmbeddedDocument):
     required = BooleanField()
     previous_value = StringField()
     sum_of = ListField(StringField())
+    part_of = ListField(StringField())
+    has_part = ListField(StringField())
     types = ListField(StringField())
     disabled = BooleanField() #TODO: remove?
     _variable = ReferenceField(Variable)

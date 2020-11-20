@@ -311,16 +311,16 @@ define(['jquery', 'bootbox', 'survey.sum', 'survey.cell', 'surveys.dispatch', 'b
         };
 
         var getTrimmedValue = function (element) {
-          return $.trim(element.val()).replace(",", ".").replace("-", "");
+            return $.trim(element.val()).replace(",", ".").replace("-", "").replace(" ", "");
         };
 
         var checkPartSum = function (partValueEl, valueEl) {
             var partValueElVal = getTrimmedValue($(partValueEl));
             var valueElVal = getTrimmedValue($(valueEl));
-          if ($.isNumeric(partValueElVal) && $.isNumeric(valueElVal)) {
-              return parseFloat(partValueElVal) <= parseFloat(valueElVal);
-          }
-          return true;
+            if ($.isNumeric(partValueElVal) && $.isNumeric(valueElVal)) {
+                return parseFloat(partValueElVal) <= parseFloat(valueElVal);
+            }
+            return true;
         };
 
         return {
@@ -381,6 +381,43 @@ define(['jquery', 'bootbox', 'survey.sum', 'survey.cell', 'surveys.dispatch', 'b
                             })
                         }
                     }
+                }).on('success.field.bv', function (e, data) {
+                    var partOfAttr = data.element.attr('data-part-of');
+                    var hasPartAttr = data.element.attr('data-has-part');
+                    var isPartEl = typeof partOfAttr !== typeof undefined && partOfAttr !== false;
+                    var isSumEl = typeof hasPartAttr !== typeof undefined && hasPartAttr !== false;
+                    var partSumElID;
+                    var sumElID;
+
+                    if (isPartEl) {
+                        partOfAttr = partOfAttr.split(' ');
+                        partSumElID = '#' + data.element.attr('id');    
+                        
+                        // check if a field is a part of another field
+                        // value must not be larger than it's "parent" field value
+                        $.each(partOfAttr, function(index, value){
+                            if (! checkPartSum(partSumElID, '#' + value)){
+                                survey.validator().updateStatus($(partSumElID), 'INVALID', 'callback');                                                            
+                            }
+                        });
+                    }
+                    
+                    if (isSumEl) {
+                        sumElID = '#' + data.element.attr('id');
+                        hasPartAttr = hasPartAttr.split(' ');
+
+                        // check if a field has any "subfields"
+                        // invalidate a subfield if subfield value is larger than it's parent
+                        $.each(hasPartAttr, function(index, value){
+                            if (! checkPartSum('#' + value, sumElID)){
+                                survey.validator().updateStatus($('#' + value), 'INVALID', 'callback');                                                            
+                            }
+                            else{
+                                survey.validator().revalidateField($('#' + value));
+                            }                                                  
+                        });
+                    }                        
+                    
                 }).on('error.validator.bv', function (e, data) { // http://bootstrapvalidator.com/examples/changing-default-behaviour/#showing-one-message-each-time
 
                     isDirty = true;
@@ -394,10 +431,10 @@ define(['jquery', 'bootbox', 'survey.sum', 'survey.cell', 'surveys.dispatch', 'b
 
                         var messageShown = null;
                         if (submit_action == 'save') {
-                            messageShown = "Något eller några värden behöver korrigeras innan du kan spara enkäten. Du måste se till att det inte dykt upp ett rödmarkerat felmeddelande under någon av inmatningsrutorna. Om du inte har möjlighet att ange ett värde kan du klicka på pilen bredvid inmatningsfältet för att välja 'värdet är okänt' i rullisten, alternativt kan du ange '-' om värdet inte är relevant.";
+                            messageShown = "Något eller några värden behöver korrigeras innan du kan spara enkäten. Du måste se till att det inte dykt upp ett rödmarkerat felmeddelande under någon av inmatningsrutorna. Om du inte har möjlighet att ange ett värde kan du ange '-' om värdet inte är relevant.";
                         }
                         if (submit_action == 'presubmit') {
-                            messageShown = "Något eller några värden behöver korrigeras innan du kan skicka in enkäten. Alla obligatoriska fält behöver vara ifyllda och du måste se till att det inte dykt upp ett rödmarkerat felmeddelande under någon av inmatningsrutorna. Om du inte har möjlighet att ange ett värde kan du klicka på pilen bredvid inmatningsfältet för att välja 'värdet är okänt' i rullisten, alternativt kan du ange '-' om värdet inte är relevant.";
+                            messageShown = "Något eller några värden behöver korrigeras innan du kan skicka in enkäten. Alla obligatoriska fält behöver vara ifyllda och du måste se till att det inte dykt upp ett rödmarkerat felmeddelande under någon av inmatningsrutorna. Om du inte har möjlighet att ange ett värde kan du ange '-' om värdet inte är relevant.";
                         }
 
                         bootbox.alert(messageShown, function() {
