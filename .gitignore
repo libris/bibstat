@@ -53,6 +53,8 @@ docs/_build/
 
 /.settings
 
+.venv/
+
 # IntelliJ
 .idea/
 *.iml
