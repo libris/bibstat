@@ -227,9 +227,4 @@ Filerna hamnar under [data/excel_exports] (data/excel_exports) (under /data/appl
 
 ## Analytics
 
-[Google Analytics](http://www.google.com/analytics) används för att spåra hur externa användare använder tjänsten.  
-Kontot som används delas tillsammans med de andra utvecklade systemen i Libris.
-
-Inloggningsuppgifterna kan fås genom att fråga en involverad utvecklare.
-
-Tjänsten genererar även data till Piwik på [http://analytics.kb.se](http://analytics.kb.se)
+Tjänsten genererar data till Matomo på [http://analytics.kb.se](http://analytics.kb.se).
