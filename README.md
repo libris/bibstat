@@ -225,6 +225,12 @@ För att köra script som bakgrundsprocess:
 	
 Filerna hamnar under [data/excel_exports] (data/excel_exports) (under /data/appl/excel_exports på servrarna)
 
+### Uppdatera sigel
+
+Om ett bibliotek bytt sigel kan kommandot `update_sigel` köras för att ändra i Bibstat:
+
+    $ python manage.py update_sigel --from="GAMMALT_SIGEL" --to="NYTT_SIGEL"
+
 ## Analytics
 
 Tjänsten genererar data till Matomo på [http://analytics.kb.se](http://analytics.kb.se).
