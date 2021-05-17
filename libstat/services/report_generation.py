@@ -36,16 +36,15 @@ def get_report(surveys, year):
     if cached_report:
         return cached_report
     else:
-
         library_types = [survey.library.library_type for survey in surveys]
-        only_folkbib = all(libtype == u"folkbib" for libtype in library_types)
+        only_folkbib_or_folkskolbib = all(libtype in [u"folkbib", u"folkskolbib"] for libtype in library_types)
 
         # This should of course be updated when (and if) more report templates are added
 
         # Different report templates are used depending on types of libraries included
-        if only_folkbib:
+        if only_folkbib_or_folkskolbib:
             report_template = report_template_base_with_municipality_calculations()
-        elif len(surveys) > 1 and any(libtype == u"folkbib" for libtype in library_types):
+        elif len(surveys) > 1 and any(libtype in [u"folkbib", u"folkskolbib"] for libtype in library_types):
             report_template = report_template_base()
         else:
             report_template = report_template_base_with_target_group_calculations()
