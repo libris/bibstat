@@ -1,7 +1,5 @@
-# -*- coding: utf-8 -*-
-
 import json
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from django.http import HttpResponse, Http404
 from bibstat import settings
 from libstat.models import Variable

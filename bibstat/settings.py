@@ -11,15 +11,14 @@ https://docs.djangoproject.com/en/1.6/ref/settings/
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 import os
 import sys
-from django.conf.global_settings import TEMPLATE_CONTEXT_PROCESSORS as TCP
+from pathlib import Path
+#from django.conf.global_settings import TEMPLATE_CONTEXT_PROCESSORS as TCP
 
-reload(sys)
-sys.setdefaultencoding('utf-8')
+#reload(sys)
+#sys.setdefaultencoding('utf-8')
 
-BASE_DIR = os.path.dirname(os.path.dirname(__file__))
-
-# Quick-start development settings - unsuitable for production
-# See https://docs.djangoproject.com/en/1.6/howto/deployment/checklist/
+# Build paths inside the project like this: BASE_DIR / 'subdir'.
+BASE_DIR = Path(__file__).resolve().parent.parent
 
 """
 ----------------------------------------------------------
@@ -29,18 +28,10 @@ Environment specific settings, hostnames, usernames e t c
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = False
-
 TEMPLATE_DEBUG = False
-
 BLOCK_SURVEY = False
-
 BLOCK_REPORTS = False
-
 ANALYTICS_ENABLED = False
-
-TEMPLATE_CONTEXT_PROCESSORS = TCP + (
-    'django.core.context_processors.request',
-)
 
 ALLOWED_HOSTS = [
     ".bibstat-stg.kb.se",
@@ -48,12 +39,6 @@ ALLOWED_HOSTS = [
 ]
 
 BIBSTAT_BLOG_BASE_URL = "https://www.kb.se/biblioteksstatistik"
-
-# DB connection details
-MONGODB_HOST = 'localhost'
-MONGODB_NAME = 'bibstat'
-MONGODB_USER = 'bibstat'
-MONGODB_PASSWD = 'bibstat'
 
 # Email details
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
@@ -63,16 +48,16 @@ LOG_LEVEL = 'WARNING'
 
 # Override above with local settings if present
 try:
-    from settings_local import *
-except ImportError:
-    print "local settings could not be imported"
+    from .settings_local import *
+except ImportError as e:
+    print(f"local settings could not be imported: {e}")
 
 """
 -----------------------------------------------------------
 """
 
 # Application definition
-INSTALLED_APPS = (
+INSTALLED_APPS = [
     # Django standard apps
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -82,47 +67,65 @@ INSTALLED_APPS = (
     'django_js_reverse',
 
     # Bibstat specific apps
-    'mongoengine.django.mongo_auth',
+    #'mongoengine.django.mongo_auth',
+    'django_mongoengine',
+    'django_mongoengine.mongo_auth',
+    #'django_mongoengine.mongo_admin',
     'libstat'
-)
+]
 
-MIDDLEWARE_CLASSES = (
+MIDDLEWARE = [
+    'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-)
+]
 
 ROOT_URLCONF = 'bibstat.urls'
+
+TEMPLATES = [
+    {
+        'BACKEND': 'django.template.backends.django.DjangoTemplates',
+        'DIRS': [],
+        'APP_DIRS': True,
+        'OPTIONS': {
+            'context_processors': [
+                'django.template.context_processors.debug',
+                'django.template.context_processors.request',
+                'django.contrib.auth.context_processors.auth',
+                'django.contrib.messages.context_processors.messages',
+            ],
+        },
+    },
+]
+
+SESSION_ENGINE = 'django_mongoengine.sessions'
+SESSION_SERIALIZER = 'django_mongoengine.sessions.BSONSerializer'
 
 WSGI_APPLICATION = 'bibstat.wsgi.application'
 
 
 # Database
-# https://docs.djangoproject.com/en/1.6/ref/settings/#databases
+# https://docs.djangoproject.com/en/3.2/ref/settings/#databases
 
 DATABASES = {
     # Configuring Django ORM with dummy DB since MongoEngine config does not use this setting
     'default': {
-        'ENGINE': 'django.db.backends.dummy'
+        'ENGINE': ''
     }
 }
 
 # Internationalization
-# https://docs.djangoproject.com/en/1.6/topics/i18n/
+# https://docs.djangoproject.com/en/3.2/topics/i18n/
 
 LANGUAGE_CODE = 'sv-se'
-
 TIME_ZONE = 'Europe/Stockholm'
-
 USE_I18N = True
-
 USE_L10N = True
-
 USE_TZ = True
-
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/1.6/howto/static-files/
@@ -183,24 +186,21 @@ if DEBUG:
 """
     MongoEngine settings
 """
-import mongoengine
 
 # Enable some basic auth features such as get_user(). Define a custom user model if advanced auth features are required
-AUTHENTICATION_BACKENDS = (
-    'mongoengine.django.auth.MongoEngineBackend',
-)
+AUTHENTICATION_BACKENDS = ('django_mongoengine.mongo_auth.backends.MongoEngineBackend',)
 AUTH_USER_MODEL = 'mongo_auth.MongoUser'
-MONGOENGINE_USER_DOCUMENT = 'mongoengine.django.auth.User'
+#MONGOENGINE_USER_DOCUMENT = 'mongoengine.django.auth.User'
 
 # Store Django sessions in MongoDB backend
-SESSION_ENGINE = 'mongoengine.django.sessions'
-SESSION_SERIALIZER = 'mongoengine.django.sessions.BSONSerializer'
-SESSION_COOKIE_AGE = 2592000
+SESSION_ENGINE = 'django_mongoengine.sessions'
+#SESSION_SERIALIZER = 'mongoengine.django.sessions.BSONSerializer'
+#SESSION_COOKIE_AGE = 2592000
 
 # Initialize MongoDB connection
-MONGODB_DATABASE_HOST = 'mongodb://%s:%s@%s/%s' % (MONGODB_USER, MONGODB_PASSWD, MONGODB_HOST, MONGODB_NAME)
+#MONGODB_DATABASE_HOST = 'mongodb://%s:%s@%s/%s' % (MONGODB_USER, MONGODB_PASSWD, MONGODB_HOST, MONGODB_NAME)
 
-mongoengine.connect(MONGODB_NAME, host=MONGODB_DATABASE_HOST)
+#mongoengine.connect(MONGODB_NAME, host=MONGODB_DATABASE_HOST)
 # mongoengine.connect(MONGODB_NAME)
 
 # Use custom test runner to skip setup/teardown of fixtures for test database

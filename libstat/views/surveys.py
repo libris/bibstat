@@ -1,10 +1,9 @@
-# -*- coding: utf-8 -*-
 import logging
 import json
 from time import strftime
 from datetime import datetime
 
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from django.shortcuts import render, redirect
 from django.http import HttpResponse, HttpResponseRedirect, HttpResponseNotFound, HttpResponseNotAllowed, HttpResponseServerError, HttpResponseBadRequest, HttpResponseForbidden
 from django.contrib.auth.decorators import permission_required

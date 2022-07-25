@@ -1,6 +1,5 @@
-# -*- coding: utf-8 -*
 from django.contrib.auth.decorators import permission_required
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from django.shortcuts import render, redirect
 
 from libstat.forms.article import ArticleForm

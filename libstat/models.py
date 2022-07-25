@@ -1,6 +1,4 @@
-# -*- coding: UTF-8 -*-
 import logging
-from sets import Set
 import string
 import random
 
@@ -496,7 +494,7 @@ class SurveyBase(Document):
 
     def selected_sigels_in_other_surveys(self, sample_year):
         if not self.library.municipality_code:
-            return Set()
+            return set()
 
         surveys = Survey.objects.filter(
             sample_year=sample_year,
@@ -505,7 +503,7 @@ class SurveyBase(Document):
             library__sigel__ne=self.library.sigel
         ).only("selected_libraries")
 
-        selected_sigels = Set()
+        selected_sigels = set()
         for survey in surveys:
             for sigel in survey.selected_libraries:
                 selected_sigels.add(sigel)

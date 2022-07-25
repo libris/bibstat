@@ -5,7 +5,7 @@ import logging
 from time import strftime
 
 from django.http import HttpResponse, Http404, HttpResponseBadRequest, HttpResponseNotFound
-from django.core.servers.basehttp import FileWrapper
+from wsgiref.util import FileWrapper
 from mongoengine import Q
 from openpyxl.writer.excel import save_virtual_workbook
 

@@ -1,9 +1,8 @@
-# -*- coding: utf-8 -*-
 import logging
 
 from django.contrib.auth.decorators import permission_required
 from django.core.mail import get_connection, EmailMultiAlternatives
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from django.shortcuts import render, redirect
 from django.template.loader import render_to_string
 

@@ -1,8 +1,7 @@
-# -*- coding: utf-8 -*-
 import json
 import logging
 
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 
 from django.shortcuts import render
 from django.http import HttpResponseForbidden, HttpResponse, Http404

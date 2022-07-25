@@ -16,10 +16,15 @@ API_BASE_URL = "http://localhost:8000"
 BIBDB_BASE_URL = "http://localhost:8001"
 
 # DB connection details
-MONGODB_HOST = 'localhost'
-MONGODB_NAME = 'bibstat'
-MONGODB_USER = 'bibstat'
-MONGODB_PASSWD = 'bibstat'
+MONGODB_DATABASES = {
+    "default": {
+        "name": "bibstat",
+        "host": "localhost",
+        "password": "bibstat",
+        "username": "bibstat",
+        "tz_aware": True, # if you using timezones in django (USE_TZ = True)
+    },
+}
 
 # Email details
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'

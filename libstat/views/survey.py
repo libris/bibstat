@@ -1,14 +1,13 @@
-# -*- coding: utf-8 -*-
 import logging
 import time
 import json
 from datetime import datetime, timedelta, date
 
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from django.shortcuts import render, redirect
 from django.http import HttpResponseNotFound, HttpResponseForbidden, HttpResponse, HttpResponseNotAllowed
 from django.contrib.auth.decorators import permission_required
-from django.forms.util import ErrorList
+from django.forms.utils import ErrorList
 
 from bibstat import settings
 

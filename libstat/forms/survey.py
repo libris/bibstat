@@ -1,11 +1,9 @@
-# -*- coding: utf-8 -*-
-from sets import Set
 import logging
 import time
 import json
 
 from django import forms
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 
 from bibstat import settings
 from data.municipalities import municipalities
@@ -150,7 +148,7 @@ class SurveyForm(forms.Form):
         else:
             field.initial = observation.value
 
-        if isinstance(field.initial, unicode):
+        if isinstance(field.initial, str):
             field.initial = field.initial.strip()
 
         if cell.variable_key == "Besok01":
@@ -220,7 +218,7 @@ class SurveyForm(forms.Form):
         return next((status[1] for status in Survey.STATUSES if status[0] == key))
 
     def _conflicting_libraries(self, first_selection, second_selection):
-        intersection = Set(first_selection).intersection(Set(second_selection))
+        intersection = set(first_selection).intersection(set(second_selection))
         survey_list = []
         sigel_list = []
         for survey in Survey.objects.filter(library__sigel__in=intersection):

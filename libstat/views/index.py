@@ -1,7 +1,6 @@
-# -*- coding: utf-8 -*-
 import logging
 
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from django.shortcuts import render, redirect
 
 from bibstat import settings
@@ -24,7 +23,7 @@ def index(request):
 
 
 def admin(request):
-    if request.user.is_authenticated():
+    if request.user.is_authenticated:
         return redirect(reverse("surveys"))
 
     return render(request, 'libstat/admin.html')
