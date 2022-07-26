@@ -15,7 +15,7 @@ def report(request):
         return redirect(reverse("reports"))
 
     previous_url = request.POST.get("previous_url", reverse("reports"))
-    if not is_safe_url(url=previous_url, host=request.get_host()):
+    if not is_safe_url(url=previous_url, allowed_hosts=request.get_host()):
         return redirect(reverse("reports"))
 
     sample_year = int(request.POST.get("sample_year", None))

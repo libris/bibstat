@@ -111,7 +111,7 @@ def survey(request, survey_id):
         return request.GET["p"] if request.method == "GET" else request.POST.get("password", None)
 
     def can_view_survey(survey):
-        return request.user.is_authenticated() or request.session.get("password") == survey.id
+        return request.user.is_authenticated or request.session.get("password") == survey.id
 
     survey = Survey.objects.filter(pk=survey_id)
     if len(survey) != 1:
@@ -119,7 +119,7 @@ def survey(request, survey_id):
 
     survey = survey[0]
 
-    if not survey.is_active and not request.user.is_authenticated():
+    if not survey.is_active and not request.user.is_authenticated:
         return HttpResponseForbidden()
 
     context = {
@@ -129,12 +129,12 @@ def survey(request, survey_id):
     if not request.user.is_superuser:
         context["hide_navbar"] = True
 
-    if not request.user.is_authenticated() and settings.BLOCK_SURVEY:
+    if not request.user.is_authenticated and settings.BLOCK_SURVEY:
         return render(request, "libstat/survey_blocked.html")
 
     if can_view_survey(survey):
 
-        if not request.user.is_authenticated() and survey.status == "not_viewed":
+        if not request.user.is_authenticated and survey.status == "not_viewed":
             survey.status = "initiated"
             survey.save()
 
@@ -160,7 +160,7 @@ def survey(request, survey_id):
             #     else: # Lock
             #         SurveyEditingLock.lock_survey(survey.id)
 
-            context["form"] = SurveyForm(survey=survey, authenticated=request.user.is_authenticated())
+            context["form"] = SurveyForm(survey=survey, authenticated=request.user.is_authenticated)
             return render(request, 'libstat/survey.html', context)
 
     if has_password():

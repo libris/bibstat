@@ -22,13 +22,13 @@ logger = logging.getLogger(__name__)
 @csrf_protect
 @never_cache
 def login(request):
-    redirect_to = _get_listview_from_modalview(request.REQUEST.get("next", ""))
+    redirect_to = _get_listview_from_modalview(request.POST.get("next", ""))
 
     if request.method == "POST":
         form = AuthenticationForm(request, data=request.POST)
         if form.is_valid():
             # Ensure the user-originating redirection url is safe.
-            if not is_safe_url(url=redirect_to, host=request.get_host()):
+            if not is_safe_url(url=redirect_to, allowed_hosts=request.get_host()):
                 redirect_to = resolve_url(settings.LOGIN_REDIRECT_URL)
 
             # Okay, security check complete. Log the user in.

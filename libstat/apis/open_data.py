@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 import datetime
 import json
 import logging
@@ -127,6 +126,6 @@ def export_api(request):
         filename = u"Biblioteksstatistik för {} ({}).xlsx".format(sample_year, strftime("%Y-%m-%d %H.%M.%S"))
         path = public_excel_workbook(sample_year)
 
-        response = HttpResponse(FileWrapper(file(path)), content_type='application/vnd.ms-excel')
+        response = HttpResponse(FileWrapper(open(path, 'rb')), content_type='application/vnd.ms-excel')
         response['Content-Disposition'] = u'attachment; filename="{}"'.format(filename)
         return response

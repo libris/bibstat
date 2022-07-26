@@ -325,7 +325,7 @@ def get_counties(municipality_codes):
         if county_code in municipalities:
             county_list.append((municipalities[county_code], county_code))
 
-    for name, code in dict(county_list).iteritems():
+    for name, code in dict(county_list).items():
         yield (name, code)
 
 

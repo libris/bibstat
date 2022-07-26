@@ -2,8 +2,10 @@ import logging
 import string
 import random
 
-from mongoengine import *
-from mongoengine import signals
+from django_mongoengine import Document, EmbeddedDocument, fields, QuerySet
+
+# from mongoengine import *
+from mongoengine import signals, Q, NULLIFY, PULL
 from django.conf import settings
 
 from datetime import datetime
@@ -20,29 +22,31 @@ logger = logging.getLogger(__name__)
 
 
 class VariableBase(Document):
-    description = StringField(required=True)
+    description = fields.StringField(blank=False)
     # Comment is a private field and should never be returned as open data
-    comment = StringField()
-    is_public = BooleanField(required=True, default=True)
-    type = StringField(required=True, choices=VARIABLE_TYPES)
-    target_groups = ListField(StringField(choices=SURVEY_TARGET_GROUPS), required=True)
-    category = StringField()
-    sub_category = StringField()
+    comment = fields.StringField()
+    is_public = fields.BooleanField(blank=False, default=True)
+    type = fields.StringField(blank=False, choices=VARIABLE_TYPES)
+    target_groups = fields.ListField(fields.StringField(choices=SURVEY_TARGET_GROUPS), blank=False)
+    category = fields.StringField()
+    sub_category = fields.StringField()
 
     # TODO: Inför frågor/delfrågor i termdokument och kör om importen
-    question = StringField()
-    question_part = StringField()
-    summary_of = ListField()
+    question = fields.StringField()
+    question_part = fields.StringField()
+    summary_of = fields.ListField()
 
-    date_modified = DateTimeField()
-    is_draft = BooleanField()
+    date_modified = fields.DateTimeField()
+    is_draft = fields.BooleanField()
 
     # Only date-part of these fields is relevant,
-    active_from = DateTimeField()
-    active_to = DateTimeField()
+    active_from = fields.DateTimeField()
+    active_to = fields.DateTimeField()
 
-    replaces = ListField(ReferenceField("Variable"))
-    replaced_by = ReferenceField("Variable")
+    replaces = fields.ListField(fields.ReferenceField("Variable"))
+    replaced_by = fields.ReferenceField("Variable")
+
+    modified_by = fields.ReferenceField("Variable", blank=False)
 
     meta = {
         'abstract': True,
@@ -81,7 +85,7 @@ class VariableBase(Document):
 
 
 class Variable(VariableBase):
-    key = StringField(required=True, unique=True)
+    key = fields.StringField(blank=False, unique=True)
 
     meta = {
         'collection': 'libstat_variables',
@@ -255,8 +259,8 @@ class Variable(VariableBase):
 
 
 class VariableVersion(VariableBase):
-    key = StringField(required=True)
-    variable_id = ObjectIdField(required=True)
+    key = fields.StringField(blank=False)
+    variable_id = fields.ObjectIdField(blank=False)
 
     meta = {
         'collection': 'libstat_variable_versions',
@@ -267,21 +271,21 @@ class ExternalIdentifier(EmbeddedDocument):
     ID_TYPES = (
         (u"school_code", u"Skolenhetskod")
     )
-    identifier = StringField(required=True)
-    type = StringField(required=True, choices=ID_TYPES)
+    identifier = fields.StringField(blank=False)
+    type = fields.StringField(blank=False, choices=ID_TYPES)
 
 
 class Library(EmbeddedDocument):
-    name = StringField()
-    bibdb_id = StringField()
-    sigel = StringField()
-    email = StringField()
-    city = StringField()
-    municipality_code = StringField()
-    address = StringField()
-    zip_code = StringField()
-    library_type = StringField(choices=SURVEY_TARGET_GROUPS)
-    external_identifiers = ListField(EmbeddedDocumentField(ExternalIdentifier), required=False, default=None)
+    name = fields.StringField()
+    bibdb_id = fields.StringField()
+    sigel = fields.StringField()
+    email = fields.StringField()
+    city = fields.StringField()
+    municipality_code = fields.StringField()
+    address = fields.StringField()
+    zip_code = fields.StringField()
+    library_type = fields.StringField(choices=SURVEY_TARGET_GROUPS)
+    external_identifiers = fields.ListField(fields.EmbeddedDocumentField(ExternalIdentifier), blank=True, default=None)
 
     meta = {
         'collection': 'libstat_libraries'
@@ -300,12 +304,12 @@ class Library(EmbeddedDocument):
 
 
 class SurveyObservation(EmbeddedDocument):
-    variable = ReferenceField(Variable, required=True)
-    value = DynamicField()
-    disabled = BooleanField()#TODO: remove?
-    value_unknown = BooleanField()
+    variable = fields.ReferenceField(Variable, blank=False)
+    value = fields.DynamicField()
+    disabled = fields.BooleanField()#TODO: remove?
+    value_unknown = fields.BooleanField()
     # Public API Optimization and traceability (was this field public at the time of the survey?)
-    _is_public = BooleanField(required=True, default=True)
+    _is_public = fields.BooleanField(blank=False, default=True)
 
     meta = {
         'indexes': [
@@ -389,21 +393,21 @@ class SurveyBase(Document):
     )
     _status_labels = dict(STATUSES)
 
-    published_at = DateTimeField()
-    date_created = DateTimeField(required=True, default=datetime.utcnow)
-    date_modified = DateTimeField(required=True, default=datetime.utcnow)
-    observations = ListField(EmbeddedDocumentField(SurveyObservation))
-    _status = StringField(choices=STATUSES, default="not_viewed")
-    notes = StringField()
-    library = EmbeddedDocumentField(Library)
-    selected_libraries = ListField(StringField())
-    sample_year = IntField()
-    password = StringField()
-    principal = StringField(choices=PRINCIPALS)
-    is_active = BooleanField(required=True, default=True)
+    published_at = fields.DateTimeField()
+    date_created = fields.DateTimeField(blank=False, default=datetime.utcnow)
+    date_modified = fields.DateTimeField(blank=False, default=datetime.utcnow)
+    observations = fields.ListField(fields.EmbeddedDocumentField(SurveyObservation))
+    _status = fields.StringField(choices=STATUSES, default="not_viewed")
+    notes = fields.StringField()
+    library = fields.EmbeddedDocumentField(Library)
+    selected_libraries = fields.ListField(fields.StringField())
+    sample_year = fields.IntField()
+    password = fields.StringField()
+    principal = fields.StringField(choices=PRINCIPALS)
+    is_active = fields.BooleanField(blank=False, default=True)
 
-    _municipality_code = StringField()
-    _library_type = StringField()
+    _municipality_code = fields.StringField()
+    _library_type = fields.StringField()
 
     meta = {
         'abstract': True,
@@ -416,7 +420,7 @@ class SurveyBase(Document):
     # From: http://en.wikipedia.org/wiki/Random_password_generator#Python
     @classmethod
     def _generate_password(cls):
-        alphabet = string.letters[0:52] + string.digits
+        alphabet = string.ascii_letters[0:52] + string.digits
         return str().join(random.SystemRandom().choice(alphabet) for _ in range(10))
 
     @property
@@ -775,7 +779,7 @@ class Survey(SurveyBase):
 
 
 class SurveyVersion(SurveyBase):
-    survey_response_id = ObjectIdField(required=True)
+    survey_response_id = fields.ObjectIdField(blank=False)
 
     meta = {
         'collection': 'libstat_survey_versions',
@@ -784,9 +788,9 @@ class SurveyVersion(SurveyBase):
 
 
 class Article(Document):
-    title = StringField()
-    content = StringField()
-    date_published = DateTimeField(default=datetime.utcnow)
+    title = fields.StringField()
+    content = fields.StringField()
+    date_published = fields.DateTimeField(default=datetime.utcnow)
 
     meta = {
         'collection': 'libstat_articles',
@@ -795,12 +799,12 @@ class Article(Document):
 
 
 class Dispatch(Document):
-    description = StringField()
-    title = StringField()
-    message = StringField()
-    library_email = StringField()
-    library_city = StringField()
-    library_name = StringField()
+    description = fields.StringField()
+    title = fields.StringField()
+    message = fields.StringField()
+    library_email = fields.StringField()
+    library_city = fields.StringField()
+    library_name = fields.StringField()
 
     meta = {
         'collection': 'libstat_dispatches'
@@ -808,17 +812,17 @@ class Dispatch(Document):
 
 
 class OpenData(Document):
-    is_active = BooleanField(required=True, default=True) # Usage: False if source_survey has been unpublished, if source_survey.library is no longer in variable.target_group or if observation it's based on is no longer public
-    source_survey = ReferenceField(Survey)
-    library_name = StringField(required=True)
-    sigel = StringField()
-    sample_year = IntField(required=True)
-    target_group = StringField(required=True, choices=SURVEY_TARGET_GROUPS)
-    variable = ReferenceField(Variable, required=True)
-    variable_key = StringField()
-    value = DynamicField()
-    date_created = DateTimeField(required=True, default=datetime.utcnow)
-    date_modified = DateTimeField(required=True, default=datetime.utcnow)
+    is_active = fields.BooleanField(blank=False, default=True) # Usage: False if source_survey has been unpublished, if source_survey.library is no longer in variable.target_group or if observation it's based on is no longer public
+    source_survey = fields.ReferenceField(Survey)
+    library_name = fields.StringField(blank=False)
+    sigel = fields.StringField()
+    sample_year = fields.IntField(blank=False)
+    target_group = fields.StringField(blank=False, choices=SURVEY_TARGET_GROUPS)
+    variable = fields.ReferenceField(Variable, blank=False)
+    variable_key = fields.StringField()
+    value = fields.DynamicField()
+    date_created = fields.DateTimeField(blank=False, default=datetime.utcnow)
+    date_modified = fields.DateTimeField(blank=False, default=datetime.utcnow)
 
     meta = {
         'collection': 'libstat_open_data',
@@ -867,15 +871,15 @@ class OpenData(Document):
 
 
 class Cell(EmbeddedDocument):
-    variable_key = StringField()
-    required = BooleanField()
-    previous_value = StringField()
-    sum_of = ListField(StringField())
-    part_of = ListField(StringField())
-    has_part = ListField(StringField())
-    types = ListField(StringField())
-    disabled = BooleanField() #TODO: remove?
-    _variable = ReferenceField(Variable)
+    variable_key = fields.StringField()
+    required = fields.BooleanField()
+    previous_value = fields.StringField()
+    sum_of = fields.ListField(fields.StringField())
+    part_of = fields.ListField(fields.StringField())
+    has_part = fields.ListField(fields.StringField())
+    types = fields.ListField(fields.StringField())
+    disabled = fields.BooleanField() #TODO: remove?
+    _variable = fields.ReferenceField(Variable)
 
     @property
     def variable(self):
@@ -895,7 +899,7 @@ class Cell(EmbeddedDocument):
 
 
 class Row(EmbeddedDocument):
-    cells = ListField(EmbeddedDocumentField(Cell))
+    cells = fields.ListField(fields.EmbeddedDocumentField(Cell))
 
     @property
     def description(self):
@@ -905,7 +909,7 @@ class Row(EmbeddedDocument):
 
 
 class Group(EmbeddedDocument):
-    rows = ListField(EmbeddedDocumentField(Row))
+    rows = fields.ListField(fields.EmbeddedDocumentField(Row))
 
     @property
     def description(self):
@@ -930,13 +934,13 @@ class Group(EmbeddedDocument):
 
 
 class Section(EmbeddedDocument):
-    title = StringField()
-    groups = ListField(EmbeddedDocumentField(Group))
+    title = fields.StringField()
+    groups = fields.ListField(fields.EmbeddedDocumentField(Group))
 
 
 class SurveyTemplate(Document):
-    intro_text_variable_key = StringField()
-    sections = ListField(EmbeddedDocumentField(Section))
+    intro_text_variable_key = fields.StringField()
+    sections = fields.ListField(fields.EmbeddedDocumentField(Section))
 
     @property
     def cells(self):
@@ -956,10 +960,10 @@ class SurveyTemplate(Document):
 
 
 class CachedReport(Document):
-    surveys = ListField(ReferenceField(Survey))
-    report = DictField()
-    year = IntField()
-    date_created = DateTimeField(default=datetime.utcnow)
+    surveys = fields.ListField(fields.ReferenceField(Survey))
+    report = fields.DictField()
+    year = fields.IntField()
+    date_created = fields.DateTimeField(default=datetime.utcnow)
 
     meta = {
         'collection': 'libstat_reports',
@@ -971,8 +975,8 @@ class CachedReport(Document):
     }
 
 class SurveyEditingLock(Document):
-    survey_id = ObjectIdField(required=True)
-    date_locked = DateTimeField(required=True, default=datetime.utcnow)
+    survey_id = fields.ObjectIdField(blank=False)
+    date_locked = fields.DateTimeField(blank=False, default=datetime.utcnow)
 
     meta = {
         'collection': 'libstat_survey_locks',

@@ -153,7 +153,7 @@ class SurveyForm(forms.Form):
 
         if cell.variable_key == "Besok01":
             logger.debug("attrs:")
-            for attr, value in attrs.iteritems():
+            for attr, value in attrs.items():
                 logger.debug(attr)
 
         return field
@@ -334,5 +334,5 @@ class SurveyForm(forms.Form):
 
         if self.is_read_only:
             self.fields["read_only"].initial = "true"
-            for key, input in self.fields.iteritems():
+            for key, input in self.fields.items():
                 input.widget.attrs["readonly"] = ""

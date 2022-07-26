@@ -1,8 +1,7 @@
-# -*- coding: utf-8 -*-
 from libstat.models import Variable
 
 
-class ReportTemplate():
+class ReportTemplate:
     @property
     def all_variable_keys(self):
         variable_keys = []
@@ -36,7 +35,8 @@ class Row():
         if None in values:
             return None
         try:
-            return apply(self.computation, values)
+            return self.computation(*values)
+            #return apply(self.computation, values)
         except ZeroDivisionError:
             return None
 

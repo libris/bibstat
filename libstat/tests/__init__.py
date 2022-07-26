@@ -35,7 +35,7 @@ class MongoTestCase(TestCase):
         url = reverse(action, kwargs=kwargs)
         if params:
             url += "?"
-            for key, value in params.iteritems():
+            for key, value in params.items():
                 url = "{}{}={}&".format(url, key, value)
         return self.client.get(url)
 

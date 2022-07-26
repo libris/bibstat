@@ -117,7 +117,7 @@ def format_email(email, limit=30):
 
 @register.filter
 def two_parts(thelist):
-    middle = len(thelist) / 2
+    middle = len(thelist) // 2
 
     if len(thelist) % 2 == 0:
         return [thelist[middle:], thelist[:middle]]

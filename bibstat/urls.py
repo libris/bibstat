@@ -69,7 +69,7 @@ urlpatterns = [
 
     # Administration
     re_path(r'^administration/create_new_collection$', create_new_collection, name='create_new_collection'),
-    #re_path(r'^administration$', administration, name='administration'),
+    re_path(r'^administration$', administration, name='administration'),
 
     # Survey
     re_path(r'^surveys$', surveys, name='surveys'),

@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 from __future__ import division
 import glob
 import os
@@ -39,7 +38,7 @@ def _cached_workbook_exists_and_is_valid(year, file_name="public_export_{} {}.xs
     if not paths:
         return False
 
-    cache_date = datetime.datetime.strptime(paths[-1].split(" ")[-1].split(".")[0], DATE_FORMAT)
+    cache_date = datetime.datetime.strptime(paths[-1].split(" ")[-1].split(".")[0], DATE_FORMAT).replace(tzinfo=datetime.timezone.utc)
     
     if workbook_is_public:
         latest_modification = OpenData.objects.first().date_modified
@@ -54,7 +53,7 @@ def _cache_workbook(workbook, year, file_name_str="public_export_{} {}.xslx", wo
         if ".xslx" in filename:
             if (workbook_is_public == True and filename.startswith("public")) or (workbook_is_public == False and filename.startswith("survey")):
                 os.remove("%s%s" % (_cache_dir_path(), filename))
-    with open(_cache_path(year, file_name_str, datetime.datetime.utcnow().strftime(DATE_FORMAT)), "w") as f:
+    with open(_cache_path(year, file_name_str, datetime.datetime.utcnow().strftime(DATE_FORMAT)), "wb") as f:
         File(f).write(save_virtual_workbook(workbook))
 
 
@@ -65,7 +64,7 @@ def public_excel_workbook(year):
 
 
 def _published_open_data_as_workbook(year):
-    workbook = Workbook(encoding="utf-8")
+    workbook = Workbook()
     worksheet = workbook.active
     worksheet.title = u"Värden"
 

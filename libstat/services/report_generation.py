@@ -124,7 +124,7 @@ def generate_report(report_template, year, observations, library_types):
         }
 
     def clear_nones(a_dict):
-        return dict([(k, v) for k, v in a_dict.iteritems() if v is not None])
+        return dict([(k, v) for k, v in a_dict.items() if v is not None])
 
 
     report = []
@@ -181,7 +181,7 @@ def generate_report(report_template, year, observations, library_types):
 
 def pre_cache_observations(template, surveys, year):
     def is_number(obj):
-        return isinstance(obj, (int, long, float, complex))
+        return isinstance(obj, (int, float, complex))
 
     def survey_ids_three_latest_years():
         survey_ids = {
