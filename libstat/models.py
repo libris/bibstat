@@ -104,7 +104,7 @@ class Variable(VariableBase):
                 changed_fields))
             query_set = Variable.objects.filter(pk=document.id)
             assert len(query_set) > 0  # Trigger lazy loading
-            versions = query_set.clone_into(VariableVersion.objects)
+            versions = query_set._clone_into(VariableVersion.objects)
             for v in versions:
                 v.id = None
                 v.variable_id = document.id
@@ -641,11 +641,12 @@ class Survey(SurveyBase):
     def pre_save(cls, sender, document, **kwargs):
         def store_version_of(document):
             survey = Survey.objects.filter(pk=document.id)
+            list(survey)  # force evaluation, otherwise _clone_into won't work (ugh!)
             if survey:
-                survey_version = survey.clone_into(SurveyVersion.objects)[0]
+                survey_version = survey._clone_into(SurveyVersion.objects)[0]
                 survey_version.id = None
                 survey_version.survey_response_id = document.id
-                survey_version.save()
+                survey_version.save(validate=False)
 
         def remove_older_versions_of(document, max_versions):
             for version in SurveyVersion.objects[max_versions:].filter(survey_response_id=document.id).only(

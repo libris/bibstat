@@ -53,7 +53,6 @@ def sigel_survey(request, sigel):
 
 
 def _save_survey_response_from_form(survey, form):
-
     # Note: all syntax/format validation is done on client side w Bootstrap validator. 
     # All fields are handled as CharFields in the form and casted based on variable.type before saving.  More types can be added when needed.
 
@@ -87,7 +86,7 @@ def _save_survey_response_from_form(survey, form):
                     observation.disabled = (field in disabled_inputs)
                     observation.value_unknown = (field in unknown_inputs)
             else:
-                survey.__dict__["_data"][field] = value
+                survey._data[field] = value
 
         survey.selected_libraries = filter(None, form.cleaned_data["selected_libraries"].split(" "))
 
@@ -95,7 +94,7 @@ def _save_survey_response_from_form(survey, form):
             if not survey.has_conflicts():
                 survey.status = "submitted"
 
-        survey.save()
+        survey.save(validate=False)
 
     else:
         logger.error('Could not save survey due to django validation error, library: %s' % survey.library.sigel)
@@ -136,7 +135,7 @@ def survey(request, survey_id):
 
         if not request.user.is_authenticated and survey.status == "not_viewed":
             survey.status = "initiated"
-            survey.save()
+            survey.save(validate=False)
 
         if request.method == "POST":
             form = SurveyForm(request.POST, survey=survey)
