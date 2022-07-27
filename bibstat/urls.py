@@ -1,12 +1,9 @@
-import django_js_reverse
-from django.conf.urls import url
-from django.urls import reverse, path, re_path
-from django.views.generic import RedirectView, TemplateView
+from django.urls import re_path
+from django.views.generic import TemplateView
 from django.contrib.auth import logout
 
 from django_js_reverse.views import urls_js
 
-from django.contrib import admin
 import libstat
 from libstat.apis.open_data import data_api, observation_api, export_api
 from libstat.apis.terms import term_api, terms_api
@@ -105,4 +102,3 @@ urlpatterns = [
     #re_path(r'^.well-known/void$', RedirectView.as_view(url=reverse('open_data'), permanent=False)),
     re_path(r'^jsreverse/$', urls_js, name='js_reverse'),
 ]
-

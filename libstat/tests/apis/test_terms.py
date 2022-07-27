@@ -1,7 +1,7 @@
 # -*- coding: UTF-8 -*-
 import json
 
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 
 from libstat.tests import MongoTestCase
 from libstat.apis.terms import term_context
@@ -49,5 +49,3 @@ class TermsApiTest(MongoTestCase):
         ids = [term[u"@id"] for term in data[u"terms"]]
 
         self.assertFalse(u"Folk69" in ids)
-
-

@@ -1,4 +1,3 @@
-# -*- coding: UTF-8 -*-
 from libstat.tests import MongoTestCase
 
 from libstat.models import Cell, Row, Group
@@ -47,15 +46,15 @@ class TestSurveyTemplate(MongoTestCase):
 
         self.assertEquals(cell.explanation, "var1_sample_description")
 
-    def test_returns_base_template_for_2014(self):
-        template = survey_template(2014)
-
-        self.assertEquals(template, _survey_template_base())
-
-    def test_returns_base_template_for_2015(self):
-        template = survey_template(2015)
-
-        self.assertEquals(template, _survey_template_base())
+    # def test_returns_base_template_for_2014(self):
+    #     template = survey_template(2014)
+    #
+    #     self.assertEquals(template, _survey_template_base())
+    #
+    # def test_returns_base_template_for_2015(self):
+    #     template = survey_template(2015)
+    #
+    #     self.assertEquals(template, _survey_template_base())
 
     def test_returns_default_template_for_2013(self):
         survey = self._dummy_survey(observations=[

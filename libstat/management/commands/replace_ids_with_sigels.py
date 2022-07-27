@@ -1,27 +1,24 @@
-# -*- coding: UTF-8 -*-
-
 from django.core.management.base import BaseCommand, CommandError
-from optparse import make_option
 import logging, re
 from libstat.services.clean_data import _load_sigel_mapping_from_workbook, _update_sigel
 from libstat.models import Survey
 
 logger = logging.getLogger(__name__)
 
+
 class Command(BaseCommand):
     args = "--year=<YYYY>"
     help = "Replace code-string with sigel based on excel mapping file"
-    help_text = ("Usage: python manage.py replace_ids_with_sigels --year=<YYYY>\n\n")
+    help_text = "Usage: python manage.py replace_ids_with_sigels --year=<YYYY>\n\n"
 
-    option_list = BaseCommand.option_list + (
-        make_option("--year", dest="year", type="str", help="Sample year, format YYYY"),
-    )
+    def add_arguments(self, parser):
+        parser.add_argument("--year", dest="year", type=int, help="Sample year, format YYYY")
 
     def handle(self, *args, **options):
         year = options.get("year")
 
         def _valid_year(year):
-            return re.compile('^\d{4}$').match(year)
+            return re.compile(r'^\d{4}$').match(year)
 
         if not year:
             logger.info(self.help_text)

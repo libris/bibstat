@@ -40,6 +40,17 @@ ALLOWED_HOSTS = [
 
 BIBSTAT_BLOG_BASE_URL = "https://www.kb.se/biblioteksstatistik"
 
+# DB connection details
+MONGODB_DATABASES = {
+    "default": {
+        "name": "bibstat",
+        "host": "localhost",
+        "password": "bibstat",
+        "username": "bibstat",
+        "tz_aware": True,  # if you using timezones in django (USE_TZ = True)
+    },
+}
+
 # Email details
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 EMAIL_SENDER = 'biblioteksstatistik@kb.se'
@@ -67,7 +78,6 @@ INSTALLED_APPS = [
     'django_js_reverse',
 
     # Bibstat specific apps
-    #'mongoengine.django.mongo_auth',
     'django_mongoengine',
     'django_mongoengine.mongo_auth',
     #'django_mongoengine.mongo_admin',
@@ -130,7 +140,7 @@ USE_L10N = True
 USE_TZ = True
 
 # Static files (CSS, JavaScript, Images)
-# https://docs.djangoproject.com/en/1.6/howto/static-files/
+# https://docs.djangoproject.com/en/3.2/howto/static-files/
 STATIC_URL = '/static/'
 
 # Common static resources not tied to any application.

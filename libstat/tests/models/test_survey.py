@@ -1,6 +1,4 @@
-# -*- coding: UTF-8 -*-
 from datetime import timedelta
-from sets import Set
 from data.principals import PRINCIPALS
 
 from libstat.tests import MongoTestCase
@@ -499,13 +497,13 @@ class TestSelectableLibraries(MongoTestCase):
     def test_should_return_an_empty_list_for_no_municipality_code(self):
         survey = self._dummy_survey(library=self._dummy_library(municipality_code=None))
 
-        self.assertItemsEqual(survey.selectable_libraries(), [])
+        self.assertCountEqual(survey.selectable_libraries(), [])
 
     def test_should_exclude_second_library_with_different_municipality_code(self):
         survey = self._dummy_survey(library=self._dummy_library(municipality_code="1"))
         self._dummy_survey(library=self._dummy_library(municipality_code="2"))
 
-        self.assertItemsEqual(survey.selectable_libraries(), [])
+        self.assertCountEqual(survey.selectable_libraries(), [])
 
     def test_should_include_second_library_with_same_municipality_code(self):
         library = self._dummy_library(municipality_code="1")
@@ -521,7 +519,7 @@ class TestSelectableLibraries(MongoTestCase):
         survey = self._dummy_survey(library=self._dummy_library(sigel="1"))
         self._dummy_survey(library=self._dummy_library(sigel="1"))
 
-        self.assertItemsEqual(survey.selectable_libraries(), [])
+        self.assertCountEqual(survey.selectable_libraries(), [])
 
     def test_should_include_second_library_with_same_municipality_code_and_same_principal_library_type(self):
         library = self._dummy_library(municipality_code="1", library_type=u"folkbib")
@@ -570,7 +568,7 @@ class TestSelectedSigels(MongoTestCase):
         library = self._dummy_library(municipality_code=None)
         survey = self._dummy_survey(sample_year=2014)
 
-        self.assertSetEqual(survey.selected_sigels_in_other_surveys(2014), Set())
+        self.assertSetEqual(survey.selected_sigels_in_other_surveys(2014), set())
 
     def test_should_include_second_surveys_selected_sigel(self):
         library = self._dummy_library(sigel="1")
@@ -597,7 +595,7 @@ class TestSelectedSigels(MongoTestCase):
         survey = self._dummy_survey(library=library, sample_year=2014)
         self._dummy_survey(library=second_library, sample_year=2015, selected_libraries=["1", "2"])
 
-        self.assertSetEqual(survey.selected_sigels_in_other_surveys(2014), Set())
+        self.assertSetEqual(survey.selected_sigels_in_other_surveys(2014), set())
 
     def test_should_exclude_selected_sigel_for_another_municipality_code(self):
         library = self._dummy_library(sigel="1")
@@ -606,7 +604,7 @@ class TestSelectedSigels(MongoTestCase):
         survey = self._dummy_survey(library=library, sample_year=2014)
         self._dummy_survey(library=second_library, sample_year=2014, selected_libraries=["2"])
 
-        self.assertSetEqual(survey.selected_sigels_in_other_surveys(2014), Set())
+        self.assertSetEqual(survey.selected_sigels_in_other_surveys(2014), set())
 
     def test_should_exclude_selected_sigel_in_librarys_own_survey(self):
         library = self._dummy_library(sigel="1")
@@ -633,7 +631,7 @@ class TestSelectedSigels(MongoTestCase):
         survey = self._dummy_survey(library=library, sample_year=2014)
         self._dummy_survey(library=second_library, sample_year=2014, selected_libraries=["2"])
 
-        self.assertSetEqual(survey.selected_sigels_in_other_surveys(2014), Set())
+        self.assertSetEqual(survey.selected_sigels_in_other_surveys(2014), set())
 
     def test_should_include_second_surveys_selected_sigel_when_library_type_is_unknown(self):
         library = self._dummy_library(sigel="1", library_type=None)

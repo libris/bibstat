@@ -1,8 +1,8 @@
-# -*- coding: utf-8 -*-
 import requests
 from bibstat import settings
 from libstat.models import Library, ExternalIdentifier
 from libstat.utils import SURVEY_TARGET_GROUPS
+
 
 def check_library_criteria(json_data):
     if not json_data.get("country_code", None) == "se":
@@ -37,8 +37,7 @@ def library_from_json(json_data):
     library.zip_code = location["zip_code"] if location and location["zip_code"] else None
     contacts = json_data.get("contact", None)
     if contacts:
-        library.email = next((c["email"] for c in contacts
-                            if "email" in c and c["contact_type"] == "statans"), None)
+        library.email = next((c["email"] for c in contacts if "email" in c and c["contact_type"] == "statans"), None)
     school_code = json_data.get("school_code", None)
     if school_code:
         external_identifier = ExternalIdentifier(type="school_code", identifier=school_code)
@@ -53,7 +52,7 @@ def fetch_libraries():
     for start_index in range(0, 30000, 200):
         response = requests.get(
             url="%s/api/lib?dump=true&start=%d" % (settings.BIBDB_BASE_URL, start_index),
-            headers={"APIKEY-AUTH-HEADER": "bibstataccess"}) # KP 180110
+            headers={"APIKEY-AUTH-HEADER": "bibstataccess"})  # KP 180110
 
         if not response.json().get("libraries", None):
             break

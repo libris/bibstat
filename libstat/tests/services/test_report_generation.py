@@ -1,5 +1,3 @@
-# -*- coding: utf-8 -*-
-from pprint import pprint
 from libstat.tests import MongoTestCase
 from libstat.models import CachedReport
 from libstat.report_templates import ReportTemplate, Group, Row

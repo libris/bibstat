@@ -1,5 +1,3 @@
-# -*- coding: UTF-8 -*-
-from optparse import make_option
 import re
 import logging
 import traceback
@@ -19,22 +17,20 @@ logger = logging.getLogger(__name__)
 class Command(BaseCommand):
     args = "--file=<file> --target_group=<folkbib|specbib|sjukbib|skolbib> --year=<YYYY>"
     help = "Imports surveys from a spreadsheet"
-    help_text = ("Usage: python manage.py import_survey_responses --file=</path/to/file>"
+    help_text = ("Usage: python manage.py import_survey_responses --file=</path/to/file> "
                  "--target_group=<folkbib|specbib|sjukbib|skolbib> --year=<YYYY>\n\n")
 
-    option_list = BaseCommand.option_list + (
-        make_option(u'--target_group', dest=u"target_group", type=u'choice',
-                    choices=["folkbib", "specbib", "sjukbib", "skolbib"],
-                    help=u'Target group; public, research, hospital, school'),
-        make_option('--file', dest="file", type='string',
-                    help='File; Absolute path to source spreadsheet. I.e. /home/MyUser/documents/sourcefile.xlsx'),
-        make_option('--year', dest="year", type='int',
-                    help='Year; Measurment year, format YYYY'),
-    )
+    def add_arguments(self, parser):
+        parser.add_argument("--target_group", dest="target_group",
+                            choices=["folkbib", "specbib", "sjukbib", "skolbib"],
+                            help="Target group; public, research, hospital, school")
+        parser.add_argument("--file", dest="file",
+                            help="File; Absolute path to source spreadsheet. I.e. /home/MyUser/documents/sourcefile.xlsx")
+        parser.add_argument("--year", dest="year", type=int, help="Measurement year, format YYYY")
 
     def _import_from_work_sheet(self, work_sheet, year, target_group):
         def _parse_value(value):
-            if isinstance(value, (int, float, long)):
+            if isinstance(value, (int, float)):
                 if value == 0:
                     value = None
                 elif variable.type == TYPE_BOOLEAN[0]:
@@ -42,9 +38,9 @@ class Command(BaseCommand):
                 elif variable.type == TYPE_INTEGER[0]:
                     value = int(value)
                 elif variable.type == TYPE_LONG[0]:
-                    value = long(value)
+                    value = int(value)
 
-            if (isinstance(value, str) and value.strip() == ""):
+            if isinstance(value, str) and value.strip() == "":
                 value = None
             return value
 
@@ -85,7 +81,7 @@ class Command(BaseCommand):
 
             lib_col_value = row[library_name_column]
             # Research libraries file and hospital libraries file has summary rows mixed with library response rows
-            if (lib_col_value and isinstance(lib_col_value, basestring)
+            if (lib_col_value and isinstance(lib_col_value, str)
                 and not lib_col_value.startswith(("Summa", "summa", "Riket",))):
                 library_name = lib_col_value.strip()
             else:

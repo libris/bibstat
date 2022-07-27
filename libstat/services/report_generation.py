@@ -1,6 +1,5 @@
-# -*- coding: utf-8 -*-
-from pprint import pprint
-import uuid, logging
+import logging
+import uuid
 
 from libstat.models import Survey, Variable, OpenData, CachedReport
 from libstat.report_templates import report_template_base, report_template_base_with_municipality_calculations, report_template_base_with_target_group_calculations
@@ -9,6 +8,7 @@ from libstat.report_templates import report_template_base, report_template_base_
 logger = logging.getLogger(__name__)
 
 REPORT_CACHE_LIMIT = 500
+
 
 def get_cached_report(surveys, year):
     if (CachedReport.objects.count() != 0 and

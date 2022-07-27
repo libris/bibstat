@@ -1,4 +1,3 @@
-# -*- coding: UTF-8 -*-
 import json
 import textwrap
 import re
@@ -38,12 +37,14 @@ def tg_label(value):
                 display_names.append(targetGroups[value])
     return ", ".join(display_names)
 
+
 @register.filter
 def var_type_label(var_key):
     try:
         return variableTypes[var_key]
     except KeyError:
         return None
+
 
 @register.filter
 def srs_label(key):
@@ -57,6 +58,7 @@ def access(value, arg):
     except KeyError:
         return None
 
+
 @register.filter
 def get_errors(form, key):
     try:
@@ -66,9 +68,10 @@ def get_errors(form, key):
         return None
     return None
 
+
 @register.filter
 def split_into_number_and_body(description):
-    if re.compile("^[0-9]+\.").match(description):
+    if re.compile(r"^[0-9]+\.").match(description):
         return description.split(" ", 1)
     else:
         return "", description
@@ -102,10 +105,12 @@ def format_number(number, digits=1):
         locale.setlocale(locale.LC_NUMERIC, 'sv_SE.UTF-8')
     return locale.format("%d" if number == int(number) else "%.{}f".format(digits), number, grouping=True)
 
+
 @register.filter
 def format_percentage(number):
     percentage = number * 100
     return format_number(percentage) + "%"
+
 
 @register.filter
 def format_email(email, limit=30):
@@ -123,6 +128,7 @@ def two_parts(thelist):
         return [thelist[middle:], thelist[:middle]]
     else:
         return [thelist[:middle + 1], thelist[middle + 1:]]
+
 
 @register.filter
 def chunks(l, n):

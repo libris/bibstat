@@ -1,8 +1,6 @@
-# -*- coding: UTF-8 -*-
-from sets import Set
-
 from libstat.forms.survey import SurveyForm
 from libstat.tests import MongoTestCase
+
 
 class TestUserReadOnly(MongoTestCase):
 

@@ -5,12 +5,12 @@ import datetime
 import math
 from django.core.files import File
 
-from openpyxl import Workbook, load_workbook
+from openpyxl import Workbook
 from openpyxl.writer.excel import save_virtual_workbook
 from bibstat import settings
 
 from data.principals import principal_for_library_type
-from libstat.models import Survey, OpenData, Variable, Library
+from libstat.models import Survey, OpenData, Variable
 
 import logging
 
@@ -197,7 +197,7 @@ def surveys_to_excel_workbook(survey_ids, include_previous_year=False):
         "Samredovisas",
         "Redovisas av"
     ]
-    headers += [unicode(observation.variable.key) for observation in Survey.objects.get(pk=survey_ids[0]).observations if observation.variable.key]
+    headers += [str(observation.variable.key) for observation in Survey.objects.get(pk=survey_ids[0]).observations if observation.variable.key]
     headers += ["Samredovisat bibliotek", "Gatuadress", "Postnummer"]
 
     # Create a headers dictionary for lookup of column number
@@ -206,7 +206,7 @@ def surveys_to_excel_workbook(survey_ids, include_previous_year=False):
         headers_dict[header] = column_no
         column_no = column_no + 1
 
-    workbook = Workbook(encoding="utf-8")
+    workbook = Workbook()
     worksheet = workbook.active
     worksheet.append(headers)
 

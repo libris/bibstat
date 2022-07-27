@@ -1,7 +1,6 @@
-# -*- coding: UTF-8 -*-
-
 from libstat.models import Survey
 from libstat.tests import MongoTestCase
+
 
 class TestExternalIdentifier(MongoTestCase):
 

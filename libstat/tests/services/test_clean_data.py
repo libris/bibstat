@@ -4,6 +4,7 @@ from libstat.models import Library
 
 import unittest
 
+
 class TestCleanDataFunctions(MongoTestCase):
 
     def test_update_sigel(self):

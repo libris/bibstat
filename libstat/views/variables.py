@@ -132,7 +132,7 @@ def replaceable_variables(request):
     """
         Helper Json API method to populate search field for replaceable variables. (Ajax call)
     """
-    query = request.REQUEST.get("q", None)
+    query = request.GET.get("q", None)
     if query:
         key_query = Q(key__icontains=query)
         description_query = Q(description__icontains=query)

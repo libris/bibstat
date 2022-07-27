@@ -1,4 +1,3 @@
-# -*- coding: UTF-8 -*-
 from libstat.models import Dispatch
 from libstat.tests import MongoTestCase
 

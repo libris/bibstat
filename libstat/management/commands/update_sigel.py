@@ -1,7 +1,4 @@
-# -*- coding: UTF-8 -*-
-
 from django.core.management.base import BaseCommand
-from optparse import make_option
 import logging
 import sys
 
@@ -15,10 +12,9 @@ class Command(BaseCommand):
     help = "Updates a sigel."
     help_text = "Usage: python manage.py update_sigel --from=<old sigel> --to=<new sigel>\n\n"
 
-    option_list = BaseCommand.option_list + (
-        make_option('--from', dest='from', type='string', help=u'Old sigel'),
-        make_option('--to', dest='to', type='string', help=u'New sigel'),
-    )
+    def add_arguments(self, parser):
+        parser.add_argument("--from", dest="from", help="Old sigel")
+        parser.add_argument("--to", dest="to", help="New sigel")
 
     def handle(self, *args, **options):
         old_sigel = options.get('from')

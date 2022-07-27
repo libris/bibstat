@@ -1,4 +1,3 @@
-# -*- coding: UTF-8 -*-
 from datetime import datetime
 from bibstat import settings
 from libstat.models import Variable
@@ -12,7 +11,7 @@ class OpenDataTest(MongoTestCase):
         v = Variable(key=u"folk5", description=u"Antal bemannade serviceställen, sammanräknat", type="integer",
                      is_public=True, target_groups=["folkbib"])
         v.save()
-        publishing_date = datetime(2014, 06, 03, 15, 28, 31)
+        publishing_date = datetime(2014, 6, 3, 15, 28, 31)
         d1 = OpenData(library_name=u"KARLSTAD STADSBIBLIOTEK", sigel="323", sample_year=2013,
                       target_group="folkbib", variable=v, value=6, date_created=publishing_date,
                       date_modified=publishing_date)

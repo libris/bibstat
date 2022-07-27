@@ -1,5 +1,3 @@
-# -*- coding: UTF-8 -*-
-
 MUNICIPALITIES = (
     (u"Riket", u"0000"),
     (u"Stockholms län", u"0100"),
@@ -318,6 +316,7 @@ municipalities = dict([(tuple[1], tuple[0]) for tuple in MUNICIPALITIES])
 
 municipalities_without_counties = dict([(tuple[1], tuple[0]) for tuple in MUNICIPALITIES if not (len(tuple[0].split()) > 1 and tuple[0].split()[len(tuple[0].split())-1] == u"län")])
 
+
 def get_counties(municipality_codes):
     county_list = []
     for municipality_code in municipality_codes:
@@ -326,7 +325,7 @@ def get_counties(municipality_codes):
             county_list.append((municipalities[county_code], county_code))
 
     for name, code in dict(county_list).items():
-        yield (name, code)
+        yield name, code
 
 
 def municipality_code_from(code):

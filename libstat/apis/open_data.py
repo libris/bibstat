@@ -6,7 +6,6 @@ from time import strftime
 from django.http import HttpResponse, Http404, HttpResponseBadRequest, HttpResponseNotFound
 from wsgiref.util import FileWrapper
 from mongoengine import Q
-from openpyxl.writer.excel import save_virtual_workbook
 
 from bibstat import settings
 from libstat.models import Variable, OpenData

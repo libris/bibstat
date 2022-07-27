@@ -1,7 +1,7 @@
-# -*- coding: UTF-8 -*-
 from libstat.services.excel_export import _published_open_data_as_workbook
 
 from libstat.tests import MongoTestCase
+
 
 class TestSurveysExport(MongoTestCase):
 

@@ -1,8 +1,7 @@
-# -*- coding: UTF-8 -*-
 import json
 from datetime import datetime
 
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from django.conf import settings
 
 from libstat.tests import MongoTestCase
@@ -33,7 +32,7 @@ class OpenDataApiTest(MongoTestCase):
         self.assertEquals(len(data[u"observations"]), 3)
 
     def test_should_filter_data_by_from_date(self):
-        self._dummy_open_data(sigel="sigel_1", date_modified=datetime(2014, 06, 05, 11, 14, 01))
+        self._dummy_open_data(sigel="sigel_1", date_modified=datetime(2014, 6, 5, 11, 14, 1))
 
         response = self.client.get(u"{}?from_date=2014-06-04".format(reverse("data_api")))
         data = json.loads(response.content)
@@ -43,7 +42,7 @@ class OpenDataApiTest(MongoTestCase):
                           u"{}/library/sigel_1".format(settings.BIBDB_BASE_URL))
 
     def test_should_filter_data_by_to_date(self):
-        self._dummy_open_data(sigel="81", date_modified=datetime(2014, 06, 02, 11, 14, 01))
+        self._dummy_open_data(sigel="81", date_modified=datetime(2014, 6, 2, 11, 14, 1))
 
         response = self.client.get(u"{}?to_date=2014-06-03".format(reverse("data_api")))
         data = json.loads(response.content)
@@ -53,7 +52,7 @@ class OpenDataApiTest(MongoTestCase):
                           u"{}/library/81".format(settings.BIBDB_BASE_URL))
 
     def test_should_filter_data_by_date_range(self):
-        self._dummy_open_data(sigel="323", date_modified=datetime(2014, 06, 03, 11, 14, 01))
+        self._dummy_open_data(sigel="323", date_modified=datetime(2014, 6, 3, 11, 14, 1))
 
         response = self.client.get(
             u"{}?from_date=2014-06-02T15:28:31.000&to_date=2014-06-04T11:14:00.000".format(reverse("data_api")))

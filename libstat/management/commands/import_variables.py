@@ -1,7 +1,4 @@
-# -*- coding: UTF-8 -*-
 import logging
-
-from optparse import make_option
 
 from django.core.management.base import BaseCommand, CommandError
 from xlrd import open_workbook
@@ -33,13 +30,11 @@ class Command(BaseCommand):
 
     help = "Imports statistical variables from a spreadsheet"
 
-    option_list = BaseCommand.option_list + (
-        make_option(u'--target_group', dest=u"target_group", type=u'choice',
-                    choices=["folkbib", "specbib", "sjukbib", "skolbib"],
-                    help=u'Target group; public, research, hospital, school'),
-        make_option('--file', dest="file", type='string',
-                    help='File; Absolute path to source spreadsheet. I.e. /home/MyUser/documents/sourcefile.xlsx'),
-    )
+    def add_arguments(self, parser):
+        parser.add_argument("--target-group", dest="target_group", choices=["folkbib", "specbib", "sjukbib", "skolbib"],
+                            help="Target group; public, research, hospital, school")
+        parser.add_argument("--file", dest="file",
+                            help="File; Absolute path to source spreadsheet. i.e. /home/MyUser/documents/sourcefile.xlsx")
 
     def handle(self, *args, **options):
         if not options["target_group"] or not options["file"]:

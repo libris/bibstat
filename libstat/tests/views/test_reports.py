@@ -1,5 +1,5 @@
-# -*- coding: UTF-8 -*-
 from libstat.tests import MongoTestCase
+
 
 class ReportSelectionTest(MongoTestCase):
     def test_can_view_report_selection_if_not_logged_in(self):

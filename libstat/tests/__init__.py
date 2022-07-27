@@ -1,4 +1,3 @@
-# -*- coding: UTF-8 -*-
 import random
 import string
 import json
@@ -9,13 +8,13 @@ from django.test.utils import setup_test_environment
 from django.test.runner import DiscoverRunner
 from django.test import TestCase
 from django.conf import settings
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 
 from libstat.models import Variable, OpenData, Survey, Library, SurveyObservation, Article, Dispatch, ExternalIdentifier
 
 
 class MongoEngineTestRunner(DiscoverRunner):
-    def setup_databases(self):
+    def setup_databases(self, aliases=None):
         pass
 
     def teardown_databases(self, *args):
@@ -23,7 +22,7 @@ class MongoEngineTestRunner(DiscoverRunner):
 
 
 class MongoTestCase(TestCase):
-    mongodb_name = 'test_%s' % settings.MONGODB_NAME
+    mongodb_name = 'test_%s' % settings.MONGODB_DATABASES["default"]["name"]
 
     def _login(self):
         self.client.login(username="admin", password="admin")
@@ -97,9 +96,9 @@ class MongoTestCase(TestCase):
             variable = self._dummy_variable()
             variable.save()
         if not date_created:
-            date_created = datetime(2014, 05, 27, 8, 00, 00)
+            date_created = datetime(2014, 5, 27, 8, 0, 0)
         if not date_modified:
-            date_modified = datetime(2014, 06, 02, 17, 57, 16)
+            date_modified = datetime(2014, 6, 2, 17, 57, 16)
         open_data = OpenData(library_name=library_name, sigel=sigel, sample_year=sample_year, is_active=is_active,
                              target_group=target_group, variable=variable, value=value, date_created=date_created,
                              date_modified=date_modified)
@@ -109,7 +108,7 @@ class MongoTestCase(TestCase):
         return open_data
 
     def _dummy_article(self, title=None, content=None):
-        article = Article(title, content)
+        article = Article(title=title, content=content)
         article.save()
         article.reload()
         return article
@@ -127,17 +126,18 @@ class MongoTestCase(TestCase):
         return external_identifier
 
     def _fixture_setup(self):
-        from mongoengine.connection import connect, disconnect
+        from mongoengine.connection import connect, disconnect, get_db
 
         disconnect()
-        connect(self.mongodb_name, host=settings.MONGODB_HOST)
-        from mongoengine.django.mongo_auth.models import MongoUser
+        connect(self.mongodb_name, host=settings.MONGODB_DATABASES["default"]["host"])
+        self.db = get_db()
+        from django_mongoengine.mongo_auth.models import User
 
-        if MongoUser.objects.filter(username="admin").count() == 0:
-            MongoUser.objects.create_superuser("admin", "admin@example.com", "admin")
-        if MongoUser.objects.filter(username="library_user").count() == 0:
-            MongoUser.objects.create_user("library_user", "library.user@example.com", "secret")
-        setup_test_environment()
+        if User.objects.filter(username="admin").count() == 0:
+            User.create_superuser("admin", "admin", email="admin@example.com")
+        if User.objects.filter(username="library_user").count() == 0:
+            User.create_user("library_user", "secret", email="library.user@example.com")
+        #setup_test_environment()
 
     def _post_teardown(self):
         from mongoengine.connection import get_connection, disconnect

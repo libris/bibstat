@@ -1,6 +1,4 @@
 import logging
-import time
-import json
 
 from django import forms
 from django.urls import reverse
@@ -11,6 +9,7 @@ from libstat.models import Survey, Variable, SurveyObservation
 from libstat.survey_templates import survey_template
 
 logger = logging.getLogger(__name__)
+
 
 class SurveyForm(forms.Form):
 

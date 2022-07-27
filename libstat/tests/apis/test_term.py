@@ -1,7 +1,6 @@
-# -*- coding: UTF-8 -*-
 import json
 
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 
 from libstat.tests import MongoTestCase
 from libstat.apis.terms import term_context

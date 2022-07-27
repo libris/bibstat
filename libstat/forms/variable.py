@@ -1,4 +1,3 @@
-# coding=utf-8
 from django import forms
 from libstat.models import Variable
 from libstat.utils import VARIABLE_TYPES, SURVEY_TARGET_GROUPS

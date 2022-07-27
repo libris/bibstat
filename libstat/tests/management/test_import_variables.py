@@ -1,4 +1,3 @@
-# -*- coding: UTF-8 -*-
 from django.core.management import call_command
 
 from libstat.tests import MongoTestCase

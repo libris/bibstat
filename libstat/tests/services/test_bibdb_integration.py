@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 from libstat.services.bibdb_integration import check_library_criteria, library_from_json
 from libstat.tests import MongoTestCase
 

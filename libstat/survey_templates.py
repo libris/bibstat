@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 from libstat.models import Section, Group, Cell, Row, SurveyTemplate
 
 

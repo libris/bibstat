@@ -1,5 +1,6 @@
-# -*- coding: UTF-8 -*-
 from datetime import timedelta
+
+from mongoengine import DoesNotExist
 
 from libstat.tests import MongoTestCase
 from libstat.models import *
@@ -27,7 +28,7 @@ class VariableQuerySetTest(MongoTestCase):
 
         # Active
         v3 = Variable(key=u"Folk31", description=u"Antal årsverken totalt", type="decimal", is_public=True,
-                      target_groups=["folkbib"], id_draft=False)
+                      target_groups=["folkbib"], is_draft=False)
         v3.summary_of = [self.v2]
         v3.save()
         self.v3 = Variable.objects.get(pk=v3.id)
@@ -405,6 +406,7 @@ class VariableTest(MongoTestCase):
         replacement.replace_siblings([replaced_1.id, replaced_2.id], switchover_date=datetime(2015, 1, 1), commit=True)
         replacement.reload()
 
+        print(replacement.id)
         replacement.delete()
 
         replaced_1.reload()

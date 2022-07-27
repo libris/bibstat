@@ -1,4 +1,3 @@
-# -*- coding: UTF-8 -*-
 from django.core.management import call_command
 from django.core.management.base import CommandError
 
@@ -64,7 +63,7 @@ class ImportSurveyResponsesTest(MongoTestCase):
         # Check data types and visibility
         # Private, string value
         folk1_obs = [obs for obs in sr.observations if obs.variable.key == "Folk1"][0]
-        self.assertTrue(isinstance(folk1_obs.value, basestring))
+        self.assertTrue(isinstance(folk1_obs.value, str))
         self.assertEquals(folk1_obs.value, u"Karlstad")
         self.assertFalse(folk1_obs._is_public)
         # Private, string value None
@@ -82,7 +81,7 @@ class ImportSurveyResponsesTest(MongoTestCase):
         self.assertTrue(folk26_obs._is_public)
         # Public, long value
         folk38_obs = [obs for obs in sr.observations if obs.variable.key == "Folk38"][0]
-        self.assertTrue(isinstance(folk38_obs.value, long))
+        self.assertTrue(isinstance(folk38_obs.value, int))
         self.assertEquals(folk38_obs.value, 29500000)
         self.assertTrue(folk38_obs._is_public)
         # Public, decimal value (percent)

@@ -1,5 +1,3 @@
-# -*- coding: UTF-8 -*-
-
 from django.core.management.base import BaseCommand, CommandError
 from xlrd import open_workbook
 from libstat.models import Survey, ExternalIdentifier
@@ -51,7 +49,6 @@ class Command(BaseCommand):
                             survey.save()
 
         except Exception as e:
-            print unicode(e)
-
+            print(str(e))
 
 

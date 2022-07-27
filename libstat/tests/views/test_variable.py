@@ -2,8 +2,8 @@
 import uuid
 import json
 
-from django.core.urlresolvers import reverse
-from mongoengine.django.auth import User
+from django.urls import reverse
+from django_mongoengine.mongo_auth.models import User
 
 from datetime import datetime
 from libstat.tests import MongoTestCase
@@ -170,7 +170,7 @@ class EditVariableViewTest(MongoTestCase):
     def setUp(self):
         self.v1 = Variable(key=u"Folk10", description=u"Antal bemannade serviceställen", type="integer",
                            is_public=True, target_groups=["folkbib"])
-        self.v1.save()
+        self.v1.save(validate=False)
         self.v2 = Variable(key=u"Sjukhus102",
                            description=u"Bestånd av tillgängliga medier för personer med läsnedsättning",
                            type="integer", is_public=True, target_groups=["sjukbib"])
@@ -467,15 +467,15 @@ class EditVariableViewTest(MongoTestCase):
             # active_to input is disabled if variable is replaced
             u"active_to": variable.active_to.date() if variable.active_to and not variable.replaced_by else "",
             u"replaces": ", ".join([str(v.id) for v in variable.replaces]) if variable.replaces else "",
-            u"question": variable.question,
-            u"question_part": variable.question_part,
-            u"category": variable.category,
-            u"sub_category": variable.sub_category,
-            u"type": variable.type,
+            u"question": variable.question or "",
+            u"question_part": variable.question_part or "",
+            u"category": variable.category or "",
+            u"sub_category": variable.sub_category or "",
+            u"type": variable.type or "",
             u"is_public": int(variable.is_public),
-            u"target_groups": variable.target_groups,
-            u"description": variable.description,
-            u"comment": variable.comment,
+            u"target_groups": variable.target_groups or "",
+            u"description": variable.description or "",
+            u"comment": variable.comment or "",
             u"submit_action": action
         })
 
@@ -487,7 +487,7 @@ class EditVariableViewTest(MongoTestCase):
 
     def new_variable(self, key=None, description=None, type=None, target_groups=None, is_draft=True, save=True):
         variable = Variable(
-            key=key if key else unicode(uuid.uuid1()),
+            key=key if key else str(uuid.uuid1()),
             description=description if description else u"description",
             type=type if type else "integer",
             target_groups=target_groups if target_groups else ["folkbib"],
@@ -529,6 +529,7 @@ class EditVariableViewTest(MongoTestCase):
             Variable.objects.get(pk=variable.id)
         except Variable.DoesNotExist as dne:
             self.fail(str(dne))
+
 
 class ReplaceableVariablesApiTest(MongoTestCase):
 

@@ -1,4 +1,3 @@
-# -*- coding: UTF-8 -*-
 from libstat.services.excel_export import surveys_to_excel_workbook
 
 from libstat.tests import MongoTestCase
@@ -337,6 +336,7 @@ class TestSurveyView(MongoTestCase):
 
         response = self._get("surveys", params={"action": "list", "sample_year": "2014", "exclude_co_reported_by_other": "on"})
         self.assertNotContains(response, 'value="{}"'.format(survey2.id))
+
 
 class TestSurveyState(MongoTestCase):
     def setUp(self):

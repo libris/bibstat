@@ -1,5 +1,3 @@
-# -*- coding: UTF-8 -*-
-
 PRINCIPALS = (
     (u"musstat", u"stat"),
     (u"muslan", u"landsting"),
@@ -37,6 +35,7 @@ library_types_for_principal = {
     u'privat': [u'frisgym', u'friskol'],
     u'kommun': [u'muskom', u'vuxbib', u'skolbib', u'folkbib', u'folkskolbib', u'gymbib']
 }
+
 
 def get_library_types_with_same_principal(library):
     if library.library_type is None or library.library_type not in principal_for_library_type:
