@@ -8,7 +8,6 @@ from libstat.apis.terms import term_context
 
 
 class TermsApiTest(MongoTestCase):
-
     def test_response_should_return_jsonld(self):
         response = self.client.get(reverse("terms_api"))
 

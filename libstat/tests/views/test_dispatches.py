@@ -28,41 +28,57 @@ class TestDispatches(MongoTestCase):
         self._dummy_survey(library=self._dummy_library("lib2"))
         survey3 = self._dummy_survey(library=self._dummy_library("lib3"))
 
-        self._post("dispatches", data={
-            "title": "some_title",
-            "message": "some_message",
-            "description": "some_description",
-            "survey-response-ids": [survey1.pk, survey3.pk]
-        })
+        self._post(
+            "dispatches",
+            data={
+                "title": "some_title",
+                "message": "some_message",
+                "description": "some_description",
+                "survey-response-ids": [survey1.pk, survey3.pk],
+            },
+        )
 
         self.assertEqual(Dispatch.objects.count(), 2)
         self.assertEqual(Dispatch.objects.get(library_name="lib3").title, "some_title")
-        self.assertEqual(Dispatch.objects.get(library_name="lib3").message, "some_message")
-        self.assertEqual(Dispatch.objects.get(library_name="lib3").description, "some_description")
+        self.assertEqual(
+            Dispatch.objects.get(library_name="lib3").message, "some_message"
+        )
+        self.assertEqual(
+            Dispatch.objects.get(library_name="lib3").description, "some_description"
+        )
 
     def test_can_delete_dispatches(self):
         dispatch1 = self._dummy_dispatch()
         self._dummy_dispatch()
         dispatch3 = self._dummy_dispatch()
 
-        self._post("dispatches_delete", data={
-            "dispatch-ids": [dispatch1.pk, dispatch3.pk]
-        })
+        self._post(
+            "dispatches_delete", data={"dispatch-ids": [dispatch1.pk, dispatch3.pk]}
+        )
 
         self.assertEqual(Dispatch.objects.count(), 1)
 
     def test_replaces_key_words_with_survey_fields(self):
-        survey = self._dummy_survey(password="some_password", library=self._dummy_library(name="some_name",
-                                                                                          city="some_city"))
+        survey = self._dummy_survey(
+            password="some_password",
+            library=self._dummy_library(name="some_name", city="some_city"),
+        )
 
-        self._post("dispatches", data={
-            "title": "abc {bibliotek} cde {ort} fgh {lösenord}",
-            "message": "ijk {lösenord} lmn{bibliotek}opq {ort}",
-            "description": "some_description",
-            "survey-response-ids": [survey.pk]
-        })
+        self._post(
+            "dispatches",
+            data={
+                "title": "abc {bibliotek} cde {ort} fgh {lösenord}",
+                "message": "ijk {lösenord} lmn{bibliotek}opq {ort}",
+                "description": "some_description",
+                "survey-response-ids": [survey.pk],
+            },
+        )
 
         dispatch = Dispatch.objects.all()[0]
 
-        self.assertEqual(dispatch.title, "abc some_name cde some_city fgh some_password")
-        self.assertEqual(dispatch.message, "ijk some_password lmnsome_nameopq some_city")
+        self.assertEqual(
+            dispatch.title, "abc some_name cde some_city fgh some_password"
+        )
+        self.assertEqual(
+            dispatch.message, "ijk some_password lmnsome_nameopq some_city"
+        )

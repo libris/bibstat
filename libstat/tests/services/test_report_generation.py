@@ -2,7 +2,12 @@ from libstat.tests import MongoTestCase
 from libstat.models import CachedReport
 from libstat.report_templates import ReportTemplate, Group, Row
 
-from libstat.services.report_generation import generate_report, pre_cache_observations, get_report, is_variable_to_be_included
+from libstat.services.report_generation import (
+    generate_report,
+    pre_cache_observations,
+    get_report,
+    is_variable_to_be_included,
+)
 from libstat.services import report_generation
 from libstat.report_templates import report_template_base
 
@@ -10,35 +15,49 @@ import unittest
 
 
 class TestReportGeneration(MongoTestCase):
-
     @unittest.skip("Skipped as data in test itself is not correct")
     def test_creates_correct_report(self):
-        template = ReportTemplate(groups=[
-            Group(title="some_title1",
-                  rows=[Row(description="some_description1",
-                            variable_key="key1")]),
-            Group(title="some_title2",
-                  extra="some_extra_description",
-                  show_chart=False,
-                  rows=[Row(description="some_description2",
+        template = ReportTemplate(
+            groups=[
+                Group(
+                    title="some_title1",
+                    rows=[Row(description="some_description1", variable_key="key1")],
+                ),
+                Group(
+                    title="some_title2",
+                    extra="some_extra_description",
+                    show_chart=False,
+                    rows=[
+                        Row(
+                            description="some_description2",
                             variable_key="key2",
                             computation=(lambda a, b: (a / b)),
-                            variable_keys=["key1", "key2"]),
-                        Row(description="only_a_label",
-                            label_only=True),
-                        Row(description="some_description3",
+                            variable_keys=["key1", "key2"],
+                        ),
+                        Row(description="only_a_label", label_only=True),
+                        Row(
+                            description="some_description3",
                             computation=(lambda a, b: (a / b) / 15),
-                            variable_keys=["key1", "key2"]),
-                        Row(description="some_description4",
-                            variable_key="does_not_exist1"),
-                        Row(description="some_description5",
+                            variable_keys=["key1", "key2"],
+                        ),
+                        Row(
+                            description="some_description4",
+                            variable_key="does_not_exist1",
+                        ),
+                        Row(
+                            description="some_description5",
                             variable_key="key4",
-                            is_sum=True),
-                        Row(description="some_description6",
+                            is_sum=True,
+                        ),
+                        Row(
+                            description="some_description6",
                             computation=(lambda a, b: (a / b)),
-                            variable_keys=["does_not_exist2", "does_not_exist3"]),
-                  ])
-        ])
+                            variable_keys=["does_not_exist2", "does_not_exist3"],
+                        ),
+                    ],
+                ),
+            ]
+        )
         variable1 = self._dummy_variable(key="key1", target_groups=["folkbib"])
         variable2 = self._dummy_variable(key="key2", target_groups=["folkbib"])
         variable4 = self._dummy_variable(key="key4", target_groups=["folkbib"])
@@ -48,19 +67,10 @@ class TestReportGeneration(MongoTestCase):
                 2013: 5.0,
                 2014: 7.0,
                 "total": 31.0,
-                "incomplete_data": []
+                "incomplete_data": [],
             },
-            "key2": {
-                2013: 11.0,
-                2014: 13.0,
-                "total": 47.0,
-                "incomplete_data": [2012]
-            },
-            "key4": {
-                2014: 3.0,
-                2012: 17.0,
-                "incomplete_data": [2013]
-            }
+            "key2": {2013: 11.0, 2014: 13.0, "total": 47.0, "incomplete_data": [2012]},
+            "key4": {2014: 3.0, 2012: 17.0, "incomplete_data": [2013]},
         }
 
         report = generate_report(template, 2014, observations, ["folkbib"])
@@ -79,7 +89,7 @@ class TestReportGeneration(MongoTestCase):
                         "diff": ((7.0 / 5.0) - 1) * 100,
                         "nation_diff": (7.0 / 31.0) * 1000,
                     }
-                ]
+                ],
             },
             {
                 "title": "some_title2",
@@ -95,12 +105,12 @@ class TestReportGeneration(MongoTestCase):
                         "diff": ((13.0 / 11.0) - 1) * 100,
                         "nation_diff": (13.0 / 47.0) * 1000,
                         "extra": (7.0 / 13.0) * 100,
-                        "incomplete_data": ["2012"]
+                        "incomplete_data": ["2012"],
                     },
                     {
                         "label": "only_a_label",
                         "label_only": True,
-                        "show_in_chart": False
+                        "show_in_chart": False,
                     },
                     {
                         "label": "some_description3",
@@ -109,7 +119,7 @@ class TestReportGeneration(MongoTestCase):
                         "diff": (((7.0 / 13.0) / 15) / ((5.0 / 11.0) / 15) - 1) * 100,
                         "incomplete_data": ["2012"],
                         "is_key_figure": True,
-                        "show_in_chart": False
+                        "show_in_chart": False,
                     },
                     {
                         "label": "some_description4",
@@ -121,15 +131,15 @@ class TestReportGeneration(MongoTestCase):
                         "2012": 17.0,
                         "2014": 3.0,
                         "is_sum": True,
-                        "incomplete_data": ["2013"]
+                        "incomplete_data": ["2013"],
                     },
                     {
                         "label": "some_description6",
                         "is_key_figure": True,
-                        "show_in_chart": False
-                    }
-                ]
-            }
+                        "show_in_chart": False,
+                    },
+                ],
+            },
         ]
 
         self.assertEqual(report, expected_report)
@@ -148,56 +158,63 @@ class TestReportGeneration(MongoTestCase):
             library=library1,
             observations=[
                 self._dummy_observation(variable=variable1, value=1),
-                self._dummy_observation(variable=variable2, value=2)
-            ])
+                self._dummy_observation(variable=variable2, value=2),
+            ],
+        )
 
         survey2 = self._dummy_survey(
             sample_year=2016,
             library=library2,
             observations=[
                 self._dummy_observation(variable=variable1, value=3),
-                self._dummy_observation(variable=variable3, value=5)
-            ])
+                self._dummy_observation(variable=variable3, value=5),
+            ],
+        )
 
         survey3 = self._dummy_survey(
             sample_year=2016,
             library=library3,
             observations=[
                 self._dummy_observation(variable=variable2, value=13),
-                self._dummy_observation(variable=variable3, value=17)
-            ])
+                self._dummy_observation(variable=variable3, value=17),
+            ],
+        )
 
         survey4 = self._dummy_survey(
             sample_year=2015,
             library=library1,
             observations=[
                 self._dummy_observation(variable=variable1, value=7),
-                self._dummy_observation(variable=variable2, value=11)
-            ])
+                self._dummy_observation(variable=variable2, value=11),
+            ],
+        )
 
         survey5 = self._dummy_survey(
             sample_year=2015,
             library=library2,
             observations=[
                 self._dummy_observation(variable=variable1, value=8),
-                self._dummy_observation(variable=variable2, value=9)
-            ])
+                self._dummy_observation(variable=variable2, value=9),
+            ],
+        )
 
         survey6 = self._dummy_survey(
             sample_year=2014,
             library=library1,
             observations=[
                 self._dummy_observation(variable=variable1, value=19),
-                self._dummy_observation(variable=variable2, value=23)
-            ])
+                self._dummy_observation(variable=variable2, value=23),
+            ],
+        )
 
         survey7 = self._dummy_survey(
             sample_year=2014,
             library=library2,
             observations=[
                 self._dummy_observation(variable=variable1, value=21),
-                self._dummy_observation(variable=variable2, value=22)
-            ])
+                self._dummy_observation(variable=variable2, value=22),
+            ],
+        )
 
         survey1.publish()
         survey2.publish()
@@ -207,12 +224,17 @@ class TestReportGeneration(MongoTestCase):
         survey6.publish()
         survey7.publish()
 
-        template = ReportTemplate(groups=[
-            Group(rows=[Row(variable_key="key1")]),
-            Group(rows=[Row(variable_key="key2"),
+        template = ReportTemplate(
+            groups=[
+                Group(rows=[Row(variable_key="key1")]),
+                Group(
+                    rows=[
+                        Row(variable_key="key2"),
                         Row(variable_keys=["key3", "key2"]),
-            ])
-        ])
+                    ]
+                ),
+            ]
+        )
 
         observations = pre_cache_observations(template, [survey1, survey2], 2016)
         expected_observations = {
@@ -221,31 +243,35 @@ class TestReportGeneration(MongoTestCase):
                 2015: (7.0 + 8.0),
                 2016: (1.0 + 3.0),
                 "total": (1.0 + 3.0),
-                "incomplete_data": []
+                "incomplete_data": [],
             },
             "key2": {
                 2014: (23.0 + 22.0),
                 2015: (11.0 + 9.0),
                 2016: 2.0,
                 "total": (2.0 + 13.0),
-                "incomplete_data": [2016]
+                "incomplete_data": [2016],
             },
             "key3": {
                 2014: None,
                 2015: None,
                 2016: 5.0,
                 "total": (5.0 + 17.0),
-                "incomplete_data": [2016, 2015, 2014]
-            }
+                "incomplete_data": [2016, 2015, 2014],
+            },
         }
 
         self.assertEqual(observations, expected_observations)
 
     @unittest.skip("Skipped due to strange bson conversion error")
     def test_is_variable_to_be_included(self):
-        variable1 = self._dummy_variable(key="key4", target_groups=["folkbib", "natbib"])
+        variable1 = self._dummy_variable(
+            key="key4", target_groups=["folkbib", "natbib"]
+        )
         variable2 = self._dummy_variable(key="key5", target_groups=["natbib"])
-        variable3 = self._dummy_variable(key="key6", target_groups=["skolbib", "folkbib"])
+        variable3 = self._dummy_variable(
+            key="key6", target_groups=["skolbib", "folkbib"]
+        )
 
         self.assertTrue(is_variable_to_be_included(variable1, ["folkbib"]))
         self.assertFalse(is_variable_to_be_included(variable2, ["folkbib"]))
@@ -253,16 +279,21 @@ class TestReportGeneration(MongoTestCase):
 
 
 class TestReportTemplate(MongoTestCase):
-    def test_returns_all_variable_keys_present_in_report_template_without_duplicates(self):
-        template = ReportTemplate(groups=[
-            Group(rows=[
-                Row(variable_key="key1")]),
-            Group(rows=[
-                Row(variable_key="key2"),
-                Row(variable_keys=["key3", "key2"]),
-                Row(variable_key="key4", variable_keys=["key3", "key5"]),
-            ])
-        ])
+    def test_returns_all_variable_keys_present_in_report_template_without_duplicates(
+        self,
+    ):
+        template = ReportTemplate(
+            groups=[
+                Group(rows=[Row(variable_key="key1")]),
+                Group(
+                    rows=[
+                        Row(variable_key="key2"),
+                        Row(variable_keys=["key3", "key2"]),
+                        Row(variable_key="key4", variable_keys=["key3", "key5"]),
+                    ]
+                ),
+            ]
+        )
 
         variable_keys = template.all_variable_keys
 
@@ -273,7 +304,9 @@ class TestReportTemplate(MongoTestCase):
         self.assertTrue("key4" in variable_keys)
         self.assertTrue("key5" in variable_keys)
 
-    def test_fetches_description_from_variable_if_variable_exists_and_no_description_is_given(self):
+    def test_fetches_description_from_variable_if_variable_exists_and_no_description_is_given(
+        self,
+    ):
         variable = self._dummy_variable(question_part="some_description")
         row = Row(variable_key=variable.key)
 
@@ -284,7 +317,9 @@ class TestReportTemplate(MongoTestCase):
 
         self.assertEqual(row.description, None)
 
-    def test_does_not_fetch_description_from_variable_if_variable_exists_and_description_is_given(self):
+    def test_does_not_fetch_description_from_variable_if_variable_exists_and_description_is_given(
+        self,
+    ):
         variable = self._dummy_variable(question_part="dont use this")
         row = Row(variable_key=variable.key, description="some_description")
 
@@ -375,13 +410,19 @@ class TestReportCaching(MongoTestCase):
         self.assertEqual(CachedReport.objects.all()[0].report["id"], report["id"])
 
     def test_removes_all_reports_after_a_survey_has_been_published(self):
-        survey1 = self._dummy_survey(sample_year=2014, publish=True, observations=[self._dummy_observation()])
-        survey2 = self._dummy_survey(sample_year=2014, publish=True, observations=[self._dummy_observation()])
+        survey1 = self._dummy_survey(
+            sample_year=2014, publish=True, observations=[self._dummy_observation()]
+        )
+        survey2 = self._dummy_survey(
+            sample_year=2014, publish=True, observations=[self._dummy_observation()]
+        )
 
         get_report([survey1], 2014)
         get_report([survey2], 2014)
 
-        survey3 = self._dummy_survey(sample_year=2014, publish=True, observations=[self._dummy_observation()])
+        survey3 = self._dummy_survey(
+            sample_year=2014, publish=True, observations=[self._dummy_observation()]
+        )
 
         report = get_report([survey3], 2014)
 
@@ -389,8 +430,12 @@ class TestReportCaching(MongoTestCase):
         self.assertEqual(CachedReport.objects.all()[0].report["id"], report["id"])
 
     def test_removes_all_reports_after_a_survey_has_been_republished(self):
-        survey1 = self._dummy_survey(sample_year=2014, publish=True, observations=[self._dummy_observation()])
-        survey2 = self._dummy_survey(sample_year=2014, publish=True, observations=[self._dummy_observation()])
+        survey1 = self._dummy_survey(
+            sample_year=2014, publish=True, observations=[self._dummy_observation()]
+        )
+        survey2 = self._dummy_survey(
+            sample_year=2014, publish=True, observations=[self._dummy_observation()]
+        )
 
         get_report([survey1], 2014)
         get_report([survey2], 2014)
@@ -405,8 +450,12 @@ class TestReportCaching(MongoTestCase):
 
     def test_removes_all_reports_after_a_variable_has_been_updated(self):
         variable = self._dummy_variable()
-        survey1 = self._dummy_survey(sample_year=2014, publish=True, observations=[self._dummy_observation()])
-        survey2 = self._dummy_survey(sample_year=2014, publish=True, observations=[self._dummy_observation()])
+        survey1 = self._dummy_survey(
+            sample_year=2014, publish=True, observations=[self._dummy_observation()]
+        )
+        survey2 = self._dummy_survey(
+            sample_year=2014, publish=True, observations=[self._dummy_observation()]
+        )
 
         get_report([survey1], 2014)
         get_report([survey2], 2014)
@@ -419,10 +468,18 @@ class TestReportCaching(MongoTestCase):
         self.assertEqual(CachedReport.objects.all()[0].report["id"], report["id"])
 
     def test_removes_older_reports_when_limit_reached(self):
-        survey1 = self._dummy_survey(sample_year=2014, publish=True, observations=[self._dummy_observation()])
-        survey2 = self._dummy_survey(sample_year=2014, publish=True, observations=[self._dummy_observation()])
-        survey3 = self._dummy_survey(sample_year=2014, publish=True, observations=[self._dummy_observation()])
-        survey4 = self._dummy_survey(sample_year=2014, publish=True, observations=[self._dummy_observation()])
+        survey1 = self._dummy_survey(
+            sample_year=2014, publish=True, observations=[self._dummy_observation()]
+        )
+        survey2 = self._dummy_survey(
+            sample_year=2014, publish=True, observations=[self._dummy_observation()]
+        )
+        survey3 = self._dummy_survey(
+            sample_year=2014, publish=True, observations=[self._dummy_observation()]
+        )
+        survey4 = self._dummy_survey(
+            sample_year=2014, publish=True, observations=[self._dummy_observation()]
+        )
 
         report_generation.REPORT_CACHE_LIMIT = 3
 

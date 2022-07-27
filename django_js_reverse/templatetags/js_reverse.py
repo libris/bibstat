@@ -12,7 +12,7 @@ except ImportError:
 register = template.Library()
 
 
-urlconf = template.Variable('request.urlconf')
+urlconf = template.Variable("request.urlconf")
 
 
 def _get_urlconf(context):

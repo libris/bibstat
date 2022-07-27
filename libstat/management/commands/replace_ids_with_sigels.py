@@ -12,13 +12,15 @@ class Command(BaseCommand):
     help_text = "Usage: python manage.py replace_ids_with_sigels --year=<YYYY>\n\n"
 
     def add_arguments(self, parser):
-        parser.add_argument("--year", dest="year", type=int, help="Sample year, format YYYY")
+        parser.add_argument(
+            "--year", dest="year", type=int, help="Sample year, format YYYY"
+        )
 
     def handle(self, *args, **options):
         year = options.get("year")
 
         def _valid_year(year):
-            return re.compile(r'^\d{4}$').match(year)
+            return re.compile(r"^\d{4}$").match(year)
 
         if not year:
             logger.info(self.help_text)
@@ -29,11 +31,15 @@ class Command(BaseCommand):
 
         logger.info("Changing sigels for surveys... year %s" % year)
 
-        sigel_mapping = _load_sigel_mapping_from_workbook(sheet=year, column_old_value=6, column_new_value=7)
+        sigel_mapping = _load_sigel_mapping_from_workbook(
+            sheet=year, column_old_value=6, column_new_value=7
+        )
 
         for code in list(sigel_mapping.keys()):
             sigel = sigel_mapping[code]
             logger.debug("Updating %s to %s" % (code, sigel))
-            survey = Survey.objects.filter(library__sigel=code, sample_year=year).first()
+            survey = Survey.objects.filter(
+                library__sigel=code, sample_year=year
+            ).first()
             if survey:
                 _update_sigel(survey, sigel)

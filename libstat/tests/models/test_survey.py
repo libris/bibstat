@@ -36,7 +36,9 @@ class TestSurveyModel(MongoTestCase):
 
     def test_should_export_public_non_null_observations_to_openData(self):
         variable = self._dummy_variable(key="key1", is_public=True)
-        observation = self._dummy_observation(variable=variable, value="val1", _is_public=variable.is_public)
+        observation = self._dummy_observation(
+            variable=variable, value="val1", _is_public=variable.is_public
+        )
         library = self._dummy_library(name="lib1_name", sigel="lib1_sigel")
         survey = self._dummy_survey(library=library, observations=[observation])
 
@@ -54,8 +56,12 @@ class TestSurveyModel(MongoTestCase):
 
     def test_should_overwrite_value_and_date_modified_for_existing_openData(self):
         variable = self._dummy_variable(key="key1", is_public=True)
-        observation = self._dummy_observation(variable=variable, value="old_value", _is_public=variable.is_public)
-        library = self._dummy_library(name="lib1_name", sigel="lib1_sigel", library_type="folkbib")
+        observation = self._dummy_observation(
+            variable=variable, value="old_value", _is_public=variable.is_public
+        )
+        library = self._dummy_library(
+            name="lib1_name", sigel="lib1_sigel", library_type="folkbib"
+        )
         survey = self._dummy_survey(library=library, observations=[observation])
 
         survey.publish()
@@ -79,14 +85,18 @@ class TestSurveyModel(MongoTestCase):
         self.assertNotEqual(open_data.date_created, open_data.date_modified)
 
     def test_should_get_observation_by_variable_key(self):
-        observation1 = self._dummy_observation(variable=self._dummy_variable(key="key1"))
-        observation2 = self._dummy_observation(variable=self._dummy_variable(key="key2"))
-        observation3 = self._dummy_observation(variable=self._dummy_variable(key="key3"))
-        survey = self._dummy_survey(observations=[
-            observation1,
-            observation2,
-            observation3
-        ])
+        observation1 = self._dummy_observation(
+            variable=self._dummy_variable(key="key1")
+        )
+        observation2 = self._dummy_observation(
+            variable=self._dummy_variable(key="key2")
+        )
+        observation3 = self._dummy_observation(
+            variable=self._dummy_variable(key="key3")
+        )
+        survey = self._dummy_survey(
+            observations=[observation1, observation2, observation3]
+        )
         self.assertEqual(survey.get_observation("key2"), observation2)
 
     def test_returns_none_if_variable_does_not_exist(self):
@@ -94,34 +104,44 @@ class TestSurveyModel(MongoTestCase):
 
         self.assertEqual(survey.get_observation(key="does_not_exist"), None)
 
-
     def test_should_get_observation_for_replaced_variable_if_wanted(self):
         variable1 = self._dummy_variable(key="key1")
         variable2 = self._dummy_variable(key="key2", replaces=[variable1])
         variable3 = self._dummy_variable(key="key3", replaces=[variable2])
-        survey = self._dummy_survey(observations=[
-            self._dummy_observation(variable=variable1, value="some_value")
-        ])
+        survey = self._dummy_survey(
+            observations=[
+                self._dummy_observation(variable=variable1, value="some_value")
+            ]
+        )
 
-        self.assertEqual(survey.get_observation("key3", backtrack_replaced_variables=True).value, "some_value")
+        self.assertEqual(
+            survey.get_observation("key3", backtrack_replaced_variables=True).value,
+            "some_value",
+        )
 
     def test_should_not_get_observation_for_replaced_variable_if_not_wanted(self):
         variable1 = self._dummy_variable(key="key1")
         variable2 = self._dummy_variable(key="key2", replaces=[variable1])
         variable3 = self._dummy_variable(key="key3", replaces=[variable2])
-        survey = self._dummy_survey(observations=[
-            self._dummy_observation(variable=variable1, value="some_value")
-        ])
+        survey = self._dummy_survey(
+            observations=[
+                self._dummy_observation(variable=variable1, value="some_value")
+            ]
+        )
 
         self.assertEqual(survey.get_observation("key3"), None)
 
-    def test_should_not_get_observation_for_replaced_variable_if_replaced_by_multiple_variables(self):
+    def test_should_not_get_observation_for_replaced_variable_if_replaced_by_multiple_variables(
+        self,
+    ):
         variable1 = self._dummy_variable(key="key1")
         variable2 = self._dummy_variable(key="key2")
         variable3 = self._dummy_variable(key="key3", replaces=[variable1, variable2])
-        survey = self._dummy_survey(observations=[
-            self._dummy_observation(variable=variable1, value="some_value")
-        ])
+        survey = self._dummy_survey(
+            observations=[
+                self._dummy_observation(variable=variable1, value="some_value")
+            ]
+        )
 
         self.assertEqual(survey.get_observation("key3"), None)
 
@@ -129,15 +149,22 @@ class TestSurveyModel(MongoTestCase):
         variable1 = self._dummy_variable(key="key1")
         variable2 = self._dummy_variable(key="key2", replaces=[variable1])
         variable3 = self._dummy_variable(key="key3", replaces=[variable2])
-        survey = self._dummy_survey(observations=[
-            self._dummy_observation(variable=variable1, value="some_value1"),
-            self._dummy_observation(variable=variable2, value="some_value2")
-        ])
+        survey = self._dummy_survey(
+            observations=[
+                self._dummy_observation(variable=variable1, value="some_value1"),
+                self._dummy_observation(variable=variable2, value="some_value2"),
+            ]
+        )
 
-        self.assertEqual(survey.get_observation("key3", backtrack_replaced_variables=True).value, "some_value2")
+        self.assertEqual(
+            survey.get_observation("key3", backtrack_replaced_variables=True).value,
+            "some_value2",
+        )
 
     def test_should_store_version_when_updating_existing_object(self):
-        library = self._dummy_library(name="lib1_old_name", city="lib1_old_city", sigel="lib1_sigel")
+        library = self._dummy_library(
+            name="lib1_old_name", city="lib1_old_city", sigel="lib1_sigel"
+        )
         survey = self._dummy_survey(status="initiated", library=library)
 
         survey.library.name = "lib1_new_name"
@@ -200,11 +227,12 @@ class TestSurveyModel(MongoTestCase):
         self.assertEqual(survey_versions[3].library.name, "name3")
         self.assertEqual(survey_versions[4].library.name, "name2")
 
-
     def test_should_store_version_when_updating_observations_for_existing_objects(self):
-        survey = self._dummy_survey(observations=[
-            self._dummy_observation(variable=self._dummy_variable(key="key1"))
-        ])
+        survey = self._dummy_survey(
+            observations=[
+                self._dummy_observation(variable=self._dummy_variable(key="key1"))
+            ]
+        )
         self.assertEqual(len(SurveyVersion.objects.all()), 0)
 
         survey.get_observation("key1").value = "new_value"
@@ -235,12 +263,16 @@ class TestSurveyModel(MongoTestCase):
 
     def test_should_not_store_version_when_updating_notes_in_existing_object(self):
         survey = self._dummy_survey()
-        self.assertEqual(len(SurveyVersion.objects.filter(survey_response_id=survey.id)), 0)
+        self.assertEqual(
+            len(SurveyVersion.objects.filter(survey_response_id=survey.id)), 0
+        )
 
         survey.notes = "new_notes"
         survey.save()
 
-        self.assertEqual(len(SurveyVersion.objects.filter(survey_response_id=survey.id)), 0)
+        self.assertEqual(
+            len(SurveyVersion.objects.filter(survey_response_id=survey.id)), 0
+        )
 
     def test_should_flag_as_not_published_when_updating_existing_object(self):
         survey = self._dummy_survey()
@@ -249,7 +281,9 @@ class TestSurveyModel(MongoTestCase):
 
         self.assertFalse(survey.is_published)
 
-    def test_should_not_flag_as_not_published_when_updating_notes_in_existing_object(self):
+    def test_should_not_flag_as_not_published_when_updating_notes_in_existing_object(
+        self,
+    ):
         survey = self._dummy_survey()
         survey.publish()
         self.assertTrue(survey.is_published)
@@ -329,17 +363,20 @@ class TestSurveyPublish(MongoTestCase):
         self.assertTrue(survey.is_published)
 
     def test_creates_open_data_when_publishing(self):
-        survey = self._dummy_survey(observations=[
-            self._dummy_observation(),
-            self._dummy_observation()])
+        survey = self._dummy_survey(
+            observations=[self._dummy_observation(), self._dummy_observation()]
+        )
         self.assertEqual(len(OpenData.objects.all()), 0)
 
         survey.publish()
         self.assertEqual(len(OpenData.objects.all()), 2)
 
-    def test_does_not_create_new_open_data_for_existing_open_data_when_republishing(self):
-        survey = self._dummy_survey(observations=[
-            self._dummy_observation(value="old_value")])
+    def test_does_not_create_new_open_data_for_existing_open_data_when_republishing(
+        self,
+    ):
+        survey = self._dummy_survey(
+            observations=[self._dummy_observation(value="old_value")]
+        )
         survey.publish()
 
         self.assertEqual(len(OpenData.objects.all()), 1)
@@ -350,8 +387,9 @@ class TestSurveyPublish(MongoTestCase):
         self.assertEqual(len(OpenData.objects.all()), 1)
 
     def test_modifies_existing_open_data_that_has_changed_when_republishing(self):
-        survey = self._dummy_survey(observations=[
-            self._dummy_observation(value="old_value")])
+        survey = self._dummy_survey(
+            observations=[self._dummy_observation(value="old_value")]
+        )
         survey.publish()
 
         self.assertEqual(OpenData.objects.all()[0].value, "old_value")
@@ -362,8 +400,9 @@ class TestSurveyPublish(MongoTestCase):
         self.assertEqual(OpenData.objects.all()[0].value, "new_value")
 
     def test_deletes_existing_open_data_if_observation_value_has_been_emptied(self):
-        survey = self._dummy_survey(observations=[
-            self._dummy_observation(value="some_value")])
+        survey = self._dummy_survey(
+            observations=[self._dummy_observation(value="some_value")]
+        )
         survey.publish()
 
         self.assertEqual(OpenData.objects.all()[0].value, "some_value")
@@ -375,49 +414,76 @@ class TestSurveyPublish(MongoTestCase):
 
         self.assertEqual(OpenData.objects.filter(pk=open_data.pk).count(), 0)
 
-    def test_updates_date_modified_for_open_data_that_has_changed_when_republishing(self):
-        survey = self._dummy_survey(observations=[
-            self._dummy_observation(value="old_value")])
+    def test_updates_date_modified_for_open_data_that_has_changed_when_republishing(
+        self,
+    ):
+        survey = self._dummy_survey(
+            observations=[self._dummy_observation(value="old_value")]
+        )
         survey.publish()
 
-        self.assertEqual(OpenData.objects.all()[0].date_modified, OpenData.objects.all()[0].date_created)
+        self.assertEqual(
+            OpenData.objects.all()[0].date_modified,
+            OpenData.objects.all()[0].date_created,
+        )
 
         survey.observations[0].value = "new_value"
         survey.publish()
 
-        self.assertTrue(OpenData.objects.all()[0].date_modified > OpenData.objects.all()[0].date_created)
+        self.assertTrue(
+            OpenData.objects.all()[0].date_modified
+            > OpenData.objects.all()[0].date_created
+        )
 
-    def test_does_not_update_date_modified_for_open_data_that_has_not_changed_when_republishing(self):
+    def test_does_not_update_date_modified_for_open_data_that_has_not_changed_when_republishing(
+        self,
+    ):
         variable1 = self._dummy_variable(key="key1")
         variable2 = self._dummy_variable(key="key2")
-        survey = self._dummy_survey(observations=[
-            self._dummy_observation(variable1, value="old_value1"),
-            self._dummy_observation(variable2, value="old_value2")])
+        survey = self._dummy_survey(
+            observations=[
+                self._dummy_observation(variable1, value="old_value1"),
+                self._dummy_observation(variable2, value="old_value2"),
+            ]
+        )
         survey.publish()
 
-        self.assertEqual(OpenData.objects.filter(variable=variable2)[0].date_modified,
-                          OpenData.objects.filter(variable=variable2)[0].date_created)
+        self.assertEqual(
+            OpenData.objects.filter(variable=variable2)[0].date_modified,
+            OpenData.objects.filter(variable=variable2)[0].date_created,
+        )
 
         survey.get_observation("key1").value = "new_value1"
         survey.publish()
 
-        self.assertEqual(OpenData.objects.filter(variable=variable2)[0].date_modified,
-                          OpenData.objects.filter(variable=variable2)[0].date_created)
+        self.assertEqual(
+            OpenData.objects.filter(variable=variable2)[0].date_modified,
+            OpenData.objects.filter(variable=variable2)[0].date_created,
+        )
 
-    def test_does_not_modify_existing_open_data_that_has_not_changed_when_republishing(self):
+    def test_does_not_modify_existing_open_data_that_has_not_changed_when_republishing(
+        self,
+    ):
         variable1 = self._dummy_variable(key="key1")
         variable2 = self._dummy_variable(key="key2")
-        survey = self._dummy_survey(observations=[
-            self._dummy_observation(variable1, value="old_value1"),
-            self._dummy_observation(variable2, value="old_value2")])
+        survey = self._dummy_survey(
+            observations=[
+                self._dummy_observation(variable1, value="old_value1"),
+                self._dummy_observation(variable2, value="old_value2"),
+            ]
+        )
         survey.publish()
 
-        self.assertEqual(OpenData.objects.filter(variable=variable2)[0].value, "old_value2")
+        self.assertEqual(
+            OpenData.objects.filter(variable=variable2)[0].value, "old_value2"
+        )
 
         survey.get_observation("key1").value = "new_value1"
         survey.publish()
 
-        self.assertEqual(OpenData.objects.filter(variable=variable2)[0].value, "old_value2")
+        self.assertEqual(
+            OpenData.objects.filter(variable=variable2)[0].value, "old_value2"
+        )
 
     def test_sets_existing_open_data_as_inactive_when_revoking_publication(self):
         survey = self._dummy_survey(observations=[self._dummy_observation()])
@@ -429,7 +495,9 @@ class TestSurveyPublish(MongoTestCase):
 
         self.assertFalse(OpenData.objects.all()[0].is_active)
 
-    def test_sets_existing_open_data_as_active_when_publishing_after_revoking_publication(self):
+    def test_sets_existing_open_data_as_active_when_publishing_after_revoking_publication(
+        self,
+    ):
         survey = self._dummy_survey(observations=[self._dummy_observation()])
         survey.publish()
 
@@ -467,18 +535,24 @@ class TestSurveyPublish(MongoTestCase):
 
         self.assertFalse(survey.is_published)
 
-    def test_does_not_create_open_data_when_publishing_survey_if_it_has_no_selected_libraries(self):
-        survey = self._dummy_survey(selected_libraries=[],
-                                    observations=[
-                                        self._dummy_observation(),
-                                        self._dummy_observation(),
-                                    ])
+    def test_does_not_create_open_data_when_publishing_survey_if_it_has_no_selected_libraries(
+        self,
+    ):
+        survey = self._dummy_survey(
+            selected_libraries=[],
+            observations=[
+                self._dummy_observation(),
+                self._dummy_observation(),
+            ],
+        )
 
         survey.publish()
 
         self.assertEqual(OpenData.objects.count(), 0)
 
-    def test_can_not_publish_survey_if_another_survey_reports_for_the_same_library(self):
+    def test_can_not_publish_survey_if_another_survey_reports_for_the_same_library(
+        self,
+    ):
         self._dummy_library(sigel="lib1")
         self._dummy_library(sigel="lib2")
         self._dummy_library(sigel="lib3")
@@ -521,7 +595,9 @@ class TestSelectableLibraries(MongoTestCase):
 
         self.assertCountEqual(survey.selectable_libraries(), [])
 
-    def test_should_include_second_library_with_same_municipality_code_and_same_principal_library_type(self):
+    def test_should_include_second_library_with_same_municipality_code_and_same_principal_library_type(
+        self,
+    ):
         library = self._dummy_library(municipality_code="1", library_type="folkbib")
         second = self._dummy_library(municipality_code="1", library_type="muskom")
         survey = self._dummy_survey(library=library)
@@ -531,7 +607,9 @@ class TestSelectableLibraries(MongoTestCase):
         self.assertEqual(len(selectables), 1)
         self.assertEqual(selectables[0], second)
 
-    def test_should_exclude_second_library_with_same_municipality_code_and_different_principal_library_type(self):
+    def test_should_exclude_second_library_with_same_municipality_code_and_different_principal_library_type(
+        self,
+    ):
         library = self._dummy_library(municipality_code="1", library_type="folkbib")
         second = self._dummy_library(municipality_code="1", library_type="sjukbib")
         survey = self._dummy_survey(library=library)
@@ -540,7 +618,9 @@ class TestSelectableLibraries(MongoTestCase):
 
         self.assertEqual(len(selectables), 0)
 
-    def test_should_include_second_library_with_same_municipality_code_when_library_type_is_unknown(self):
+    def test_should_include_second_library_with_same_municipality_code_when_library_type_is_unknown(
+        self,
+    ):
         library = self._dummy_library(municipality_code="1", library_type=None)
         second = self._dummy_library(municipality_code="1", library_type="muskom")
         survey = self._dummy_survey(library=library)
@@ -550,7 +630,9 @@ class TestSelectableLibraries(MongoTestCase):
         self.assertEqual(len(selectables), 1)
         self.assertEqual(selectables[0], second)
 
-    def test_should_include_second_library_with_same_municipality_code_when_principal_is_unknown_for_library_type(self):
+    def test_should_include_second_library_with_same_municipality_code_when_principal_is_unknown_for_library_type(
+        self,
+    ):
         library = self._dummy_library(municipality_code="1", library_type="musbib")
         self.assertFalse(library.library_type in PRINCIPALS)
 
@@ -575,7 +657,9 @@ class TestSelectedSigels(MongoTestCase):
         second_library = self._dummy_library(sigel="2")
 
         survey = self._dummy_survey(library=library, sample_year=2014)
-        self._dummy_survey(library=second_library, sample_year=2014, selected_libraries=["2"])
+        self._dummy_survey(
+            library=second_library, sample_year=2014, selected_libraries=["2"]
+        )
 
         self.assertSetEqual(survey.selected_sigels_in_other_surveys(2014), {"2"})
 
@@ -584,7 +668,9 @@ class TestSelectedSigels(MongoTestCase):
         second_library = self._dummy_library(sigel="2")
 
         survey = self._dummy_survey(library=library, sample_year=2014)
-        self._dummy_survey(library=second_library, sample_year=2014, selected_libraries=["1", "2"])
+        self._dummy_survey(
+            library=second_library, sample_year=2014, selected_libraries=["1", "2"]
+        )
 
         self.assertSetEqual(survey.selected_sigels_in_other_surveys(2014), {"1", "2"})
 
@@ -593,7 +679,9 @@ class TestSelectedSigels(MongoTestCase):
         second_library = self._dummy_library(sigel="2")
 
         survey = self._dummy_survey(library=library, sample_year=2014)
-        self._dummy_survey(library=second_library, sample_year=2015, selected_libraries=["1", "2"])
+        self._dummy_survey(
+            library=second_library, sample_year=2015, selected_libraries=["1", "2"]
+        )
 
         self.assertSetEqual(survey.selected_sigels_in_other_surveys(2014), set())
 
@@ -602,7 +690,9 @@ class TestSelectedSigels(MongoTestCase):
         second_library = self._dummy_library(sigel="2", municipality_code="m")
 
         survey = self._dummy_survey(library=library, sample_year=2014)
-        self._dummy_survey(library=second_library, sample_year=2014, selected_libraries=["2"])
+        self._dummy_survey(
+            library=second_library, sample_year=2014, selected_libraries=["2"]
+        )
 
         self.assertSetEqual(survey.selected_sigels_in_other_surveys(2014), set())
 
@@ -610,45 +700,65 @@ class TestSelectedSigels(MongoTestCase):
         library = self._dummy_library(sigel="1")
         second_library = self._dummy_library(sigel="2")
 
-        survey = self._dummy_survey(library=library, sample_year=2014, selected_libraries=["3"])
-        self._dummy_survey(library=second_library, sample_year=2014, selected_libraries=["2"])
+        survey = self._dummy_survey(
+            library=library, sample_year=2014, selected_libraries=["3"]
+        )
+        self._dummy_survey(
+            library=second_library, sample_year=2014, selected_libraries=["2"]
+        )
 
         self.assertSetEqual(survey.selected_sigels_in_other_surveys(2014), {"2"})
 
-    def test_should_include_second_surveys_selected_sigel_with_same_principal_library_type(self):
+    def test_should_include_second_surveys_selected_sigel_with_same_principal_library_type(
+        self,
+    ):
         library = self._dummy_library(sigel="1", library_type="folkbib")
         second_library = self._dummy_library(sigel="2", library_type="muskom")
 
         survey = self._dummy_survey(library=library, sample_year=2014)
-        self._dummy_survey(library=second_library, sample_year=2014, selected_libraries=["2"])
+        self._dummy_survey(
+            library=second_library, sample_year=2014, selected_libraries=["2"]
+        )
 
         self.assertSetEqual(survey.selected_sigels_in_other_surveys(2014), {"2"})
 
-    def test_should_exclude_second_surveys_selected_sigel_with_different_principal_library_type(self):
+    def test_should_exclude_second_surveys_selected_sigel_with_different_principal_library_type(
+        self,
+    ):
         library = self._dummy_library(sigel="1", library_type="folkbib")
         second_library = self._dummy_library(sigel="2", library_type="sjukbib")
 
         survey = self._dummy_survey(library=library, sample_year=2014)
-        self._dummy_survey(library=second_library, sample_year=2014, selected_libraries=["2"])
+        self._dummy_survey(
+            library=second_library, sample_year=2014, selected_libraries=["2"]
+        )
 
         self.assertSetEqual(survey.selected_sigels_in_other_surveys(2014), set())
 
-    def test_should_include_second_surveys_selected_sigel_when_library_type_is_unknown(self):
+    def test_should_include_second_surveys_selected_sigel_when_library_type_is_unknown(
+        self,
+    ):
         library = self._dummy_library(sigel="1", library_type=None)
         second_library = self._dummy_library(sigel="2", library_type="muskom")
 
         survey = self._dummy_survey(library=library, sample_year=2014)
-        self._dummy_survey(library=second_library, sample_year=2014, selected_libraries=["2"])
+        self._dummy_survey(
+            library=second_library, sample_year=2014, selected_libraries=["2"]
+        )
 
         self.assertSetEqual(survey.selected_sigels_in_other_surveys(2014), {"2"})
 
-    def test_should_include_second_surveys_selected_sigel_when_principal_is_unknown_for_library_type(self):
+    def test_should_include_second_surveys_selected_sigel_when_principal_is_unknown_for_library_type(
+        self,
+    ):
         library = self._dummy_library(sigel="1", library_type="musbib")
         self.assertFalse(library.library_type in PRINCIPALS)
         second_library = self._dummy_library(sigel="2", library_type="muskom")
 
         survey = self._dummy_survey(library=library, sample_year=2014)
-        self._dummy_survey(library=second_library, sample_year=2014, selected_libraries=["2"])
+        self._dummy_survey(
+            library=second_library, sample_year=2014, selected_libraries=["2"]
+        )
 
         self.assertSetEqual(survey.selected_sigels_in_other_surveys(2014), {"2"})
 
@@ -657,22 +767,25 @@ class TestSelectedSigels(MongoTestCase):
         library2 = self._dummy_library(sigel="lib2")
         library3 = self._dummy_library(sigel="lib3")
 
-        survey1 = self._dummy_survey(selected_libraries=[library1.sigel,
-                                                         library2.sigel,
-                                                         library3.sigel])
-        survey2 = self._dummy_survey(selected_libraries=[library1.sigel,
-                                                         library2.sigel,
-                                                         library3.sigel])
+        survey1 = self._dummy_survey(
+            selected_libraries=[library1.sigel, library2.sigel, library3.sigel]
+        )
+        survey2 = self._dummy_survey(
+            selected_libraries=[library1.sigel, library2.sigel, library3.sigel]
+        )
 
         self.assertTrue(survey1.reports_for_same_libraries(survey2))
 
-    def test_does_not_report_for_same_libraries_when_different_amount_of_selected_libraries(self):
+    def test_does_not_report_for_same_libraries_when_different_amount_of_selected_libraries(
+        self,
+    ):
         library1 = self._dummy_library(sigel="lib1")
         library2 = self._dummy_library(sigel="lib2")
 
         survey1 = self._dummy_survey(selected_libraries=[library1.sigel])
-        survey2 = self._dummy_survey(selected_libraries=[library1.sigel,
-                                                         library2.sigel])
+        survey2 = self._dummy_survey(
+            selected_libraries=[library1.sigel, library2.sigel]
+        )
 
         self.assertFalse(survey1.reports_for_same_libraries(survey2))
 
@@ -690,8 +803,12 @@ class TestHasConflicts(MongoTestCase):
         first_library = self._dummy_library(sigel="1")
         second_library = self._dummy_library(sigel="2")
 
-        survey = self._dummy_survey(library=first_library, sample_year=2014, selected_libraries=["1", "2"])
-        self._dummy_survey(library=second_library, sample_year=2014, selected_libraries=["2"])
+        survey = self._dummy_survey(
+            library=first_library, sample_year=2014, selected_libraries=["1", "2"]
+        )
+        self._dummy_survey(
+            library=second_library, sample_year=2014, selected_libraries=["2"]
+        )
 
         self.assertTrue(survey.has_conflicts())
 
@@ -699,8 +816,12 @@ class TestHasConflicts(MongoTestCase):
         first_library = self._dummy_library(sigel="1")
         second_library = self._dummy_library(sigel="2")
 
-        survey = self._dummy_survey(library=first_library, sample_year=2014, selected_libraries=["1", "2"])
-        self._dummy_survey(library=second_library, sample_year=2015, selected_libraries=["2"])
+        survey = self._dummy_survey(
+            library=first_library, sample_year=2014, selected_libraries=["1", "2"]
+        )
+        self._dummy_survey(
+            library=second_library, sample_year=2015, selected_libraries=["2"]
+        )
 
         self.assertFalse(survey.has_conflicts())
 
@@ -708,58 +829,88 @@ class TestHasConflicts(MongoTestCase):
         first_library = self._dummy_library(sigel="1")
         second_library = self._dummy_library(sigel="2")
 
-        survey = self._dummy_survey(library=first_library, sample_year=2014, selected_libraries=["1"])
-        self._dummy_survey(library=second_library, sample_year=2014, selected_libraries=["2"])
+        survey = self._dummy_survey(
+            library=first_library, sample_year=2014, selected_libraries=["1"]
+        )
+        self._dummy_survey(
+            library=second_library, sample_year=2014, selected_libraries=["2"]
+        )
 
         self.assertFalse(survey.has_conflicts())
 
-    def test_should_return_true_for_conflict_when_second_survey_reports_for_first_survey(self):
+    def test_should_return_true_for_conflict_when_second_survey_reports_for_first_survey(
+        self,
+    ):
         first_library = self._dummy_library(sigel="1")
         second_library = self._dummy_library(sigel="2")
 
-        survey = self._dummy_survey(library=first_library, sample_year=2014, selected_libraries=[])
-        self._dummy_survey(library=second_library, sample_year=2014, selected_libraries=["1", "2"])
+        survey = self._dummy_survey(
+            library=first_library, sample_year=2014, selected_libraries=[]
+        )
+        self._dummy_survey(
+            library=second_library, sample_year=2014, selected_libraries=["1", "2"]
+        )
 
         self.assertTrue(survey.has_conflicts())
 
     def test_should_return_true_for_conflict_when_second_survey_reports_for_first_survey_with_same_principal_library_type(
-            self):
+        self,
+    ):
         first_library = self._dummy_library(sigel="1", library_type="folkbib")
         second_library = self._dummy_library(sigel="2", library_type="muskom")
 
-        survey = self._dummy_survey(library=first_library, sample_year=2014, selected_libraries=[])
-        self._dummy_survey(library=second_library, sample_year=2014, selected_libraries=["1", "2"])
+        survey = self._dummy_survey(
+            library=first_library, sample_year=2014, selected_libraries=[]
+        )
+        self._dummy_survey(
+            library=second_library, sample_year=2014, selected_libraries=["1", "2"]
+        )
 
         self.assertTrue(survey.has_conflicts())
 
     def test_should_return_false_for_non_conflict_when_second_survey_reports_for_first_survey_with_different_principal_library_type(
-            self):
+        self,
+    ):
         first_library = self._dummy_library(sigel="1", library_type="folkbib")
         second_library = self._dummy_library(sigel="2", library_type="sjukbib")
 
-        survey = self._dummy_survey(library=first_library, sample_year=2014, selected_libraries=[])
-        self._dummy_survey(library=second_library, sample_year=2014, selected_libraries=["1", "2"])
+        survey = self._dummy_survey(
+            library=first_library, sample_year=2014, selected_libraries=[]
+        )
+        self._dummy_survey(
+            library=second_library, sample_year=2014, selected_libraries=["1", "2"]
+        )
 
         self.assertFalse(survey.has_conflicts())
 
     def test_should_return_true_for_conflict_when_second_survey_reports_for_first_survey_when_library_type_is_unknown(
-            self):
+        self,
+    ):
         first_library = self._dummy_library(sigel="1", library_type=None)
         second_library = self._dummy_library(sigel="2", library_type="muskom")
 
-        survey = self._dummy_survey(library=first_library, sample_year=2014, selected_libraries=[])
-        self._dummy_survey(library=second_library, sample_year=2014, selected_libraries=["1", "2"])
+        survey = self._dummy_survey(
+            library=first_library, sample_year=2014, selected_libraries=[]
+        )
+        self._dummy_survey(
+            library=second_library, sample_year=2014, selected_libraries=["1", "2"]
+        )
 
         self.assertTrue(survey.has_conflicts())
 
     def test_should_return_true_for_conflict_when_second_survey_reports_for_first_survey_when_principal_for_library_type_is_unknown(
-            self):
+        self,
+    ):
         first_library = self._dummy_library(sigel="1", library_type="musbib")
         self.assertFalse(first_library.library_type in PRINCIPALS)
         second_library = self._dummy_library(sigel="2", library_type="muskom")
 
-        survey = self._dummy_survey(library=first_library, sample_year=2014, selected_libraries=[])
-        self._dummy_survey(library=second_library, sample_year=2014, selected_libraries=["1", "2"])
+        survey = self._dummy_survey(
+            library=first_library, sample_year=2014, selected_libraries=[]
+        )
+        self._dummy_survey(
+            library=second_library, sample_year=2014, selected_libraries=["1", "2"]
+        )
 
         self.assertTrue(survey.has_conflicts())
 
@@ -769,8 +920,12 @@ class TestGetConflictingSurveys(MongoTestCase):
         first_library = self._dummy_library(sigel="1")
         second_library = self._dummy_library(sigel="3")
 
-        first_survey = self._dummy_survey(library=first_library, sample_year=2014, selected_libraries=["1", "2"])
-        second_survey = self._dummy_survey(library=second_library, sample_year=2014, selected_libraries=["2"])
+        first_survey = self._dummy_survey(
+            library=first_library, sample_year=2014, selected_libraries=["1", "2"]
+        )
+        second_survey = self._dummy_survey(
+            library=second_library, sample_year=2014, selected_libraries=["2"]
+        )
 
         self.assertListEqual(first_survey.get_conflicting_surveys(), [second_survey])
 
@@ -779,18 +934,30 @@ class TestGetConflictingSurveys(MongoTestCase):
         second_library = self._dummy_library(sigel="2")
         third_library = self._dummy_library(sigel="3")
 
-        first_survey = self._dummy_survey(library=first_library, sample_year=2014, selected_libraries=["1", "2"])
-        second_survey = self._dummy_survey(library=second_library, sample_year=2014, selected_libraries=["1"])
-        third_survey = self._dummy_survey(library=third_library, sample_year=2014, selected_libraries=["2"])
+        first_survey = self._dummy_survey(
+            library=first_library, sample_year=2014, selected_libraries=["1", "2"]
+        )
+        second_survey = self._dummy_survey(
+            library=second_library, sample_year=2014, selected_libraries=["1"]
+        )
+        third_survey = self._dummy_survey(
+            library=third_library, sample_year=2014, selected_libraries=["2"]
+        )
 
-        self.assertListEqual(first_survey.get_conflicting_surveys(), [second_survey, third_survey])
+        self.assertListEqual(
+            first_survey.get_conflicting_surveys(), [second_survey, third_survey]
+        )
 
     def test_should_return_empty_list_for_non_conflict_in_different_sample_years(self):
         first_library = self._dummy_library(sigel="1")
         second_library = self._dummy_library(sigel="3")
 
-        first_survey = self._dummy_survey(library=first_library, sample_year=2014, selected_libraries=["1", "2"])
-        self._dummy_survey(library=second_library, sample_year=2015, selected_libraries=["2"])
+        first_survey = self._dummy_survey(
+            library=first_library, sample_year=2014, selected_libraries=["1", "2"]
+        )
+        self._dummy_survey(
+            library=second_library, sample_year=2015, selected_libraries=["2"]
+        )
 
         self.assertListEqual(first_survey.get_conflicting_surveys(), [])
 
@@ -798,106 +965,151 @@ class TestGetConflictingSurveys(MongoTestCase):
         first_library = self._dummy_library(sigel="1")
         second_library = self._dummy_library(sigel="2")
 
-        first_survey = self._dummy_survey(library=first_library, sample_year=2014, selected_libraries=[])
-        second_survey = self._dummy_survey(library=second_library, sample_year=2014, selected_libraries=["1", "2"])
+        first_survey = self._dummy_survey(
+            library=first_library, sample_year=2014, selected_libraries=[]
+        )
+        second_survey = self._dummy_survey(
+            library=second_library, sample_year=2014, selected_libraries=["1", "2"]
+        )
 
         self.assertListEqual(first_survey.get_conflicting_surveys(), [second_survey])
 
-    def test_should_return_second_survey_when_reporting_for_first_survey_with_same_principal_library_type(self):
+    def test_should_return_second_survey_when_reporting_for_first_survey_with_same_principal_library_type(
+        self,
+    ):
         first_library = self._dummy_library(sigel="1", library_type="folkbib")
         second_library = self._dummy_library(sigel="2", library_type="muskom")
 
-        first_survey = self._dummy_survey(library=first_library, sample_year=2014, selected_libraries=[])
-        second_survey = self._dummy_survey(library=second_library, sample_year=2014, selected_libraries=["1", "2"])
+        first_survey = self._dummy_survey(
+            library=first_library, sample_year=2014, selected_libraries=[]
+        )
+        second_survey = self._dummy_survey(
+            library=second_library, sample_year=2014, selected_libraries=["1", "2"]
+        )
 
         self.assertListEqual(first_survey.get_conflicting_surveys(), [second_survey])
 
     def test_should_not_return_second_survey_when_reporting_for_first_survey_with_different_principal_library_type(
-            self):
+        self,
+    ):
         first_library = self._dummy_library(sigel="1", library_type="folkbib")
         second_library = self._dummy_library(sigel="2", library_type="sjukbib")
 
-        first_survey = self._dummy_survey(library=first_library, sample_year=2014, selected_libraries=[])
-        self._dummy_survey(library=second_library, sample_year=2014, selected_libraries=["1", "2"])
+        first_survey = self._dummy_survey(
+            library=first_library, sample_year=2014, selected_libraries=[]
+        )
+        self._dummy_survey(
+            library=second_library, sample_year=2014, selected_libraries=["1", "2"]
+        )
 
         self.assertListEqual(first_survey.get_conflicting_surveys(), [])
 
-    def test_should_return_second_survey_when_reporting_for_first_survey_when_library_type_is_unknown(self):
+    def test_should_return_second_survey_when_reporting_for_first_survey_when_library_type_is_unknown(
+        self,
+    ):
         first_library = self._dummy_library(sigel="1", library_type=None)
         second_library = self._dummy_library(sigel="2", library_type="sjukbib")
 
-        first_survey = self._dummy_survey(library=first_library, sample_year=2014, selected_libraries=[])
-        second_survey = self._dummy_survey(library=second_library, sample_year=2014, selected_libraries=["1", "2"])
+        first_survey = self._dummy_survey(
+            library=first_library, sample_year=2014, selected_libraries=[]
+        )
+        second_survey = self._dummy_survey(
+            library=second_library, sample_year=2014, selected_libraries=["1", "2"]
+        )
 
         self.assertListEqual(first_survey.get_conflicting_surveys(), [second_survey])
 
     def test_should_return_second_survey_when_reporting_for_first_survey_when_principal_for_library_type_is_unknown(
-            self):
+        self,
+    ):
         first_library = self._dummy_library(sigel="1", library_type="musbib")
         self.assertFalse(first_library.library_type in PRINCIPALS)
         second_library = self._dummy_library(sigel="2", library_type="sjukbib")
 
-        first_survey = self._dummy_survey(library=first_library, sample_year=2014, selected_libraries=[])
-        second_survey = self._dummy_survey(library=second_library, sample_year=2014, selected_libraries=["1", "2"])
+        first_survey = self._dummy_survey(
+            library=first_library, sample_year=2014, selected_libraries=[]
+        )
+        second_survey = self._dummy_survey(
+            library=second_library, sample_year=2014, selected_libraries=["1", "2"]
+        )
 
         self.assertListEqual(first_survey.get_conflicting_surveys(), [second_survey])
 
 
 class TestPreviousYearsSurvey(MongoTestCase):
     def test_finds_survey_from_previous_year_if_identical_names_ignoring_case(self):
-        previous_years_survey = self._dummy_survey(sample_year=2013,
-                                                   library=self._dummy_library(name="ALLINGSÅS BIBLIOTEK"))
-        this_years_survey = self._dummy_survey(sample_year=2014,
-                                               library=self._dummy_library(name="Allingsås bibliotek"))
+        previous_years_survey = self._dummy_survey(
+            sample_year=2013, library=self._dummy_library(name="ALLINGSÅS BIBLIOTEK")
+        )
+        this_years_survey = self._dummy_survey(
+            sample_year=2014, library=self._dummy_library(name="Allingsås bibliotek")
+        )
 
         previous_years_survey.publish()
 
-        self.assertEqual(previous_years_survey, this_years_survey.previous_years_survey())
+        self.assertEqual(
+            previous_years_survey, this_years_survey.previous_years_survey()
+        )
 
-    def test_does_not_find_survey_from_previous_year_if_not_identical_names_ignoring_case(self):
-        self._dummy_survey(sample_year=2013,
-                           library=self._dummy_library(name="BOTKYRKA BIBLIOTEK"))
-        this_years_survey = self._dummy_survey(sample_year=2014,
-                                               library=self._dummy_library(name="Allingsås bibliotek"))
+    def test_does_not_find_survey_from_previous_year_if_not_identical_names_ignoring_case(
+        self,
+    ):
+        self._dummy_survey(
+            sample_year=2013, library=self._dummy_library(name="BOTKYRKA BIBLIOTEK")
+        )
+        this_years_survey = self._dummy_survey(
+            sample_year=2014, library=self._dummy_library(name="Allingsås bibliotek")
+        )
 
         self.assertEqual(None, this_years_survey.previous_years_survey())
 
-    def test_does_not_find_survey_from_previous_year_even_if_other_library_name_contains_name(self):
-        self._dummy_survey(sample_year=2013,
-                           library=self._dummy_library(name="Nyköpings stadsbibliotek"))
-        this_years_survey = self._dummy_survey(sample_year=2014,
-                                               library=self._dummy_library(name="Köpings stadsbibliotek"))
+    def test_does_not_find_survey_from_previous_year_even_if_other_library_name_contains_name(
+        self,
+    ):
+        self._dummy_survey(
+            sample_year=2013,
+            library=self._dummy_library(name="Nyköpings stadsbibliotek"),
+        )
+        this_years_survey = self._dummy_survey(
+            sample_year=2014, library=self._dummy_library(name="Köpings stadsbibliotek")
+        )
 
         self.assertEqual(None, this_years_survey.previous_years_survey())
 
     def test_finds_survey_from_previous_year_by_sigel_but_different_names(self):
-        previous_years_survey = self._dummy_survey(sample_year=2014,
-                                                   library=self._dummy_library(sigel="lib1",
-                                                                               name="previous_name"))
-        this_years_survey = self._dummy_survey(sample_year=2015,
-                                               library=self._dummy_library(sigel="lib1",
-                                                                           name="new_name"))
+        previous_years_survey = self._dummy_survey(
+            sample_year=2014,
+            library=self._dummy_library(sigel="lib1", name="previous_name"),
+        )
+        this_years_survey = self._dummy_survey(
+            sample_year=2015, library=self._dummy_library(sigel="lib1", name="new_name")
+        )
         previous_years_survey.publish()
 
-        self.assertEqual(this_years_survey.previous_years_survey(), previous_years_survey)
+        self.assertEqual(
+            this_years_survey.previous_years_survey(), previous_years_survey
+        )
 
     def test_does_not_find_survey_from_previous_year_if_not_published(self):
-        self._dummy_survey(sample_year=2014,
-                           library=self._dummy_library(sigel="lib1",
-                                                       name="previous_name"))
-        this_years_survey = self._dummy_survey(sample_year=2015,
-                                               library=self._dummy_library(sigel="lib1",
-                                                                           name="new_name"))
+        self._dummy_survey(
+            sample_year=2014,
+            library=self._dummy_library(sigel="lib1", name="previous_name"),
+        )
+        this_years_survey = self._dummy_survey(
+            sample_year=2015, library=self._dummy_library(sigel="lib1", name="new_name")
+        )
 
         self.assertEqual(this_years_survey.previous_years_survey(), None)
 
     def test_does_not_find_survey_from_previous_year_if_not_identical_sigels(self):
-        self._dummy_survey(sample_year=2014,
-                           library=self._dummy_library(sigel="lib1",
-                                                       name="ALLINGSÅS BIBLIOTEK"))
-        this_years_survey = self._dummy_survey(sample_year=2015,
-                                               library=self._dummy_library(sigel="lib2",
-                                                                           name="Allingsås bibliotek"))
+        self._dummy_survey(
+            sample_year=2014,
+            library=self._dummy_library(sigel="lib1", name="ALLINGSÅS BIBLIOTEK"),
+        )
+        this_years_survey = self._dummy_survey(
+            sample_year=2015,
+            library=self._dummy_library(sigel="lib2", name="Allingsås bibliotek"),
+        )
 
         self.assertEqual(None, this_years_survey.previous_years_survey())
 
@@ -905,125 +1117,170 @@ class TestPreviousYearsSurvey(MongoTestCase):
         variable = self._dummy_variable()
         library = self._dummy_library()
 
-        self._dummy_survey(sample_year=2014,
-                           library=library,
-                           observations=[self._dummy_observation(variable=variable,
-                                                                 value="old_value")]).publish()
+        self._dummy_survey(
+            sample_year=2014,
+            library=library,
+            observations=[
+                self._dummy_observation(variable=variable, value="old_value")
+            ],
+        ).publish()
 
-        this_years_survey = self._dummy_survey(sample_year=2015,
-                                               library=library)
+        this_years_survey = self._dummy_survey(sample_year=2015, library=library)
 
         self.assertEqual(this_years_survey.previous_years_value(variable), "old_value")
 
     def test_does_not_return_previous_years_value_if_no_previous_survey(self):
         variable = self._dummy_variable()
 
-        self._dummy_survey(sample_year=2014,
-                           library=self._dummy_library(),
-                           observations=[self._dummy_observation(variable=variable,
-                                                                 value="old_value")])
+        self._dummy_survey(
+            sample_year=2014,
+            library=self._dummy_library(),
+            observations=[
+                self._dummy_observation(variable=variable, value="old_value")
+            ],
+        )
 
-        this_years_survey = self._dummy_survey(sample_year=2015,
-                                               library=self._dummy_library())
+        this_years_survey = self._dummy_survey(
+            sample_year=2015, library=self._dummy_library()
+        )
 
         self.assertEqual(this_years_survey.previous_years_value(variable), None)
 
-    def test_returns_previous_years_value_for_single_replaced_variable_with_same_target_groups(self):
+    def test_returns_previous_years_value_for_single_replaced_variable_with_same_target_groups(
+        self,
+    ):
         old_variable = self._dummy_variable(target_groups=["folkbib"])
-        new_variable = self._dummy_variable(target_groups=["folkbib"],
-                                            replaces=[old_variable])
+        new_variable = self._dummy_variable(
+            target_groups=["folkbib"], replaces=[old_variable]
+        )
 
         library = self._dummy_library()
 
-        self._dummy_survey(sample_year=2014,
-                           library=library,
-                           observations=[self._dummy_observation(variable=old_variable,
-                                                                 value="old_value")]).publish()
-        this_years_survey = self._dummy_survey(sample_year=2015,
-                                               library=library)
+        self._dummy_survey(
+            sample_year=2014,
+            library=library,
+            observations=[
+                self._dummy_observation(variable=old_variable, value="old_value")
+            ],
+        ).publish()
+        this_years_survey = self._dummy_survey(sample_year=2015, library=library)
 
-        self.assertEqual(this_years_survey.previous_years_value(new_variable), "old_value")
+        self.assertEqual(
+            this_years_survey.previous_years_value(new_variable), "old_value"
+        )
 
-    def test_returns_previous_years_value_for_single_replaced_variable_with_different_target_groups(self):
+    def test_returns_previous_years_value_for_single_replaced_variable_with_different_target_groups(
+        self,
+    ):
         old_variable = self._dummy_variable(target_groups=["folkbib"])
-        new_variable = self._dummy_variable(target_groups=["sjukbib"],
-                                            replaces=[old_variable])
+        new_variable = self._dummy_variable(
+            target_groups=["sjukbib"], replaces=[old_variable]
+        )
 
         library = self._dummy_library()
 
-        self._dummy_survey(sample_year=2014,
-                           library=library,
-                           observations=[self._dummy_observation(variable=old_variable,
-                                                                 value="old_value")]).publish()
-        this_years_survey = self._dummy_survey(sample_year=2015,
-                                               library=library)
+        self._dummy_survey(
+            sample_year=2014,
+            library=library,
+            observations=[
+                self._dummy_observation(variable=old_variable, value="old_value")
+            ],
+        ).publish()
+        this_years_survey = self._dummy_survey(sample_year=2015, library=library)
 
-        self.assertEqual(this_years_survey.previous_years_value(new_variable), "old_value")
+        self.assertEqual(
+            this_years_survey.previous_years_value(new_variable), "old_value"
+        )
 
-
-    def test_does_not_return_previous_years_value_for_multiple_replaced_variables_with_same_library_type(self):
+    def test_does_not_return_previous_years_value_for_multiple_replaced_variables_with_same_library_type(
+        self,
+    ):
         old_variable1 = self._dummy_variable(target_groups=["folkbib"])
         old_variable2 = self._dummy_variable(target_groups=["folkbib"])
         new_variable = self._dummy_variable(replaces=[old_variable1, old_variable2])
 
         library = self._dummy_library()
 
-        self._dummy_survey(sample_year=2014,
-                           library=library,
-                           observations=[self._dummy_observation(variable=old_variable1,
-                                                                 value="old_value")]).publish()
-        this_years_survey = self._dummy_survey(sample_year=2015,
-                                               library=library)
+        self._dummy_survey(
+            sample_year=2014,
+            library=library,
+            observations=[
+                self._dummy_observation(variable=old_variable1, value="old_value")
+            ],
+        ).publish()
+        this_years_survey = self._dummy_survey(sample_year=2015, library=library)
 
         self.assertEqual(this_years_survey.previous_years_value(new_variable), None)
 
     def test_returns_previous_years_value_for_multiple_replaced_variables_where_one_has_same_library_type_as_this_years_survey(
-            self):
+        self,
+    ):
         old_variable1 = self._dummy_variable(target_groups=["folkbib"])
         old_variable2 = self._dummy_variable(target_groups=["sjukbib"])
-        new_variable = self._dummy_variable(target_groups=["folkbib"],
-                                            replaces=[old_variable1, old_variable2])
+        new_variable = self._dummy_variable(
+            target_groups=["folkbib"], replaces=[old_variable1, old_variable2]
+        )
 
-        self._dummy_survey(sample_year=2014,
-                           library=self._dummy_library(sigel="abcd",
-                                                       library_type="specbib"),
-                           observations=[self._dummy_observation(variable=old_variable1,
-                                                                 value="old_value")]).publish()
-        this_years_survey = self._dummy_survey(sample_year=2015,
-                                               library=self._dummy_library(sigel="abcd",
-                                                                           library_type="folkbib"))
+        self._dummy_survey(
+            sample_year=2014,
+            library=self._dummy_library(sigel="abcd", library_type="specbib"),
+            observations=[
+                self._dummy_observation(variable=old_variable1, value="old_value")
+            ],
+        ).publish()
+        this_years_survey = self._dummy_survey(
+            sample_year=2015,
+            library=self._dummy_library(sigel="abcd", library_type="folkbib"),
+        )
 
-        self.assertEqual(this_years_survey.previous_years_value(new_variable), "old_value")
+        self.assertEqual(
+            this_years_survey.previous_years_value(new_variable), "old_value"
+        )
 
     def test_returns_previous_years_value_for_multiple_replaced_variables_where_one_has_same_library_type_as_previous_years_survey(
-            self):
+        self,
+    ):
         old_variable1 = self._dummy_variable(target_groups=["folkbib"])
         old_variable2 = self._dummy_variable(target_groups=["sjukbib"])
-        new_variable = self._dummy_variable(target_groups=["folkbib"],
-                                            replaces=[old_variable1, old_variable2])
+        new_variable = self._dummy_variable(
+            target_groups=["folkbib"], replaces=[old_variable1, old_variable2]
+        )
 
-        self._dummy_survey(sample_year=2014,
-                           library=self._dummy_library(sigel="abcd",
-                                                       library_type="folkbib"),
-                           observations=[self._dummy_observation(variable=old_variable1,
-                                                                 value="old_value")]).publish()
-        this_years_survey = self._dummy_survey(sample_year=2015,
-                                               library=self._dummy_library(sigel="abcd",
-                                                                           library_type="specbib"))
+        self._dummy_survey(
+            sample_year=2014,
+            library=self._dummy_library(sigel="abcd", library_type="folkbib"),
+            observations=[
+                self._dummy_observation(variable=old_variable1, value="old_value")
+            ],
+        ).publish()
+        this_years_survey = self._dummy_survey(
+            sample_year=2015,
+            library=self._dummy_library(sigel="abcd", library_type="specbib"),
+        )
 
-        self.assertEqual(this_years_survey.previous_years_value(new_variable), "old_value")
+        self.assertEqual(
+            this_years_survey.previous_years_value(new_variable), "old_value"
+        )
 
     def test_does_not_return_previous_years_value_for_multiple_replaced_variables_where_several_has_same_library_type(
-            self):
+        self,
+    ):
         old_variable1 = self._dummy_variable(target_groups=["folkbib"])
         old_variable2 = self._dummy_variable(target_groups=["folkbib"])
         old_variable3 = self._dummy_variable(target_groups=["sjukbib"])
-        new_variable = self._dummy_variable(target_groups=["folkbib"],
-                                            replaces=[old_variable1, old_variable2, old_variable3])
+        new_variable = self._dummy_variable(
+            target_groups=["folkbib"],
+            replaces=[old_variable1, old_variable2, old_variable3],
+        )
         library = self._dummy_library()
 
-        self._dummy_survey(sample_year=2014, library=library, observations=[
-            self._dummy_observation(variable=old_variable1, value="old_value")]).publish()
+        self._dummy_survey(
+            sample_year=2014,
+            library=library,
+            observations=[
+                self._dummy_observation(variable=old_variable1, value="old_value")
+            ],
+        ).publish()
         this_years_survey = self._dummy_survey(sample_year=2015, library=library)
 
         this_years_survey.publish()
@@ -1061,7 +1318,9 @@ class TestLockSurvey(MongoTestCase):
     def test_creates_a_lock(self):
         survey = self._dummy_survey()
         SurveyEditingLock.lock_survey(survey_id=survey.id)
-        self.assertTrue(SurveyEditingLock.objects.filter(survey_id=survey.id).first() != None)
+        self.assertTrue(
+            SurveyEditingLock.objects.filter(survey_id=survey.id).first() != None
+        )
 
     def test_changes_time_when_renewing_lock(self):
         survey = self._dummy_survey()
@@ -1075,6 +1334,3 @@ class TestLockSurvey(MongoTestCase):
         survey = self._dummy_survey()
         SurveyEditingLock.release_lock_on_survey(survey_id=survey.id)
         self.assertEqual(len(SurveyEditingLock.objects.filter(survey_id=survey.id)), 0)
-
-
-

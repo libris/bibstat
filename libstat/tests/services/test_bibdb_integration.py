@@ -12,36 +12,24 @@ class TestBibdbIntegration(MongoTestCase):
             "library_type": "sjukbib",
             "municipality_code": "1793",
             "school_code": "12345678",
-            "address":
-                [
-                    {
-                        "address_type": "gen",
-                        "city": "lib1_city",
-                        "street": "street1"
-                    },
-                    {
-                        "address_type": "ill",
-                        "city": "ill_lib1_city",
-                        "street": "ill_street1"
-                    },
-                    {
-                        "address_type": "stat",
-                        "city": "stat_lib1_city",
-                        "street": "stat_street1",
-                        "zip_code": "123 45"
-                    }
-                ],
-            "contact":
-                [
-                    {
-                        "contact_type": "orgchef",
-                        "email": "dont@care.atall"
-                    },
-                    {
-                        "contact_type": "statans",
-                        "email": "lib1@dom.top"
-                    }
-                ]
+            "address": [
+                {"address_type": "gen", "city": "lib1_city", "street": "street1"},
+                {
+                    "address_type": "ill",
+                    "city": "ill_lib1_city",
+                    "street": "ill_street1",
+                },
+                {
+                    "address_type": "stat",
+                    "city": "stat_lib1_city",
+                    "street": "stat_street1",
+                    "zip_code": "123 45",
+                },
+            ],
+            "contact": [
+                {"contact_type": "orgchef", "email": "dont@care.atall"},
+                {"contact_type": "statans", "email": "lib1@dom.top"},
+            ],
         }
 
         self._dummy_json_data_1 = {
@@ -52,36 +40,24 @@ class TestBibdbIntegration(MongoTestCase):
             "library_type": "sjukbib",
             "municipality_code": "1793",
             "school_code": None,
-            "address":
-                [
-                    {
-                        "address_type": "gen",
-                        "city": "lib1_city",
-                        "street": "street1"
-                    },
-                    {
-                        "address_type": "ill",
-                        "city": "ill_lib1_city",
-                        "street": "ill_street1"
-                    },
-                    {
-                        "address_type": "stat",
-                        "city": "stat_lib1_city",
-                        "street": "stat_street1",
-                        "zip_code": "123 45"
-                    }
-                ],
-            "contact":
-                [
-                    {
-                        "contact_type": "orgchef",
-                        "email": "dont@care.atall"
-                    },
-                    {
-                        "contact_type": "statans",
-                        "email": "lib1@dom.top"
-                    }
-                ]
+            "address": [
+                {"address_type": "gen", "city": "lib1_city", "street": "street1"},
+                {
+                    "address_type": "ill",
+                    "city": "ill_lib1_city",
+                    "street": "ill_street1",
+                },
+                {
+                    "address_type": "stat",
+                    "city": "stat_lib1_city",
+                    "street": "stat_street1",
+                    "zip_code": "123 45",
+                },
+            ],
+            "contact": [
+                {"contact_type": "orgchef", "email": "dont@care.atall"},
+                {"contact_type": "statans", "email": "lib1@dom.top"},
+            ],
         }
 
     def test_creates_library_from_dict(self):

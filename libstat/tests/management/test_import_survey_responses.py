@@ -6,11 +6,10 @@ from libstat.models import Variable, Survey
 
 
 class ImportSurveyResponsesTest(MongoTestCase):
-
     def setUp(self):
         args = []
         opts = {"file": "data/variables/folk_termer.xlsx", "target_group": "folkbib"}
-        call_command('import_variables', *args, **opts)
+        call_command("import_variables", *args, **opts)
 
         # Check that all variables have been imported
         self.assertEqual(len(Variable.objects.all()), 201)
@@ -18,38 +17,54 @@ class ImportSurveyResponsesTest(MongoTestCase):
     def test_import_survey_responses_requires_file_option(self):
         args = []
         opts = {"target_group": "folkbib", "year": 2012}
-        call_command('import_survey_responses', *args, **opts)
+        call_command("import_survey_responses", *args, **opts)
 
         self.assertEqual(len(Survey.objects.all()), 0)
 
     def test_import_variables_requires_target_group_option(self):
         args = []
         opts = {"file": "libstat/tests/data/Folk2012.xlsx", "year": 2012}
-        call_command('import_survey_responses', *args, **opts)
+        call_command("import_survey_responses", *args, **opts)
 
         self.assertEqual(len(Survey.objects.all()), 0)
 
     def test_import_variables_requires_year_option(self):
         args = []
         opts = {"file": "libstat/tests/data/Folk2012.xlsx", "target_group": "folkbib"}
-        call_command('import_survey_responses', *args, **opts)
+        call_command("import_survey_responses", *args, **opts)
 
         self.assertEqual(len(Survey.objects.all()), 0)
 
     def test_import_survey_responses_should_abort_if_invalid_year(self):
         args = []
-        opts = {"file": "libstat/tests/data/Folk2012.xlsx", "target_group": "folkbib", "year": '201b'}
-        self.assertRaises(CommandError, call_command, 'import_survey_responses', *args, **opts)
+        opts = {
+            "file": "libstat/tests/data/Folk2012.xlsx",
+            "target_group": "folkbib",
+            "year": "201b",
+        }
+        self.assertRaises(
+            CommandError, call_command, "import_survey_responses", *args, **opts
+        )
 
     def test_import_survey_responses_should_abort_if_data_for_year_not_in_file(self):
         args = []
-        opts = {"file": "libstat/tests/data/Folk2012.xlsx", "target_group": "folkbib", "year": 2013}
-        self.assertRaises(CommandError, call_command, 'import_survey_responses', *args, **opts)
+        opts = {
+            "file": "libstat/tests/data/Folk2012.xlsx",
+            "target_group": "folkbib",
+            "year": 2013,
+        }
+        self.assertRaises(
+            CommandError, call_command, "import_survey_responses", *args, **opts
+        )
 
     def test_should_import_public_lib_survey_responses(self):
         args = []
-        opts = {"file": "libstat/tests/data/Folk2012.xlsx", "target_group": "folkbib", "year": 2012}
-        call_command('import_survey_responses', *args, **opts)
+        opts = {
+            "file": "libstat/tests/data/Folk2012.xlsx",
+            "target_group": "folkbib",
+            "year": 2012,
+        }
+        call_command("import_survey_responses", *args, **opts)
 
         self.assertEqual(len(Survey.objects.all()), 8)
 
@@ -95,7 +110,9 @@ class ImportSurveyResponsesTest(MongoTestCase):
         self.assertEqual(folk54_obs.value, 8.33583518419239)
         self.assertTrue(folk54_obs._is_public)
         # Private, integer value
-        folk201_obs = [obs for obs in sr.observations if obs.variable.key == "Folk201"][0]
+        folk201_obs = [obs for obs in sr.observations if obs.variable.key == "Folk201"][
+            0
+        ]
         self.assertTrue(isinstance(folk201_obs.value, int))
         self.assertEqual(folk201_obs.value, 13057)
         self.assertFalse(folk201_obs._is_public)

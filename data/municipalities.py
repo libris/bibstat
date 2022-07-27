@@ -310,11 +310,21 @@ MUNICIPALITIES = (
     ("Piteå", "2581"),
     ("Älvsbyn", "2560"),
     ("Överkalix", "2513"),
-    ("Övertorneå", "2518"))
+    ("Övertorneå", "2518"),
+)
 
 municipalities = dict([(tuple[1], tuple[0]) for tuple in MUNICIPALITIES])
 
-municipalities_without_counties = dict([(tuple[1], tuple[0]) for tuple in MUNICIPALITIES if not (len(tuple[0].split()) > 1 and tuple[0].split()[len(tuple[0].split())-1] == "län")])
+municipalities_without_counties = dict(
+    [
+        (tuple[1], tuple[0])
+        for tuple in MUNICIPALITIES
+        if not (
+            len(tuple[0].split()) > 1
+            and tuple[0].split()[len(tuple[0].split()) - 1] == "län"
+        )
+    ]
+)
 
 
 def get_counties(municipality_codes):
@@ -333,7 +343,9 @@ def municipality_code_from(code):
         return None
     code = int(code)
     if code > 9999:
-        raise ValueError("Municipality code can only contain four digits: {}".format(code))
+        raise ValueError(
+            "Municipality code can only contain four digits: {}".format(code)
+        )
     if code < 0:
         raise ValueError("Municipality code can not be negative: {}".format(code))
     return "{0:04d}".format(code)

@@ -34,26 +34,21 @@ def login(request):
             # Okay, security check complete. Log the user in.
             auth_login(request, form.get_user())
 
-            context = {
-                'next': redirect_to
-            }
+            context = {"next": redirect_to}
             return HttpResponse(json.dumps(context), content_type="application/json")
         else:
-            context = {
-                'errors': form.errors,
-                'next': redirect_to
-            }
+            context = {"errors": form.errors, "next": redirect_to}
             return HttpResponse(json.dumps(context), content_type="application/json")
 
     else:
         form = AuthenticationForm(request)
 
     context = {
-        'form': form,
-        'next': redirect_to,
+        "form": form,
+        "next": redirect_to,
     }
 
-    return render(request, 'libstat/templates/libstat/base/admin/login.html', context)
+    return render(request, "libstat/templates/libstat/base/admin/login.html", context)
 
 
 def _get_listview_from_modalview(relative_url=""):

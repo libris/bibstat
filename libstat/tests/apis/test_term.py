@@ -21,20 +21,38 @@ class TermApiTest(MongoTestCase):
         data = json.loads(response.content)
 
         self.assertEqual(data["@context"]["xsd"], "http://www.w3.org/2001/XMLSchema#")
-        self.assertEqual(data["@context"]["rdf"], "http://www.w3.org/1999/02/22-rdf-syntax-ns#")
-        self.assertEqual(data["@context"]["rdfs"], "http://www.w3.org/2000/01/rdf-schema#")
+        self.assertEqual(
+            data["@context"]["rdf"], "http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+        )
+        self.assertEqual(
+            data["@context"]["rdfs"], "http://www.w3.org/2000/01/rdf-schema#"
+        )
         self.assertEqual(data["@context"]["qb"], "http://purl.org/linked-data/cube#")
         self.assertEqual(data["@context"]["@language"], "sv")
         self.assertEqual(data["@context"]["label"], "rdfs:label")
-        self.assertEqual(data["@context"]["range"], {"@id": "rdfs:range", "@type": "@id"})
+        self.assertEqual(
+            data["@context"]["range"], {"@id": "rdfs:range", "@type": "@id"}
+        )
         self.assertEqual(data["@context"]["comment"], "rdfs:comment")
-        self.assertEqual(data["@context"]["subClassOf"], {"@id": "rdfs:subClassOf", "@type": "@id"})
-        self.assertEqual(data["@context"]["replaces"], {"@id": "dcterms:replaces", "@type": "@id"})
-        self.assertEqual(data["@context"]["replacedBy"], {"@id": "dcterms:isReplacedBy", "@type": "@id"})
-        self.assertEqual(data["@context"]["valid"], {"@id": "dcterms:valid", "@type": "dcterms:Period"})
+        self.assertEqual(
+            data["@context"]["subClassOf"], {"@id": "rdfs:subClassOf", "@type": "@id"}
+        )
+        self.assertEqual(
+            data["@context"]["replaces"], {"@id": "dcterms:replaces", "@type": "@id"}
+        )
+        self.assertEqual(
+            data["@context"]["replacedBy"],
+            {"@id": "dcterms:isReplacedBy", "@type": "@id"},
+        )
+        self.assertEqual(
+            data["@context"]["valid"],
+            {"@id": "dcterms:valid", "@type": "dcterms:Period"},
+        )
 
     def test_should_return_one_term(self):
-        self._dummy_variable(key="folk5", description="some description", type="integer")
+        self._dummy_variable(
+            key="folk5", description="some description", type="integer"
+        )
 
         response = self.client.get(reverse("term_api", kwargs={"term_key": "folk5"}))
         data = json.loads(response.content)

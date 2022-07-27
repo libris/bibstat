@@ -3,7 +3,6 @@ from libstat.tests import MongoTestCase
 
 
 class TestUserReadOnly(MongoTestCase):
-
     def test_form_should_not_be_user_read_only_when_survey_status_is_not_viewed(self):
         survey = self._dummy_survey(status="not_viewed")
         form = SurveyForm(survey=survey)
@@ -37,7 +36,6 @@ class TestUserReadOnly(MongoTestCase):
 
 
 class TestReadOnly(MongoTestCase):
-
     def test_form_should_not_be_read_only_when_authenticated(self):
         survey = self._dummy_survey(status="submitted")
         form = SurveyForm(survey=survey, authenticated=True)

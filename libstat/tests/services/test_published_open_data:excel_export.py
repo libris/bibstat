@@ -4,20 +4,23 @@ from libstat.tests import MongoTestCase
 
 
 class TestSurveysExport(MongoTestCase):
-
     def test_can_export_open_data_as_excel(self):
         survey1 = self._dummy_survey()
         survey1.publish()
 
-        response = self._post(action="export",
-                              data={"sample_year": "2001"})
+        response = self._post(action="export", data={"sample_year": "2001"})
 
         self.assertEqual(response.status_code, 200)
 
     def test_sets_correct_values_when_exporting_open_data_as_excel(self):
         self._dummy_variable(key="var1")
         self._dummy_observation(variable="var1", value="testvalue")
-        library1 = self._dummy_library(name="lib1_name", external_identifiers=[self._dummy_external_identifier(identifier="44444444")])
+        library1 = self._dummy_library(
+            name="lib1_name",
+            external_identifiers=[
+                self._dummy_external_identifier(identifier="44444444")
+            ],
+        )
         survey1 = self._dummy_survey(library=library1)
         survey1.publish()
 

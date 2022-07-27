@@ -4,7 +4,14 @@ from django.core.management.base import BaseCommand, CommandError
 from xlrd import open_workbook
 
 from libstat.utils import DATA_IMPORT_nonMeasurementCategories
-from libstat.utils import TYPE_STRING, TYPE_BOOLEAN, TYPE_INTEGER, TYPE_LONG, TYPE_DECIMAL, TYPE_PERCENT
+from libstat.utils import (
+    TYPE_STRING,
+    TYPE_BOOLEAN,
+    TYPE_INTEGER,
+    TYPE_LONG,
+    TYPE_DECIMAL,
+    TYPE_PERCENT,
+)
 from libstat.models import Variable
 
 
@@ -20,26 +27,34 @@ class Command(BaseCommand):
         "Long": TYPE_LONG[0],
         "Decimal två": TYPE_DECIMAL[0],
         "Decimal ett": TYPE_DECIMAL[0],
-        "Procent": TYPE_PERCENT[0]
+        "Procent": TYPE_PERCENT[0],
     }
 
-    isPublic = {
-        "Öppet": True,
-        "Inte": False
-    }
+    isPublic = {"Öppet": True, "Inte": False}
 
     help = "Imports statistical variables from a spreadsheet"
 
     def add_arguments(self, parser):
-        parser.add_argument("--target-group", dest="target_group", choices=["folkbib", "specbib", "sjukbib", "skolbib"],
-                            help="Target group; public, research, hospital, school")
-        parser.add_argument("--file", dest="file",
-                            help="File; Absolute path to source spreadsheet. i.e. /home/MyUser/documents/sourcefile.xlsx")
+        parser.add_argument(
+            "--target-group",
+            dest="target_group",
+            choices=["folkbib", "specbib", "sjukbib", "skolbib"],
+            help="Target group; public, research, hospital, school",
+        )
+        parser.add_argument(
+            "--file",
+            dest="file",
+            help="File; Absolute path to source spreadsheet. i.e. /home/MyUser/documents/sourcefile.xlsx",
+        )
 
     def handle(self, *args, **options):
         if not options["target_group"] or not options["file"]:
-            logger.info(("Usage: python manage.py import_variables --file=</path/to/file>"
-                         "--target_group=<folkbib|specbib|sjukbib|skolbib>\n\n"))
+            logger.info(
+                (
+                    "Usage: python manage.py import_variables --file=</path/to/file>"
+                    "--target_group=<folkbib|specbib|sjukbib|skolbib>\n\n"
+                )
+            )
             return
 
         file = options["file"]
@@ -64,12 +79,18 @@ class Command(BaseCommand):
             is_public = row[5].strip()
 
             if variable_type not in list(self.variableTypes.keys()):
-                raise CommandError("Invalid variable type: {} for key: {}".format(variable_type, key))
+                raise CommandError(
+                    "Invalid variable type: {} for key: {}".format(variable_type, key)
+                )
             else:
                 variable_type = self.variableTypes[variable_type]
 
             if is_public not in list(self.isPublic.keys()):
-                raise CommandError("Invalid public/private column value: {} for key: {}".format(is_public, key))
+                raise CommandError(
+                    "Invalid public/private column value: {} for key: {}".format(
+                        is_public, key
+                    )
+                )
             else:
                 is_public = self.isPublic[is_public]
 
@@ -78,8 +99,15 @@ class Command(BaseCommand):
 
             existing_vars = Variable.objects.filter(key=key)
             if len(existing_vars) == 0:
-                object = Variable(key=key, description=description, category=category, sub_category=sub_category,
-                                  type=variable_type, is_public=is_public, target_groups=[target_group], )
+                object = Variable(
+                    key=key,
+                    description=description,
+                    category=category,
+                    sub_category=sub_category,
+                    type=variable_type,
+                    is_public=is_public,
+                    target_groups=[target_group],
+                )
                 object.save()
                 imported_variables += 1
             else:
@@ -93,5 +121,8 @@ class Command(BaseCommand):
                 object.save()
                 updated_variables += 1
 
-        logger.info("...{} {} variables imported, {} updated.".format(imported_variables,
-                                                                       target_group, updated_variables))
+        logger.info(
+            "...{} {} variables imported, {} updated.".format(
+                imported_variables, target_group, updated_variables
+            )
+        )

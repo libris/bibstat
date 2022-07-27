@@ -14,7 +14,9 @@ class TestArticleView(MongoTestCase):
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.context["articles"][1].title, article.title)
         self.assertEqual(response.context["articles"][1].content, article.content)
-        self.assertEqual(response.context["articles"][1].date_published, article.date_published)
+        self.assertEqual(
+            response.context["articles"][1].date_published, article.date_published
+        )
 
     def test_can_not_edit_articles_when_not_logged_in(self):
         article = self._dummy_article(title="some_title", content="some_content")
@@ -35,8 +37,11 @@ class TestArticleView(MongoTestCase):
         self._login()
         article = self._dummy_article(title="some_title", content="some_content")
 
-        self._post("article", kwargs={"article_id": str(article.pk)}, data={"title": "new_title",
-                                                                            "content": "new_content"})
+        self._post(
+            "article",
+            kwargs={"article_id": str(article.pk)},
+            data={"title": "new_title", "content": "new_content"},
+        )
 
         article.reload()
         self.assertEqual(article.title, "new_title")
@@ -45,8 +50,11 @@ class TestArticleView(MongoTestCase):
     def test_can_not_update_article_if_not_logged_in(self):
         article = self._dummy_article(title="some_title", content="some_content")
 
-        self._post("article", kwargs={"article_id": str(article.pk)}, data={"title": "new_title",
-                                                                            "content": "new_content"})
+        self._post(
+            "article",
+            kwargs={"article_id": str(article.pk)},
+            data={"title": "new_title", "content": "new_content"},
+        )
 
         article.reload()
         self.assertEqual(article.title, "some_title")

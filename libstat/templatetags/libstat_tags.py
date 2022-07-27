@@ -18,7 +18,11 @@ register = template.Library()
 
 @register.filter
 def utc_tz(value):
-    return value.replace(tzinfo=pytz.utc) if value and isinstance(value, datetime) else value
+    return (
+        value.replace(tzinfo=pytz.utc)
+        if value and isinstance(value, datetime)
+        else value
+    )
 
 
 @register.filter
@@ -100,10 +104,12 @@ def debug_enabled(_):
 @register.filter
 def format_number(number, digits=1):
     try:
-        locale.setlocale(locale.LC_NUMERIC, 'sv_SE')
+        locale.setlocale(locale.LC_NUMERIC, "sv_SE")
     except Exception:
-        locale.setlocale(locale.LC_NUMERIC, 'sv_SE.UTF-8')
-    return locale.format("%d" if number == int(number) else "%.{}f".format(digits), number, grouping=True)
+        locale.setlocale(locale.LC_NUMERIC, "sv_SE.UTF-8")
+    return locale.format(
+        "%d" if number == int(number) else "%.{}f".format(digits), number, grouping=True
+    )
 
 
 @register.filter
@@ -117,7 +123,7 @@ def format_email(email, limit=30):
     if len(email) <= limit:
         return email
 
-    return email[:limit - 3] + "..."
+    return email[: limit - 3] + "..."
 
 
 @register.filter
@@ -127,13 +133,13 @@ def two_parts(thelist):
     if len(thelist) % 2 == 0:
         return [thelist[middle:], thelist[:middle]]
     else:
-        return [thelist[:middle + 1], thelist[middle + 1:]]
+        return [thelist[: middle + 1], thelist[middle + 1 :]]
 
 
 @register.filter
 def chunks(l, n):
     for i in range(0, len(l), n):
-        yield l[i:i+n]
+        yield l[i : i + n]
 
 
 @register.filter

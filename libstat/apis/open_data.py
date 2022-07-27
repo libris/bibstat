@@ -3,7 +3,12 @@ import json
 import logging
 from time import strftime
 
-from django.http import HttpResponse, Http404, HttpResponseBadRequest, HttpResponseNotFound
+from django.http import (
+    HttpResponse,
+    Http404,
+    HttpResponseBadRequest,
+    HttpResponseNotFound,
+)
 from wsgiref.util import FileWrapper
 from mongoengine import Q
 
@@ -30,15 +35,16 @@ data_context = {
     "next": {"@id": "xhv:next", "@type": "@id"},
     "published": {"@type": "xsd:dateTime"},
     "modified": {"@type": "xsd:dateTime"},
-    "name": "foaf:name"
+    "name": "foaf:name",
 }
 
 data_set = {
     "@context": data_context,
     "@id": "",
     "@type": "DataSet",
-    "label": "Sveriges biblioteksstatistik"
+    "label": "Sveriges biblioteksstatistik",
 }
+
 
 def data_api(request):
     from_date = parse_datetime_from_isodate_str(request.GET.get("from_date", None))
@@ -62,27 +68,35 @@ def data_api(request):
             variable = Variable.objects.get(key=term)
             logger.debug(
                 "Fetching statistics data for term {} published between {} and {}, items {} to {}".format(
-                    variable.key,
-                    from_date,
-                    to_date,
-                    offset,
-                    offset + limit))
-            objects = OpenData.objects.filter(
-                Q(variable=variable)
-                & modified_from_query
-                & modified_to_query
-                & is_active_query).skip(offset).limit(limit)
+                    variable.key, from_date, to_date, offset, offset + limit
+                )
+            )
+            objects = (
+                OpenData.objects.filter(
+                    Q(variable=variable)
+                    & modified_from_query
+                    & modified_to_query
+                    & is_active_query
+                )
+                .skip(offset)
+                .limit(limit)
+            )
         except Exception:
             logger.warn("Unknown variable {}, skipping..".format(term))
 
     else:
         logger.debug(
             "Fetching statistics data published between {} and {}, items {} to {}".format(
-                from_date, to_date, offset, offset + limit))
-        objects = OpenData.objects.filter(
-            modified_from_query
-            & modified_to_query
-            & is_active_query).skip(offset).limit(limit)
+                from_date, to_date, offset, offset + limit
+            )
+        )
+        objects = (
+            OpenData.objects.filter(
+                modified_from_query & modified_to_query & is_active_query
+            )
+            .skip(offset)
+            .limit(limit)
+        )
 
     observations = []
     for item in objects:
@@ -122,9 +136,13 @@ def export_api(request):
         if sample_year not in valid_sample_years:
             return HttpResponseNotFound()
 
-        filename = "Biblioteksstatistik för {} ({}).xlsx".format(sample_year, strftime("%Y-%m-%d %H.%M.%S"))
+        filename = "Biblioteksstatistik för {} ({}).xlsx".format(
+            sample_year, strftime("%Y-%m-%d %H.%M.%S")
+        )
         path = public_excel_workbook(sample_year)
 
-        response = HttpResponse(FileWrapper(open(path, 'rb')), content_type='application/vnd.ms-excel')
-        response['Content-Disposition'] = 'attachment; filename="{}"'.format(filename)
+        response = HttpResponse(
+            FileWrapper(open(path, "rb")), content_type="application/vnd.ms-excel"
+        )
+        response["Content-Disposition"] = 'attachment; filename="{}"'.format(filename)
         return response

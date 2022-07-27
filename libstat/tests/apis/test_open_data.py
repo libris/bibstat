@@ -9,7 +9,6 @@ from libstat.apis.open_data import data_context
 
 
 class OpenDataApiTest(MongoTestCase):
-
     def test_response_should_return_jsonld(self):
         response = self.client.get(reverse("data_api"))
 
@@ -32,14 +31,20 @@ class OpenDataApiTest(MongoTestCase):
         self.assertEqual(len(data["observations"]), 3)
 
     def test_should_filter_data_by_from_date(self):
-        self._dummy_open_data(sigel="sigel_1", date_modified=datetime(2014, 6, 5, 11, 14, 1))
+        self._dummy_open_data(
+            sigel="sigel_1", date_modified=datetime(2014, 6, 5, 11, 14, 1)
+        )
 
-        response = self.client.get("{}?from_date=2014-06-04".format(reverse("data_api")))
+        response = self.client.get(
+            "{}?from_date=2014-06-04".format(reverse("data_api"))
+        )
         data = json.loads(response.content)
 
         self.assertEqual(len(data["observations"]), 1)
-        self.assertEqual(data["observations"][0]["library"]["@id"],
-                          "{}/library/sigel_1".format(settings.BIBDB_BASE_URL))
+        self.assertEqual(
+            data["observations"][0]["library"]["@id"],
+            "{}/library/sigel_1".format(settings.BIBDB_BASE_URL),
+        )
 
     def test_should_filter_data_by_to_date(self):
         self._dummy_open_data(sigel="81", date_modified=datetime(2014, 6, 2, 11, 14, 1))
@@ -48,19 +53,28 @@ class OpenDataApiTest(MongoTestCase):
         data = json.loads(response.content)
 
         self.assertEqual(len(data["observations"]), 1)
-        self.assertEqual(data["observations"][0]["library"]["@id"],
-                          "{}/library/81".format(settings.BIBDB_BASE_URL))
+        self.assertEqual(
+            data["observations"][0]["library"]["@id"],
+            "{}/library/81".format(settings.BIBDB_BASE_URL),
+        )
 
     def test_should_filter_data_by_date_range(self):
-        self._dummy_open_data(sigel="323", date_modified=datetime(2014, 6, 3, 11, 14, 1))
+        self._dummy_open_data(
+            sigel="323", date_modified=datetime(2014, 6, 3, 11, 14, 1)
+        )
 
         response = self.client.get(
-            "{}?from_date=2014-06-02T15:28:31.000&to_date=2014-06-04T11:14:00.000".format(reverse("data_api")))
+            "{}?from_date=2014-06-02T15:28:31.000&to_date=2014-06-04T11:14:00.000".format(
+                reverse("data_api")
+            )
+        )
         data = json.loads(response.content)
 
         self.assertEqual(len(data["observations"]), 1)
-        self.assertEqual(data["observations"][0]["library"]["@id"],
-                          "{}/library/323".format(settings.BIBDB_BASE_URL))
+        self.assertEqual(
+            data["observations"][0]["library"]["@id"],
+            "{}/library/323".format(settings.BIBDB_BASE_URL),
+        )
 
     def test_should_limit_results(self):
         self._dummy_open_data()

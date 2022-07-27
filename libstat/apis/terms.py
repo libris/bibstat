@@ -30,7 +30,7 @@ terms_vocab = {
     "@context": term_context,
     "@id": "",
     "@type": "owl:Ontology",
-    "label": "Termer för Sveriges biblioteksstatistik"
+    "label": "Termer för Sveriges biblioteksstatistik",
 }
 
 core_terms = [
@@ -38,21 +38,21 @@ core_terms = [
         "@id": "library",
         "@type": ["rdf:Property", "qb:DimensionProperty"],
         "range": "https://schema.org/Organization",
-        "label": "Bibliotek"
+        "label": "Bibliotek",
     },
     {
         "@id": "sampleYear",
         "@type": ["rdf:Property", "qb:DimensionProperty"],
         "label": "Mätår",
         "comment": "Det mätår som statistikuppgiften avser",
-        "range": "xsd:gYear"
+        "range": "xsd:gYear",
     },
     {
         "@id": "targetGroup",
         "@type": ["rdf:Property", "qb:DimensionProperty"],
         "label": "Målgrupp",
         "comment": "Den målgrupp som svarande bibliotek ingår i.",
-        "range": "xsd:string"
+        "range": "xsd:string",
     },
     {
         "@id": "modified",
@@ -60,7 +60,7 @@ core_terms = [
         "subPropertyOf": "dcterms:modified",
         "label": "Uppdaterad",
         "comment": "Datum då mätvärdet senast uppdaterades",
-        "range": "xsd:dateTime"
+        "range": "xsd:dateTime",
     },
     {
         "@id": "published",
@@ -68,15 +68,15 @@ core_terms = [
         "subPropertyOf": "dcterms:issued",
         "label": "Publicerad",
         "comment": "Datum då mätvärdet först publicerades",
-        "range": "xsd:dateTime"
+        "range": "xsd:dateTime",
     },
     {
         "@id": "Observation",
         "@type": "rdfs:Class",
         "subClassOf": "qb:Observation",
         "label": "Observation",
-        "comment": "En observation för ett bibiliotek, mätår och variabel"
-    }
+        "comment": "En observation för ett bibiliotek, mätår och variabel",
+    },
 ]
 
 core_term_ids = {term["@id"] for term in core_terms}

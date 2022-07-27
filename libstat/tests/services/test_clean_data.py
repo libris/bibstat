@@ -6,11 +6,12 @@ import unittest
 
 
 class TestCleanDataFunctions(MongoTestCase):
-
     def test_update_sigel(self):
         random_sigel = Library._random_sigel()
         library = self._dummy_library(sigel=random_sigel)
-        survey1 = self._dummy_survey(library=library, observations=[self._dummy_observation()])
+        survey1 = self._dummy_survey(
+            library=library, observations=[self._dummy_observation()]
+        )
         survey2 = self._dummy_survey()
         clean_data._update_sigel(survey1, survey2.library.sigel)
         self.assertEqual(survey1.reload().library.sigel, survey2.library.sigel)

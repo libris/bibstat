@@ -12,19 +12,24 @@ logger = logging.getLogger(__name__)
 class Command(BaseCommand):
     args = "--year=<YYYY> --all=<y/n>"
     help = "Export libraries with published surveys to Excel file"
-    help_text = ("Usage: python manage.py export_libraries_to_excel --year=<YYYY> --all=<y/n>\n\n")
+    help_text = "Usage: python manage.py export_libraries_to_excel --year=<YYYY> --all=<y/n>\n\n"
 
     def add_arguments(self, parser):
-        parser.add_argument("--year", dest="year", type=int, help="Sample year, format YYYY")
-        parser.add_argument("--all", dest="all",
-                            help="Y=Export all libraries with published surveys, N=Only export libraries from published surveys with missing sigel code")
+        parser.add_argument(
+            "--year", dest="year", type=int, help="Sample year, format YYYY"
+        )
+        parser.add_argument(
+            "--all",
+            dest="all",
+            help="Y=Export all libraries with published surveys, N=Only export libraries from published surveys with missing sigel code",
+        )
 
     def handle(self, *args, **options):
         year = options.get("year")
         all = options.get("all")
 
         def _valid_year(year):
-            return re.compile('^\d{4}$').match(str(year))
+            return re.compile("^\d{4}$").match(str(year))
 
         if not year:
             logger.info(self.help_text)
@@ -37,18 +42,48 @@ class Command(BaseCommand):
             raise CommandError("Invalid 'all' option '{}', aborting").format(all)
 
         if all and (all == "Y" or all == "y"):
-            libraries = [s.library for s in Survey.objects.filter(sample_year=year, _status="published").only("library")]
+            libraries = [
+                s.library
+                for s in Survey.objects.filter(
+                    sample_year=year, _status="published"
+                ).only("library")
+            ]
         else:
-            #Find all surveys with a generated random code instead of a sigel
-            libraries = [s.library for s in Survey.objects.filter(sample_year=year, _status="published").only("library") if
-                         len(s.library.sigel) == 10]
+            # Find all surveys with a generated random code instead of a sigel
+            libraries = [
+                s.library
+                for s in Survey.objects.filter(
+                    sample_year=year, _status="published"
+                ).only("library")
+                if len(s.library.sigel) == 10
+            ]
 
         workbook = Workbook()
         worksheet = workbook.active
-        worksheet.append(["Bibliotek", "Adress", "Postnr", "Ort", "Kommunkod", "Bibliotekstyp", "Sigel"])
+        worksheet.append(
+            [
+                "Bibliotek",
+                "Adress",
+                "Postnr",
+                "Ort",
+                "Kommunkod",
+                "Bibliotekstyp",
+                "Sigel",
+            ]
+        )
         for library in libraries:
             logger.debug(library.address)
-            worksheet.append([library.name, library.address, library.zip_code, library.city, library.municipality_code, library.library_type, library.sigel])
+            worksheet.append(
+                [
+                    library.name,
+                    library.address,
+                    library.zip_code,
+                    library.city,
+                    library.municipality_code,
+                    library.library_type,
+                    library.sigel,
+                ]
+            )
         file_name_str = "libraries_export_{}.xslx".format(year)
 
         if settings.ENVIRONMENT == "local":

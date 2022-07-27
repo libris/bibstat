@@ -4,11 +4,17 @@ from libstat.models import Article
 
 
 class ArticleForm(forms.Form):
-    title = forms.CharField(label="Rubrik", widget=forms.TextInput(attrs={"class": "form-control form-article-input"}))
-    content = forms.CharField(label="Innehåll", widget=forms.Textarea(attrs={"class": "form-control form-article-input"}))
+    title = forms.CharField(
+        label="Rubrik",
+        widget=forms.TextInput(attrs={"class": "form-control form-article-input"}),
+    )
+    content = forms.CharField(
+        label="Innehåll",
+        widget=forms.Textarea(attrs={"class": "form-control form-article-input"}),
+    )
 
     def __init__(self, *args, **kwargs):
-        self.article = kwargs.pop('article', None)
+        self.article = kwargs.pop("article", None)
         super(ArticleForm, self).__init__(*args, **kwargs)
         if self.article:
             self.fields["title"].initial = self.article.title
