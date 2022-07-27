@@ -154,10 +154,7 @@ def show_in_chart(rows):
 
 @register.simple_tag
 def footer():
-    infoStr = "© Kungl. biblioteket 2014-" + str(datetime.now().year)
-    if settings.RELEASE_VERSION:
-        infoStr = infoStr + ". Version " + settings.RELEASE_VERSION
-    return infoStr
+    return f"Version {settings.RELEASE_VERSION}"
 
 
 @register.simple_tag()
