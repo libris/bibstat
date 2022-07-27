@@ -41,6 +41,8 @@ Nedan är ett exempel på en minimal installation i Linux.
 
 	# Starta servern
 	python manage.py runserver
+    # Alternativt (obs, gunicorn kommer inte serva statiska filer):
+    gunicorn bibstat.wsgi
 
 ### Importera produktionsdata till lokal utvecklingsmiljö
 
