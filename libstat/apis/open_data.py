@@ -82,7 +82,7 @@ def data_api(request):
                 .limit(limit)
             )
         except Exception:
-            logger.warn("Unknown variable {}, skipping..".format(term))
+            logger.warning("Unknown variable {}, skipping..".format(term))
 
     else:
         logger.debug(
