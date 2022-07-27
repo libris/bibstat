@@ -13,13 +13,11 @@ import os
 import sys
 from pathlib import Path
 
-# from django.conf.global_settings import TEMPLATE_CONTEXT_PROCESSORS as TCP
-
-# reload(sys)
-# sys.setdefaultencoding('utf-8')
-
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
+
+# Bibstat version number - update this when making a new release
+RELEASE_VERSION = "1.20.0"
 
 """
 ----------------------------------------------------------
