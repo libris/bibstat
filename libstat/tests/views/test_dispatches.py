@@ -35,10 +35,10 @@ class TestDispatches(MongoTestCase):
             "survey-response-ids": [survey1.pk, survey3.pk]
         })
 
-        self.assertEquals(Dispatch.objects.count(), 2)
-        self.assertEquals(Dispatch.objects.get(library_name="lib3").title, "some_title")
-        self.assertEquals(Dispatch.objects.get(library_name="lib3").message, "some_message")
-        self.assertEquals(Dispatch.objects.get(library_name="lib3").description, "some_description")
+        self.assertEqual(Dispatch.objects.count(), 2)
+        self.assertEqual(Dispatch.objects.get(library_name="lib3").title, "some_title")
+        self.assertEqual(Dispatch.objects.get(library_name="lib3").message, "some_message")
+        self.assertEqual(Dispatch.objects.get(library_name="lib3").description, "some_description")
 
     def test_can_delete_dispatches(self):
         dispatch1 = self._dummy_dispatch()
@@ -49,7 +49,7 @@ class TestDispatches(MongoTestCase):
             "dispatch-ids": [dispatch1.pk, dispatch3.pk]
         })
 
-        self.assertEquals(Dispatch.objects.count(), 1)
+        self.assertEqual(Dispatch.objects.count(), 1)
 
     def test_replaces_key_words_with_survey_fields(self):
         survey = self._dummy_survey(password="some_password", library=self._dummy_library(name="some_name",
@@ -64,5 +64,5 @@ class TestDispatches(MongoTestCase):
 
         dispatch = Dispatch.objects.all()[0]
 
-        self.assertEquals(dispatch.title, "abc some_name cde some_city fgh some_password")
-        self.assertEquals(dispatch.message, "ijk some_password lmnsome_nameopq some_city")
+        self.assertEqual(dispatch.title, "abc some_name cde some_city fgh some_password")
+        self.assertEqual(dispatch.message, "ijk some_password lmnsome_nameopq some_city")

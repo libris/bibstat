@@ -39,8 +39,8 @@ class TestArticleView(MongoTestCase):
                                                                             "content": "new_content"})
 
         article.reload()
-        self.assertEquals(article.title, "new_title")
-        self.assertEquals(article.content, "new_content")
+        self.assertEqual(article.title, "new_title")
+        self.assertEqual(article.content, "new_content")
 
     def test_can_not_update_article_if_not_logged_in(self):
         article = self._dummy_article(title="some_title", content="some_content")
@@ -49,8 +49,8 @@ class TestArticleView(MongoTestCase):
                                                                             "content": "new_content"})
 
         article.reload()
-        self.assertEquals(article.title, "some_title")
-        self.assertEquals(article.content, "some_content")
+        self.assertEqual(article.title, "some_title")
+        self.assertEqual(article.content, "some_content")
 
     def test_deletes_article(self):
         self._login()
@@ -58,11 +58,11 @@ class TestArticleView(MongoTestCase):
 
         self._post("articles_delete", kwargs={"article_id": str(article.pk)})
 
-        self.assertEquals(Article.objects.count(), 0)
+        self.assertEqual(Article.objects.count(), 0)
 
     def test_can_not_delete_article_if_not_logged_in(self):
         article = self._dummy_article(title="some_title", content="some_content")
 
         self._post("articles_delete", kwargs={"article_id": str(article.pk)})
 
-        self.assertEquals(Article.objects.count(), 1)
+        self.assertEqual(Article.objects.count(), 1)

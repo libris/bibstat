@@ -52,9 +52,9 @@ def surveys(request, *args, **kwargs):
     active_surveys = []
     inactive_surveys = []
     if Survey.objects.count() == 0:
-        message = u"Det finns inga enkäter inlagda i systemet."
+        message = "Det finns inga enkäter inlagda i systemet."
     elif not sample_year:
-        message = u"Du måste ange för vilket år du vill lista enkätsvar."
+        message = "Du måste ange för vilket år du vill lista enkätsvar."
     else:
         active_surveys = Survey.objects.by(
             sample_year=sample_year,
@@ -105,7 +105,7 @@ def surveys(request, *args, **kwargs):
         'message': message,
         'survey_base_url': reverse("surveys"),
         'url_base': settings.API_BASE_URL,
-        'bibdb_library_base_url': u"{}/library".format(settings.BIBDB_BASE_URL),
+        'bibdb_library_base_url': "{}/library".format(settings.BIBDB_BASE_URL),
         'nav_surveys_css': 'active',
         'num_active_surveys': len(active_surveys),
         'num_inactive_surveys': len(inactive_surveys),
@@ -147,22 +147,22 @@ def _surveys_redirect(request):
     free_text = method.get("free_text", "")
     surveys_state = method.get("surveys_state", "")
 
-    return HttpResponseRedirect(u"{}{}".format(
+    return HttpResponseRedirect("{}{}".format(
         reverse("surveys"),
-        u"?action=list&sample_year={}&municipality_code={}&target_group={}&status={}&email={}&free_text={}&surveys_state={}".
+        "?action=list&sample_year={}&municipality_code={}&target_group={}&status={}&email={}&free_text={}&surveys_state={}".
         format(sample_year, municipality_code, target_group, status, email, free_text, surveys_state)))
 
 
 def _surveys_export_base(request, include_previous_year=False):
     if request.method == "POST":
         survey_ids = request.POST.getlist("survey-response-ids", [])
-        filename = u"Exporterade enkätsvar ({}).xlsx".format(strftime("%Y-%m-%d %H.%M.%S"))
+        filename = "Exporterade enkätsvar ({}).xlsx".format(strftime("%Y-%m-%d %H.%M.%S"))
         workbook = surveys_to_excel_workbook(
             survey_ids, include_previous_year=include_previous_year
         )
 
         response = HttpResponse(save_virtual_workbook(workbook), content_type='application/vnd.ms-excel')
-        response['Content-Disposition'] = u'attachment; filename="{}"'.format(filename)
+        response['Content-Disposition'] = 'attachment; filename="{}"'.format(filename)
         return response
 
 
@@ -240,11 +240,11 @@ def surveys_statuses(request):
             successful = survey.publish()
             if successful:
                 num_successful_published += 1
-        message = u"Publicerade {} stycken enkäter.".format(num_successful_published)
+        message = "Publicerade {} stycken enkäter.".format(num_successful_published)
         if num_successful_published != len(survey_response_ids):
-            message = (u"{} Kunde inte publicera {} enkäter eftersom de inte har markerat att "
-                       u"de svarar för några bibliotek eller för att flera enkäter svarar för "
-                       u"samma bibliotek. Alternativt saknar biblioteken kommunkod eller huvudman.").format(
+            message = ("{} Kunde inte publicera {} enkäter eftersom de inte har markerat att "
+                       "de svarar för några bibliotek eller för att flera enkäter svarar för "
+                       "samma bibliotek. Alternativt saknar biblioteken kommunkod eller huvudman.").format(
                 message, len(survey_response_ids) - num_successful_published)
     else:
         surveys = Survey.objects.filter(id__in=survey_response_ids)
@@ -253,7 +253,7 @@ def surveys_statuses(request):
             survey.save()
 
         surveys.filter(_status__ne="published").update(set___status=status)
-        message = u"Ändrade status på {} stycken enkäter.".format(len(survey_response_ids))
+        message = "Ändrade status på {} stycken enkäter.".format(len(survey_response_ids))
 
     request.session["message"] = message
     return _surveys_redirect(request)

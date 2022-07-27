@@ -16,7 +16,7 @@ class TestCleanDataFunctions(MongoTestCase):
         self.assertEqual(survey1.reload().library.sigel, survey2.library.sigel)
         self.assertTrue(survey1.reload().library.sigel in survey1.selected_libraries)
         self.assertTrue(random_sigel not in survey1.selected_libraries)
-        self.assertEqual(survey1.reload()._status, u"published")
+        self.assertEqual(survey1.reload()._status, "published")
 
     @unittest.skip("Skipped as dependent on sigel mapping workbook")
     def test_load_sigel_mapping_from_workbook(self):

@@ -25,7 +25,7 @@ class Command(BaseCommand):
             return
         
         if not _valid_year(year):
-            raise CommandError(u"Invalid Year '{}', aborting".format(year))
+            raise CommandError("Invalid Year '{}', aborting".format(year))
         
         surveys = Survey.objects.filter(sample_year=year, is_active=True)
         survey_ids = [s.id for s in surveys]

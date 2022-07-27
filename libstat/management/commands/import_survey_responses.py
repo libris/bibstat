@@ -52,23 +52,23 @@ class Command(BaseCommand):
             variables = Variable.objects.filter(key=key)
             if len(variables) > 0:
                 variable = variables[0]
-                if variable.sub_category in [u"Biblioteksnamn"]:
+                if variable.sub_category in ["Biblioteksnamn"]:
                     library_name_column = i
                 variable_keys.append((i, variable))
 
         if library_name_column == -1:
-            raise CommandError(u"Library identifier variable not found, aborting!")
+            raise CommandError("Library identifier variable not found, aborting!")
 
         if not variable_keys:
-            raise CommandError(u"Failed to find any variables, aborting!")
+            raise CommandError("Failed to find any variables, aborting!")
 
         municipality_code_column = -1
         county_code_column = -1
         for i in range(0, work_sheet.ncols):
-            if work_sheet.cell_value(1, i) == u"Kommunkod":
+            if work_sheet.cell_value(1, i) == "Kommunkod":
                 municipality_code_column = i
                 break
-            elif work_sheet.cell_value(1, i) == u"Länskod":
+            elif work_sheet.cell_value(1, i) == "Länskod":
                 county_code_column = i
                 break
 
@@ -97,9 +97,9 @@ class Command(BaseCommand):
 
             if target_group == "specbib":
                 library_type = {
-                    u"Nationalbibliotek": u"natbib",
-                    u"Högskolebibliotek": u"univbib",
-                    u"Specialbibliotek": u"specbib"
+                    "Nationalbibliotek": "natbib",
+                    "Högskolebibliotek": "univbib",
+                    "Specialbibliotek": "specbib"
                 }[row[2]]
             else:
                 library_type = target_group
@@ -116,7 +116,7 @@ class Command(BaseCommand):
 
             num_imported_surveys += 1
 
-        logger.info(u"...{} surveys imported".format(num_imported_surveys))
+        logger.info("...{} surveys imported".format(num_imported_surveys))
 
     def handle(self, *args, **options):
         def _get_work_sheet(file_name, year):
@@ -124,25 +124,25 @@ class Command(BaseCommand):
                 book = open_workbook(file_name, verbosity=0)
                 return book.sheet_by_name(str(year))
             except XLRDError as xld_e:
-                raise CommandError(u"No data for year {} in workbook: {}".format(year, xld_e))
+                raise CommandError("No data for year {} in workbook: {}".format(year, xld_e))
 
         def _valid_year(year):
             return re.compile('^\d{4}$').match(str(year))
 
-        file_name = options.get(u"file")
-        year = options.get(u"year")
-        target_group = options.get(u"target_group")
+        file_name = options.get("file")
+        year = options.get("year")
+        target_group = options.get("target_group")
 
         if not file_name or not target_group or not year:
             logger.info(self.help_text)
             return
 
         if not _valid_year(year):
-            raise CommandError(u"Invalid Year '{}', aborting".format(year))
+            raise CommandError("Invalid Year '{}', aborting".format(year))
 
         work_sheet = _get_work_sheet(file_name, year)
 
         try:
             self._import_from_work_sheet(work_sheet, year, target_group)
         except Exception as e:
-            print(traceback.format_exc())
+            print((traceback.format_exc()))

@@ -22,7 +22,7 @@ class Command(BaseCommand):
         changed = False
 
         if not old_sigel or not new_sigel:
-            print(self.help_text)
+            print((self.help_text))
             sys.exit(1)
 
         logger.info("Changing sigel {} to {}".format(old_sigel, new_sigel))

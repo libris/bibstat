@@ -13,19 +13,19 @@ logger = logging.getLogger(__name__)
 
 class Command(BaseCommand):
     variableTypes = {
-        u"Text": TYPE_STRING[0],
-        u"Numerisk": TYPE_STRING[0],
-        u"Boolesk": TYPE_BOOLEAN[0],
-        u"Integer": TYPE_INTEGER[0],
-        u"Long": TYPE_LONG[0],
-        u"Decimal två": TYPE_DECIMAL[0],
-        u"Decimal ett": TYPE_DECIMAL[0],
-        u"Procent": TYPE_PERCENT[0]
+        "Text": TYPE_STRING[0],
+        "Numerisk": TYPE_STRING[0],
+        "Boolesk": TYPE_BOOLEAN[0],
+        "Integer": TYPE_INTEGER[0],
+        "Long": TYPE_LONG[0],
+        "Decimal två": TYPE_DECIMAL[0],
+        "Decimal ett": TYPE_DECIMAL[0],
+        "Procent": TYPE_PERCENT[0]
     }
 
     isPublic = {
-        u"Öppet": True,
-        u"Inte": False
+        "Öppet": True,
+        "Inte": False
     }
 
     help = "Imports statistical variables from a spreadsheet"
@@ -45,7 +45,7 @@ class Command(BaseCommand):
         file = options["file"]
         target_group = options["target_group"]
 
-        logger.info(u"Importing {} variables from: {}...".format(target_group, file))
+        logger.info("Importing {} variables from: {}...".format(target_group, file))
 
         book = open_workbook(file)
         work_sheet = book.sheet_by_index(0)
@@ -63,13 +63,13 @@ class Command(BaseCommand):
             variable_type = row[4].strip()
             is_public = row[5].strip()
 
-            if variable_type not in self.variableTypes.keys():
-                raise CommandError(u"Invalid variable type: {} for key: {}".format(variable_type, key))
+            if variable_type not in list(self.variableTypes.keys()):
+                raise CommandError("Invalid variable type: {} for key: {}".format(variable_type, key))
             else:
                 variable_type = self.variableTypes[variable_type]
 
-            if is_public not in self.isPublic.keys():
-                raise CommandError(u"Invalid public/private column value: {} for key: {}".format(is_public, key))
+            if is_public not in list(self.isPublic.keys()):
+                raise CommandError("Invalid public/private column value: {} for key: {}".format(is_public, key))
             else:
                 is_public = self.isPublic[is_public]
 
@@ -93,5 +93,5 @@ class Command(BaseCommand):
                 object.save()
                 updated_variables += 1
 
-        logger.info(u"...{} {} variables imported, {} updated.".format(imported_variables,
+        logger.info("...{} {} variables imported, {} updated.".format(imported_variables,
                                                                        target_group, updated_variables))

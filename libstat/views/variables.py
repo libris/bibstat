@@ -21,9 +21,9 @@ logger = logging.getLogger(__name__)
 def variables(request):
     target_groups = request.GET.getlist("target_group", [])
     if target_groups:
-        if target_groups == [u"all"]:
+        if target_groups == ["all"]:
             #target_group_filter = [g[0] for g in SURVEY_TARGET_GROUPS]
-            target_group_filter = (u"sjukbib", u"skolbib", u"specbib", u"folkbib")
+            target_group_filter = ("sjukbib", "skolbib", "specbib", "folkbib")
             variables = Variable.objects.filter(target_groups__all=target_group_filter)
         else:
             target_group_filter = target_groups
@@ -47,7 +47,7 @@ def create_variable(request):
     context = {
         'mode': 'create',
         'form_url': reverse("create_variable"),
-        'modal_title': u"Ny term (utkast)"
+        'modal_title': "Ny term (utkast)"
     }
     if request.method == "POST":
         errors = {}
@@ -58,11 +58,11 @@ def create_variable(request):
                 # No redirect since this is displayed as a modal and we do a javascript redirect if no form errors
                 return HttpResponse(v.to_json(), content_type="application/json")
             except NotUniqueError as nue:
-                logger.warning(u"A Variable with key {} already exists: {}".format(form.fields["key"], nue))
-                errors['key'] = [u"Det finns redan en term med nyckel {}".format(form.fields["key"])]
+                logger.warning("A Variable with key {} already exists: {}".format(form.fields["key"], nue))
+                errors['key'] = ["Det finns redan en term med nyckel {}".format(form.fields["key"])]
             except Exception as e:
-                logger.warning(u"Error creating Variable: {}".format(e))
-                errors['__all__'] = [u"Kan inte skapa term {}".format(form.fields["key"])]
+                logger.warning("Error creating Variable: {}".format(e))
+                errors['__all__'] = ["Kan inte skapa term {}".format(form.fields["key"])]
         else:
             errors = form.errors
             context['errors'] = errors
@@ -89,7 +89,7 @@ def edit_variable(request, variable_id):
     context = {
         'mode': 'edit',
         'form_url': reverse("edit_variable", kwargs={"variable_id": variable_id}),
-        'modal_title': u"{} ({})".format(v.key, v.state["label"]) if not v.state["state"] == u"current" else v.key
+        'modal_title': "{} ({})".format(v.key, v.state["label"]) if not v.state["state"] == "current" else v.key
     }
 
     if request.method == "POST":
@@ -111,11 +111,11 @@ def edit_variable(request, variable_id):
                 return HttpResponse(v.to_json(), content_type="application/json")
 
             except NotUniqueError as nue:
-                logger.warning(u"A Variable with key {} already exists: {}".format(v.key, nue))
-                errors['key'] = [u"Det finns redan en term med nyckel {}".format(v.key)]
+                logger.warning("A Variable with key {} already exists: {}".format(v.key, nue))
+                errors['key'] = ["Det finns redan en term med nyckel {}".format(v.key)]
             except Exception as e:
-                logger.warning(u"Error updating Variable {}: {}".format(variable_id, e))
-                errors['__all__'] = [u"Kan inte uppdatera term {}".format(v.key)]
+                logger.warning("Error updating Variable {}: {}".format(variable_id, e))
+                errors['__all__'] = ["Kan inte uppdatera term {}".format(v.key)]
 
         else:
             errors = form.errors

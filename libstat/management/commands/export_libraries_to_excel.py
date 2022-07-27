@@ -31,16 +31,16 @@ class Command(BaseCommand):
             return
 
         if not _valid_year(year):
-            raise CommandError(u"Invalid Year '{}', aborting".format(year))
+            raise CommandError("Invalid Year '{}', aborting".format(year))
 
         if all not in ["y", "Y", "n", "N"]:
-            raise CommandError(u"Invalid 'all' option '{}', aborting").format(all)
+            raise CommandError("Invalid 'all' option '{}', aborting").format(all)
 
         if all and (all == "Y" or all == "y"):
-            libraries = [s.library for s in Survey.objects.filter(sample_year=year, _status=u"published").only("library")]
+            libraries = [s.library for s in Survey.objects.filter(sample_year=year, _status="published").only("library")]
         else:
             #Find all surveys with a generated random code instead of a sigel
-            libraries = [s.library for s in Survey.objects.filter(sample_year=year, _status=u"published").only("library") if
+            libraries = [s.library for s in Survey.objects.filter(sample_year=year, _status="published").only("library") if
                          len(s.library.sigel) == 10]
 
         workbook = Workbook()

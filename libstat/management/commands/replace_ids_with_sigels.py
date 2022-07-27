@@ -25,13 +25,13 @@ class Command(BaseCommand):
             return
 
         if not _valid_year(year):
-            raise CommandError(u"Invalid Year '{}', aborting".format(year))
+            raise CommandError("Invalid Year '{}', aborting".format(year))
 
         logger.info("Changing sigels for surveys... year %s" % year)
 
         sigel_mapping = _load_sigel_mapping_from_workbook(sheet=year, column_old_value=6, column_new_value=7)
 
-        for code in sigel_mapping.keys():
+        for code in list(sigel_mapping.keys()):
             sigel = sigel_mapping[code]
             logger.debug("Updating %s to %s" % (code, sigel))
             survey = Survey.objects.filter(library__sigel=code, sample_year=year).first()

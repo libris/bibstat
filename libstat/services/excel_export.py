@@ -1,4 +1,4 @@
-from __future__ import division
+
 import glob
 import os
 import datetime
@@ -66,7 +66,7 @@ def public_excel_workbook(year):
 def _published_open_data_as_workbook(year):
     workbook = Workbook()
     worksheet = workbook.active
-    worksheet.title = u"Värden"
+    worksheet.title = "Värden"
 
     public_variables = list(Variable.objects.filter(is_public=True).distinct("key"))
 
@@ -107,7 +107,7 @@ def _published_open_data_as_workbook(year):
         worksheet.append(row)
 
     variable_sheet = workbook.create_sheet()
-    variable_sheet.title = u"Definitioner"
+    variable_sheet.title = "Definitioner"
     for variable in Variable.objects.filter(key__in=variable_keys):
         variable_sheet.append([variable.key, variable.description])
 
@@ -138,7 +138,7 @@ def _populate_survey_cells(survey, worksheet, headers_columns_dict, row_no):
         if headers_columns_dict.get(variable_key, None):
             value = observation.value
             if observation.value_unknown:
-                value = u"okänt värde"
+                value = "okänt värde"
             worksheet.cell(row=row_no, column=headers_columns_dict[variable_key]).value = value
 
     other_sigels = [s for s in survey.selected_libraries if s != survey.library.sigel]

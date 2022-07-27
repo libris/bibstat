@@ -34,7 +34,7 @@ class MongoTestCase(TestCase):
         url = reverse(action, kwargs=kwargs)
         if params:
             url += "?"
-            for key, value in params.items():
+            for key, value in list(params.items()):
                 url = "{}{}={}&".format(url, key, value)
         return self.client.get(url)
 
@@ -54,7 +54,7 @@ class MongoTestCase(TestCase):
         return Library(name=name, sigel=sigel, bibdb_id=bibdb_id, city=city,
                        municipality_code=municipality_code, library_type=library_type, external_identifiers=external_identifiers)
 
-    def _dummy_variable(self, key=None, description=u"dummy description", type="integer", is_public=True,
+    def _dummy_variable(self, key=None, description="dummy description", type="integer", is_public=True,
                         target_groups=["folkbib"], is_draft=False, replaced_by=None, save=True, question=None,
                         category=None, sub_category=None, replaces=[], question_part=None):
         if not key:
@@ -89,7 +89,7 @@ class MongoTestCase(TestCase):
             survey.reload()
         return survey
 
-    def _dummy_open_data(self, library_name=u"dummy_lib", sigel="dummy_sigel", sample_year=2013,
+    def _dummy_open_data(self, library_name="dummy_lib", sigel="dummy_sigel", sample_year=2013,
                          target_group="folkbib", is_active=True,
                          variable=None, value=1, date_created=None, date_modified=None, save=True):
         if not variable:

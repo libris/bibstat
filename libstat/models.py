@@ -66,16 +66,16 @@ class VariableBase(Document):
     @property
     def state(self):
         if self.is_draft:
-            return {u"state": u"draft", u"label": u"utkast"}
+            return {"state": "draft", "label": "utkast"}
         elif self.replaced_by:
-            return {u"state": u"replaced", u"label": u"ersatt"}
+            return {"state": "replaced", "label": "ersatt"}
         elif self._is_no_longer_active():
-            return {u"state": u"discontinued", u"label": u"avslutad"}
+            return {"state": "discontinued", "label": "avslutad"}
         elif self._is_not_yet_active():
-            return {u"state": u"pending", u"label": u"vilande"}
+            return {"state": "pending", "label": "vilande"}
         else:
             # Cannot use 'active' as state/css class, it's already a class in Bootstrap...
-            return {u"state": u"current", u"label": u"aktiv"}
+            return {"state": "current", "label": "aktiv"}
 
     def _is_no_longer_active(self):
         return self.active_to and datetime.utcnow().date() > self.active_to.date()
@@ -100,7 +100,7 @@ class Variable(VariableBase):
     def store_version_and_update_date_modified(cls, sender, document, **kwargs):
         if document.id and not document.is_draft:
             changed_fields = document._changed_fields
-            logger.debug(u"PRE_SAVE: Fields {} have changed, creating variable version from current version".format(
+            logger.debug("PRE_SAVE: Fields {} have changed, creating variable version from current version".format(
                 changed_fields))
             query_set = Variable.objects.filter(pk=document.id)
             assert len(query_set) > 0  # Trigger lazy loading
@@ -120,7 +120,7 @@ class Variable(VariableBase):
                     replaced.active_to = None
                     replaced.save()
                     logger.debug(
-                        u"POST_DELETE: Setting 'active_to' to None on replaced {} when deleting replacement".format(
+                        "POST_DELETE: Setting 'active_to' to None on replaced {} when deleting replacement".format(
                             replaced.id))
 
     @property
@@ -154,11 +154,11 @@ class Variable(VariableBase):
                     variable = Variable.objects.get(pk=object_id)
                     if variable.replaced_by is not None and variable.replaced_by.id != self.id:
                         raise AttributeError(
-                            u"Variable {} is already replaced by {}".format(object_id, variable.replaced_by.id))
+                            "Variable {} is already replaced by {}".format(object_id, variable.replaced_by.id))
                     siblings_to_replace.add(variable)
                 except Exception as e:
                     logger.error(
-                        u"Error while fetching Variable with id {} to be replaced by Variable {}: {}".format(object_id,
+                        "Error while fetching Variable with id {} to be replaced by Variable {}: {}".format(object_id,
                                                                                                              self.id,
                                                                                                              e))
                     raise e
@@ -216,25 +216,25 @@ class Variable(VariableBase):
         return display_names
 
     def to_dict(self, id_prefix=""):
-        json_ld_dict = {u"@id": u"{}{}".format(id_prefix, self.key),
-                        u"@type": [u"rdf:Property", u"qb:MeasureProperty"],
-                        u"comment": self.description,
-                        u"range": self.type_to_rdf_type(self.type)}
+        json_ld_dict = {"@id": "{}{}".format(id_prefix, self.key),
+                        "@type": ["rdf:Property", "qb:MeasureProperty"],
+                        "comment": self.description,
+                        "range": self.type_to_rdf_type(self.type)}
 
         if self.replaces:
-            json_ld_dict[u"replaces"] = [replaced.key for replaced in self.replaces]
+            json_ld_dict["replaces"] = [replaced.key for replaced in self.replaces]
 
         if self.replaced_by:
-            json_ld_dict[u"replacedBy"] = self.replaced_by.key
+            json_ld_dict["replacedBy"] = self.replaced_by.key
 
         if self.active_to or self.active_from:
-            range_str = u"name=Giltighetstid;"
+            range_str = "name=Giltighetstid;"
             if self.active_from:
-                range_str += u" start={};".format(self.active_from.date())
+                range_str += " start={};".format(self.active_from.date())
             if self.active_to:
-                range_str += u" end={};".format(self.active_to.date())
+                range_str += " end={};".format(self.active_to.date())
 
-            json_ld_dict[u"valid"] = range_str
+            json_ld_dict["valid"] = range_str
 
         return json_ld_dict
 
@@ -242,7 +242,7 @@ class Variable(VariableBase):
         return rdfVariableTypes[type]
 
     def as_simple_dict(self):
-        return {u'key': self.key, u'id': str(self.id), u'description': self.description}
+        return {'key': self.key, 'id': str(self.id), 'description': self.description}
 
     def is_deletable(self):
         if self.is_draft:
@@ -269,7 +269,7 @@ class VariableVersion(VariableBase):
 
 class ExternalIdentifier(EmbeddedDocument):
     ID_TYPES = (
-        (u"school_code", u"Skolenhetskod")
+        ("school_code", "Skolenhetskod")
     )
     identifier = fields.StringField(blank=False)
     type = fields.StringField(blank=False, choices=ID_TYPES)
@@ -318,7 +318,7 @@ class SurveyObservation(EmbeddedDocument):
     }
 
     def __unicode__(self):
-        return u"{0}: {1}".format(self.variable, self.value)
+        return "{0}: {1}".format(self.variable, self.value)
 
     @property
     def instance_id(self):
@@ -377,19 +377,19 @@ class SurveyQuerySet(QuerySet):
 
 class SurveyBase(Document):
     PRINCIPALS = (
-        (u"stat", "Stat"),
-        (u"kommun", "Kommun"),
-        (u"landsting", "Landsting"),
-        (u"foretag", "Företag"),
-        (u"stiftelse", "Stiftelse")
+        ("stat", "Stat"),
+        ("kommun", "Kommun"),
+        ("landsting", "Landsting"),
+        ("foretag", "Företag"),
+        ("stiftelse", "Stiftelse")
     )
 
     STATUSES = (
-        (u"not_viewed", u"Ej öppnad"),
-        (u"initiated", u"Påbörjad"),
-        (u"submitted", u"Inskickad"),
-        (u"controlled", u"Kontrollerad"),
-        (u"published", u"Publicerad")
+        ("not_viewed", "Ej öppnad"),
+        ("initiated", "Påbörjad"),
+        ("submitted", "Inskickad"),
+        ("controlled", "Kontrollerad"),
+        ("published", "Publicerad")
     )
     _status_labels = dict(STATUSES)
 
@@ -430,7 +430,7 @@ class SurveyBase(Document):
     @status.setter
     def status(self, status):
         if status not in [s[0] for s in Survey.STATUSES]:
-            raise KeyError(u"Invalid status '{}'".format(status))
+            raise KeyError("Invalid status '{}'".format(status))
         elif status == "published":
             self.publish()
         elif status != "published":
@@ -468,7 +468,7 @@ class SurveyBase(Document):
         return targetGroups[self.target_group]
 
     def __unicode__(self):
-        return u"{} {}".format(self.library.name, self.sample_year)
+        return "{} {}".format(self.library.name, self.sample_year)
 
     def __init__(self, *args, **kwargs):
         status = kwargs.pop("status", None)
@@ -593,10 +593,10 @@ class Survey(SurveyBase):
 
     def previous_years_survey(self):
         previous_year = self.sample_year - 1
-        previous_survey = Survey.objects.filter(_status=u"published", sample_year=previous_year,
+        previous_survey = Survey.objects.filter(_status="published", sample_year=previous_year,
                                                      library__sigel=self.library.sigel).first()
         if not previous_survey:
-            previous_survey = Survey.objects.filter(_status=u"published", sample_year=previous_year,
+            previous_survey = Survey.objects.filter(_status="published", sample_year=previous_year,
                                                      library__name__iexact=self.library.name).first()
         return previous_survey
 
@@ -846,21 +846,21 @@ class OpenData(Document):
 
     def to_dict(self):
         return {
-            u"@id": str(self.id),
-            u"@type": u"Observation",
-            u"library": {
-                u"@id": u"{}/library/{}".format(settings.BIBDB_BASE_URL, self.sigel) if self.sigel else "",
-                u"name": self.library_name
+            "@id": str(self.id),
+            "@type": "Observation",
+            "library": {
+                "@id": "{}/library/{}".format(settings.BIBDB_BASE_URL, self.sigel) if self.sigel else "",
+                "name": self.library_name
             },
-            u"sampleYear": self.sample_year,
-            u"targetGroup": targetGroups[self.target_group],
+            "sampleYear": self.sample_year,
+            "targetGroup": targetGroups[self.target_group],
             self.variable.key: self.value,
-            u"published": self.date_created_str(),
-            u"modified": self.date_modified_str()
+            "published": self.date_created_str(),
+            "modified": self.date_modified_str()
         }
 
     def __unicode__(self):
-        return u"{} {} {} {} {}".format(self.library_name, self.sample_year, self.target_group, self.variable.key,
+        return "{} {} {} {} {}".format(self.library_name, self.sample_year, self.target_group, self.variable.key,
                                         self.value)
 
     def __init__(self, *args, **kwargs):

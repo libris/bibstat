@@ -64,7 +64,7 @@ class VariableForm(forms.Form):
         if replaces and not active_from:
             self._errors['replaces'] = self.error_class(
                 ["Ange när ersättning börjar gälla genom att sätta 'Giltig fr o m'"])
-            self._errors['active_from'] = self.error_class([u"Måste anges"])
+            self._errors['active_from'] = self.error_class(["Måste anges"])
 
             del cleaned_data['replaces']
             del cleaned_data['active_from']
@@ -72,7 +72,7 @@ class VariableForm(forms.Form):
         active_to = cleaned_data['active_to'] if 'active_to' in cleaned_data else None
         if (self.instance and self.instance.replaced_by and active_to and self.instance.active_to
                 and active_to != self.instance.active_to.date()):
-            self._errors['active_to'] = self.error_class([u"Styrs av ersättande term"])
+            self._errors['active_to'] = self.error_class(["Styrs av ersättande term"])
             del cleaned_data['active_to']
         return cleaned_data
 

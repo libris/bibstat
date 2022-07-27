@@ -19,7 +19,7 @@ class SurveyForm(forms.Form):
                  "name": cell.variable_key}
 
         if cell.sum_of:
-            attrs["data-sum-of"] = " ".join(map(lambda s: s, cell.sum_of))
+            attrs["data-sum-of"] = " ".join([s for s in cell.sum_of])
             attrs["data-bv-notempty"] = ""
             attrs["placeholder"] = "Obligatorisk"
 
@@ -28,10 +28,10 @@ class SurveyForm(forms.Form):
             if isinstance(cell.part_of, list):
                 part_of_as_string = " ".join(cell.part_of)
                 attrs["data-part-of"] = part_of_as_string
-                attrs["data-bv-callback-message"] = u"Värdet får inte vara högre än värdet i följande fält: {}".format(part_of_as_string)
+                attrs["data-bv-callback-message"] = "Värdet får inte vara högre än värdet i följande fält: {}".format(part_of_as_string)
             else:
                 attrs["data-part-of"] = cell.part_of
-                attrs["data-bv-callback-message"] = u"Värdet får inte vara högre än värdet i fältet {}".format(cell.part_of)
+                attrs["data-bv-callback-message"] = "Värdet får inte vara högre än värdet i fältet {}".format(cell.part_of)
 
         if cell.has_part:
             attrs["data-bv-callback"] = ""
@@ -39,11 +39,11 @@ class SurveyForm(forms.Form):
                 has_part_as_string = " ".join(cell.has_part)
                 attrs["data-has-part"] = has_part_as_string
                 if not cell.part_of:
-                    attrs["data-bv-callback-message"] = u"Värdet får inte vara mindre än värdet i följande fält: {}".format(has_part_as_string)
+                    attrs["data-bv-callback-message"] = "Värdet får inte vara mindre än värdet i följande fält: {}".format(has_part_as_string)
             else:
                 attrs["data-has-part"] = cell.has_part
                 if not cell.part_of:
-                    attrs["data-bv-callback-message"] = u"Värdet får inte vara mindre än värdet i fältet {}".format(cell.has_part)
+                    attrs["data-bv-callback-message"] = "Värdet får inte vara mindre än värdet i fältet {}".format(cell.has_part)
 
         if cell.required == True:
             attrs["data-bv-notempty"] = ""
@@ -72,10 +72,10 @@ class SurveyForm(forms.Form):
             attrs["data-bv-regexp"] = ""
             if variable_type == "integer":
                 attrs["data-bv-regexp-regexp"] = "^(-|(0|[1-9 ]([0-9 ]){0,10}))$"
-                attrs["data-bv-regexp-message"] = u"Vänligen mata in ett numeriskt värde mindre än eller lika med 999 999 999, alternativt '-' om värdet inte är relevant"
+                attrs["data-bv-regexp-message"] = "Vänligen mata in ett numeriskt värde mindre än eller lika med 999 999 999, alternativt '-' om värdet inte är relevant"
             elif variable_type == "decimal":
                 attrs["data-bv-regexp-regexp"] = "^(-|[\d ]{1,11}(\,[\d ]{1,3})?)$"
-                attrs["data-bv-regexp-message"] = u"Vänligen mata in ett numeriskt värde mindre än eller lika med 999 999 999,999 med max 3 decimaler (t ex 12,522), alternativt '-' om värdet inte är relevant"
+                attrs["data-bv-regexp-message"] = "Vänligen mata in ett numeriskt värde mindre än eller lika med 999 999 999,999 med max 3 decimaler (t ex 12,522), alternativt '-' om värdet inte är relevant"
 
         else:
 
@@ -83,13 +83,13 @@ class SurveyForm(forms.Form):
             if variable_type == "integer":
                 attrs["data-bv-regexp"] = ""
                 attrs["data-bv-regexp-regexp"] = "^(-|(0|[1-9 ]([0-9 ]){0,9}))$"
-                attrs["data-bv-message"] = u"Vänligen mata in ett numeriskt värde mindre än eller lika med 99 999 999, alternativt '-' om värdet inte är relevant"
+                attrs["data-bv-message"] = "Vänligen mata in ett numeriskt värde mindre än eller lika med 99 999 999, alternativt '-' om värdet inte är relevant"
 
             # Decimal max value is 99 999 999,999
             if variable_type == "decimal":
                 attrs["data-bv-regexp"] = ""
                 attrs["data-bv-regexp-regexp"] = "^(-|[\d ]{1,10}(\,[\d ]{1,3})?)$"
-                attrs["data-bv-regexp-message"] = u"Vänligen mata in ett numeriskt värde mindre än eller lika med 99999999,999 med max 3 decimaler (t ex 12,522), alternativt '-' om värdet inte är relevant"
+                attrs["data-bv-regexp-message"] = "Vänligen mata in ett numeriskt värde mindre än eller lika med 99999999,999 med max 3 decimaler (t ex 12,522), alternativt '-' om värdet inte är relevant"
 
             if variable_type == "email":
                 #attrs["data-bv-emailaddress"] = ""
@@ -97,7 +97,7 @@ class SurveyForm(forms.Form):
                 attrs["autocomplete"] = "email"
                 attrs["type"] = "email"
                 attrs["data-bv-regexp-regexp"] = "^([\w!#$%&'*+/=?`{|}~^-]+(?:\.[\w!#$%&'*+/=?`{|}~^-]+)*@(?:[A-Za-z0-9-]+\.)+[A-Za-z]{2,6})$"
-                attrs["data-bv-regexp-message"] = u"Vänligen mata in en giltig emailadress"
+                attrs["data-bv-regexp-message"] = "Vänligen mata in en giltig emailadress"
 
             if variable_type == "string":
                 attrs["data-bv-stringlength"] = ""
@@ -108,7 +108,7 @@ class SurveyForm(forms.Form):
                 attrs["autocomplete"] = "tel"
                 attrs["type"] = "tel"
                 attrs["data-bv-regexp-regexp"] = "^(-|\+?(\d\d?-?)+\d(\s?\d+)*\d+)$"
-                attrs["data-bv-regexp-message"] = u"Vänligen mata in ett giltigt telefonnummer utan bokstäver och parenteser, t ex 010-709 30 00"
+                attrs["data-bv-regexp-message"] = "Vänligen mata in ett giltigt telefonnummer utan bokstäver och parenteser, t ex 010-709 30 00"
 
         # Number of hours per week
         if "Open103" in cell.variable_key:
@@ -141,7 +141,7 @@ class SurveyForm(forms.Form):
             field = forms.CharField(required=False, widget=forms.TextInput(attrs=attrs))
 
         if not observation or observation.value_unknown:
-            field.initial = u"Värdet är okänt"
+            field.initial = "Värdet är okänt"
         elif observation.value != None and variable_type == "decimal":
             field.initial = str(observation.value).replace(".", ",") # decimals are displayed with comma in the form
         else:
@@ -152,7 +152,7 @@ class SurveyForm(forms.Form):
 
         if cell.variable_key == "Besok01":
             logger.debug("attrs:")
-            for attr, value in attrs.items():
+            for attr, value in list(attrs.items()):
                 logger.debug(attr)
 
         return field
@@ -182,9 +182,9 @@ class SurveyForm(forms.Form):
 
             if library.sigel in other_surveys_selected_sigels:
                 attrs["disabled"] = "disabled"
-                row["comment"] = u"Detta bibliotek rapporteras redan för i en annan enkät."
+                row["comment"] = "Detta bibliotek rapporteras redan för i en annan enkät."
                 if current_library or library.sigel in this_surveys_selected_sigels:
-                    row["comment"] = u"Rapporteringen för detta bibliotek kolliderar med en annan enkät."
+                    row["comment"] = "Rapporteringen för detta bibliotek kolliderar med en annan enkät."
                     self.library_selection_conflict = True
                     del attrs["disabled"]
 
@@ -194,7 +194,7 @@ class SurveyForm(forms.Form):
                     attrs["checked"] = "checked"
 
                 if not library.sigel in other_surveys_selected_sigels:
-                    row["comment"] = u"Detta är det bibliotek som mottagit denna enkät. Om du samredovisar med andra bibliotek, glöm inte att även kryssa för dem här i listan."
+                    row["comment"] = "Detta är det bibliotek som mottagit denna enkät. Om du samredovisar med andra bibliotek, glöm inte att även kryssa för dem här i listan."
             elif library.sigel in this_surveys_selected_sigels:
                 attrs["checked"] = "checked"
 
@@ -228,21 +228,21 @@ class SurveyForm(forms.Form):
 
     def _mailto_link(self):
         body = (
-            u"%0D%0A"
-            u"----------" + "%0D%0A"
-            u"Var%20vänlig%20och%20låt%20följande%20information%20stå%20kvar%20i%20meddelandet." + "%0D%0A"
-            u"" + "%0D%0A"
-            u"Bibliotek:%20{}%20({})%20i%20{}".format(self.library_name, self.library_sigel, self.city) + "%0D%0A"
-            u"Kommun/län:%20{}%20({})".format(municipalities.get(self.municipality_code, ""), self.municipality_code) + "%0D%0A"
-            u"Statistikansvarig:%20{}".format(self.email) + "%0D%0A"
-            u"Insamlingsår:%20{}".format(self.sample_year) + "%0D%0A"
-            u"----------"
+            "%0D%0A"
+            "----------" + "%0D%0A"
+            "Var%20vänlig%20och%20låt%20följande%20information%20stå%20kvar%20i%20meddelandet." + "%0D%0A"
+            "" + "%0D%0A"
+            "Bibliotek:%20{}%20({})%20i%20{}".format(self.library_name, self.library_sigel, self.city) + "%0D%0A"
+            "Kommun/län:%20{}%20({})".format(municipalities.get(self.municipality_code, ""), self.municipality_code) + "%0D%0A"
+            "Statistikansvarig:%20{}".format(self.email) + "%0D%0A"
+            "Insamlingsår:%20{}".format(self.sample_year) + "%0D%0A"
+            "----------"
         )
 
         return (
-            u"mailto:biblioteksstatistik@kb.se"
-            u"?subject=Fråga%20för%20statistikenkät:%20{}%20({})".format(self.library_name, self.library_sigel) +
-            u"&body={}".format(body)
+            "mailto:biblioteksstatistik@kb.se"
+            "?subject=Fråga%20för%20statistikenkät:%20{}%20({})".format(self.library_name, self.library_sigel) +
+            "&body={}".format(body)
         )
 
     def __init__(self, *args, **kwargs):
@@ -281,7 +281,7 @@ class SurveyForm(forms.Form):
         self.city = survey.library.city
         self.municipality_code = survey.library.municipality_code
         self.sample_year = survey.sample_year
-        self.is_user_read_only = not survey.status in (u"not_viewed", u"initiated")
+        self.is_user_read_only = not survey.status in ("not_viewed", "initiated")
         self.is_read_only = not authenticated and self.is_user_read_only
         self.can_submit = not authenticated and survey.status in ("not_viewed", "initiated")
         self.password = survey.password
@@ -333,5 +333,5 @@ class SurveyForm(forms.Form):
 
         if self.is_read_only:
             self.fields["read_only"].initial = "true"
-            for key, input in self.fields.items():
+            for key, input in list(self.fields.items()):
                 input.widget.attrs["readonly"] = ""

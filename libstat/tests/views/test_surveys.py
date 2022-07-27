@@ -14,7 +14,7 @@ class TestSurveyAuthorization(MongoTestCase):
 
         response = self._get("survey", kwargs={"survey_id": survey.pk})
 
-        self.assertEquals(response.status_code, 200)
+        self.assertEqual(response.status_code, 200)
         self.assertTrue("form" in response.context)
 
     def test_can_view_survey_if_not_logged_in_and_have_correct_password(self):
@@ -23,9 +23,9 @@ class TestSurveyAuthorization(MongoTestCase):
         response = self._post(action="survey", kwargs={"survey_id": survey.pk},
                               data={"password": survey.password})
 
-        self.assertEquals(response.status_code, 302)
+        self.assertEqual(response.status_code, 302)
         response = self._get(action="survey", kwargs={"survey_id": survey.pk})
-        self.assertEquals(response.status_code, 200)
+        self.assertEqual(response.status_code, 200)
         self.assertTrue("form" in response.context)
 
     def test_can_not_view_survey_if_not_logged_in_and_have_incorrect_password(self):
@@ -33,7 +33,7 @@ class TestSurveyAuthorization(MongoTestCase):
 
         response = self._get("survey", kwargs={"survey_id": survey.pk})
 
-        self.assertEquals(response.status_code, 200)
+        self.assertEqual(response.status_code, 200)
         self.assertFalse("form" in response.context)
 
     def test_can_enter_password_if_not_logged_in(self):
@@ -42,7 +42,7 @@ class TestSurveyAuthorization(MongoTestCase):
         response = self._get("survey", kwargs={"survey_id": survey.pk})
 
         self.assertContains(response,
-                            u"<button type='submit' class='btn btn-primary'>Visa enkäten</button>",
+                            "<button type='submit' class='btn btn-primary'>Visa enkäten</button>",
                             count=1,
                             status_code=200,
                             html=True)
@@ -53,11 +53,11 @@ class TestSurveyAuthorization(MongoTestCase):
         response = self._post(action="survey", kwargs={"survey_id": survey.pk},
                               data={"password": survey.password})
 
-        self.assertEquals(response.status_code, 302)
+        self.assertEqual(response.status_code, 302)
         response = self._get(action="index")
-        self.assertEquals(response.status_code, 200)
+        self.assertEqual(response.status_code, 200)
         response = self._get(action="survey", kwargs={"survey_id": survey.pk})
-        self.assertEquals(response.status_code, 200)
+        self.assertEqual(response.status_code, 200)
         self.assertTrue("form" in response.context)
 
     def test_should_not_show_navbar_if_not_logged_in(self):
@@ -65,24 +65,24 @@ class TestSurveyAuthorization(MongoTestCase):
 
         response = self._post(action="survey", kwargs={"survey_id": survey.pk},
                               data={"password": survey.password})
-        self.assertEquals(response.status_code, 302)
+        self.assertEqual(response.status_code, 302)
         response = self._get(action="survey", kwargs={"survey_id": survey.pk})
-        self.assertEquals(response.status_code, 200)
+        self.assertEqual(response.status_code, 200)
 
         self.assertTrue("hide_navbar" in response.context)
         self.assertNotContains(response,
-                               u'<div class="navbar navbar-inverse navbar-static-top" role="navigation">')
+                               '<div class="navbar navbar-inverse navbar-static-top" role="navigation">')
 
     def test_should_show_navbar_if_logged_in(self):
         self._login()
         survey = self._dummy_survey()
 
         response = self._get(action="survey", kwargs={"survey_id": survey.pk})
-        self.assertEquals(response.status_code, 200)
+        self.assertEqual(response.status_code, 200)
 
         self.assertFalse("hide_navbar" in response.context)
         self.assertContains(response,
-                            u'<div class="navbar navbar-inverse navbar-static-top" role="navigation">')
+                            '<div class="navbar navbar-inverse navbar-static-top" role="navigation">')
 
     def test_can_see_inactive_survey_if_admin(self):
         self._login()
@@ -90,14 +90,14 @@ class TestSurveyAuthorization(MongoTestCase):
 
         response = self._get(action="survey", kwargs={"survey_id": survey.pk})
 
-        self.assertEquals(response.status_code, 200)
+        self.assertEqual(response.status_code, 200)
 
     def test_can_not_see_inactive_survey_if_not_admin(self):
         survey = self._dummy_survey(is_active=False)
 
         response = self._get(action="survey", kwargs={"survey_id": survey.pk})
 
-        self.assertEquals(response.status_code, 403)
+        self.assertEqual(response.status_code, 403)
 
 
 class TestSurveyStatus(MongoTestCase):
@@ -114,11 +114,11 @@ class TestSurveyStatus(MongoTestCase):
                               data={"survey-response-ids": [survey1.pk, survey3.pk],
                                     "new_status": "controlled"})
 
-        self.assertEquals(response.status_code, 302)
-        self.assertEquals(survey1.reload().status, "controlled")
-        self.assertEquals(survey2.reload().status, "initiated")
-        self.assertEquals(survey3.reload().status, "controlled")
-        self.assertEquals(survey4.reload().status, "controlled")
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(survey1.reload().status, "controlled")
+        self.assertEqual(survey2.reload().status, "initiated")
+        self.assertEqual(survey3.reload().status, "controlled")
+        self.assertEqual(survey4.reload().status, "controlled")
 
     def test_publishes_surveys(self):
         survey1 = self._dummy_survey(status="not_viewed")
@@ -161,7 +161,7 @@ class TestSurveysExport(MongoTestCase):
         response = self._post(action="surveys_export",
                               data={"survey-response-ids": [survey1.pk, survey2.pk]})
 
-        self.assertEquals(response.status_code, 200)
+        self.assertEqual(response.status_code, 200)
 
     def test_sets_correct_values_when_exporting_surveys_as_excel(self):
         survey1 = self._dummy_survey(library=self._dummy_library(name="lib1_name"))
@@ -169,12 +169,12 @@ class TestSurveysExport(MongoTestCase):
 
         worksheet = surveys_to_excel_workbook([survey1.pk, survey2.pk]).active
 
-        self.assertEquals(worksheet["A1"].value, u"År")
-        self.assertEquals(worksheet["B1"].value, "Bibliotek")
-        self.assertEquals(worksheet["G1"].value, "Kommunkod")
-        self.assertEquals(worksheet["B2"].value, "lib1_name")
-        self.assertEquals(worksheet["B3"].value, "lib2_name")
-        self.assertEquals(worksheet["E3"].value, "Kontrollerad")
+        self.assertEqual(worksheet["A1"].value, "År")
+        self.assertEqual(worksheet["B1"].value, "Bibliotek")
+        self.assertEqual(worksheet["G1"].value, "Kommunkod")
+        self.assertEqual(worksheet["B2"].value, "lib1_name")
+        self.assertEqual(worksheet["B3"].value, "lib2_name")
+        self.assertEqual(worksheet["E3"].value, "Kontrollerad")
 
 
 class TestLibraryImport(MongoTestCase):
@@ -190,9 +190,9 @@ class TestLibraryImport(MongoTestCase):
 
         survey1.reload()
         survey2.reload()
-        self.assertEquals(Survey.objects.count(), 2)
-        self.assertEquals(survey1.library.name, "new_name")
-        self.assertEquals(survey2.library.name, "old_name2")
+        self.assertEqual(Survey.objects.count(), 2)
+        self.assertEqual(survey1.library.name, "new_name")
+        self.assertEqual(survey2.library.name, "old_name2")
 
     def test_creates_new_surveys_with_new_libraries(self):
         self._dummy_survey(library=self._dummy_library(sigel="sigel1"), sample_year=2013)
@@ -202,7 +202,7 @@ class TestLibraryImport(MongoTestCase):
 
         _create_surveys([new_library], 2013)
 
-        self.assertEquals(Survey.objects.count(), 3)
+        self.assertEqual(Survey.objects.count(), 3)
 
     def test_creates_new_surveys_from_2014_template(self):
         library = self._dummy_library(sigel="sigel1")
@@ -210,7 +210,7 @@ class TestLibraryImport(MongoTestCase):
 
         _create_surveys([library], 2014, ignore_missing_variables=True)
 
-        self.assertEquals(len(Survey.objects.all()[0].observations), 1)
+        self.assertEqual(len(Survey.objects.all()[0].observations), 1)
 
     def test_can_create_surveys_for_multiple_years(self):
         library = self._dummy_library(sigel="sigel1")
@@ -219,7 +219,7 @@ class TestLibraryImport(MongoTestCase):
         _create_surveys([library], 2014, ignore_missing_variables=True)
         _create_surveys([library], 2015, ignore_missing_variables=True)
 
-        self.assertEquals(Survey.objects.count(), 2)
+        self.assertEqual(Survey.objects.count(), 2)
 
 
 class TestSurveyView(MongoTestCase):
@@ -232,7 +232,7 @@ class TestSurveyView(MongoTestCase):
 
         response = self._get("surveys", params={"action": "list", "sample_year": "2012"})
 
-        self.assertEquals(len(response.context["survey_responses"]), 1)
+        self.assertEqual(len(response.context["survey_responses"]), 1)
 
     def test_should_list_survey_responses_by_target_group(self):
         self._dummy_survey(library=self._dummy_library(library_type="folkbib"), sample_year=2010)
@@ -241,7 +241,7 @@ class TestSurveyView(MongoTestCase):
 
         response = self._get("surveys", params={"action": "list", "target_group": "folkbib", "sample_year": "2010"})
 
-        self.assertEquals(len(response.context["survey_responses"]), 2)
+        self.assertEqual(len(response.context["survey_responses"]), 2)
 
     def test_should_list_survey_responses_by_status(self):
         self._dummy_survey(status="not_viewed", sample_year=2010)
@@ -250,7 +250,7 @@ class TestSurveyView(MongoTestCase):
 
         response = self._get("surveys", params={"action": "list", "status": "submitted", "sample_year": "2010"})
 
-        self.assertEquals(len(response.context["survey_responses"]), 1)
+        self.assertEqual(len(response.context["survey_responses"]), 1)
 
     def test_should_list_survey_responses_by_municipality_code(self):
         self._dummy_survey(library=self._dummy_library(municipality_code="1234"))
@@ -259,7 +259,7 @@ class TestSurveyView(MongoTestCase):
 
         response = self._get("surveys", params={"action": "list", "municipality_code": "1234"})
 
-        self.assertEquals(len(response.context["survey_responses"]), 2)
+        self.assertEqual(len(response.context["survey_responses"]), 2)
 
     def test_should_list_surveys_when_searching_with_free_text_on_partial_municipality_code(self):
         self._dummy_survey(library=self._dummy_library(municipality_code="1234"))
@@ -268,7 +268,7 @@ class TestSurveyView(MongoTestCase):
 
         response = self._get("surveys", params={"action": "list", "free_text": "23"})
 
-        self.assertEquals(len(response.context["survey_responses"]), 2)
+        self.assertEqual(len(response.context["survey_responses"]), 2)
 
     def test_should_list_surveys_when_searching_with_free_text_on_partial_municipality_name(self):
         self._dummy_survey(library=self._dummy_library(municipality_code="0126"))
@@ -277,7 +277,7 @@ class TestSurveyView(MongoTestCase):
 
         response = self._get("surveys", params={"action": "list", "free_text": " ING  "})
 
-        self.assertEquals(len(response.context["survey_responses"]), 2)
+        self.assertEqual(len(response.context["survey_responses"]), 2)
 
     def test_should_list_surveys_when_searching_with_free_text_on_partial_library_name(self):
         self._dummy_survey(library=self._dummy_library(name="abcdef"))
@@ -286,7 +286,7 @@ class TestSurveyView(MongoTestCase):
 
         response = self._get("surveys", params={"action": "list", "free_text": "  cde "})
 
-        self.assertEquals(len(response.context["survey_responses"]), 2)
+        self.assertEqual(len(response.context["survey_responses"]), 2)
 
     def test_should_list_surveys_when_searching_with_free_text_on_partial_email(self):
         self._dummy_survey(library=self._dummy_library(name="some@dude.com"))
@@ -295,7 +295,7 @@ class TestSurveyView(MongoTestCase):
 
         response = self._get("surveys", params={"action": "list", "free_text": " @dUdE  "})
 
-        self.assertEquals(len(response.context["survey_responses"]), 2)
+        self.assertEqual(len(response.context["survey_responses"]), 2)
 
     def test_should_list_survey_responses_by_year_and_target_group(self):
         self._dummy_survey(library=self._dummy_library(name="lib1", library_type="folkbib"), sample_year=2012)
@@ -304,8 +304,8 @@ class TestSurveyView(MongoTestCase):
 
         response = self._get("surveys", params={"action": "list", "target_group": "folkbib", "sample_year": "2013"})
 
-        self.assertEquals(len(response.context["survey_responses"]), 1)
-        self.assertEquals(response.context["survey_responses"][0].library.name, "lib2")
+        self.assertEqual(len(response.context["survey_responses"]), 1)
+        self.assertEqual(response.context["survey_responses"][0].library.name, "lib2")
 
     def test_each_survey_response_should_have_checkbox_for_actions(self):
         survey = self._dummy_survey(sample_year=2013)
@@ -326,7 +326,7 @@ class TestSurveyView(MongoTestCase):
         survey1 = self._dummy_survey(sample_year=2014, library=library1)
 
         response = self._get("surveys", params={"action": "list", "sample_year": "2014", "sigel": "Abc"})
-        self.assertEquals(len(response.context["survey_responses"]), 0)
+        self.assertEqual(len(response.context["survey_responses"]), 0)
 
     def test_should_not_list_co_reported_survey(self):
         library1 = self._dummy_library(sigel="Abc")
@@ -350,7 +350,7 @@ class TestSurveyState(MongoTestCase):
         response = self._get("surveys", params={"action": "list", "sample_year": "2014",
                                                 "surveys_state": "active"})
 
-        self.assertEquals(len(response.context["survey_responses"]), 2)
+        self.assertEqual(len(response.context["survey_responses"]), 2)
 
     def test_returns_inactive_surveys(self):
         self._dummy_survey(is_active=True, sample_year=2014)
@@ -360,7 +360,7 @@ class TestSurveyState(MongoTestCase):
         response = self._get("surveys", params={"action": "list", "sample_year": "2014",
                                                 "surveys_state": "inactive"})
 
-        self.assertEquals(len(response.context["survey_responses"]), 1)
+        self.assertEqual(len(response.context["survey_responses"]), 1)
 
     def test_can_inactivate_surveys(self):
         survey1 = self._dummy_survey(is_active=True)
@@ -396,11 +396,11 @@ class TestSurveysOverview(MongoTestCase):
 
         response = self._get("surveys_overview", kwargs={"sample_year": 2014})
 
-        self.assertEquals(response.status_code, 200)
+        self.assertEqual(response.status_code, 200)
 
     def test_can_not_view_overview_when_not_logged_in(self):
         self._dummy_survey()
 
         response = self._get("surveys_overview", kwargs={"sample_year": 2014})
 
-        self.assertEquals(response.status_code, 302)
+        self.assertEqual(response.status_code, 302)

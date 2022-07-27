@@ -24,14 +24,14 @@ def report(request):
     municipality_code = request.POST.get("municipality_code", None)
     principal = request.POST.get("principal", None)
 
-    surveys = list(Survey.objects.filter(_status=u"published", sample_year=sample_year, library__sigel__in=sigels))
+    surveys = list(Survey.objects.filter(_status="published", sample_year=sample_year, library__sigel__in=sigels))
 
     context = get_report(surveys, sample_year)
     context["previous_url"] = previous_url
 
     if len(sigels) == number_of_sigel_choices:
         context["principal"] = principal
-        context["municipality_code"] = u"hela riket" if len(sigels) == Survey.objects.filter(_status=u"published", sample_year=sample_year).count() else municipality_code
+        context["municipality_code"] = "hela riket" if len(sigels) == Survey.objects.filter(_status="published", sample_year=sample_year).count() else municipality_code
 
     return render(request, 'libstat/report.html', context)
 
@@ -65,7 +65,7 @@ def reports(request):
         return _principals
 
     if request.method == "GET":
-        surveys = Survey.objects.filter(_status=u"published").exclude("observations").order_by("library.name")
+        surveys = Survey.objects.filter(_status="published").exclude("observations").order_by("library.name")
 
         sample_year = request.GET.get("sample_year", "")
         municipality_code = request.GET.get("municipality_code", "")
@@ -84,7 +84,7 @@ def reports(request):
             if municipality_code:
                 filtered_surveys = filtered_surveys.filter(
                     library__municipality_code__startswith=(municipality_code[0:2]
-                                                            if municipality_code.endswith(u"00")
+                                                            if municipality_code.endswith("00")
                                                             else municipality_code))
             if principal:
                 filtered_surveys = filtered_surveys.filter(
@@ -95,7 +95,7 @@ def reports(request):
                 library_name_for_sigel[survey.library.sigel] = survey.library.name
 
             if len(filtered_surveys) == 0:
-                message = u"Det finns inga bibliotek att visa för den valda verksamheten."
+                message = "Det finns inga bibliotek att visa för den valda verksamheten."
 
         context = {
             "sample_year": sample_year,

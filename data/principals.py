@@ -1,39 +1,39 @@
 PRINCIPALS = (
-    (u"musstat", u"stat"),
-    (u"muslan", u"landsting"),
-    (u"muskom", u"kommun"),
-    (u"folkbib", u"kommun"),
-    (u"folkskolbib", u"kommun"),
-    (u"specbib", u"stat"),
-    (u"univbib", u"stat"),
-    (u"sjukbib", u"landsting"),
-    (u"myndbib", u"stat"),
-    (u"folkhogbib", u"landsting"),
-    (u"ovrbib", u"stat"),
-    (u"frisgym", u"privat"),
-    (u"friskol", u"privat"),
-    (u"skolbib", u"kommun"),
-    (u"gymbib", u"kommun"),
-    (u"statskol", u"stat"),
-    (u"vuxbib", u"kommun"),
-    (u"natbib", u"stat")
+    ("musstat", "stat"),
+    ("muslan", "landsting"),
+    ("muskom", "kommun"),
+    ("folkbib", "kommun"),
+    ("folkskolbib", "kommun"),
+    ("specbib", "stat"),
+    ("univbib", "stat"),
+    ("sjukbib", "landsting"),
+    ("myndbib", "stat"),
+    ("folkhogbib", "landsting"),
+    ("ovrbib", "stat"),
+    ("frisgym", "privat"),
+    ("friskol", "privat"),
+    ("skolbib", "kommun"),
+    ("gymbib", "kommun"),
+    ("statskol", "stat"),
+    ("vuxbib", "kommun"),
+    ("natbib", "stat")
 )
 
 name_for_principal = {
-    u"landsting": u"Landsting",
-    u"kommun": u"Kommun",
-    u"stat": u"Stat",
-    u"privat": u"Privat"
+    "landsting": "Landsting",
+    "kommun": "Kommun",
+    "stat": "Stat",
+    "privat": "Privat"
 }
 
 principal_for_library_type = dict(PRINCIPALS)
-library_types_with_principals = [u'univbib', u'muslan', u'muskom', u'vuxbib', u'frisgym', u'skolbib', u'sjukbib', u'myndbib', u'statskol', u'folkbib', u'folkskolbib', u'musstat', u'specbib', u'folkhogbib', u'friskol', u'ovrbib', u'natbib', u'gymbib']
+library_types_with_principals = ['univbib', 'muslan', 'muskom', 'vuxbib', 'frisgym', 'skolbib', 'sjukbib', 'myndbib', 'statskol', 'folkbib', 'folkskolbib', 'musstat', 'specbib', 'folkhogbib', 'friskol', 'ovrbib', 'natbib', 'gymbib']
 
 library_types_for_principal = {
-    u'stat': [u'univbib', u'myndbib', u'statskol', u'musstat', u'specbib', u'ovrbib', u'natbib'],
-    u'landsting': [u'muslan', u'sjukbib', u'folkhogbib'],
-    u'privat': [u'frisgym', u'friskol'],
-    u'kommun': [u'muskom', u'vuxbib', u'skolbib', u'folkbib', u'folkskolbib', u'gymbib']
+    'stat': ['univbib', 'myndbib', 'statskol', 'musstat', 'specbib', 'ovrbib', 'natbib'],
+    'landsting': ['muslan', 'sjukbib', 'folkhogbib'],
+    'privat': ['frisgym', 'friskol'],
+    'kommun': ['muskom', 'vuxbib', 'skolbib', 'folkbib', 'folkskolbib', 'gymbib']
 }
 
 

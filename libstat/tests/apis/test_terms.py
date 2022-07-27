@@ -18,34 +18,34 @@ class TermsApiTest(MongoTestCase):
         response = self.client.get(reverse("terms_api"))
         data = json.loads(response.content)
 
-        self.assertEquals(data[u"@context"], term_context)
+        self.assertEqual(data["@context"], term_context)
 
     def test_should_contain_hardcoded_terms(self):
         response = self.client.get(reverse("terms_api"))
         data = json.loads(response.content)
-        ids = [term[u"@id"] for term in data[u"terms"]]
+        ids = [term["@id"] for term in data["terms"]]
 
-        self.assertTrue(u"library" in ids)
-        self.assertTrue(u"sampleYear" in ids)
-        self.assertTrue(u"targetGroup" in ids)
-        self.assertTrue(u"modified" in ids)
-        self.assertTrue(u"published" in ids)
-        self.assertTrue(u"Observation" in ids)
+        self.assertTrue("library" in ids)
+        self.assertTrue("sampleYear" in ids)
+        self.assertTrue("targetGroup" in ids)
+        self.assertTrue("modified" in ids)
+        self.assertTrue("published" in ids)
+        self.assertTrue("Observation" in ids)
 
     def test_should_return_all_variables(self):
-        self._dummy_variable(key=u"folk5")
+        self._dummy_variable(key="folk5")
 
         response = self.client.get(reverse("terms_api"))
         data = json.loads(response.content)
-        ids = [term[u"@id"] for term in data[u"terms"]]
+        ids = [term["@id"] for term in data["terms"]]
 
-        self.assertTrue(u"folk5" in ids)
+        self.assertTrue("folk5" in ids)
 
     def test_should_not_return_variable_drafts(self):
-        self._dummy_variable(key=u"69", is_draft=True)
+        self._dummy_variable(key="69", is_draft=True)
 
         response = self.client.get(reverse("terms_api"))
         data = json.loads(response.content)
-        ids = [term[u"@id"] for term in data[u"terms"]]
+        ids = [term["@id"] for term in data["terms"]]
 
-        self.assertFalse(u"Folk69" in ids)
+        self.assertFalse("Folk69" in ids)

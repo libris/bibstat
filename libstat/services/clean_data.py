@@ -18,7 +18,7 @@ def _get_surveys_with_no_observations(sample_year):
 
 
 def _get_surveys_with_status_not_viewed(sample_year):
-    surveys = [s for s in Survey.objects.filter(sample_year=sample_year, _status=u"not_viewed")]
+    surveys = [s for s in Survey.objects.filter(sample_year=sample_year, _status="not_viewed")]
     return surveys
 
 
@@ -30,7 +30,7 @@ def _load_sigel_mapping_from_workbook(sheet="Blad1", column_old_value=1, column_
         book = open_workbook(settings.SIGEL_MAPPING_FILE_PATH, verbosity=0)
         worksheet = book.sheet_by_name(str(sheet))
     except XLRDError as xld_e:
-        logger.error(u"{}".format(xld_e))
+        logger.error("{}".format(xld_e))
 
     if worksheet:
         for i in range(1, worksheet.nrows):
@@ -49,7 +49,7 @@ def _update_sigel(survey, matched_survey_sigel):
 
 
 def match_libraries_and_replace_sigel(sample_year):
-    all_published_surveys = Survey.objects.filter(sample_year=sample_year, _status=u"published")
+    all_published_surveys = Survey.objects.filter(sample_year=sample_year, _status="published")
     count = 0
     matched = 0
 
@@ -78,7 +78,7 @@ def match_libraries_and_replace_sigel(sample_year):
 
     # Try to match remaining 8*-sigels against sigel mapping file
 
-    surveys_sigel_start_w_8 = [s for s in Survey.objects.filter(sample_year=sample_year, _status=u"published") if
+    surveys_sigel_start_w_8 = [s for s in Survey.objects.filter(sample_year=sample_year, _status="published") if
                                s.library.sigel.startswith("8", 0, 1) and len(s.library.sigel) < 10]
 
     sigel_dict = _load_sigel_mapping_from_workbook()
@@ -101,7 +101,7 @@ def match_libraries_and_replace_sigel(sample_year):
 
     no_surveys_sigel_start_w_8 = len(surveys_sigel_start_w_8)
 
-    unmatched_surveys = [s for s in Survey.objects.filter(sample_year=sample_year, _status=u"published") if
+    unmatched_surveys = [s for s in Survey.objects.filter(sample_year=sample_year, _status="published") if
                          len(s.library.sigel) == 10]
     no_of_unmatched_surveys = len(unmatched_surveys)
 

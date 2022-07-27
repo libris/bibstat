@@ -28,13 +28,13 @@ def example_survey(request):
         "form": SurveyForm(survey=Survey(
             sample_year=sample_year,
             library=Library(
-                name=u"Exempelbiblioteket",
-                sigel=u"exempel_sigel",
-                email=u"exempel@email.com",
-                city=u"Exempelstaden",
+                name="Exempelbiblioteket",
+                sigel="exempel_sigel",
+                email="exempel@email.com",
+                city="Exempelstaden",
                 municipality_code=180,
-                address=u"Exempelgatan 14B",
-                library_type=u"folkbib"
+                address="Exempelgatan 14B",
+                library_type="folkbib"
             ),
             observations=[SurveyObservation(variable=Variable.objects.get(key=cell.variable_key))
                           for cell in survey_template(sample_year).cells])),
@@ -88,7 +88,7 @@ def _save_survey_response_from_form(survey, form):
             else:
                 survey._data[field] = value
 
-        survey.selected_libraries = filter(None, form.cleaned_data["selected_libraries"].split(" "))
+        survey.selected_libraries = [_f for _f in form.cleaned_data["selected_libraries"].split(" ") if _f]
 
         if submit_action == "submit" and survey.status in ("not_viewed", "initiated"):
             if not survey.has_conflicts():
@@ -185,7 +185,7 @@ def release_survey_lock(request, survey_id):
 def survey_status(request, survey_id):
     if request.method == "POST":
         survey = Survey.objects.get(pk=survey_id)
-        survey.status = request.POST[u'selected_status']
+        survey.status = request.POST['selected_status']
         survey.save()
 
     return redirect(reverse('survey', args=(survey_id,)))
@@ -195,7 +195,7 @@ def survey_status(request, survey_id):
 def survey_notes(request, survey_id):
     if request.method == "POST":
         survey = Survey.objects.get(pk=survey_id)
-        survey.notes = request.POST[u'notes']
+        survey.notes = request.POST['notes']
         survey.save()
 
     return redirect(reverse('survey', args=(survey_id,)))

@@ -13,28 +13,28 @@ class ImportSurveyResponsesTest(MongoTestCase):
         call_command('import_variables', *args, **opts)
 
         # Check that all variables have been imported
-        self.assertEquals(len(Variable.objects.all()), 201)
+        self.assertEqual(len(Variable.objects.all()), 201)
 
     def test_import_survey_responses_requires_file_option(self):
         args = []
         opts = {"target_group": "folkbib", "year": 2012}
         call_command('import_survey_responses', *args, **opts)
 
-        self.assertEquals(len(Survey.objects.all()), 0)
+        self.assertEqual(len(Survey.objects.all()), 0)
 
     def test_import_variables_requires_target_group_option(self):
         args = []
         opts = {"file": "libstat/tests/data/Folk2012.xlsx", "year": 2012}
         call_command('import_survey_responses', *args, **opts)
 
-        self.assertEquals(len(Survey.objects.all()), 0)
+        self.assertEqual(len(Survey.objects.all()), 0)
 
     def test_import_variables_requires_year_option(self):
         args = []
         opts = {"file": "libstat/tests/data/Folk2012.xlsx", "target_group": "folkbib"}
         call_command('import_survey_responses', *args, **opts)
 
-        self.assertEquals(len(Survey.objects.all()), 0)
+        self.assertEqual(len(Survey.objects.all()), 0)
 
     def test_import_survey_responses_should_abort_if_invalid_year(self):
         args = []
@@ -51,57 +51,57 @@ class ImportSurveyResponsesTest(MongoTestCase):
         opts = {"file": "libstat/tests/data/Folk2012.xlsx", "target_group": "folkbib", "year": 2012}
         call_command('import_survey_responses', *args, **opts)
 
-        self.assertEquals(len(Survey.objects.all()), 8)
+        self.assertEqual(len(Survey.objects.all()), 8)
 
         sr = None
         for s in Survey.objects.all():
-            if s.library.name == u"KARLSTADS STADSBIBLIOTEK":
+            if s.library.name == "KARLSTADS STADSBIBLIOTEK":
                 sr = s
-        self.assertEquals(sr.library.name, u"KARLSTADS STADSBIBLIOTEK")
-        self.assertEquals(sr.library.municipality_code, u"1780")
+        self.assertEqual(sr.library.name, "KARLSTADS STADSBIBLIOTEK")
+        self.assertEqual(sr.library.municipality_code, "1780")
 
         # Check data types and visibility
         # Private, string value
         folk1_obs = [obs for obs in sr.observations if obs.variable.key == "Folk1"][0]
         self.assertTrue(isinstance(folk1_obs.value, str))
-        self.assertEquals(folk1_obs.value, u"Karlstad")
+        self.assertEqual(folk1_obs.value, "Karlstad")
         self.assertFalse(folk1_obs._is_public)
         # Private, string value None
         folk7_obs = [obs for obs in sr.observations if obs.variable.key == "Folk7"][0]
-        self.assertEquals(folk7_obs.value, None)
+        self.assertEqual(folk7_obs.value, None)
         self.assertFalse(folk7_obs._is_public)
         # Public, int (boolean) value None
         folk8_obs = [obs for obs in sr.observations if obs.variable.key == "Folk8"][0]
-        self.assertEquals(folk8_obs.value, None)
+        self.assertEqual(folk8_obs.value, None)
         self.assertTrue(folk8_obs._is_public)
         # Public, decimal value
         folk26_obs = [obs for obs in sr.observations if obs.variable.key == "Folk26"][0]
         self.assertTrue(isinstance(folk26_obs.value, float))
-        self.assertEquals(folk26_obs.value, 1798.57575757576)
+        self.assertEqual(folk26_obs.value, 1798.57575757576)
         self.assertTrue(folk26_obs._is_public)
         # Public, long value
         folk38_obs = [obs for obs in sr.observations if obs.variable.key == "Folk38"][0]
         self.assertTrue(isinstance(folk38_obs.value, int))
-        self.assertEquals(folk38_obs.value, 29500000)
+        self.assertEqual(folk38_obs.value, 29500000)
         self.assertTrue(folk38_obs._is_public)
         # Public, decimal value (percent)
         folk52_obs = [obs for obs in sr.observations if obs.variable.key == "Folk52"][0]
         self.assertTrue(isinstance(folk52_obs.value, float))
-        self.assertEquals(folk52_obs.value, 0.438087421014918)
+        self.assertEqual(folk52_obs.value, 0.438087421014918)
         self.assertTrue(folk52_obs._is_public)
         # Public, decimal value
         folk54_obs = [obs for obs in sr.observations if obs.variable.key == "Folk54"][0]
         self.assertTrue(isinstance(folk54_obs.value, float))
-        self.assertEquals(folk54_obs.value, 8.33583518419239)
+        self.assertEqual(folk54_obs.value, 8.33583518419239)
         self.assertTrue(folk54_obs._is_public)
         # Private, integer value
         folk201_obs = [obs for obs in sr.observations if obs.variable.key == "Folk201"][0]
         self.assertTrue(isinstance(folk201_obs.value, int))
-        self.assertEquals(folk201_obs.value, 13057)
+        self.assertEqual(folk201_obs.value, 13057)
         self.assertFalse(folk201_obs._is_public)
 
         # Check parsing of bool value when 1/1.0/True
-        sr2 = Survey.objects.filter(library__name=u"GISLAVEDS BIBLIOTEK")[0]
+        sr2 = Survey.objects.filter(library__name="GISLAVEDS BIBLIOTEK")[0]
         folk8_obs = [obs for obs in sr2.observations if obs.variable.key == "Folk8"][0]
         self.assertTrue(isinstance(folk8_obs.value, bool))
-        self.assertEquals(folk8_obs.value, True)
+        self.assertEqual(folk8_obs.value, True)

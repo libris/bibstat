@@ -395,7 +395,7 @@ class TestReportCaching(MongoTestCase):
         get_report([survey1], 2014)
         get_report([survey2], 2014)
 
-        survey1.observations[0].value = u"new_value"
+        survey1.observations[0].value = "new_value"
         survey1.publish()
 
         report = get_report([survey2], 2014)
@@ -411,7 +411,7 @@ class TestReportCaching(MongoTestCase):
         get_report([survey1], 2014)
         get_report([survey2], 2014)
 
-        variable.description = u"something_new"
+        variable.description = "something_new"
         variable.save()
         report = get_report([survey2], 2014)
 

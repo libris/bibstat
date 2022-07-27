@@ -16,11 +16,11 @@ def _rendered_template(template, survey):
     survey_url = settings.API_BASE_URL + reverse('survey', args=(survey.id,))
     survey_url_with_password = survey_url + "?p=" + survey.password
 
-    rendered = template.replace(u"{bibliotek}", survey.library.name if survey.library.name else u"")
-    rendered = rendered.replace(u"{ort}", survey.library.city if survey.library.city else u"")
-    rendered = rendered.replace(u"{lösenord}", survey.password)
-    rendered = rendered.replace(u"{enkätadress}", survey_url)
-    rendered = rendered.replace(u"{enkätadress (med lösenord)}", survey_url_with_password)
+    rendered = template.replace("{bibliotek}", survey.library.name if survey.library.name else "")
+    rendered = rendered.replace("{ort}", survey.library.city if survey.library.city else "")
+    rendered = rendered.replace("{lösenord}", survey.password)
+    rendered = rendered.replace("{enkätadress}", survey_url)
+    rendered = rendered.replace("{enkätadress (med lösenord)}", survey_url_with_password)
 
     return rendered
 
@@ -80,7 +80,7 @@ def dispatches_send(request):
         dispatches_with_email = [dispatch for dispatch in dispatches if dispatch.library_email]
 
         def chunks(l, n):
-            for i in xrange(0, len(l), n):
+            for i in range(0, len(l), n):
                 yield l[i:i + n]
 
         sent_ids = []
