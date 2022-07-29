@@ -33,6 +33,8 @@ BLOCK_REPORTS = False
 ANALYTICS_ENABLED = False
 
 ALLOWED_HOSTS = [".bibstat-stg.kb.se", ".bibstat-stg.libris.kb.se"]
+USE_X_FORWARDED_HOST = True
+USE_X_FORWARDED_PORT = True
 
 BIBSTAT_BLOG_BASE_URL = "https://www.kb.se/biblioteksstatistik"
 
