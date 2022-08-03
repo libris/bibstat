@@ -3,14 +3,14 @@
 ## Beroenden
 
 * Python 3.6.x (Django)
-* MongoDB 4.4.x
+* MongoDB 5.0.x
 
 ## Installation
 
 Nedan är ett exempel på en minimal installation i Linux.  
 
-	# Installera MongoDB 4.4.x:
-    # https://www.mongodb.com/docs/v4.4/installation/
+	# Installera MongoDB 5.0.x:
+    # https://www.mongodb.com/docs/v5.0/installation/
 
 	# Klona projektet
 	git clone git@github.com:libris/bibstat
