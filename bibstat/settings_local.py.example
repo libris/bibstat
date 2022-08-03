@@ -1,4 +1,4 @@
-import os, urllib3, certifi
+import os
 
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = '3x%=t4cm@eszqbwuw@00f**ol@8^kqomtm8-%x&5_ydq9rm(nl'
@@ -16,10 +16,15 @@ API_BASE_URL = "http://localhost:8000"
 BIBDB_BASE_URL = "http://localhost:8001"
 
 # DB connection details
-MONGODB_HOST = 'localhost'
-MONGODB_NAME = 'bibstat'
-MONGODB_USER = 'bibstat'
-MONGODB_PASSWD = 'bibstat'
+MONGODB_DATABASES = {
+    "default": {
+        "name": "bibstat",
+        "host": "localhost",
+        "password": "bibstat",
+        "username": "bibstat",
+        "tz_aware": True, # if you using timezones in django (USE_TZ = True)
+    },
+}
 
 # Email details
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
@@ -34,16 +39,6 @@ SIGEL_MAPPING_FILE_PATH = '/Users/ina/projects/bibstat/data/sigel_match/sigel_ma
 
 # This setting has to be adjusted for 'stage' and 'prod' environments
 ENVIRONMENT = 'local'
-
-# Getting version number from latest release tag in github libris/bibstat repository
-http = urllib3.PoolManager(cert_reqs='CERT_REQUIRED', ca_certs=certifi.where())
-response = http.urlopen('GET', 'https://github.com/libris/bibstat/releases/latest', redirect=False)
-location_header = response.headers.get('Location', None)
-if location_header:
-    latest_version = location_header.split('/')[-1]
-else:
-    latest_version = None
-RELEASE_VERSION = latest_version
 
 # SECURITY WARNING: keep the pass for bibdb library updates in production secret!
 BIBDB_UPDATE_PASS = 'password'

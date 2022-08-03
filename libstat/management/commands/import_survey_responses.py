@@ -1,5 +1,3 @@
-# -*- coding: UTF-8 -*-
-from optparse import make_option
 import re
 import logging
 import traceback
@@ -7,7 +5,10 @@ import traceback
 from django.core.management.base import BaseCommand, CommandError
 from xlrd import open_workbook
 from xlrd.biffh import XLRDError
-from data.municipalities import municipality_code_from, municipality_code_from_county_code
+from data.municipalities import (
+    municipality_code_from,
+    municipality_code_from_county_code,
+)
 
 from libstat.utils import TYPE_BOOLEAN, TYPE_INTEGER, TYPE_LONG
 from libstat.models import Survey, SurveyObservation, Variable, Library
@@ -17,34 +18,44 @@ logger = logging.getLogger(__name__)
 
 
 class Command(BaseCommand):
-    args = "--file=<file> --target_group=<folkbib|specbib|sjukbib|skolbib> --year=<YYYY>"
-    help = "Imports surveys from a spreadsheet"
-    help_text = ("Usage: python manage.py import_survey_responses --file=</path/to/file>"
-                 "--target_group=<folkbib|specbib|sjukbib|skolbib> --year=<YYYY>\n\n")
-
-    option_list = BaseCommand.option_list + (
-        make_option(u'--target_group', dest=u"target_group", type=u'choice',
-                    choices=["folkbib", "specbib", "sjukbib", "skolbib"],
-                    help=u'Target group; public, research, hospital, school'),
-        make_option('--file', dest="file", type='string',
-                    help='File; Absolute path to source spreadsheet. I.e. /home/MyUser/documents/sourcefile.xlsx'),
-        make_option('--year', dest="year", type='int',
-                    help='Year; Measurment year, format YYYY'),
+    args = (
+        "--file=<file> --target_group=<folkbib|specbib|sjukbib|skolbib> --year=<YYYY>"
     )
+    help = "Imports surveys from a spreadsheet"
+    help_text = (
+        "Usage: python manage.py import_survey_responses --file=</path/to/file> "
+        "--target_group=<folkbib|specbib|sjukbib|skolbib> --year=<YYYY>\n\n"
+    )
+
+    def add_arguments(self, parser):
+        parser.add_argument(
+            "--target_group",
+            dest="target_group",
+            choices=["folkbib", "specbib", "sjukbib", "skolbib"],
+            help="Target group; public, research, hospital, school",
+        )
+        parser.add_argument(
+            "--file",
+            dest="file",
+            help="File; Absolute path to source spreadsheet. I.e. /home/MyUser/documents/sourcefile.xlsx",
+        )
+        parser.add_argument(
+            "--year", dest="year", type=int, help="Measurement year, format YYYY"
+        )
 
     def _import_from_work_sheet(self, work_sheet, year, target_group):
         def _parse_value(value):
-            if isinstance(value, (int, float, long)):
+            if isinstance(value, (int, float)):
                 if value == 0:
                     value = None
                 elif variable.type == TYPE_BOOLEAN[0]:
-                    value = (True if value == 1 else False)
+                    value = True if value == 1 else False
                 elif variable.type == TYPE_INTEGER[0]:
                     value = int(value)
                 elif variable.type == TYPE_LONG[0]:
-                    value = long(value)
+                    value = int(value)
 
-            if (isinstance(value, str) and value.strip() == ""):
+            if isinstance(value, str) and value.strip() == "":
                 value = None
             return value
 
@@ -56,23 +67,23 @@ class Command(BaseCommand):
             variables = Variable.objects.filter(key=key)
             if len(variables) > 0:
                 variable = variables[0]
-                if variable.sub_category in [u"Biblioteksnamn"]:
+                if variable.sub_category in ["Biblioteksnamn"]:
                     library_name_column = i
                 variable_keys.append((i, variable))
 
         if library_name_column == -1:
-            raise CommandError(u"Library identifier variable not found, aborting!")
+            raise CommandError("Library identifier variable not found, aborting!")
 
         if not variable_keys:
-            raise CommandError(u"Failed to find any variables, aborting!")
+            raise CommandError("Failed to find any variables, aborting!")
 
         municipality_code_column = -1
         county_code_column = -1
         for i in range(0, work_sheet.ncols):
-            if work_sheet.cell_value(1, i) == u"Kommunkod":
+            if work_sheet.cell_value(1, i) == "Kommunkod":
                 municipality_code_column = i
                 break
-            elif work_sheet.cell_value(1, i) == u"Länskod":
+            elif work_sheet.cell_value(1, i) == "Länskod":
                 county_code_column = i
                 break
 
@@ -85,8 +96,17 @@ class Command(BaseCommand):
 
             lib_col_value = row[library_name_column]
             # Research libraries file and hospital libraries file has summary rows mixed with library response rows
-            if (lib_col_value and isinstance(lib_col_value, basestring)
-                and not lib_col_value.startswith(("Summa", "summa", "Riket",))):
+            if (
+                lib_col_value
+                and isinstance(lib_col_value, str)
+                and not lib_col_value.startswith(
+                    (
+                        "Summa",
+                        "summa",
+                        "Riket",
+                    )
+                )
+            ):
                 library_name = lib_col_value.strip()
             else:
                 continue
@@ -95,15 +115,19 @@ class Command(BaseCommand):
                 continue
 
             if municipality_code_column != -1:
-                municipality_code = municipality_code_from(row[municipality_code_column])
+                municipality_code = municipality_code_from(
+                    row[municipality_code_column]
+                )
             elif county_code_column != -1:
-                municipality_code = municipality_code_from_county_code(row[county_code_column])
+                municipality_code = municipality_code_from_county_code(
+                    row[county_code_column]
+                )
 
             if target_group == "specbib":
                 library_type = {
-                    u"Nationalbibliotek": u"natbib",
-                    u"Högskolebibliotek": u"univbib",
-                    u"Specialbibliotek": u"specbib"
+                    "Nationalbibliotek": "natbib",
+                    "Högskolebibliotek": "univbib",
+                    "Specialbibliotek": "specbib",
                 }[row[2]]
             else:
                 library_type = target_group
@@ -111,16 +135,23 @@ class Command(BaseCommand):
             library = Library(name=library_name, library_type=library_type)
             if municipality_code is not None:
                 library.municipality_code = municipality_code
-            survey = Survey(sample_year=year, library=library, selected_libraries=[library.sigel])
+            survey = Survey(
+                sample_year=year, library=library, selected_libraries=[library.sigel]
+            )
             for col, variable in variable_keys:
                 survey.observations.append(
-                    SurveyObservation(variable=variable, value=_parse_value(row[col]), _is_public=variable.is_public))
+                    SurveyObservation(
+                        variable=variable,
+                        value=_parse_value(row[col]),
+                        _is_public=variable.is_public,
+                    )
+                )
 
             survey.save().publish()
 
             num_imported_surveys += 1
 
-        logger.info(u"...{} surveys imported".format(num_imported_surveys))
+        logger.info("...{} surveys imported".format(num_imported_surveys))
 
     def handle(self, *args, **options):
         def _get_work_sheet(file_name, year):
@@ -128,25 +159,27 @@ class Command(BaseCommand):
                 book = open_workbook(file_name, verbosity=0)
                 return book.sheet_by_name(str(year))
             except XLRDError as xld_e:
-                raise CommandError(u"No data for year {} in workbook: {}".format(year, xld_e))
+                raise CommandError(
+                    "No data for year {} in workbook: {}".format(year, xld_e)
+                )
 
         def _valid_year(year):
-            return re.compile('^\d{4}$').match(str(year))
+            return re.compile("^\d{4}$").match(str(year))
 
-        file_name = options.get(u"file")
-        year = options.get(u"year")
-        target_group = options.get(u"target_group")
+        file_name = options.get("file")
+        year = options.get("year")
+        target_group = options.get("target_group")
 
         if not file_name or not target_group or not year:
             logger.info(self.help_text)
             return
 
         if not _valid_year(year):
-            raise CommandError(u"Invalid Year '{}', aborting".format(year))
+            raise CommandError("Invalid Year '{}', aborting".format(year))
 
         work_sheet = _get_work_sheet(file_name, year)
 
         try:
             self._import_from_work_sheet(work_sheet, year, target_group)
         except Exception as e:
-            print(traceback.format_exc())
+            print((traceback.format_exc()))
