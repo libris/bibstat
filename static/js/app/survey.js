@@ -643,7 +643,6 @@ define(['jquery', 'bootbox', 'survey.sum', 'survey.cell', 'surveys.dispatch', 'b
                                 $('#save-survey-btn').html('Spara');
                                 $('#submit-survey-btn').html('Skicka');
 
-
                                 if (submit_action == 'save') {
 
                                     isDirty = false;
@@ -683,11 +682,21 @@ define(['jquery', 'bootbox', 'survey.sum', 'survey.cell', 'surveys.dispatch', 'b
 
                             },
                             // handle a non-successful response
-                            error: function () {
-                                alert('Ett fel uppstod! Var vänlig försök igen.');
-                                $('#print-survey-btn, #save-survey-btn, #submit-survey-btn').removeClass('disabled');
-                                $('#save-survey-btn').html('Spara');
-                                $('#submit-survey-btn').html('Skicka');
+                            error: function (xhr, status) {
+                                // Special handling for 409 = survey already has status submitted (or higher)
+                                if (xhr.status == 409) {
+                                    $('#already-submitted-modal').modal('show');
+                                    $('#already-submitted-modal').addClass('show'); // permanent
+                                    // Hide bootstrap navbar (footer)
+                                    $('.navbar-fixed-bottom').hide();
+                                    // Don't show status message about unsaved changes
+                                    $('#unsaved-changes-label').html('');
+                                } else {
+                                    alert('Ett fel uppstod! Var vänlig försök igen.');
+                                    $('#print-survey-btn, #save-survey-btn, #submit-survey-btn').removeClass('disabled');
+                                    $('#save-survey-btn').html('Spara');
+                                    $('#submit-survey-btn').html('Skicka');
+                                }
                             }
                         }); //End ajax
 

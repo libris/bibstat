@@ -1,7 +1,6 @@
 import logging
-import time
 import json
-from datetime import datetime, timedelta, date
+from datetime import date
 
 from django.urls import reverse
 from django.shortcuts import render, redirect
@@ -12,7 +11,6 @@ from django.http import (
     HttpResponseNotAllowed,
 )
 from django.contrib.auth.decorators import permission_required
-from django.forms.utils import ErrorList
 
 from bibstat import settings
 
@@ -72,7 +70,8 @@ def sigel_survey(request, sigel):
 
 def _save_survey_response_from_form(survey, form):
     # Note: all syntax/format validation is done on client side w Bootstrap validator.
-    # All fields are handled as CharFields in the form and casted based on variable.type before saving.  More types can be added when needed.
+    # All fields are handled as CharFields in the form and casted based on variable.type before saving.
+    # More types can be added when needed.
 
     if form.is_valid():
         disabled_inputs = form.cleaned_data.pop("disabled_inputs").split(" ")
@@ -169,14 +168,27 @@ def survey(request, survey_id):
             survey.save(validate=False)
 
         if request.method == "POST":
-            form = SurveyForm(request.POST, survey=survey)
-            errors = _save_survey_response_from_form(
-                survey, form
-            )  # Errors returned as separate json
-            logger.debug("ERRORS: ")
-            logger.debug(json.dumps(errors))
-            return HttpResponse(json.dumps(errors), content_type="application/json")
-
+            # Only superuser is allowed to edit surveys that have already been submitted
+            if (
+                survey.status not in ["not_viewed", "initiated"]
+                and not request.user.is_superuser
+            ):
+                logger.error(
+                    f"Refusing to save because survey has status submitted (or higher), library {survey.library.sigel}"
+                )
+                return HttpResponse(
+                    json.dumps({"error": "Survey already submitted"}),
+                    status=409,
+                    content_type="application/json",
+                )
+            else:
+                form = SurveyForm(request.POST, survey=survey)
+                errors = _save_survey_response_from_form(
+                    survey, form
+                )  # Errors returned as separate json
+                logger.debug("ERRORS: ")
+                logger.debug(json.dumps(errors))
+                return HttpResponse(json.dumps(errors), content_type="application/json")
         else:
 
             # if not request.user.is_superuser:
