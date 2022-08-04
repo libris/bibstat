@@ -1,19 +1,29 @@
 import os
 
+# This setting has to be adjusted for "stage" and "prod" environments
+ENVIRONMENT = "local"
+
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = '3x%=t4cm@eszqbwuw@00f**ol@8^kqomtm8-%x&5_ydq9rm(nl'
+SECRET_KEY = "CHAAAAANGEEE-MEEE-WOOOOOOOOOOOO"
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 TEMPLATE_DEBUG = True
-
-LOG_LEVEL = 'DEBUG'
+LOG_LEVEL = "DEBUG"
 
 ALLOWED_HOSTS = []
+# prod:
+#ALLOWED_HOSTS = [
+#    ".bibstat.kb.se",
+#    ".bibstat.libris.kb.se",
+#    ".bibstat.libris.kb.se.",
+#]
 
 # Base url for api, i.e. http://stats.kb.se
-API_BASE_URL = "http://localhost:8000"
-BIBDB_BASE_URL = "http://localhost:8001"
+API_BASE_URL = "http://localhost:8000"  # prod: http://bibstat.kb.se
+BIBDB_BASE_URL = "http://localhost:8001"  # prod: http://bibdb.libris.kb.se
+# SECURITY WARNING: keep the pass for bibdb library updates in production secret!
+BIBDB_UPDATE_PASS = "password"
 
 # DB connection details
 MONGODB_DATABASES = {
@@ -22,12 +32,14 @@ MONGODB_DATABASES = {
         "host": "localhost",
         "password": "bibstat",
         "username": "bibstat",
-        "tz_aware": True, # if you using timezones in django (USE_TZ = True)
+        "tz_aware": True, # if you're using timezones in Django (USE_TZ = True)
     },
 }
 
 # Email details
-EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
+# EMAIL_SENDER = "biblioteksstatistik@kb.se"  # uncomment for prod
+# EMAIL_HOST = "smtp.kb.se"  # uncomment for prod
 
 # Path to log files for cleaning data functions
 # Change to /data/appl/log for production
@@ -35,12 +47,6 @@ CLEAN_DATA_LOG_PATH = os.path.dirname(os.path.dirname(__file__))
 
 # Path to excel file with sigel mappings
 # Change to /data/appl/sigel_match/sigel_mapping.xlsx for production
-SIGEL_MAPPING_FILE_PATH = '/Users/ina/projects/bibstat/data/sigel_match/sigel_mapping.xlsx'
+SIGEL_MAPPING_FILE_PATH = "/data/appl/sigel_match/sigel_mapping.xlsx"
 
-# This setting has to be adjusted for 'stage' and 'prod' environments
-ENVIRONMENT = 'local'
 
-# SECURITY WARNING: keep the pass for bibdb library updates in production secret!
-BIBDB_UPDATE_PASS = 'password'
-
-SURVEY_EDITING_LOCK_TIMEOUT_HOURS = 8
