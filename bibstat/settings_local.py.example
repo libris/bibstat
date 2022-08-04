@@ -38,6 +38,7 @@ MONGODB_DATABASES = {
 
 # Email details
 EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
+# EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"  # uncomment for prod
 # EMAIL_SENDER = "biblioteksstatistik@kb.se"  # uncomment for prod
 # EMAIL_HOST = "smtp.kb.se"  # uncomment for prod
 
