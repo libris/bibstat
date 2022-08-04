@@ -1,3 +1,5 @@
+import copy
+
 from pprint import pprint
 from bibstat import settings
 from django.urls import reverse
@@ -34,7 +36,7 @@ def report(request):
         )
     )
 
-    context = get_report(surveys, sample_year)
+    context = copy.deepcopy(get_report(surveys, sample_year))
     context["previous_url"] = previous_url
 
     if len(sigels) == number_of_sigel_choices:
