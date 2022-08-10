@@ -141,7 +141,7 @@ Filerna finns på både stage- och produktionsmiljön i `/data/appl/old_bibstat_
 	python manage.py import_survey_responses --file=/data/appl/old_bibstat_data/Folkbibliotek.xlsx --target_group=folkbib --year=2010
 
 ### Export
-Export av enkäter till excelfil kan göras via administrationssidan [/surveys](http://bibstat.kb.se/surveys). Det öppna datat kan också exporteras till excelfil under "Öppna data". Då kommer enbart observationer med för variabler som är publika.
+Export av enkäter till excelfil kan göras via administrationssidan [/surveys](https://bibstat.kb.se/surveys). Det öppna datat kan också exporteras till excelfil under "Öppna data". Då kommer enbart observationer med för variabler som är publika.
 
 Script för export finns även under [libstat/management/commands]([libstat/management/commands).
 
