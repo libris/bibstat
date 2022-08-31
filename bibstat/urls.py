@@ -1,6 +1,6 @@
 from django.urls import re_path
 from django.views.generic import TemplateView
-from django.contrib.auth import logout
+from django.contrib.auth.views import LogoutView
 
 from django_js_reverse.views import urls_js
 
@@ -63,7 +63,7 @@ urlpatterns = [
     re_path(r"^export$", export_api, name="export_api"),
     # Auth
     re_path(r"^login$", login, name="login"),
-    re_path(r"^logout$", logout, {"next_page": "admin"}, name="logout"),
+    re_path(r"^logout$", LogoutView.as_view(),  name='logout'),
     # Index
     re_path(r"^$", index, name="index"),
     re_path(r"^admin$", libstat.views.index.admin, name="admin"),

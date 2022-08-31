@@ -73,11 +73,12 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
+    "django.contrib.admin",
     "django_js_reverse",
     # Bibstat specific apps
     "django_mongoengine",
     "django_mongoengine.mongo_auth",
-    #'django_mongoengine.mongo_admin',
+    'django_mongoengine.mongo_admin',
     "libstat",
 ]
 
@@ -145,6 +146,7 @@ STATICFILES_DIRS = (
 )
 
 LOGIN_REDIRECT_URL = "/surveys"
+LOGOUT_REDIRECT_URL = "/admin"
 
 """
     Logging

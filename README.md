@@ -37,7 +37,7 @@ Nedan är ett exempel på en minimal installation i Linux.
 	cp bibstat/settings_local.py.example bibstat/settings_local.py
     vi bibstat/settings_local.py # eller nano, eller...
     # Skapa admin-användare
-	python manage.py createsuperuser --username=super --email=a@b.com
+	python manage.py createmongodbsuperuser --username=super --email=a@b.com
 
 	# Starta servern
 	python manage.py runserver
