@@ -1,18 +1,26 @@
-# -*- coding: utf-8 -*-
 import logging
-import time
 import json
-from datetime import datetime, timedelta, date
+from datetime import date
 
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from django.shortcuts import render, redirect
-from django.http import HttpResponseNotFound, HttpResponseForbidden, HttpResponse, HttpResponseNotAllowed
+from django.http import (
+    HttpResponseNotFound,
+    HttpResponseForbidden,
+    HttpResponse,
+    HttpResponseNotAllowed,
+)
 from django.contrib.auth.decorators import permission_required
-from django.forms.util import ErrorList
 
 from bibstat import settings
 
-from libstat.models import Survey, Variable, SurveyObservation, Library, SurveyEditingLock
+from libstat.models import (
+    Survey,
+    Variable,
+    SurveyObservation,
+    Library,
+    SurveyEditingLock,
+)
 from libstat.forms.survey import SurveyForm
 from libstat.survey_templates import survey_template
 
@@ -26,37 +34,44 @@ def example_survey(request):
         "hide_navbar": True,
         "hide_bottom_bar": True,
         "hide_admin_panel": True,
-        "form": SurveyForm(survey=Survey(
-            sample_year=sample_year,
-            library=Library(
-                name=u"Exempelbiblioteket",
-                sigel=u"exempel_sigel",
-                email=u"exempel@email.com",
-                city=u"Exempelstaden",
-                municipality_code=180,
-                address=u"Exempelgatan 14B",
-                library_type=u"folkbib"
-            ),
-            observations=[SurveyObservation(variable=Variable.objects.get(key=cell.variable_key))
-                          for cell in survey_template(sample_year).cells])),
+        "form": SurveyForm(
+            survey=Survey(
+                sample_year=sample_year,
+                library=Library(
+                    name="Exempelbiblioteket",
+                    sigel="exempel_sigel",
+                    email="exempel@email.com",
+                    city="Exempelstaden",
+                    municipality_code=180,
+                    address="Exempelgatan 14B",
+                    library_type="folkbib",
+                ),
+                observations=[
+                    SurveyObservation(
+                        variable=Variable.objects.get(key=cell.variable_key)
+                    )
+                    for cell in survey_template(sample_year).cells
+                ],
+            )
+        ),
     }
-    return render(request, 'libstat/survey.html', context)
+    return render(request, "libstat/survey.html", context)
 
 
-@permission_required('is_superuser', login_url='index')
+@permission_required("is_superuser", login_url="index")
 def sigel_survey(request, sigel):
-    if request.method == 'GET':
+    if request.method == "GET":
         survey = Survey.objects.filter(library__sigel=sigel).first()
         if survey:
-            logger.info('Redirecting to /survey/%s' % survey.id)
-            return redirect(reverse('survey', args=(survey.id,)))
+            logger.info("Redirecting to /survey/%s" % survey.id)
+            return redirect(reverse("survey", args=(survey.id,)))
         return HttpResponseNotFound()
 
 
 def _save_survey_response_from_form(survey, form):
-
-    # Note: all syntax/format validation is done on client side w Bootstrap validator. 
-    # All fields are handled as CharFields in the form and casted based on variable.type before saving.  More types can be added when needed.
+    # Note: all syntax/format validation is done on client side w Bootstrap validator.
+    # All fields are handled as CharFields in the form and casted based on variable.type before saving.
+    # More types can be added when needed.
 
     if form.is_valid():
         disabled_inputs = form.cleaned_data.pop("disabled_inputs").split(" ")
@@ -64,7 +79,7 @@ def _save_survey_response_from_form(survey, form):
         submit_action = form.cleaned_data.pop("submit_action", None)
         altered_fields = form.cleaned_data.pop("altered_fields", None).split(" ")
 
-        variables = Variable.objects.all().only('key')
+        variables = Variable.objects.all().only("key")
         all_variable_keys = [var.key for var in variables]
 
         for field in form.cleaned_data:
@@ -76,8 +91,7 @@ def _save_survey_response_from_form(survey, form):
                 if variable_type == "integer" and value != "" and value != "-":
                     # spaces are used as thousands separators
                     value = int(value.replace(" ", ""))
-                elif variable_type == "decimal" and value != "" \
-                        and value != "-":
+                elif variable_type == "decimal" and value != "" and value != "-":
                     # decimals are entered with comma in the form
                     # spaces are used as thousands separators
                     value = float(value.replace(" ", "").replace(",", "."))
@@ -85,34 +99,48 @@ def _save_survey_response_from_form(survey, form):
             if observation:
                 if field in altered_fields:
                     observation.value = value
-                    observation.disabled = (field in disabled_inputs)
-                    observation.value_unknown = (field in unknown_inputs)
+                    observation.disabled = field in disabled_inputs
+                    observation.value_unknown = field in unknown_inputs
             else:
-                survey.__dict__["_data"][field] = value
+                survey._data[field] = value
 
-        survey.selected_libraries = filter(None, form.cleaned_data["selected_libraries"].split(" "))
+        survey.selected_libraries = [
+            _f for _f in form.cleaned_data["selected_libraries"].split(" ") if _f
+        ]
 
         if submit_action == "submit" and survey.status in ("not_viewed", "initiated"):
             if not survey.has_conflicts():
                 survey.status = "submitted"
 
-        survey.save()
+        survey.save(validate=False)
 
     else:
-        logger.error('Could not save survey due to django validation error, library: %s' % survey.library.sigel)
+        logger.error(
+            "Could not save survey due to django validation error, library: %s"
+            % survey.library.sigel
+        )
         logger.error(form.errors)
         raise Exception(form.errors)
 
 
 def survey(request, survey_id):
     def has_password():
-        return request.method == "GET" and "p" in request.GET or request.method == "POST"
+        return (
+            request.method == "GET" and "p" in request.GET or request.method == "POST"
+        )
 
     def get_password():
-        return request.GET["p"] if request.method == "GET" else request.POST.get("password", None)
+        return (
+            request.GET["p"]
+            if request.method == "GET"
+            else request.POST.get("password", None)
+        )
 
     def can_view_survey(survey):
-        return request.user.is_authenticated() or request.session.get("password") == survey.id
+        return (
+            request.user.is_authenticated
+            or request.session.get("password") == survey.id
+        )
 
     survey = Survey.objects.filter(pk=survey_id)
     if len(survey) != 1:
@@ -120,32 +148,47 @@ def survey(request, survey_id):
 
     survey = survey[0]
 
-    if not survey.is_active and not request.user.is_authenticated():
+    if not survey.is_active and not request.user.is_authenticated:
         return HttpResponseForbidden()
 
     context = {
-        'survey_id': survey_id,
+        "survey_id": survey_id,
     }
 
     if not request.user.is_superuser:
         context["hide_navbar"] = True
 
-    if not request.user.is_authenticated() and settings.BLOCK_SURVEY:
+    if not request.user.is_authenticated and settings.BLOCK_SURVEY:
         return render(request, "libstat/survey_blocked.html")
 
     if can_view_survey(survey):
 
-        if not request.user.is_authenticated() and survey.status == "not_viewed":
+        if not request.user.is_authenticated and survey.status == "not_viewed":
             survey.status = "initiated"
-            survey.save()
+            survey.save(validate=False)
 
         if request.method == "POST":
-            form = SurveyForm(request.POST, survey=survey)
-            errors = _save_survey_response_from_form(survey, form) # Errors returned as separate json
-            logger.debug("ERRORS: ")
-            logger.debug(json.dumps(errors))
-            return HttpResponse(json.dumps(errors), content_type="application/json")
-
+            # Only superuser is allowed to edit surveys that have already been submitted
+            if (
+                survey.status not in ["not_viewed", "initiated"]
+                and not request.user.is_superuser
+            ):
+                logger.error(
+                    f"Refusing to save because survey has status submitted (or higher), library {survey.library.sigel}"
+                )
+                return HttpResponse(
+                    json.dumps({"error": "Survey already submitted"}),
+                    status=409,
+                    content_type="application/json",
+                )
+            else:
+                form = SurveyForm(request.POST, survey=survey)
+                errors = _save_survey_response_from_form(
+                    survey, form
+                )  # Errors returned as separate json
+                logger.debug("ERRORS: ")
+                logger.debug(json.dumps(errors))
+                return HttpResponse(json.dumps(errors), content_type="application/json")
         else:
 
             # if not request.user.is_superuser:
@@ -161,8 +204,10 @@ def survey(request, survey_id):
             #     else: # Lock
             #         SurveyEditingLock.lock_survey(survey.id)
 
-            context["form"] = SurveyForm(survey=survey, authenticated=request.user.is_authenticated())
-            return render(request, 'libstat/survey.html', context)
+            context["form"] = SurveyForm(
+                survey=survey, authenticated=request.user.is_authenticated
+            )
+            return render(request, "libstat/survey.html", context)
 
     if has_password():
         if get_password() == survey.password:
@@ -171,7 +216,7 @@ def survey(request, survey_id):
         else:
             context["wrong_password"] = True
 
-    return render(request, 'libstat/survey/password.html', context)
+    return render(request, "libstat/survey/password.html", context)
 
 
 def release_survey_lock(request, survey_id):
@@ -180,24 +225,24 @@ def release_survey_lock(request, survey_id):
             return HttpResponse()
         else:
             return HttpResponseNotFound()
-    return HttpResponseNotAllowed(permitted_methods=['GET'])
+    return HttpResponseNotAllowed(permitted_methods=["GET"])
 
 
-@permission_required('is_superuser', login_url='index')
+@permission_required("is_superuser", login_url="index")
 def survey_status(request, survey_id):
     if request.method == "POST":
         survey = Survey.objects.get(pk=survey_id)
-        survey.status = request.POST[u'selected_status']
+        survey.status = request.POST["selected_status"]
         survey.save()
 
-    return redirect(reverse('survey', args=(survey_id,)))
+    return redirect(reverse("survey", args=(survey_id,)))
 
 
-@permission_required('is_superuser', login_url='index')
+@permission_required("is_superuser", login_url="index")
 def survey_notes(request, survey_id):
     if request.method == "POST":
         survey = Survey.objects.get(pk=survey_id)
-        survey.notes = request.POST[u'notes']
+        survey.notes = request.POST["notes"]
         survey.save()
 
-    return redirect(reverse('survey', args=(survey_id,)))
+    return redirect(reverse("survey", args=(survey_id,)))

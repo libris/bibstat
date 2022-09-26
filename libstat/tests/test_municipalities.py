@@ -1,5 +1,7 @@
-# -*- coding: UTF-8 -*-
-from data.municipalities import municipality_code_from, municipality_code_from_county_code
+from data.municipalities import (
+    municipality_code_from,
+    municipality_code_from_county_code,
+)
 from libstat.tests import MongoTestCase
 
 

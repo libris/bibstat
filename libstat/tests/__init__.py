@@ -1,4 +1,3 @@
-# -*- coding: UTF-8 -*-
 import random
 import string
 import json
@@ -9,13 +8,22 @@ from django.test.utils import setup_test_environment
 from django.test.runner import DiscoverRunner
 from django.test import TestCase
 from django.conf import settings
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 
-from libstat.models import Variable, OpenData, Survey, Library, SurveyObservation, Article, Dispatch, ExternalIdentifier
+from libstat.models import (
+    Variable,
+    OpenData,
+    Survey,
+    Library,
+    SurveyObservation,
+    Article,
+    Dispatch,
+    ExternalIdentifier,
+)
 
 
 class MongoEngineTestRunner(DiscoverRunner):
-    def setup_databases(self):
+    def setup_databases(self, aliases=None):
         pass
 
     def teardown_databases(self, *args):
@@ -23,7 +31,7 @@ class MongoEngineTestRunner(DiscoverRunner):
 
 
 class MongoTestCase(TestCase):
-    mongodb_name = 'test_%s' % settings.MONGODB_NAME
+    mongodb_name = "test_%s" % settings.MONGODB_DATABASES["default"]["name"]
 
     def _login(self):
         self.client.login(username="admin", password="admin")
@@ -35,7 +43,7 @@ class MongoTestCase(TestCase):
         url = reverse(action, kwargs=kwargs)
         if params:
             url += "?"
-            for key, value in params.iteritems():
+            for key, value in list(params.items()):
                 url = "{}{}={}&".format(url, key, value)
         return self.client.get(url)
 
@@ -48,76 +56,175 @@ class MongoTestCase(TestCase):
         else:
             return self.client.post(reverse(action, kwargs=kwargs))
 
-    def _dummy_library(self, name="dummy_name", sigel=None, bibdb_id="dummy_id", city="dummy_city",
-                       municipality_code="dummy_code", library_type="folkbib", external_identifiers=None):
+    def _dummy_library(
+        self,
+        name="dummy_name",
+        sigel=None,
+        bibdb_id="dummy_id",
+        city="dummy_city",
+        municipality_code="dummy_code",
+        library_type="folkbib",
+        external_identifiers=None,
+    ):
         if not sigel:
             sigel = Library._random_sigel()
-        return Library(name=name, sigel=sigel, bibdb_id=bibdb_id, city=city,
-                       municipality_code=municipality_code, library_type=library_type, external_identifiers=external_identifiers)
+        return Library(
+            name=name,
+            sigel=sigel,
+            bibdb_id=bibdb_id,
+            city=city,
+            municipality_code=municipality_code,
+            library_type=library_type,
+            external_identifiers=external_identifiers,
+        )
 
-    def _dummy_variable(self, key=None, description=u"dummy description", type="integer", is_public=True,
-                        target_groups=["folkbib"], is_draft=False, replaced_by=None, save=True, question=None,
-                        category=None, sub_category=None, replaces=[], question_part=None):
+    def _dummy_variable(
+        self,
+        key=None,
+        description="dummy description",
+        type="integer",
+        is_public=True,
+        target_groups=["folkbib"],
+        is_draft=False,
+        replaced_by=None,
+        save=True,
+        question=None,
+        category=None,
+        sub_category=None,
+        replaces=[],
+        question_part=None,
+    ):
         if not key:
-            key = ''.join(random.choice(string.ascii_uppercase + string.digits) for _ in range(8))
-        variable = Variable(key=key, description=description, type=type, is_public=is_public, category=category,
-                            target_groups=target_groups, is_draft=is_draft, replaced_by=replaced_by, question=question,
-                            sub_category=sub_category, replaces=replaces, question_part=question_part)
+            key = "".join(
+                random.choice(string.ascii_uppercase + string.digits) for _ in range(8)
+            )
+        variable = Variable(
+            key=key,
+            description=description,
+            type=type,
+            is_public=is_public,
+            category=category,
+            target_groups=target_groups,
+            is_draft=is_draft,
+            replaced_by=replaced_by,
+            question=question,
+            sub_category=sub_category,
+            replaces=replaces,
+            question_part=question_part,
+        )
         if save:
             variable.save()
             variable.reload()
         return variable
 
-    def _dummy_observation(self, variable=None, value="dummy_value", disabled=False, value_unknown=False,
-                           _is_public=True):
+    def _dummy_observation(
+        self,
+        variable=None,
+        value="dummy_value",
+        disabled=False,
+        value_unknown=False,
+        _is_public=True,
+    ):
         if not variable:
             variable = self._dummy_variable()
-        return SurveyObservation(variable=variable, value=value, disabled=disabled, value_unknown=value_unknown,
-                                 _is_public=_is_public)
+        return SurveyObservation(
+            variable=variable,
+            value=value,
+            disabled=disabled,
+            value_unknown=value_unknown,
+            _is_public=_is_public,
+        )
 
-    def _dummy_survey(self, sample_year=2001, password=None, target_group="folkbib",
-                      status="not_viewed", publish=False, library=None, is_active=True,
-                      observations=[], selected_libraries=None):
+    def _dummy_survey(
+        self,
+        sample_year=2001,
+        password=None,
+        target_group="folkbib",
+        status="not_viewed",
+        publish=False,
+        library=None,
+        is_active=True,
+        observations=[],
+        selected_libraries=None,
+    ):
         if not library:
             library = self._dummy_library()
         if selected_libraries is None:
             selected_libraries = [library.sigel]
-        survey = Survey(library=library, sample_year=sample_year,
-                        target_group=target_group, password=password, status=status, is_active=is_active,
-                        observations=observations, selected_libraries=selected_libraries).save()
+        survey = Survey(
+            library=library,
+            sample_year=sample_year,
+            target_group=target_group,
+            password=password,
+            status=status,
+            is_active=is_active,
+            observations=observations,
+            selected_libraries=selected_libraries,
+        ).save()
         if publish:
             survey.publish()
             survey.reload()
         return survey
 
-    def _dummy_open_data(self, library_name=u"dummy_lib", sigel="dummy_sigel", sample_year=2013,
-                         target_group="folkbib", is_active=True,
-                         variable=None, value=1, date_created=None, date_modified=None, save=True):
+    def _dummy_open_data(
+        self,
+        library_name="dummy_lib",
+        sigel="dummy_sigel",
+        sample_year=2013,
+        target_group="folkbib",
+        is_active=True,
+        variable=None,
+        value=1,
+        date_created=None,
+        date_modified=None,
+        save=True,
+    ):
         if not variable:
             variable = self._dummy_variable()
             variable.save()
         if not date_created:
-            date_created = datetime(2014, 05, 27, 8, 00, 00)
+            date_created = datetime(2014, 5, 27, 8, 0, 0)
         if not date_modified:
-            date_modified = datetime(2014, 06, 02, 17, 57, 16)
-        open_data = OpenData(library_name=library_name, sigel=sigel, sample_year=sample_year, is_active=is_active,
-                             target_group=target_group, variable=variable, value=value, date_created=date_created,
-                             date_modified=date_modified)
+            date_modified = datetime(2014, 6, 2, 17, 57, 16)
+        open_data = OpenData(
+            library_name=library_name,
+            sigel=sigel,
+            sample_year=sample_year,
+            is_active=is_active,
+            target_group=target_group,
+            variable=variable,
+            value=value,
+            date_created=date_created,
+            date_modified=date_modified,
+        )
         if save:
             open_data.save()
             open_data.reload()
         return open_data
 
     def _dummy_article(self, title=None, content=None):
-        article = Article(title, content)
+        article = Article(title=title, content=content)
         article.save()
         article.reload()
         return article
 
-    def _dummy_dispatch(self, description=None, title=None, message=None, library_email=None,
-                        library_city=None, library_name=None):
-        dispatch = Dispatch(description=description, title=title, message=message, library_email=library_email,
-                            library_city=library_city, library_name=library_name)
+    def _dummy_dispatch(
+        self,
+        description=None,
+        title=None,
+        message=None,
+        library_email=None,
+        library_city=None,
+        library_name=None,
+    ):
+        dispatch = Dispatch(
+            description=description,
+            title=title,
+            message=message,
+            library_email=library_email,
+            library_city=library_city,
+            library_name=library_name,
+        )
         dispatch.save()
         dispatch.reload()
         return dispatch
@@ -127,17 +234,18 @@ class MongoTestCase(TestCase):
         return external_identifier
 
     def _fixture_setup(self):
-        from mongoengine.connection import connect, disconnect
+        from mongoengine.connection import connect, disconnect, get_db
 
         disconnect()
-        connect(self.mongodb_name, host=settings.MONGODB_HOST)
-        from mongoengine.django.mongo_auth.models import MongoUser
+        connect(self.mongodb_name, host=settings.MONGODB_DATABASES["default"]["host"])
+        self.db = get_db()
+        from django_mongoengine.mongo_auth.models import User
 
-        if MongoUser.objects.filter(username="admin").count() == 0:
-            MongoUser.objects.create_superuser("admin", "admin@example.com", "admin")
-        if MongoUser.objects.filter(username="library_user").count() == 0:
-            MongoUser.objects.create_user("library_user", "library.user@example.com", "secret")
-        setup_test_environment()
+        if User.objects.filter(username="admin").count() == 0:
+            User.create_superuser("admin", "admin", email="admin@example.com")
+        if User.objects.filter(username="library_user").count() == 0:
+            User.create_user("library_user", "secret", email="library.user@example.com")
+        # setup_test_environment()
 
     def _post_teardown(self):
         from mongoengine.connection import get_connection, disconnect

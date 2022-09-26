@@ -41,7 +41,7 @@
 
             <p>Enkäten är nu inskickad. Du kan fortfarande se dina inskickade svar, men enkäten är nu låst.<br>
             Om du skulle vilja ändra ett svar i efterhand, kontakta <a href="{{ form.mailto }}">biblioteksstatistik@kb.se</a>.</p>
-            <p>Dina resultat kommer att publiceras inom några dagar på <a href="http://bibstat.kb.se/reports">http://bibstat.kb.se/reports</a></p>
+            <p>Dina resultat kommer att publiceras inom några dagar på <a href="https://bibstat.kb.se/reports">https://bibstat.kb.se/reports</a></p>
             <p><a href="javascript:if(window.print)window.print()" role="button" aria-label="Skriv ut">
                 <span class="fa fa-print fa-inline" aria-hidden="true"></span>Skriv ut enkäten</a></p>
         </div>
@@ -290,6 +290,20 @@
                     <a href="#" id="cancel-submit-survey-btn" role="button" class="btn btn-danger" data-dismiss="modal">Avbryt</a>
                     <a href="#" id="confirm-submit-survey-btn" role="button" class="btn btn-success spinner"
                             data-spinner-text="Skickar... (STÄNG EJ WEBBLÄSARFLIKEN)" data-spinner-disable="#cancel-submit-survey-btn">Skicka</a>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal" id="already-submitted-modal" tabindex="-1" role="dialog" aria-hidden="true" aria-labelledby="already-submitted-title">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3 class="modal-title" id="already-submitted-title">Enkäten har redan skickats in</h3>
+                </div>
+                <div class="modal-body">
+                    <p>
+                        Enkäten har redan skickats in och kan därför inte sparas eller skickas in på nytt. Vänligen ladda om sidan, eller stäng fönstret och öppna länken på nytt.
+                    </p>
                 </div>
             </div>
         </div>

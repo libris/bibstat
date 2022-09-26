@@ -1,4 +1,3 @@
-# -*- coding: UTF-8 -*-
 import json
 import textwrap
 import re
@@ -19,7 +18,11 @@ register = template.Library()
 
 @register.filter
 def utc_tz(value):
-    return value.replace(tzinfo=pytz.utc) if value and isinstance(value, datetime) else value
+    return (
+        value.replace(tzinfo=pytz.utc)
+        if value and isinstance(value, datetime)
+        else value
+    )
 
 
 @register.filter
@@ -38,12 +41,14 @@ def tg_label(value):
                 display_names.append(targetGroups[value])
     return ", ".join(display_names)
 
+
 @register.filter
 def var_type_label(var_key):
     try:
         return variableTypes[var_key]
     except KeyError:
         return None
+
 
 @register.filter
 def srs_label(key):
@@ -57,6 +62,7 @@ def access(value, arg):
     except KeyError:
         return None
 
+
 @register.filter
 def get_errors(form, key):
     try:
@@ -66,9 +72,10 @@ def get_errors(form, key):
         return None
     return None
 
+
 @register.filter
 def split_into_number_and_body(description):
-    if re.compile("^[0-9]+\.").match(description):
+    if re.compile(r"^[0-9]+\.").match(description):
         return description.split(" ", 1)
     else:
         return "", description
@@ -97,37 +104,42 @@ def debug_enabled(_):
 @register.filter
 def format_number(number, digits=1):
     try:
-        locale.setlocale(locale.LC_NUMERIC, 'sv_SE')
+        locale.setlocale(locale.LC_NUMERIC, "sv_SE")
     except Exception:
-        locale.setlocale(locale.LC_NUMERIC, 'sv_SE.UTF-8')
-    return locale.format("%d" if number == int(number) else "%.{}f".format(digits), number, grouping=True)
+        locale.setlocale(locale.LC_NUMERIC, "sv_SE.UTF-8")
+    return locale.format(
+        "%d" if number == int(number) else "%.{}f".format(digits), number, grouping=True
+    )
+
 
 @register.filter
 def format_percentage(number):
     percentage = number * 100
     return format_number(percentage) + "%"
 
+
 @register.filter
 def format_email(email, limit=30):
     if len(email) <= limit:
         return email
 
-    return email[:limit - 3] + "..."
+    return email[: limit - 3] + "..."
 
 
 @register.filter
 def two_parts(thelist):
-    middle = len(thelist) / 2
+    middle = len(thelist) // 2
 
     if len(thelist) % 2 == 0:
         return [thelist[middle:], thelist[:middle]]
     else:
-        return [thelist[:middle + 1], thelist[middle + 1:]]
+        return [thelist[: middle + 1], thelist[middle + 1 :]]
+
 
 @register.filter
 def chunks(l, n):
-    for i in xrange(0, len(l), n):
-        yield l[i:i+n]
+    for i in range(0, len(l), n):
+        yield l[i : i + n]
 
 
 @register.filter
@@ -142,10 +154,7 @@ def show_in_chart(rows):
 
 @register.simple_tag
 def footer():
-    infoStr = "&copy; Kungl. biblioteket 2014-" + str(datetime.now().year)
-    if settings.RELEASE_VERSION:
-        infoStr = infoStr + ". Version " + settings.RELEASE_VERSION
-    return infoStr
+    return f"Version {settings.RELEASE_VERSION}"
 
 
 @register.simple_tag()

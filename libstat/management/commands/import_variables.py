@@ -1,13 +1,17 @@
-# -*- coding: UTF-8 -*-
 import logging
-
-from optparse import make_option
 
 from django.core.management.base import BaseCommand, CommandError
 from xlrd import open_workbook
 
 from libstat.utils import DATA_IMPORT_nonMeasurementCategories
-from libstat.utils import TYPE_STRING, TYPE_BOOLEAN, TYPE_INTEGER, TYPE_LONG, TYPE_DECIMAL, TYPE_PERCENT
+from libstat.utils import (
+    TYPE_STRING,
+    TYPE_BOOLEAN,
+    TYPE_INTEGER,
+    TYPE_LONG,
+    TYPE_DECIMAL,
+    TYPE_PERCENT,
+)
 from libstat.models import Variable
 
 
@@ -16,41 +20,47 @@ logger = logging.getLogger(__name__)
 
 class Command(BaseCommand):
     variableTypes = {
-        u"Text": TYPE_STRING[0],
-        u"Numerisk": TYPE_STRING[0],
-        u"Boolesk": TYPE_BOOLEAN[0],
-        u"Integer": TYPE_INTEGER[0],
-        u"Long": TYPE_LONG[0],
-        u"Decimal två": TYPE_DECIMAL[0],
-        u"Decimal ett": TYPE_DECIMAL[0],
-        u"Procent": TYPE_PERCENT[0]
+        "Text": TYPE_STRING[0],
+        "Numerisk": TYPE_STRING[0],
+        "Boolesk": TYPE_BOOLEAN[0],
+        "Integer": TYPE_INTEGER[0],
+        "Long": TYPE_LONG[0],
+        "Decimal två": TYPE_DECIMAL[0],
+        "Decimal ett": TYPE_DECIMAL[0],
+        "Procent": TYPE_PERCENT[0],
     }
 
-    isPublic = {
-        u"Öppet": True,
-        u"Inte": False
-    }
+    isPublic = {"Öppet": True, "Inte": False}
 
     help = "Imports statistical variables from a spreadsheet"
 
-    option_list = BaseCommand.option_list + (
-        make_option(u'--target_group', dest=u"target_group", type=u'choice',
-                    choices=["folkbib", "specbib", "sjukbib", "skolbib"],
-                    help=u'Target group; public, research, hospital, school'),
-        make_option('--file', dest="file", type='string',
-                    help='File; Absolute path to source spreadsheet. I.e. /home/MyUser/documents/sourcefile.xlsx'),
-    )
+    def add_arguments(self, parser):
+        parser.add_argument(
+            "--target-group",
+            dest="target_group",
+            choices=["folkbib", "specbib", "sjukbib", "skolbib"],
+            help="Target group; public, research, hospital, school",
+        )
+        parser.add_argument(
+            "--file",
+            dest="file",
+            help="File; Absolute path to source spreadsheet. i.e. /home/MyUser/documents/sourcefile.xlsx",
+        )
 
     def handle(self, *args, **options):
         if not options["target_group"] or not options["file"]:
-            logger.info(("Usage: python manage.py import_variables --file=</path/to/file>"
-                         "--target_group=<folkbib|specbib|sjukbib|skolbib>\n\n"))
+            logger.info(
+                (
+                    "Usage: python manage.py import_variables --file=</path/to/file>"
+                    "--target_group=<folkbib|specbib|sjukbib|skolbib>\n\n"
+                )
+            )
             return
 
         file = options["file"]
         target_group = options["target_group"]
 
-        logger.info(u"Importing {} variables from: {}...".format(target_group, file))
+        logger.info("Importing {} variables from: {}...".format(target_group, file))
 
         book = open_workbook(file)
         work_sheet = book.sheet_by_index(0)
@@ -68,13 +78,19 @@ class Command(BaseCommand):
             variable_type = row[4].strip()
             is_public = row[5].strip()
 
-            if variable_type not in self.variableTypes.keys():
-                raise CommandError(u"Invalid variable type: {} for key: {}".format(variable_type, key))
+            if variable_type not in list(self.variableTypes.keys()):
+                raise CommandError(
+                    "Invalid variable type: {} for key: {}".format(variable_type, key)
+                )
             else:
                 variable_type = self.variableTypes[variable_type]
 
-            if is_public not in self.isPublic.keys():
-                raise CommandError(u"Invalid public/private column value: {} for key: {}".format(is_public, key))
+            if is_public not in list(self.isPublic.keys()):
+                raise CommandError(
+                    "Invalid public/private column value: {} for key: {}".format(
+                        is_public, key
+                    )
+                )
             else:
                 is_public = self.isPublic[is_public]
 
@@ -83,8 +99,15 @@ class Command(BaseCommand):
 
             existing_vars = Variable.objects.filter(key=key)
             if len(existing_vars) == 0:
-                object = Variable(key=key, description=description, category=category, sub_category=sub_category,
-                                  type=variable_type, is_public=is_public, target_groups=[target_group], )
+                object = Variable(
+                    key=key,
+                    description=description,
+                    category=category,
+                    sub_category=sub_category,
+                    type=variable_type,
+                    is_public=is_public,
+                    target_groups=[target_group],
+                )
                 object.save()
                 imported_variables += 1
             else:
@@ -98,5 +121,8 @@ class Command(BaseCommand):
                 object.save()
                 updated_variables += 1
 
-        logger.info(u"...{} {} variables imported, {} updated.".format(imported_variables,
-                                                                       target_group, updated_variables))
+        logger.info(
+            "...{} {} variables imported, {} updated.".format(
+                imported_variables, target_group, updated_variables
+            )
+        )
