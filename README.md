@@ -11,6 +11,9 @@ Nedan är ett exempel på en minimal installation i Linux.
 
 	# Installera MongoDB 5.0.x:
     # https://www.mongodb.com/docs/v5.0/installation/
+    # Installera MongoDB Database Tools:
+    # https://www.mongodb.com/try/download/database-tools
+    # (inkluderar mongorestore & co, som ej längre är del av MongoDB-disten sen 4.4)
 
 	# Klona projektet
 	git clone git@github.com:libris/bibstat
