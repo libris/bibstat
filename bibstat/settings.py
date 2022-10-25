@@ -55,6 +55,10 @@ EMAIL_SENDER = "biblioteksstatistik@kb.se"
 
 LOG_LEVEL = "WARNING"
 
+# The following is necessary because when you select all surveys in the admin
+# interface and click Export, the request is quite large.
+DATA_UPLOAD_MAX_NUMBER_FIELDS = 10000
+
 # Override above with local settings if present
 try:
     from .settings_local import *
