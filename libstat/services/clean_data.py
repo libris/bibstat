@@ -3,7 +3,7 @@ from django.core.files import File
 from bibstat import settings
 from xlrd import open_workbook
 from xlrd import XLRDError
-import os, logging, codecs
+import os, logging
 
 logger = logging.getLogger(__name__)
 
@@ -61,12 +61,11 @@ def match_libraries_and_replace_sigel(sample_year):
     count = 0
     matched = 0
 
-    f = codecs.open(
+    f = open(
         os.path.join(
             settings.CLEAN_DATA_LOG_PATH, "match_libraries_log_%d" % sample_year
         ),
-        "wt",
-        "utf-8",
+        "w"
     )
     logfile = File(f)
 
@@ -174,12 +173,11 @@ def remove_empty_surveys(sample_year, mode):
     elif mode == "not_viewed":
         remove_surveys = _get_surveys_with_status_not_viewed(sample_year)
 
-    f = codecs.open(
+    f = open(
         os.path.join(
             settings.CLEAN_DATA_LOG_PATH, "remove_surveys_log_%d" % sample_year
         ),
-        "wt",
-        "utf-8",
+        "w"
     )
     logfile = File(f)
     logfile.write("Mode: %s\n" % mode)
