@@ -187,10 +187,10 @@ class SurveyForm(forms.Form):
         if isinstance(field.initial, str):
             field.initial = field.initial.strip()
 
-        if cell.variable_key == "Besok01":
-            logger.debug("attrs:")
-            for attr, value in list(attrs.items()):
-                logger.debug(attr)
+        #if cell.variable_key == "Besok01":
+        #    logger.debug("attrs:")
+        #    for attr, value in list(attrs.items()):
+        #        logger.debug(attr)
 
         return field
 

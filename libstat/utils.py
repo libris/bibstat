@@ -1,5 +1,6 @@
-# -*- coding: UTF-8 -*-
 import datetime
+
+from ipware import IpWare
 
 ALL_TARGET_GROUPS_label = "Samtliga bibliotek"
 SURVEY_TARGET_GROUPS = (
@@ -68,6 +69,8 @@ DATA_IMPORT_nonMeasurementCategories = [
 
 ISO8601_utc_format = "%Y-%m-%dT%H:%M:%S.%fZ"
 
+ipw = IpWare()
+
 
 def parse_datetime_from_isodate_str(date_str):
     # Note: Timezone designator not supported ("+01:00").
@@ -95,3 +98,23 @@ def parse_datetime(date_str, date_format):
         return datetime.datetime.strptime(date_str, date_format)
     except ValueError:
         return None
+
+
+def get_ip_for_logging(request):
+    # We use ipware (ipw) tp easily get the "real" client IP.
+    # Might need some adjustments depending on the environment, e.g. specifying
+    # trusted proxies.
+    # This is *ONLY* for logging purposes.
+    ip, trusted_route = ipw.get_client_ip(request.META)
+    return ip
+
+
+def get_log_prefix(request, survey_id=None, survey_title=None):
+    log_prefix = f"[IP: {get_ip_for_logging(request)}]"
+    if request.user.is_superuser:
+        log_prefix = f"{log_prefix} [ADMIN]"
+    if survey_id:
+        log_prefix = f"{log_prefix} [survey: {survey_id}]"
+    if survey_title:
+        log_prefix = f"{log_prefix} [{survey_title}]"
+    return log_prefix

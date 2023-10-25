@@ -23,6 +23,7 @@ from libstat.models import (
 )
 from libstat.forms.survey import SurveyForm
 from libstat.survey_templates import survey_template
+from libstat.utils import get_log_prefix
 
 logger = logging.getLogger(__name__)
 
@@ -68,7 +69,7 @@ def sigel_survey(request, sigel):
         return HttpResponseNotFound()
 
 
-def _save_survey_response_from_form(survey, form):
+def _save_survey_response_from_form(survey, form, log_prefix):
     # Note: all syntax/format validation is done on client side w Bootstrap validator.
     # All fields are handled as CharFields in the form and casted based on variable.type before saving.
     # More types can be added when needed.
@@ -108,9 +109,13 @@ def _save_survey_response_from_form(survey, form):
             _f for _f in form.cleaned_data["selected_libraries"].split(" ") if _f
         ]
 
+        logger.info(f"{log_prefix} Saving form; submit_action={submit_action}, survey_status={survey.status}")
         if submit_action == "submit" and survey.status in ("not_viewed", "initiated"):
             if not survey.has_conflicts():
+                logger.info(f"{log_prefix} submit_action was 'submit' and survey.status {survey.status}; changing status to submitted")
                 survey.status = "submitted"
+            else:
+                logger.info(f"{log_prefix} submit_action was 'submit' and survey.status {survey.status}; however status NOT changed to submitted due to conflicts")
 
         survey.save(validate=False)
 
@@ -147,8 +152,10 @@ def survey(request, survey_id):
         return HttpResponseNotFound()
 
     survey = survey[0]
+    log_prefix = get_log_prefix(request, survey_id, survey)
 
     if not survey.is_active and not request.user.is_authenticated:
+        logger.info(f"{log_prefix} tried to {request.method} but survey is not active and user is not authenticated")
         return HttpResponseForbidden()
 
     context = {
@@ -164,6 +171,7 @@ def survey(request, survey_id):
     if can_view_survey(survey):
 
         if not request.user.is_authenticated and survey.status == "not_viewed":
+            logger.info(f"{log_prefix} User not authenticated and survey.status was not_viewed; setting survey.status to initiated and saving")
             survey.status = "initiated"
             survey.save(validate=False)
 
@@ -174,7 +182,7 @@ def survey(request, survey_id):
                 and not request.user.is_superuser
             ):
                 logger.error(
-                    f"Refusing to save because survey has status submitted (or higher), library {survey.library.sigel}"
+                    f"{log_prefix} Refusing to save because survey has status submitted (or higher), library {survey.library.sigel}"
                 )
                 return HttpResponse(
                     json.dumps({"error": "Survey already submitted"}),
@@ -182,12 +190,15 @@ def survey(request, survey_id):
                     content_type="application/json",
                 )
             else:
+                logger.info(f"{log_prefix} POSTing survey")
                 form = SurveyForm(request.POST, survey=survey)
                 errors = _save_survey_response_from_form(
-                    survey, form
+                    survey, form, log_prefix
                 )  # Errors returned as separate json
-                logger.debug("ERRORS: ")
-                logger.debug(json.dumps(errors))
+                if errors:
+                    logger.info(f"{log_prefix} Errors when saving survey: {json.dumps(errors)}")
+                else:
+                    logger.info(f"{log_prefix} Survey saved")
                 return HttpResponse(json.dumps(errors), content_type="application/json")
         else:
 
@@ -232,6 +243,8 @@ def release_survey_lock(request, survey_id):
 def survey_status(request, survey_id):
     if request.method == "POST":
         survey = Survey.objects.get(pk=survey_id)
+        log_prefix = f"{get_log_prefix(request, survey_id, survey)}"
+        logger.info(f"{log_prefix} Changing selected_status from {survey.status} to {request.POST['selected_status']}")
         survey.status = request.POST["selected_status"]
         survey.save()
 
@@ -242,6 +255,8 @@ def survey_status(request, survey_id):
 def survey_notes(request, survey_id):
     if request.method == "POST":
         survey = Survey.objects.get(pk=survey_id)
+        log_prefix = f"{get_log_prefix(request, survey_id, survey)}"
+        logger.info(f"{log_prefix} Adding notes to survey")
         survey.notes = request.POST["notes"]
         survey.save()
 

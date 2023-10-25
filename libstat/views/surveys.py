@@ -33,6 +33,7 @@ from libstat.services.excel_export import (
 )
 from libstat.survey_templates import survey_template
 from data.municipalities import municipalities
+from libstat.utils import get_log_prefix
 
 
 logger = logging.getLogger(__name__)
@@ -147,6 +148,7 @@ def surveys(request, *args, **kwargs):
 def surveys_activate(request):
     if request.method == "POST":
         survey_ids = request.POST.getlist("survey-response-ids", [])
+        logger.info(f"{get_log_prefix(request)} Activating surveys {survey_ids}")
         Survey.objects.filter(pk__in=survey_ids).update(set__is_active=True)
         request.session["message"] = "Aktiverade {} stycken enkäter.".format(
             len(survey_ids)
@@ -158,6 +160,7 @@ def surveys_activate(request):
 def surveys_inactivate(request):
     if request.method == "POST":
         survey_ids = request.POST.getlist("survey-response-ids", [])
+        logger.info(f"{get_log_prefix(request)} Inactivating surveys {survey_ids}")
         Survey.objects.filter(pk__in=survey_ids).update(set__is_active=False)
         request.session["message"] = "Inaktiverade {} stycken enkäter.".format(
             len(survey_ids)
@@ -318,8 +321,10 @@ def surveys_overview(request, sample_year):
 
 @permission_required("is_superuser", login_url="index")
 def surveys_statuses(request):
+    log_prefix = f"{get_log_prefix(request)}"
     status = request.POST.get("new_status", "")
     survey_response_ids = request.POST.getlist("survey-response-ids", [])
+    logger.info(f"{log_prefix} Changing status for {survey_response_ids}")
     if status == "published":
         num_successful_published = 0
         for survey in Survey.objects.filter(id__in=survey_response_ids):
@@ -333,6 +338,9 @@ def surveys_statuses(request):
                 "de svarar för några bibliotek eller för att flera enkäter svarar för "
                 "samma bibliotek. Alternativt saknar biblioteken kommunkod eller huvudman."
             ).format(message, len(survey_response_ids) - num_successful_published)
+            logger.info(f"{log_prefix} Published {num_successful_published} survey(s); failed publishing {len(survey_response_ids) - num_successful_published} survey(s)")
+        else:
+            logger.info(f"{log_prefix} Published {num_successful_published} survey(s)")
     else:
         surveys = Survey.objects.filter(id__in=survey_response_ids)
         for survey in surveys.filter(_status="published"):
@@ -343,6 +351,7 @@ def surveys_statuses(request):
         message = "Ändrade status på {} stycken enkäter.".format(
             len(survey_response_ids)
         )
+        logger.info(f"{log_prefix} Changed survey.status to {status} for {len(survey_response_ids)} surveys")
 
     request.session["message"] = message
     return _surveys_redirect(request)
