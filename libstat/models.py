@@ -546,7 +546,17 @@ class SurveyBase(Document):
 
     @property
     def latest_version_published(self):
-        return self.published_at is not None and self.published_at >= self.date_modified
+        # It can happen that self.modified_at is a timezone-unaware datetime object
+        # causing an error when compared with self.published_at ("can't compare offset-naive
+        # and offset-aware datetimes"). datetime.utcnow() is used in various places and does
+        # *not* set tzinfo. We shouldn't have these kinds of problems, but I'd rather not
+        # start poking at date/time handling given the state of the code, so let's just work
+        # around it here.
+        modified_at_with_tz = self.date_modified
+        if self.published_at is not None and self.published_at.tzinfo:
+            if not self.date_modified.tzinfo:
+                modified_at_with_tz = modified_at_with_tz.replace(tzinfo=self.published_at.tzinfo)
+        return self.published_at is not None and self.published_at >= modified_at_with_tz
 
     def target_group__desc(self):
         return targetGroups[self.target_group]
