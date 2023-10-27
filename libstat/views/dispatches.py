@@ -8,6 +8,7 @@ from django.template.loader import render_to_string
 
 from bibstat import settings
 from libstat.models import Dispatch, Survey
+from libstat.utils import get_log_prefix
 
 logger = logging.getLogger(__name__)
 
@@ -35,6 +36,7 @@ def _rendered_template(template, survey):
 def dispatches(request):
     if request.method == "POST":
         survey_ids = request.POST.getlist("survey-response-ids", [])
+        logger.info(f"{get_log_prefix(request)} Creating dispatches for {survey_ids}")
         surveys = list(Survey.objects.filter(id__in=survey_ids).exclude("observations"))
 
         dispatches = [
@@ -67,6 +69,7 @@ def dispatches(request):
 def dispatches_delete(request):
     if request.method == "POST":
         dispatch_ids = request.POST.getlist("dispatch-ids", [])
+        logger.info(f"{get_log_prefix(request)} Deleting dispatches {dispatch_ids}")
         Dispatch.objects.filter(id__in=dispatch_ids).delete()
 
         message = ""
@@ -83,6 +86,7 @@ def dispatches_delete(request):
 def dispatches_send(request):
     if request.method == "POST":
         dispatch_ids = request.POST.getlist("dispatch-ids", [])
+        logger.info(f"{get_log_prefix(request)} Sending dispatches {dispatch_ids}")
         dispatches = Dispatch.objects.filter(id__in=dispatch_ids)
         dispatches_with_email = [
             dispatch for dispatch in dispatches if dispatch.library_email
