@@ -1,6 +1,6 @@
 import datetime
 
-from ipware import IpWare
+from python_ipware import IpWare
 
 ALL_TARGET_GROUPS_label = "Samtliga bibliotek"
 SURVEY_TARGET_GROUPS = (
