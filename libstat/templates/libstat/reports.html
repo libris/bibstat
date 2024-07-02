@@ -68,9 +68,9 @@
                                 <select id="select-sample-year" name="sample_year" class="form-control">
                                     {% for year in sample_years %}
                                         <option value="{{ year }}"
-                                                {% ifequal year|slugify sample_year %}
+                                                {% if year|slugify == sample_year %}
                                                 selected="selected"
-                                                {% endifequal %}>
+                                                {% endif %}>
                                             {{ year }}
                                         </option>
                                     {% endfor %}
@@ -87,9 +87,9 @@
                                     {% endcomment %}
                                     {% for name, code in municipality_codes %}
                                         <option value="{{ code }}"
-                                                {% ifequal code|slugify municipality_code %}
+                                                {% if code|slugify == municipality_code %}
                                                 selected="selected"
-                                                {% endifequal %}>
+                                                {% endif %}>
                                             {{ name }}
                                         </option>
                                     {% endfor %}
@@ -104,9 +104,9 @@
                                     </option>
                                     {% for name, code in principals %}
                                         <option value="{{ code }}"
-                                                {% ifequal code|slugify principal %}
+                                                {% if code|slugify == principal %}
                                                 selected="selected"
-                                                {% endifequal %}>
+                                                {% endif %}>
                                             {{ name }}
                                         </option>
                                     {% endfor %}
