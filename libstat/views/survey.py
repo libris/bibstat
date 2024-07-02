@@ -227,6 +227,16 @@ def survey(request, survey_id):
         else:
             context["wrong_password"] = True
 
+    # If user is trying to save the form but isn't authenticated, respond with a 401
+    if (
+        request.method == "POST"
+        and not request.POST.get("password", None)
+        and not can_view_survey(survey)
+    ):
+        logger.info(f"{log_prefix} Tried saving, but unauthorized")
+        return HttpResponse("Unauthorized", status=401)
+
+    # Otherwise, show the password page
     return render(request, "libstat/survey/password.html", context)
 
 

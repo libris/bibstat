@@ -691,6 +691,11 @@ define(['jquery', 'bootbox', 'survey.sum', 'survey.cell', 'surveys.dispatch', 'b
                                     $('.navbar-fixed-bottom').hide();
                                     // Don't show status message about unsaved changes
                                     $('#unsaved-changes-label').html('');
+                                } else if (xhr.status == 401 || xhr.status == 403) {
+                                    alert('Kunde inte spara eftersom du inte är inloggad. Gör så här:\n1) Tryck på knappen "Skriv ut" för att spara en kopia till PDF (eller gör en utskrift).\n2) Klicka sedan på enkätlänken i mejlet du fått från oss för att öppna enkäten på nytt.\n3) För in eventuella ändringar från den sparade kopian och tryck på "Spara" på nytt.');
+                                    $('#print-survey-btn, #save-survey-btn, #submit-survey-btn').removeClass('disabled');
+                                    $('#save-survey-btn').html('Spara');
+                                    $('#submit-survey-btn').html('Skicka');
                                 } else {
                                     alert('Ett fel uppstod! Var vänlig försök igen.');
                                     $('#print-survey-btn, #save-survey-btn, #submit-survey-btn').removeClass('disabled');
