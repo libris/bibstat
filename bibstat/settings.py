@@ -17,7 +17,7 @@ from pathlib import Path
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 # Bibstat version number - update this when making a new release
-RELEASE_VERSION = "1.20.5"
+RELEASE_VERSION = "1.20.6"
 
 """
 ----------------------------------------------------------
