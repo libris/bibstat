@@ -34,6 +34,7 @@ Nedan är ett exempel på en minimal installation i Linux.
     # Aktivera virtuell miljö
     source venv/bin/activate
     # Installera Python-beroenden
+    pip install --upgrade pip
     pip install -r requirements.txt
 
 	# Konfigurera

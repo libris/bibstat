@@ -5,7 +5,7 @@ from bibstat import settings
 from django.urls import reverse
 
 from django.shortcuts import render, redirect
-from django.utils.http import is_safe_url
+from django.utils.http import url_has_allowed_host_and_scheme
 from data.municipalities import municipalities, get_counties
 from data.principals import (
     principal_for_library_type,
@@ -21,7 +21,7 @@ def report(request):
         return redirect(reverse("reports"))
 
     previous_url = request.POST.get("previous_url", reverse("reports"))
-    if not is_safe_url(url=previous_url, allowed_hosts=request.get_host()):
+    if not url_has_allowed_host_and_scheme(url=previous_url, allowed_hosts=request.get_host()):
         return redirect(reverse("reports"))
 
     sample_year = int(request.POST.get("sample_year", None))
