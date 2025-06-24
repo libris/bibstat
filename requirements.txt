@@ -3,7 +3,7 @@ blinker==1.5
 django-excel-response==1.0
 git+https://github.com/ierror/django-js-reverse@7cab78c#egg=django-js-reverse
 django-mongoengine==0.6.0b2
-Django==4.2.21
+Django==4.2.22
 pymongo==3.12
 mongoengine==0.28.2
 openpyxl==3.0.10
