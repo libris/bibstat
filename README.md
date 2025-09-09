@@ -2,7 +2,7 @@
 
 ## Beroenden
 
-* Python 3.6.x (Django)
+* Python 3.9.x (Django)
 * MongoDB 5.0.x
 
 ## Installation
@@ -29,13 +29,8 @@ Nedan är ett exempel på en minimal installation i Linux.
 	> db.createUser({user:"bibstat", pwd:"bibstat", roles:["readWrite"]})
 	> exit
 
-	# Skapa en virtuell miljö för Python
-    python3 -m venv venv
-    # Aktivera virtuell miljö
-    source venv/bin/activate
-    # Installera Python-beroenden
-    pip install --upgrade pip
-    pip install -r requirements.txt
+    # Installera uv:
+    # https://github.com/astral-sh/uv
 
 	# Konfigurera
 	cp bibstat/settings_local.py.example bibstat/settings_local.py
@@ -44,9 +39,9 @@ Nedan är ett exempel på en minimal installation i Linux.
 	python manage.py createmongodbsuperuser --username=super --email=a@b.com
 
 	# Starta servern
-	python manage.py runserver
+	uv run python manage.py runserver
     # Alternativt (obs, gunicorn kommer inte serva statiska filer):
-    gunicorn bibstat.wsgi
+    uv run gunicorn bibstat.wsgi
 
 ### Importera produktionsdata till lokal utvecklingsmiljö
 
@@ -99,7 +94,7 @@ för att slippa bygga om mellan uppdateringar).
 Testerna kan köras genom att använda följande kommando.
 Både enhetstesterna och integrationstesterna kommer köras.
 
-	python manage.py test
+	uv run python manage.py test
 
 ## Deploy
 
@@ -129,20 +124,20 @@ Det finns en [sammanfattning](docs/servers.md) av hur miljöerna sattes upp.
 Tidigare års statistiktermer kan importeras på följande sett.  
 Filerna finns att hitta i projektkatalogen [`data/variables`](data/variables).
 
-	python manage.py import_variables --file=data/variables/folk_termer.xlsx --target_group=folkbib	
-	python manage.py import_variables --file=data/variables/forsk_termer.xlsx --target_group=specbib
-	python manage.py import_variables --file=data/variables/skol_termer.xlsx --target_group=skolbib
-	python manage.py import_variables --file=data/variables/sjukhus_termer.xlsx --target_group=sjukbib
+	uv run python manage.py import_variables --file=data/variables/folk_termer.xlsx --target_group=folkbib	
+	uv run python manage.py import_variables --file=data/variables/forsk_termer.xlsx --target_group=specbib
+	uv run python manage.py import_variables --file=data/variables/skol_termer.xlsx --target_group=skolbib
+	uv run python manage.py import_variables --file=data/variables/sjukhus_termer.xlsx --target_group=sjukbib
 
 **Enkäter**  
 Tidigare års enkäter med de inlämnade värdena kan importeras på följande sett.  
 En exekvering av ett kommando importerar ett års värden för en viss bibliotekstyp.  
 Filerna finns på både stage- och produktionsmiljön i `/data/appl/old_bibstat_data`.
 
-	python manage.py import_survey_responses --file=/data/appl/old_bibstat_data/Folkbibliotek.xlsx --target_group=folkbib --year=2013
-	python manage.py import_survey_responses --file=/data/appl/old_bibstat_data/Folkbibliotek.xlsx --target_group=folkbib --year=2012
-	python manage.py import_survey_responses --file=/data/appl/old_bibstat_data/Folkbibliotek.xlsx --target_group=folkbib --year=2011
-	python manage.py import_survey_responses --file=/data/appl/old_bibstat_data/Folkbibliotek.xlsx --target_group=folkbib --year=2010
+	uv run python manage.py import_survey_responses --file=/data/appl/old_bibstat_data/Folkbibliotek.xlsx --target_group=folkbib --year=2013
+	uv run python manage.py import_survey_responses --file=/data/appl/old_bibstat_data/Folkbibliotek.xlsx --target_group=folkbib --year=2012
+	uv run python manage.py import_survey_responses --file=/data/appl/old_bibstat_data/Folkbibliotek.xlsx --target_group=folkbib --year=2011
+	uv run python manage.py import_survey_responses --file=/data/appl/old_bibstat_data/Folkbibliotek.xlsx --target_group=folkbib --year=2010
 
 ### Export
 Export av enkäter till excelfil kan göras via administrationssidan [/surveys](https://bibstat.kb.se/surveys). Det öppna datat kan också exporteras till excelfil under "Öppna data". Då kommer enbart observationer med för variabler som är publika.
@@ -151,20 +146,15 @@ Script för export finns även under [libstat/management/commands]([libstat/mana
 
 För att ta ut enkäter:
 
-	python manage.py export_surveys_to_excel --year=2014
+	uv run python manage.py export_surveys_to_excel --year=2014
 
 För att ta ut data om biblioteken (ange all=y för att ta ut alla bibliotek, eller all=n för att endast få med bibliotek som saknar sigel):
 
-	python manage.py export_libraries_to_excel --year=2012 --all=n
-	
-I servermiljöerna måste man aktivera virtuell env genom 
-    
-    cd /data/appl/bibstat
-    source env/bin/activate
+	uv run python manage.py export_libraries_to_excel --year=2012 --all=n
     
 För att köra script som bakgrundsprocess:
     
-    nohup python manage.py export_surveys_to_excel --year=2014 &
+    nohup uv run python manage.py export_surveys_to_excel --year=2014 &
 	
 Filerna hamnar under [data/excel_exports] (data/excel_exports) (under /data/appl/excel_exports på servrarna)
 
@@ -172,7 +162,7 @@ Filerna hamnar under [data/excel_exports] (data/excel_exports) (under /data/appl
 
 Om ett bibliotek bytt sigel kan kommandot `update_sigel` köras för att ändra i Bibstat:
 
-    python manage.py update_sigel --from="GAMMALT_SIGEL" --to="NYTT_SIGEL"
+    uv run python manage.py update_sigel --from="GAMMALT_SIGEL" --to="NYTT_SIGEL"
 
 ## Analytics
 
