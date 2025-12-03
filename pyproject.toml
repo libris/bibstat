@@ -8,7 +8,7 @@ dependencies = [
     "black==24.3.0",
     "blinker==1.5",
     "certifi==2024.7.4",
-    "django==4.2.26",
+    "django==4.2.27",
     "django-excel-response==1.0",
     "django-js-reverse",
     "django-mongoengine==0.6.0b2",
