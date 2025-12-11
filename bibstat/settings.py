@@ -51,7 +51,8 @@ MONGODB_DATABASES = {
 
 # Email details
 EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
-EMAIL_SENDER = "biblioteksstatistik@kb.se"
+EMAIL_SENDER = "no-reply.biblioteksstatistik@utskick.kb.se"
+EMAIL_REPLY_TO = "biblioteksstatistik@kb.se"
 
 LOG_LEVEL = "WARNING"
 

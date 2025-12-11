@@ -106,6 +106,7 @@ def dispatches_send(request):
                     dispatch.message,
                     settings.EMAIL_SENDER,
                     [dispatch.library_email],
+                    reply_to = [settings.EMAIL_REPLY_TO]
                 )
                 html_content = render_to_string(
                     "libstat/email_template.html", {"message": dispatch.message}
