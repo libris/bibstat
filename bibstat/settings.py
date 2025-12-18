@@ -17,7 +17,7 @@ from pathlib import Path
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 # Bibstat version number - update this when making a new release
-RELEASE_VERSION = "1.21.0"
+RELEASE_VERSION = "1.21.1"
 
 """
 ----------------------------------------------------------
@@ -51,8 +51,7 @@ MONGODB_DATABASES = {
 
 # Email details
 EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
-EMAIL_SENDER = "no-reply.biblioteksstatistik@utskick.kb.se"
-EMAIL_REPLY_TO = "biblioteksstatistik@kb.se"
+EMAIL_SENDER = "biblioteksstatistik@kb.se"
 
 LOG_LEVEL = "WARNING"
 
